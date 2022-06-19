@@ -1,0 +1,417 @@
+\chapter{Uniaxial Phenomenological Models}
+In this chapter, we present a number of uniaxial phenomenological models. Due to their phenomenological nature, some models may violate Ilyushin's postulate.
+\section{Ramberg--Osgood Model}
+\subsection{Theory}
+The Ramberg--Osgood relation is nonlinear function that defines
+\begin{gather}
+\bar\varepsilon=\dfrac{\bar\sigma}{E}+\alpha\dfrac{\bar\sigma}{E}\left(\dfrac{\bar\sigma}{\bar\sigma^y}\right)^{n-1},
+\end{gather}
+where $\alpha$ and $n$ are two model constants. To account for cyclic response, strain and stress are not directly used in the above expression.
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+height=6cm,width=10cm,
+ymin=0,ymax=13,
+xmin=0,
+xlabel=$\bar\varepsilon$,
+ylabel=$\bar\sigma$,
+]
+\addplot[domain=0:12,very thick,red](x/100+2*x/100*(x/10)^10,x);
+\end{axis}
+\end{tikzpicture}
+\end{figure}
+\subsection{Formulation}
+The residual equation is formulated as
+\begin{gather}
+R=\bar\sigma+\alpha\bar\sigma\left(\dfrac{\bar\sigma}{\bar\sigma^y}\right)^{n-1}-E\bar\varepsilon,
+\end{gather}
+its derivative with regard to $\bar\sigma$ is
+\begin{gather}
+\pdfrac{R}{\bar\sigma}=1+n\alpha\left(\dfrac{\bar\sigma}{\bar\sigma^y}\right)^{n-1}.
+\end{gather}
+Once $\bar\varepsilon$ and $\bar\sigma^y$ are determined, $\bar\sigma$ can be iteratively computed.
+
+For cyclic loads, it is necessary to record the location of reversing point, denoted by $\varepsilon^r$ and $\sigma^r$. Then,
+\begin{gather}
+\bar\varepsilon=\abs{\varepsilon-\varepsilon^r},\qquad
+\bar\sigma=\abs{\sigma-\sigma^r}.
+\end{gather}
+It simply means $\bar\varepsilon$ and $\bar\sigma$ are the absolute strain and stress measured from the reversing point.
+
+The yield stress is taken as
+\begin{gather}
+\bar\sigma^y=\sigma^y+\abs{\sigma^r}.
+\end{gather}
+where $\sigma^y$ is the initial yield stress. This definition is fine for large cycle loads, but not sufficient for small cycle loads. For which, the previous reversing point shall be used, let $\varepsilon^{pr}$ and $\sigma^{pr}$ denote its strain and stress, then for small cycles, $\abs{\sigma^{pr}}>\abs{\sigma^{r}}$,
+\begin{gather}
+\bar\sigma^y=\abs{\sigma^{pr}-\sigma^{r}}.
+\end{gather}
+
+To wrap up,
+\begin{gather}
+\bar\sigma^y=\left\{
+\begin{array}{ll}
+\max\left(\sigma^y+\abs{\sigma^r},\abs{\sigma^{pr}-\sigma^{r}}\right),&\text{if~}\sigma^{pr}=0\text{~or~}\abs{\sigma^{pr}}<\abs{\sigma^{r}},\\
+\abs{\sigma^{pr}-\sigma^{r}},&\text{otherwise}.
+\end{array}\right.
+\end{gather}
+\subsection{Implementation}
+The CPP implementation can be found as follows.
+\begin{cppcode}
+int RambergOsgood::update_trial_status(const vec& t_strain) {
+	incre_strain = (trial_strain = t_strain) - current_strain;
+
+	if(fabs(incre_strain(0)) <= datum::eps) return SUANPAN_SUCCESS;
+
+	trial_history = current_history;
+	auto& load_sign = trial_history(0);
+	auto& reverse_strain = trial_history(1);
+	auto& reverse_stress = trial_history(2);
+	auto& p_reverse_strain = trial_history(3);
+	auto& p_reverse_stress = trial_history(4);
+
+	if(const auto trial_load_sign = suanpan::sign(incre_strain(0)); !suanpan::approx_equal(trial_load_sign, load_sign)) {
+		if(!suanpan::approx_equal(load_sign, 0.)) {
+			p_reverse_strain = reverse_strain;
+			p_reverse_stress = reverse_stress;
+			reverse_strain = current_strain(0);
+			reverse_stress = current_stress(0);
+		}
+		load_sign = trial_load_sign;
+	}
+
+	const auto elastic_predictor = elastic_modulus * fabs(trial_strain(0) - reverse_strain);
+
+	const auto norm_yield_stress = std::max(datum::eps, 0. == p_reverse_stress || fabs(p_reverse_stress) < fabs(reverse_stress) ? std::max(fabs(reverse_stress - p_reverse_stress), yield_stress + fabs(reverse_stress)) : fabs(reverse_stress - p_reverse_stress));
+
+	const auto pow_a = pow(norm_yield_stress, nm);
+
+	auto norm_stress = fabs(current_stress(0) - reverse_stress);
+
+	unsigned counter = 0;
+	while(true) {
+		const auto pow_b = offset * pow(norm_stress, nm);
+		const auto jacobian = pow_a + n * pow_b;
+		const auto incre = (norm_stress * (pow_a + pow_b) - elastic_predictor * pow_a) / jacobian;
+		const auto error = fabs(incre) / yield_stress;
+		suanpan_debug("RambergOsgood local iteraton error: %.5E.\n", error);
+		if(error <= tolerance || max_iteration == ++counter) {
+			trial_stress = load_sign * norm_stress + reverse_stress;
+			trial_stiffness = elastic_modulus * pow_a / jacobian;
+			return SUANPAN_SUCCESS;
+		}
+		norm_stress -= incre;
+	}
+}
+\end{cppcode}
+\section{MPF Steel Model}
+\subsection{Theory}
+\subsection{Formulation}
+\subsection{Implementation}
+The CPP implementation can be found as follows.
+\begin{cppcode}
+int MPF::update_trial_status(const vec& t_strain) {
+	incre_strain = (trial_strain = t_strain) - current_strain;
+
+	if(fabs(incre_strain(0)) <= datum::eps) return SUANPAN_SUCCESS;
+
+	trial_history = current_history;
+	auto& reverse_stress = trial_history(0);
+	auto& reverse_strain = trial_history(1);
+	auto& inter_stress = trial_history(2);
+	auto& inter_strain = trial_history(3);
+	auto& pre_inter_strain = trial_history(4);
+	auto& max_strain = trial_history(5);
+	auto& load_sign = trial_history(6);
+
+	auto shift_stress = 0.;
+	if(isotropic_hardening) {
+		shift_stress = std::max(0., A3 * yield_stress * (max_strain / yield_strain - A4));
+		max_strain = std::max(max_strain, fabs(trial_strain(0)));
+	}
+
+	if(const auto trial_load_sign = suanpan::sign(incre_strain(0)); !suanpan::approx_equal(trial_load_sign, load_sign)) {
+		if(!suanpan::approx_equal(load_sign, 0.)) {
+			reverse_stress = current_stress(0);
+			reverse_strain = current_strain(0);
+			pre_inter_strain = inter_strain;
+			inter_strain = yield_stress * hardening_ratio - yield_stress - shift_stress;
+			if(trial_load_sign > 0.) inter_strain = -inter_strain;
+			inter_strain = (inter_strain + elastic_modulus * reverse_strain - reverse_stress) / (elastic_modulus - hardening_ratio * elastic_modulus);
+			inter_stress = elastic_modulus * (inter_strain - reverse_strain) + reverse_stress;
+		}
+		else if(trial_load_sign > 0.) {
+			inter_stress = yield_stress;
+			inter_strain = yield_strain;
+		}
+		else {
+			inter_stress = -yield_stress;
+			inter_strain = -yield_strain;
+		}
+		load_sign = trial_load_sign;
+	}
+
+	auto radius = R0;
+	if(!constant_radius) {
+		// update radius
+		const auto xi = fabs(reverse_strain - pre_inter_strain) / yield_strain;
+		radius -= A1 * xi / (A2 + xi);
+	}
+
+	const auto gap_strain = inter_strain - reverse_strain;
+	const auto gap_stress = inter_stress - reverse_stress;
+	const auto normal_strain = std::max(datum::eps, (trial_strain(0) - reverse_strain) / gap_strain);
+	const auto factor_a = 1. + pow(normal_strain, radius);
+	const auto factor_b = (1. - hardening_ratio) * pow(factor_a, -1. / radius);
+
+	trial_stress = (hardening_ratio + factor_b) * normal_strain * gap_stress + reverse_stress;
+	trial_stiffness = gap_stress / gap_strain * (hardening_ratio + factor_b / factor_a);
+
+	return SUANPAN_SUCCESS;
+}
+\end{cppcode}
+\section{Bouc--Wen Model}
+\subsection{Theory}
+\subsection{Formulation}
+\subsection{Implementation}
+\begin{cppcode}
+int BoucWen::update_trial_status(const vec& t_strain) {
+    incre_strain = (trial_strain = t_strain) - current_strain;
+
+    if(fabs(incre_strain(0)) <= datum::eps) return SUANPAN_SUCCESS;
+
+    const auto n_strain = incre_strain(0) / yield_strain;
+
+    trial_history = current_history;
+    const auto& current_z = current_history(0); // z
+    auto& z = trial_history(0);                 // z
+
+    auto incre = .5 * n_strain;
+    unsigned counter = 0;
+    while(true) {
+        if(max_iteration == ++counter) {
+            suanpan_error("BoucWen cannot converge within %u iterations.\n", max_iteration);
+            return SUANPAN_FAIL;
+        }
+
+        z += incre;
+
+        const auto p_term = (gamma + (z * n_strain >= 0. ? beta : -beta)) * pow(std::max(datum::eps, fabs(z)), n);
+        const auto t_term = n_strain * p_term;
+
+        const auto residual = z - current_z + t_term - n_strain;
+        const auto jacobian = z + n * t_term;
+
+        const auto error = fabs(incre = -residual * z / jacobian);
+
+        suanpan_debug("BoucWen local iteration error: %.5E.\n", error);
+
+        if(error <= tolerance) {
+            trial_stress = modulus_a * trial_strain + modulus_b * z;
+            trial_stiffness = modulus_a + modulus_b / yield_strain * (1. - p_term) * z / jacobian;
+
+            return SUANPAN_SUCCESS;
+        }
+    }
+}
+\end{cppcode}
+\section{General Framework for Hysteresis Models}
+\subsection{Theory}
+The general framework consists of three main elements:
+\begin{enumerate}
+\item backbone curve --- compression/tension envelope, \textcolor{blue}{blue} curves in \figref{fig:general_hysteresis}
+\item unloading curve --- unload from backbone to the corresponding residual point (with zero stress), \textcolor{green}{green} curves in \figref{fig:general_hysteresis}
+\item reloading curve --- loading from residual point to backbone curve on the opposite side, \textcolor{purple}{purple} curves in \figref{fig:general_hysteresis}
+\end{enumerate}
+Each of those three curves can be either linear/nonlinear or piece-wise linear/nonlinear and may depend on other internal variables.
+
+Accordingly, at least four points are essential to control the response of the model, namely, the tension unloading point, the tension residual point, the compression unloading point, the compression residual point. A schematic illustration is given in \figref{fig:general_hysteresis}. Some complex models may consist of more control points, such as reloading points that connect reloading curves with backbones.
+\begin{figure}[ht]
+\centering\footnotesize
+\begin{tikzpicture}
+\draw[->](-6,0)--(6,0)node[below]{strain};
+\draw[->](0,-3)--(0,3)node[left]{stress};
+\coordinate(A)at(0,0);
+\coordinate(B)at(3,2);
+\coordinate(C)at(5.5,.5);
+\coordinate(D)at(2,0);
+\draw[ultra thick,blue](A)to[out=70,in=150](B)to[out=-30,in=170](C);
+\draw[ultra thick,green](B)to[out=260,in=50](D);
+\coordinate(E)at(-3,-2);
+\coordinate(F)at(-5.5,-.5);
+\coordinate(G)at(-2,0);
+\draw[ultra thick,blue](A)to[out=-110,in=-50](E)to[out=130,in=-10](F);
+\draw[ultra thick,green](E)to[out=80,in=200](G);
+\draw[ultra thick,purple](D)to[out=185,in=75](E)(G)to[out=5,in=-105](B);
+\draw[fill=red](B)circle(1mm)node[above=1mm,align=center]{tension\\unloading};
+\draw[fill=red](D)circle(1mm)node[below=1mm,align=center]{tension\\residual};
+\draw[fill=red](E)circle(1mm)node[below left=1mm,align=center]{compression\\unloading};
+\draw[fill=red](G)circle(1mm)node[above=1mm,align=center]{compression\\residual};
+\end{tikzpicture}
+\caption{schematic illustration a generalised hysteresis model}\label{fig:general_hysteresis}
+\end{figure}
+
+With the above definition, it is clear that any given current state $\varepsilon_n$ and $\sigma_n$ shall on one of three curves. With prescribed strain increment $\Delta\varepsilon$, the determination of stress $\sigma_{n+1}$ is equivalent to computing the new point on one of three curves. As the current state $(\varepsilon_n,\sigma_n)$ has to be on one of three curves, it is easy to determine whether $\varepsilon_{n+1}=\varepsilon_n+\Delta\varepsilon$ is on unloading/reloading/backbone curve by simply comparing the magnitudes of $\varepsilon_{n+1}$ and that of unloading/residual strain, which are stored as history variables.
+
+The state determination algorithm can be cast in a branching programming style. In the following procedure, $\varepsilon_{cr}$ is compression residual strain, $\varepsilon_{cu}$ is compression unloading strain, $\varepsilon_{tr}$ is tension residual strain, $\varepsilon_{tu}$ is tension unloading strain.
+\begin{breakablealgorithm}
+\caption{state determination of general hysteresis model}\label{algo:gen_hys}
+\begin{algorithmic}[1]
+\State \textbf{Parameter}: necessary model parameters
+\State \textbf{Input}: $\varepsilon_{n+1}$, $\varepsilon_n$, $\sigma_n$ and other relevant history variables
+\State \textbf{Output}: $E_{n+1}$, $\sigma_{n+1}$ and other relevant history variables
+\State get strain values of four control points
+\State $\varepsilon_{n+1}=\varepsilon_n+\Delta\varepsilon$
+\State determine which curve the new state is on based on the curve the current state is on and the magnitudes of $\varepsilon_{n+1}$, $\varepsilon_{cr}$, $\varepsilon_{cu}$, $\varepsilon_{tr}$,  $\varepsilon_{tu}$
+\State call corresponding methods to compute the new state $(\varepsilon_{n+1},\sigma_{n+1})$ based on relevant two control points and history variables, if any
+\end{algorithmic}
+\end{breakablealgorithm}
+
+\subsection{Implementation}
+By using two flags, it is easy to track which curve each point is on.
+\begin{cppcode}
+	enum class Status { NONE, CBACKBONE, TBACKBONE, CINNER, TINNER };
+
+	Status trial_flag = Status::NONE, current_flag = Status::NONE;
+\end{cppcode}
+
+The implementation presented uses a nested structure to simply the procedure. The top level determines whether the new state is on the backbone, if not, the second level determines whether the new state is on the corresponding unloading curve or reloading curve and computes the response accordingly.
+
+For each curve, a universal interface can be provided such that each takes $\varepsilon_{n+1}$ as the input and returns $\sigma_{n+1}$ and $E_{n+1}$ in an array.
+\begin{cppcode}
+	[[nodiscard]] virtual podarray<double> compute_compression_backbone(double) const = 0;
+	[[nodiscard]] virtual podarray<double> compute_tension_backbone(double) const = 0;
+	[[nodiscard]] podarray<double> compute_compression_inner(double) const;
+	[[nodiscard]] podarray<double> compute_tension_inner(double) const;
+\end{cppcode}
+The control points can be updated on the demand with some auxiliary methods.
+\begin{cppcode}
+	[[nodiscard]] virtual podarray<double> compute_compression_initial_reverse() const = 0;
+	[[nodiscard]] virtual podarray<double> compute_tension_initial_reverse() const = 0;
+	[[nodiscard]] virtual double compute_compression_residual(double, double) const = 0;
+	[[nodiscard]] virtual double compute_tension_residual(double, double) const = 0;
+\end{cppcode}
+
+The following CPP code snippet shows a working implementation of such a state determination procedure.
+\begin{cppcode}
+int SimpleHysteresis::update_trial_status(const vec& t_strain) {
+	incre_strain = (trial_strain = t_strain) - current_strain;
+
+	if(fabs(incre_strain(0)) <= datum::eps) return SUANPAN_SUCCESS;
+
+	if(current_history.is_empty() || !any(current_history)) {
+		current_history.zeros(8);
+		auto point = compute_compression_initial_reverse();
+		current_history(2) = point(0);
+		current_history(3) = point(1);
+		point = compute_tension_initial_reverse();
+		current_history(4) = point(0);
+		current_history(5) = point(1);
+		initial_history = current_history;
+	}
+	else if(current_history.size() != 8) {
+		current_history.resize(8);
+		initial_history = current_history;
+	}
+
+	trial_history = current_history;
+	auto& max_c_strain = trial_history(0);      // maximum compression strain recorded
+	auto& max_t_strain = trial_history(1);      // maximum tension strain recorded
+	auto& reverse_c_strain = trial_history(2);  // unloading point strain compression side
+	auto& reverse_c_stress = trial_history(3);  // unloading point stress compression side
+	auto& reverse_t_strain = trial_history(4);  // unloading point strain tension side
+	auto& reverse_t_stress = trial_history(5);  // unloading point stress tension side
+	auto& residual_c_strain = trial_history(6); // residual strain in compression unloading path
+	auto& residual_t_strain = trial_history(7); // residual strain in compression unloading path
+
+	podarray<double> response;
+
+	if(Status::NONE == current_flag) {
+		if(incre_strain(0) > 0.) {
+			trial_flag = Status::TBACKBONE;
+			response = compute_tension_backbone(max_t_strain = trial_strain(0));
+		}
+		else {
+			trial_flag = Status::CBACKBONE;
+			response = compute_compression_backbone(max_c_strain = trial_strain(0));
+		}
+	}
+	else if(Status::CBACKBONE == current_flag) {
+		if(incre_strain(0) > 0.) {
+			residual_c_strain = compute_compression_residual(reverse_c_strain = current_strain(0), reverse_c_stress = current_stress(0));
+			if(trial_strain(0) > reverse_t_strain) {
+				trial_flag = Status::TBACKBONE;
+				response = compute_tension_backbone(max_t_strain = trial_strain(0));
+			}
+			else {
+				trial_flag = Status::CINNER;
+				response = compute_compression_inner(trial_strain(0));
+			}
+		}
+		else {
+			trial_flag = Status::CBACKBONE;
+			response = compute_compression_backbone(max_c_strain = trial_strain(0));
+		}
+	}
+	else if(Status::TBACKBONE == current_flag) {
+		if(incre_strain(0) < 0.) {
+			residual_t_strain = compute_tension_residual(reverse_t_strain = current_strain(0), reverse_t_stress = current_stress(0));
+			if(trial_strain(0) < reverse_c_strain) {
+				trial_flag = Status::CBACKBONE;
+				response = compute_compression_backbone(max_c_strain = trial_strain(0));
+			}
+			else {
+				trial_flag = Status::TINNER;
+				response = compute_tension_inner(trial_strain(0));
+			}
+		}
+		else {
+			trial_flag = Status::TBACKBONE;
+			response = compute_tension_backbone(max_t_strain = trial_strain(0));
+		}
+	}
+	else if(Status::CINNER == current_flag) {
+		if(trial_strain(0) > reverse_t_strain) {
+			trial_flag = Status::TBACKBONE;
+			response = compute_tension_backbone(max_t_strain = trial_strain(0));
+		}
+		else if(trial_strain(0) < reverse_c_strain) {
+			trial_flag = Status::CBACKBONE;
+			response = compute_compression_backbone(max_c_strain = trial_strain(0));
+		}
+		else {
+			trial_flag = Status::CINNER;
+			response = compute_compression_inner(trial_strain(0));
+		}
+	}
+	else if(Status::TINNER == current_flag) {
+		if(trial_strain(0) > reverse_t_strain) {
+			trial_flag = Status::TBACKBONE;
+			response = compute_tension_backbone(max_t_strain = trial_strain(0));
+		}
+		else if(trial_strain(0) < reverse_c_strain) {
+			trial_flag = Status::CBACKBONE;
+			response = compute_compression_backbone(max_c_strain = trial_strain(0));
+		}
+		else {
+			trial_flag = Status::TINNER;
+			response = compute_tension_inner(trial_strain(0));
+		}
+	}
+
+	trial_stress = response(0);
+	trial_stiffness = response(1);
+
+	suanpan_debug([&]() { if(!trial_stress.is_finite() || !trial_stiffness.is_finite()) throw invalid_argument("infinite number detected.\n"); });
+
+	return SUANPAN_SUCCESS;
+}
+\end{cppcode}
+\subsubsection{Remarks}
+A lot of hysteresis models can be reformulated in the above framework. For example, by fixing residual points to origin, all unloading paths (either linear or nonlinear) converge to origin, which correspond to a class of models that are often called origin--oriented. Alternatively, the reloading curve can be defined in a way so that it always loads back to the peak point on the backbone curve on the opposite side. This is often known as peak--oriented model.
+
+Some complex models suitable for concrete can be formulated accordingly, in which the curves are nonlinear and depend on other internal variables as well. Given that tension response and compression response are independent from each other, some asymmetric models can also be defined.
+
+Noting that the top level branching does not care about history variables, the updating of them are solely handled in the corresponding methods. The presented framework provides a flexible container so that a wide range of models can be defined.
+

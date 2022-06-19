@@ -1,0 +1,325 @@
+\chapter{Viscoplasticity}
+\section{VAFCRP Model}
+Here we present a versatile viscoplastic model that can be used to model metals under dynamic loadings. It is essentially a multiaxial extension of the aforementioned Armstrong--Fredrick uniaxial model with additional viscosity component. Due to the presence of viscosity, the typical formulation and implementation shall be modified a bit, as now transient effects are accounted for and yield function does not need to be non-positive. It is only used to determine whether a trial state is elastic or plastic.
+\subsection{Theory}
+\subsubsection{Yield Function}
+A von Mises type yielding function is used.
+\begin{gather}
+f=\sqrt{\dfrac{3}{2}}\norm{\beeta}-k=q-k,
+\end{gather}
+in which $\beeta=\bs-\bbeta$ is the shifted stress, $\bs$ is the deviatoric stress, $\bbeta$ is the back stress, $k$ is the isotropic hardening stress and $q=\sqrt{\dfrac{3}{2}}\norm{\beeta}$ is the equivalent stress.
+\subsubsection{Flow Rule}
+The associated plasticity flow is adopted. The plastic strain rate is then
+\begin{gather}
+\dot{\bvarepsilon^p}=\gamma\pdfrac{f}{\bsigma}=\sqrt{\dfrac{3}{2}}\gamma\bn,
+\end{gather}
+where $\bn=\dfrac{\beeta}{\norm{\beeta}}$. The corresponding accumulated plastic strain rate is
+\begin{gather}
+\dot{p}=\sqrt{\dfrac{2}{3}\dot{\bvarepsilon^p}:\dot{\bvarepsilon^p}}=\gamma.
+\end{gather}
+One shall note that strictly speaking, it shall be the viscous plastic strain rather than the plastic strain. For brevity, the superscript $\left(\cdot\right)^p$ is used. If one wishes, $\left(\cdot\right)^{vp}$ can also be used.
+\subsubsection{Plastic Multiplier}
+Unlike plasticity, viscoplasticity adopts a different way to determine plastic multiplier. The rate of plastic multiplier is defined as
+\begin{gather}
+\dfrac{\gamma}{\Delta{}t}=\dfrac{1}{\mu}\left(\left(\dfrac{q}{k}\right)^{\dfrac{1}{\epsilon}}-1\right),
+\end{gather}
+in which $\Delta{}t$ is increment of pseudo time which shall be available from global time integration method, $\mu$ and $\epsilon$ are two material constants. Here a \cite{Peric1993} type rule is used for easier numerical implementation. Equivalently, after some rearrangement, it is
+\begin{gather}
+q\left(\dfrac{\Delta{}t}{\Delta{}t+\mu\gamma}\right)^\epsilon-k=0.
+\end{gather}
+\subsubsection{Hardening Law}
+Similar to the previous model, a Voce type exponential function with a linear component is used for isotropic hardening stress.
+\begin{gather}
+k=\sigma_y+k_lp+k_s-k_se^{-mp}.
+\end{gather}
+In which, $m$ is a parameter controls the speed of hardening.
+
+The incremental form of multiplicative back stress \cite{Chaboche1989} $\displaystyle\bbeta=\sum\bbeta^i$ is defined as
+\begin{gather*}
+\dot{\bbeta^i}=\sqrt{\dfrac{2}{3}}a^i\dot{\bvarepsilon^p}-b^i\bbeta^i\dot{p}.
+\end{gather*}
+Again, $a^i$ and $b^i$ are two sets of model parameters. In terms of $\gamma$, it is $\dot{\bbeta^i}=a^i\gamma{}\bn-b^i\gamma\bbeta^i$.
+\subsection{Formulation}
+In the following derivation, the subscript $\left(\cdot\right)_{n+1}$ is omitted for brevity.
+\subsubsection{Elastic Loading/Unloading}
+The trial state can be computed as usual.
+\begin{gather}\label{eq:vafcrp_t}
+\bsigma^\text{trial}=\bsigma_n+\mb{D}:\left(\bvarepsilon_{n+1}-\bvarepsilon_n\right).
+\end{gather}
+The trial yield function can be then expressed as
+\begin{gather}\label{eq:vafcrp_tf}
+f^\text{trial}=\sqrt{\dfrac{3}{2}}\norm{\dev{\bsigma^\text{trial}}-\sum\bbeta_n^i}-k_n.
+\end{gather}
+\subsubsection{Plastic Evolution}
+Given that
+\begin{gather}\label{eq:vafcrp_beta}
+\bbeta^i=\bbeta_n^i+a^i\gamma\bn-b^i\gamma\bbeta^i,\quad\rightarrow\quad
+\bbeta^i=\dfrac{\bbeta_n^i+a^i\gamma\bn}{1+b^i\gamma},
+\end{gather}
+the shifted stress can be computed as
+\begin{gather}
+\begin{split}
+\beeta&=\bs-\bbeta=2G\mathbb{I}^\text{dev}:\left(\bvarepsilon_{n+1}-\bvarepsilon^p_n-\sqrt{\dfrac{3}{2}}\gamma\bn\right)-\bbeta\\&=\bs^\text{trial}-\sqrt{6}G\gamma\bn-\sum\dfrac{\bbeta_n^i+a^i\gamma\bn}{1+b^i\gamma}
+\end{split}
+\end{gather}
+with $\bs^\text{trial}=2G\mathbb{I}^\text{dev}\left(\bvarepsilon_{n+1}-\bvarepsilon^p_n\right)$. Hence,
+\begin{gather*}
+\norm{\beeta}\bn+\sqrt{6}G\gamma\bn+\sum\dfrac{a^i\gamma}{1+b^i\gamma}\bn=\bs^\text{trial}-\sum\dfrac{\bbeta_n^i}{1+b^i\gamma},
+\end{gather*}
+it is easy to see that
+\begin{gather}
+\left(\norm{\beeta}+\sqrt{6}G\gamma+\sum\dfrac{a^i\gamma}{1+b^i\gamma}\right)\bn=\bs^\text{trial}-\sum\dfrac{\bbeta_n^i}{1+b^i\gamma},
+\end{gather}
+meaning $\bn$ and $\bs^\text{trial}-\sum\dfrac{\bbeta_n^i}{1+b^i\gamma}$ are coaxial, thus
+\begin{gather}
+\bn=\dfrac{\beeta}{\norm{\beeta}}=\dfrac{\bs^\text{trial}-\sum\dfrac{\bbeta_n^i}{1+b^i\gamma}}{\norm{\bs^\text{trial}-\sum\dfrac{\bbeta_n^i}{1+b^i\gamma}}}.
+\end{gather}
+Now both $\beeta$ and $\bn$ shall be functions of $\gamma$, which allows simplification of local system. Based on this fact,
+\begin{gather}
+\beeta=\norm{\beeta}\bn=\left(\norm{\bs^\text{trial}-\sum\dfrac{\bbeta_n^i}{1+b^i\gamma}}-\sqrt{6}G\gamma-\sum\dfrac{a^i\gamma}{1+b^i\gamma}\right)\bn.
+\end{gather}
+Furthermore, $q=\sqrt{\dfrac{3}{2}}\left(\norm{\bs^\text{trial}-\sum\dfrac{\bbeta_n^i}{1+b^i\gamma}}-\sqrt{6}G\gamma-\sum\dfrac{a^i\gamma}{1+b^i\gamma}\right)$. Its derivative with regard to $\gamma$ is
+\begin{gather}
+\pdfrac{q}{\gamma}=\sqrt{\dfrac{3}{2}}\sum\dfrac{b^i\bn:\bbeta_n^i-a^i}{(1+b^i\gamma)^2}-3G.
+\end{gather}
+\subsubsection{Local Scalar Residual}
+For viscoplasticity, the yield function $f$ is not necessarily zero. The rate form of plastic multiplier is used here as the residual.
+\begin{gather*}\label{eq:vafcrp_r}
+R=q\left(\dfrac{\Delta{}t}{\Delta{}t+\mu\gamma}\right)^\epsilon-k.
+\end{gather*}
+The corresponding derivatives are then
+\begin{gather}\label{eq:vafcrp_dr}
+\pdfrac{R}{\gamma}=\left(\dfrac{\Delta{}t}{\Delta{}t+\mu\gamma}\right)^\epsilon\left(\pdfrac{q}{\gamma}-\dfrac{q\epsilon\mu}{\Delta{}t+\mu\gamma}\right)-\ddfrac{k}{\gamma}
+\end{gather}
+and
+\begin{gather}
+\pdfrac{R}{\bvarepsilon_{n+1}}=\left(\dfrac{\Delta{}t}{\Delta{}t+\mu\gamma}\right)^\epsilon\sqrt{6}G\bn:\mathbb{I}^\text{dev}=\left(\dfrac{\Delta{}t}{\Delta{}t+\mu\gamma}\right)^\epsilon\sqrt{6}G\bn,
+\end{gather}
+with
+\begin{gather}
+\ddfrac{k}{\gamma}=k_l+k_sme^{-m\left(p_n+\gamma\right)}.
+\end{gather}
+\subsubsection{Consistent Tangent Stiffness}
+For stiffness, $\bvarepsilon_{n+1}$ is now varying, then
+\begin{gather}
+\pdfrac{R}{\bvarepsilon_{n+1}}+\pdfrac{R}{\gamma}\pdfrac{\gamma}{\bvarepsilon_{n+1}}=0,\qquad\pdfrac{\gamma}{\bvarepsilon_{n+1}}=-\left(\pdfrac{R}{\gamma}\right)^{-1}\pdfrac{R}{\bvarepsilon_{n+1}}.
+\end{gather}
+The stress is
+\begin{gather}
+\bsigma_{n+1}=\bsigma^\text{trial}-\sqrt{6}G\gamma\bn.
+\end{gather}
+The derivative is
+\begin{gather}\label{eq:vafcrp_stiffness}
+\begin{split}
+\pdfrac{\bsigma_{n+1}}{\bvarepsilon_{n+1}}&=\mb{D}-\sqrt{6}G\left(\gamma\pdfrac{\bn}{\bvarepsilon_{n+1}}+\left(\bn+\gamma\pdfrac{\bn}{\gamma}\right)\pdfrac{\gamma}{\bvarepsilon_{n+1}}\right)\\
+&=\mb{D}+\sqrt{6}G\left(\left(\bn+\gamma\pdfrac{\bn}{\gamma}\right)\left(\pdfrac{R}{\gamma}\right)^{-1}\pdfrac{R}{\bvarepsilon_{n+1}}-\gamma\pdfrac{\bn}{\bvarepsilon_{n+1}}\right).
+\end{split}
+\end{gather}
+In which,
+\begin{gather}
+\pdfrac{\bn}{\gamma}=\dfrac{\sum\dfrac{b^i}{(1+b^i\gamma)^2}\left(\bbeta_n^i-\left(\bn:\bbeta_n^i\right)\bn\right)}{\norm{\bs^\text{trial}-\sum\dfrac{\bbeta_n^i}{1+b^i\gamma}}},\qquad
+\pdfrac{\bn}{\bvarepsilon_{n+1}}=\dfrac{2G\left(\mathbb{I}^\text{dev}-\bn\otimes\bn\right)}{\norm{\bs^\text{trial}-\sum\dfrac{\bbeta_n^i}{1+b^i\gamma}}}.
+\end{gather}
+\subsection{Implementation}
+The state determination algorithm of this VAFCRP model is given in \algoref{algo:vafcrp_model}.
+\begin{breakablealgorithm}
+\caption{state determination of VAFCRP model}\label{algo:vafcrp_model}
+\begin{algorithmic}
+\State \textbf{Parameter}: $\lambda$, $G$, $u$, $\epsilon$, $m$, $k_l$, $k_s$, $\sigma_y$, $a^i$, $b^i$
+\State \textbf{Input}: $\bvarepsilon_{n+1}$, $\bvarepsilon_n$, $\bsigma_n$, $\bbeta_n^i$, $p_n$, $\Delta{}t$
+\State \textbf{Output}: $\mb{D}_{n+1}$, $\bsigma_{n+1}$, $\bbeta_{n+1}^i$, $p_{n+1}$
+\State compute $\bsigma^\text{trial}$, $\bs^\text{trial}$, $\bn$ and $f^\text{trial}$\Comment{\eqsref{eq:vafcrp_t} and \eqsref{eq:vafcrp_tf}}
+\If {$f^\text{trial}\geqslant0$}
+\State $\gamma=0$
+\State compute $\bs^\text{trial}$
+\While{true}
+\State compute $\bn$
+\State compute $R$ and $\pdfrac{R}{\gamma}$\Comment{\eqsref{eq:vafcrp_r} and \eqsref{eq:vafcrp_dr}}
+\State $\Delta\gamma=\left(\pdfrac{R}{\gamma}\right)^{-1}R$
+\If {$\abs{\Delta\gamma}<\text{tolerance}$}
+\State break
+\EndIf
+\State $\gamma\leftarrow\gamma-\Delta\gamma$
+\State $p_{n+1}=p_n+\gamma$
+\EndWhile
+\State $\bsigma_{n+1}=\bsigma^\text{trial}-\sqrt{6}G\gamma\bn$
+\State compute all $\bbeta_{n+1}^i$\Comment{\eqsref{eq:vafcrp_beta}}
+\State compute $\mb{D}_{n+1}$\Comment{\eqsref{eq:vafcrp_stiffness}}
+\Else
+\State $\bsigma_{n+1}=\bsigma^\text{trial}$
+\State $\bbeta^p_{n+1}=\bbeta^p_n$
+\State $p_{n+1}=p_n$
+\State $\mb{D}_{n+1}=\mb{D}$
+\EndIf
+\end{algorithmic}
+\end{breakablealgorithm}
+\begin{cppcode}
+int VAFCRP::update_trial_status(const vec& t_strain) {
+    trial_stress = current_stress + (trial_stiffness = initial_stiffness) * (incre_strain = (trial_strain = t_strain) - current_strain);
+
+    trial_history = current_history;
+    auto& p = trial_history(0);
+
+    const auto trial_s = tensor::dev(trial_stress);
+
+    auto eta = trial_s;
+    for(unsigned I = 0; I < size; ++I) eta -= vec{&trial_history(1 + 6llu * I), 6, false, true};
+
+    // const auto residual = root_three_two * tensor::stress::norm(eta) - std::max(0., yield + hardening * p + saturated * (1. - exp(-m * p)));
+
+    if(root_three_two * tensor::stress::norm(eta) < std::max(0., yield + hardening * p + saturated * (1. - exp(-m * p)))) return SUANPAN_SUCCESS;
+
+    vec xi;
+    auto gamma = 0., exp_gamma = 1.;
+    double norm_xi, jacobian;
+
+    unsigned counter = 0;
+    while(true) {
+        if(max_iteration == ++counter) {
+            suanpan_error("VAFCRP cannot converge within %u iterations.\n", max_iteration);
+            return SUANPAN_FAIL;
+        }
+
+        const auto exp_term = saturated * exp(-m * p);
+
+        auto k = yield + saturated + hardening * p - exp_term;
+        auto dk = hardening + m * exp_term;
+        if(k < 0.) k = dk = 0.;
+
+        vec sum_a(6, fill::zeros);
+        auto sum_b = 0.;
+        for(unsigned I = 0; I < size; ++I) {
+            const auto denom = 1. + b(I) * gamma;
+            sum_a += vec{&trial_history(1 + 6llu * I), 6, false, true} / denom;
+            sum_b += a(I) * gamma / denom;
+        }
+
+        norm_xi = tensor::stress::norm(xi = trial_s - sum_a);
+
+        const auto q = root_three_two * (norm_xi - root_six_shear * gamma - sum_b);
+        exp_gamma = pow(*incre_time / (*incre_time + mu * gamma), epsilon);
+
+        sum_b = 0.;
+        for(unsigned I = 0; I < size; ++I) sum_b += (b(I) / norm_xi * tensor::stress::double_contraction(xi, vec{&trial_history(1 + 6llu * I), 6, false, true}) - a(I)) * pow(1. + b(I) * gamma, -2.);
+
+        jacobian = exp_gamma * (root_three_two * sum_b - three_shear - q * epsilon * mu / (*incre_time + mu * gamma)) - dk;
+
+        const auto incre = (q * exp_gamma - k) / jacobian;
+        suanpan_extra_debug("VAFCRP local iterative loop error: %.5E.\n", fabs(incre));
+        if(fabs(incre) <= tolerance) break;
+
+        gamma -= incre;
+        p -= incre;
+    }
+
+    const vec u = xi / norm_xi;
+
+    vec sum_c(6, fill::zeros);
+    for(unsigned I = 0; I < size; ++I) {
+        vec beta(&trial_history(1 + 6llu * I), 6, false, true);
+        sum_c += b(I) * pow(1. + b(I) * gamma, -2.) * (beta - tensor::stress::double_contraction(u, beta) * u);
+        beta = (beta + a(I) * gamma * u) / (1. + b(I) * gamma);
+    }
+
+    trial_stress -= root_six_shear * gamma * u;
+
+    trial_stiffness += (root_six_shear * (double_shear * gamma / norm_xi + root_six_shear * exp_gamma / jacobian) * u + root_six_shear * root_six_shear * exp_gamma * gamma / jacobian / norm_xi * sum_c) * u.t() - double_shear * root_six_shear * gamma / norm_xi * unit_dev_tensor;
+
+    return SUANPAN_SUCCESS;
+}
+\end{cppcode}
+\section{Maxwell Model}
+The above viscoplasticity models often requires the explicit reference to time $t$ (and its increment $\Delta{}t$). By knowing strain increment $\Delta{}\bvarepsilon$ and $\Delta{}t$, strain rate can be computed by using, for example, constant rate assumption. By such, the whole model can be converted to a form that only depends on strain input, assuming (pseudo-)time is always accessible to local material points. Even with a static analysis setup, creep can be modelled.
+
+Here we present a general framework to solve the viscoplasticity model that truly responsive to both strain and strain rate inputs.
+\subsection{Theory}
+\subsection{Formulation}
+\subsection{Implementation}
+\begin{cppcode}
+int Maxwell::update_trial_status(const vec& t_strain, const vec& t_strain_rate) {
+    incre_strain = (trial_strain = t_strain) - current_strain;
+    incre_strain_rate = (trial_strain_rate = t_strain_rate) - current_strain_rate;
+
+    if(fabs(incre_strain(0)) + fabs(incre_strain_rate(0)) <= datum::eps) return SUANPAN_SUCCESS;
+
+    const auto& K1 = spring->get_trial_stiffness().at(0);
+    const auto& K2 = damper->get_trial_stiffness().at(0);
+    const auto& K3 = damper->get_trial_damping().at(0);
+    const auto& F1 = spring->get_trial_stress().at(0);
+    const auto& F2 = damper->get_trial_stress().at(0);
+
+    // \beta\Delta{}t
+    const auto factor_a = beta * *incre_time;
+
+    const auto target = *incre_time * (current_strain_rate(0) - damper->get_current_strain_rate().at(0)) + factor_a * incre_strain_rate(0);
+
+    vec solution(3, fill::zeros);
+
+    counter = 0;
+
+    if(double error, ref_error = 1.; use_matrix) {
+        mat inv_jacobian(3, 3);
+
+        inv_jacobian(0, 2) = -factor_a;
+        inv_jacobian(1, 2) = factor_a;
+        inv_jacobian(2, 2) = 1.;
+
+        while(++counter < max_iteration) {
+            const vec residual{incre_strain(0) - solution(0) - solution(1), target - solution(0) - factor_a * solution(2), F1 - F2};
+
+            inv_jacobian(0, 0) = factor_a * K2;
+            inv_jacobian(1, 0) = factor_a * K1 + K3;
+            inv_jacobian(2, 0) = -K2;
+
+            inv_jacobian(0, 1) = K3;
+            inv_jacobian(1, 1) = -K3;
+            inv_jacobian(2, 1) = K1 + K2;
+
+            const vec incre = inv_jacobian * residual / (factor_a * (K1 + K2) + K3);
+
+            if(1 == counter) ref_error = std::max(1., norm(residual));
+            suanpan_extra_debug("Maxwell local iteration error: %.4E.\n", error = norm(residual) / ref_error);
+            if(norm(incre) <= tolerance && error <= tolerance) break;
+            solution += incre;
+            spring->update_incre_status(solution(0));
+            damper->update_incre_status(solution(1), solution(2));
+        }
+    }
+    else
+        while(++counter < max_iteration) {
+            const auto residual_a = incre_strain(0) - solution(0) - solution(1);
+            const auto residual_b = target - solution(0) - factor_a * solution(2);
+            const auto residual_c = F1 - F2;
+            const auto residual = residual_a * K2 - residual_c + residual_b / factor_a * K3;
+            const auto jacobian = K1 + K2 + K3 / factor_a;
+            const auto incre = residual / jacobian;
+            if(1 == counter) ref_error = std::max(1., fabs(residual));
+            suanpan_extra_debug("Maxwell local iteration error: %.4E.\n", error = fabs(residual) / ref_error);
+            if(fabs(incre) <= tolerance && error <= tolerance) break;
+            solution(0) += incre;
+            solution(1) += residual_a - incre;
+            solution(2) += (residual_b - incre) / factor_a;
+            spring->update_incre_status(solution(0));
+            damper->update_incre_status(solution(1), solution(2));
+        }
+
+    if(max_iteration != counter) {
+        delay_counter = 0;
+
+        trial_stress = .5 * (F1 + F2);
+
+        trial_damping = trial_stiffness = factor_a / (factor_a * (K1 + K2) + K3) * K1;
+        trial_stiffness *= K2;
+        trial_damping *= K3;
+
+        return SUANPAN_SUCCESS;
+    }
+
+    if(1 >= proceed || ++delay_counter == proceed) {
+        suanpan_error("Maxwell: local iteration cannot converge within %u iterations.\n", max_iteration);
+        return SUANPAN_FAIL;
+    }
+
+    return reset_status();
+}
+\end{cppcode}

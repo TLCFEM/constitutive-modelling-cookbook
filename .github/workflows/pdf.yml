@@ -1,0 +1,20 @@
+on: [ push ]
+jobs:
+  build_latex:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Compile
+        uses: xu-cheng/texlive-action/full@v1
+        with:
+          run: |
+            latexmk -shell-escape -pdf COOKBOOK.tex
+      - name: Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: COOKBOOK.pdf
+          asset_name: COOKBOOK.pdf
+          tag: latest
+          overwrite: true

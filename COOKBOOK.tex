@@ -1,0 +1,30 @@
+% !TeX document-id = {dc5a238d-0e55-43b2-8337-d4c8edbdff8b}
+% !TeX TXS-program:compile = txs:///pdflatex/[--shell-escape]
+\documentclass[11pt,fleqn,DIV=12]{scrbook}
+\input{HEADER}\pagestyle{empty}
+\begin{document}
+\frontmatter
+\input{TITLE}\pagestyle{scrheadings}
+\tableofcontents
+\listoffigures\addcontentsline{toc}{chapter}{List of Figures}
+\listoftables\addcontentsline{toc}{chapter}{List of Tables}
+\mainmatter
+\include{CHAPTER/PRE}
+\part{Prerequisites}
+\include{CHAPTER/CH00}
+\include{CHAPTER/CH01}
+\part{Uniaxial Models}
+\include{CHAPTER/CH02}
+\include{CHAPTER/CH03}
+\part{3D Models}
+\include{CHAPTER/CH04}
+\include{CHAPTER/CH05}
+\include{CHAPTER/CH06}
+\include{CHAPTER/CH07}
+\include{CHAPTER/CH08}
+\include{CHAPTER/CH09}
+\backmatter
+\appendix
+\footnotesize
+\bibliography{BIB}
+\end{document}

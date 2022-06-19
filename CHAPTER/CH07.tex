@@ -1,0 +1,929 @@
+\chapter{Geomaterial}
+In geotechnical engineering, compression positive convention is used in existing literatures. This brings some convenience to geotechnical engineering specific applications but conflicts against the common convention adopted in continuum mechanics (tension positive).
+
+To be consistent with other models, in this chapter the continuum mechanics convention is adopted. Thus the formulations presented here may differ from what readers can found in other literatures.
+\section{Drucker--Prager Model}
+The Drucker--Prager model is a simple model that resembles the J2 model and can be used in simple preliminary stability/capacity analysis.
+\subsection{Theory}
+\subsubsection{Yield Function}
+\begin{gather}
+f=\sqrt{J_2}+\eta{}p-\xi{}c,
+\end{gather}
+where $J_2=\dfrac{1}{2}\bs:\bs$ is the J2 invariant of the deviatoric stress tensor $\bs$, $p=\dfrac{1}{3}\tr{\bsigma}$ is the hydrostatic stress, $\eta$ and $\xi$ are two model parameters which can be adjusted to match different shapes, $c$ is the cohesion.
+\subsubsection{Flow Rule}
+The plastic potential possesses a form that resembles the yield function.
+\begin{gather}
+g=\sqrt{J_2}+\bar{\eta}p.
+\end{gather}
+When $\bar{\eta}=\eta$, an associative flow rule is implied. The corresponding rate form of plastic strain is then
+\begin{gather}
+\dot{\bvarepsilon^p}=\gamma\pdfrac{g}{\bsigma}=\gamma\left(\dfrac{\sqrt{2}}{2}\bn+\dfrac{\bar{\eta}}{3}\mb{1}\right).
+\end{gather}
+\subsubsection{Hardening Law}
+The accumulated equivalent plastic strain $\alpha$ can be defined as
+\begin{gather}
+\dot{\alpha}=\gamma.
+\end{gather}
+Then the cohesion can be defined as a function of $\alpha$.
+\begin{gather}
+c=c\left(\alpha\right).
+\end{gather}
+
+More complex laws to allow $\eta$ and $\xi$ to evolve with the development of plasticity are also possible. Here for simplicity, it is assumed that $\eta$ and $\xi$ are two constants.
+\subsection{Formulation}
+As the cohesion $c$ is not explicitly defined in this model, it can be customised to produce various hardening responses.
+
+The only local variable is the plasticity consistency parameter $\gamma$.
+\subsubsection{Elastic Loading/Unloading}
+The trial state can be computed as
+\begin{gather}
+\bsigma^\text{trial}=\mb{D}:\left(\bvarepsilon_{n+1}-\bvarepsilon^p_n\right).
+\end{gather}
+The deviatoric stress and hydrostatic stress can be computed accordingly,
+\begin{gather}
+\bs^\text{trial}=\dev{\bsigma^\text{trial}},\\
+p^\text{trial}=\dfrac{1}{3}\tr{\bsigma^\text{trial}}.
+\end{gather}
+\subsection{Implementation}
+\section{Modified Cam Clay Model}
+\subsection{Theory}
+\subsection{Formulation}
+\subsection{Implementation}
+\section{Simple Sand Model}
+This sand model is a hybrid of several existing models with significant simplifications. Readers should not expect this model to give accurate results. Instead, this model only captures the characteristics of sand material. It is presented to craft a basic framework from which more complex sand models can be developed.
+
+Compared to other models for sand, this model is more like a preliminary model just like the bilinear hardening von Mises model compared to other models for metals.
+
+A distinctive feature of sand models is that, often a non-associative plastic flow is used and the hardening law is significantly more complex, involving heavy tensor operations, than aforementioned models. Often the hardening laws are tensor--valued functions, and cannot be simplified to scalar--valued functions. The numerical complexity is higher.
+\subsection{Theory}
+\subsubsection{Elastic Constitutive Relation}
+Often for sand, the elastic response is nonlinear (to be specific, hyper-elastic). The shear modulus and bulk modulus often are functions of hydrostatic pressure. In this model, for simplicity, an linear elastic relation is assumed. Readers shall be warned this does no reflect the real behaviour of sand.
+
+The decomposition of total strain into elastic/plastic strain components is still valid. Thus the trial elastic state can be computed via the same expression.
+\begin{gather}\label{eq:ss_tsigma}
+\bsigma^\text{trial}=\mb{D}:\left(\bvarepsilon_{n+1}-\bvarepsilon^p_n\right)=\bsigma_n+\mb{D}:\left(\bvarepsilon_{n+1}-\bvarepsilon_n\right).
+\end{gather}
+Furthermore,
+\begin{gather}
+\bsigma^\text{trial}=\bs^\text{trial}+p^\text{trial}\mb{1}.
+\end{gather}
+\subsubsection{Yield Function}
+A wedge--like function is chosen to be the yield surface.
+\begin{gather*}
+f=\norm{\bs+p\balpha}+mp=\norm{\mb{\eta}}+mp,
+\end{gather*}
+where $\bs=\dev{\bsigma}$ is the deviatoric stress, $p=\dfrac{1}{3}\tr{\bsigma}$ is the hydrostatic stress, $\balpha$ is the so called back stress and $m$ characterises the size of the wedge. For simplicity, $m$ is assumed to be a constant in this model.
+\subsubsection{Flow Rule}
+A non-associated plastic flow is used, the corresponding flow rule is defined as follows.
+\begin{gather*}
+\dot{\mb{\varepsilon}^p}=\gamma\left(\bn+\dfrac{1}{3}A\left(\alpha^d-m-\balpha:\bn\right)\mb{1}\right),
+\end{gather*}
+where $D=A\left(\alpha^d-m-\balpha:\bn\right)$ is the dilatancy parameter, $\bn=\dfrac{\beeta}{\norm{\beeta}}$ is the unit directional tensor, $A$ is a model constant, it can also be defined as a function of current state. Note since the sign convention is changed, a positive $A$ leads to dilatant behaviour.
+
+Since the linear elasticity is applied, the following expressions hold.
+\begin{gather*}
+\bs=\bs^\text{trial}-2G\gamma\bn,\qquad
+p=p^\text{trial}-KA\gamma\left(\alpha^d-m-\balpha:\bn\right).
+\end{gather*}
+\subsubsection{Hardening Law}
+The evolution rate of the back stress $\balpha$ is defined in terms of a proper distance measure from the bounding surface, Here, such a distance measure is chosen to be $h\left(\left(\alpha^b-m\right)\bn-\balpha\right)$, where $h$ is a model constant. Thus,
+\begin{gather*}
+\dot{\balpha}=\gamma{}h\left(\left(\alpha^b-m\right)\bn-\balpha\right).
+\end{gather*}
+Essentially, this is similar to the Armstrong--Frederick type kinematic hardening rule. It shall be noted that $\bn$ is a deviatoric stress, and $\balpha$ stays deviatoric but may not be coaxial with $\bn$. Thus in tensor notion,
+\begin{gather}
+\bn=\mathbb{I}:\bn=\mathbb{I}^\text{dev}:\bn,\qquad
+\balpha=\mathbb{I}:\balpha=\mathbb{I}^\text{dev}:\balpha.
+\end{gather}
+\subsubsection{Critical State}
+The state parameter is defined to be
+\begin{gather*}
+\psi=v_0\left(1+\varepsilon^{v,\text{trial}}\right)-v_c+\lambda_c\ln\left(\dfrac{p}{p_c}\right),
+\end{gather*}
+where $v_0$ is the initial specific volume, $v_c$ is the corresponding specific volume on the critical line at $p_c$ and $\lambda_c$ is absolute value of the slope of the critical line in $v$--$\ln(-p)$ space.
+
+The Lode angle dependence is not considered for simple derivations of the corresponding terms. Hence both the dilatancy surface and bounding surface will be circular cones in the principal stress space.
+
+The dilatancy surface is defined as
+\begin{gather*}
+\alpha^d=\alpha^c\exp\left(n^d\psi\right).
+\end{gather*}
+The corresponding derivatives are
+\begin{gather*}
+\pdfrac{\alpha^d}{\bvarepsilon^\text{trial}}=\alpha^dn^dv_0\mb{1}^\mT,\qquad
+\pdfrac{\alpha^d}{p}=\alpha^dn^d\dfrac{\lambda_c}{p}.
+\end{gather*}
+
+The bounding surface is defined as
+\begin{gather*}
+\alpha^b=\alpha^c\exp\left(-n^b\psi\right).
+\end{gather*}
+The corresponding derivatives are
+\begin{gather*}
+\pdfrac{\alpha^b}{\bvarepsilon^\text{trial}}=-\alpha^bn^bv_0\mb{1}^\mT,\qquad
+\pdfrac{\alpha^b}{p}=-\alpha^bn^b\dfrac{\lambda_c}{p}.
+\end{gather*}
+
+The symbol $\mb{1}$ denotes the unit second order tensor. In explicit compressed matrix representation, it is $\mb{1}=\begin{bmatrix}
+1&1&1&0&0&0
+\end{bmatrix}^\mT$.
+\subsection{Formulation}
+Some tensorial derivatives are presented first. They will be used in both formulation and implementation. According to \eqsref{eq:unit_derivative}, the following expressions can be derived.
+\begin{gather*}
+\pdfrac{\norm{\beeta}}{}=\bn:\pdfrac{\mb{\eta}}{},\qquad
+\pdfrac{\bn}{}=\dfrac{1}{\norm{\beeta}}\left(\mathbb{I}-\bn\otimes\bn\right):\pdfrac{\mb{\eta}}{}.
+\end{gather*}
+Hence, in compressed matrix representation with the scaling vector $\bc=\begin{bmatrix}
+1&1&1&2&2&2
+\end{bmatrix}^\mT$,
+\begin{gather*}
+\begin{array}{ll}
+\pdfrac{\norm{\beeta}}{p}=\bn^\mT\diag{\bc}\balpha,
+&
+\pdfrac{\bn}{p}=\dfrac{1}{\norm{\beeta}}\left(\balpha-\bn\bn^\mT\diag{\bc}\balpha\right),
+\\[4mm]
+\pdfrac{\norm{\beeta}}{\bs}=\bn\circ\bc,
+&
+\pdfrac{\bn}{\bs}=\dfrac{1}{\norm{\beeta}}\left(\mb{I}-\bn\bn^\mT\diag{\bc}\right),
+\\[4mm]
+\pdfrac{\norm{\beeta}}{\balpha}=p~\bn\circ\bc,
+&
+\pdfrac{\bn}{\balpha}=\dfrac{p}{\norm{\beeta}}\left(\mb{I}-\bn\bn^\mT\diag{\bc}\right).
+\end{array}
+\end{gather*}
+
+The governing equations of this model are
+\begin{table}[ht]
+\centering
+\begin{tabular}{rl}
+\toprule
+Constitutive Law&$\bsigma=\mb{D}:\left(\bvarepsilon-\bvarepsilon^p\right)$\\
+Yield Function&$f=\norm{\bs+p\balpha}+mp=\norm{\mb{\eta}}+mp$\\
+Flow Rule&$\dot{\bvarepsilon^p}=\gamma\left(\bn+\dfrac{1}{3}A\left(\alpha^d-m-\balpha:\bn\right)\mb{1}\right)$\\
+Hardening Law&$\dot{\balpha}=\gamma{}h\left(\left(\alpha^b-m\right)\bn-\balpha\right)$\\
+Critical State&$\psi=v_0\left(1+\varepsilon^{v,\text{trial}}\right)-v_c+\lambda_c\ln\left(\dfrac{p}{p_c}\right)$\\
+&$\alpha^d=\alpha^c\exp\left(n^d\psi\right)$\\
+&$\alpha^b=\alpha^c\exp\left(-n^b\psi\right)$\\\bottomrule
+\end{tabular}
+\end{table}
+\subsubsection{Elastic Loading/Unloading}
+The trial yield function can be computed from trial stress as
+\begin{gather}\label{eq:ss_yield}
+f^\text{trial}=\norm{\bs^\text{trial}+p^\text{trial}\balpha}+mp^\text{trial}=\norm{\mb{\eta}^\text{trial}}+mp^\text{trial}.
+\end{gather}
+\subsubsection{Plastic Evolution}
+In summary, there are four residual equations.
+\begin{gather}\label{eq:ss_f}
+\mb{R}=\left\{\begin{array}{l}
+\norm{\beeta_{n+1}}+mp_{n+1},\\[4mm]
+p_{n+1}-p^\text{trial}+KA\gamma\left(\alpha^d_{n+1}-m-\balpha_{n+1}:\bn_{n+1}\right),\\[4mm]
+\bs_{n+1}-\bs^\text{trial}+2G\gamma\bn_{n+1},\\[4mm]
+\balpha_n+\gamma{}h\left(\alpha^b_{n+1}-m\right)\bn_{n+1}-\left(\gamma{}h+1\right)\balpha_{n+1}.
+\end{array}\right.
+\end{gather}
+
+To avoid complex computation of derivatives, the above four result equations are not further combined. By defined $\mb{x}=\begin{bmatrix}\gamma&p_{n+1}&\bs_{n+1}&\balpha_{n+1}\end{bmatrix}^\mT$, the local Jacobian can be derived and expressed in the compressed matrix form. It shall be noted for simplicity the subscript $\left(\cdot\right)_{n+1}$ is dropped.
+\begin{gather}\label{eq:ss_df}
+\pdfrac{\mb{R}}{\mb{x}}=\begin{bmatrix}
+\pdfrac{\mb{R}}{\gamma}&\pdfrac{\mb{R}}{p}&\pdfrac{\mb{R}}{\bs}&\pdfrac{\mb{R}}{\balpha}
+\end{bmatrix},
+\end{gather}
+with
+\begin{gather}
+\pdfrac{\mb{R}}{\gamma}=\begin{bmatrix}
+0\\[5mm]
+KA\left(\alpha^d-m-\balpha:\bn\right)\\[5mm]
+2G\bn\\[5mm]
+h\left(\alpha^b-m\right)\bn-h\balpha
+\end{bmatrix},
+\end{gather}
+\begin{gather}
+\pdfrac{\mb{R}}{p}=\begin{bmatrix}
+\balpha:\bn+m\\[5mm]
+1+KA\gamma\left(\alpha^dn^d\dfrac{\lambda_c}{p}-\dfrac{\balpha:\balpha-\left(\balpha:\bn\right)^2}{\norm{\beeta}}\right)\\[5mm]
+\dfrac{2G\gamma}{\norm{\beeta}}\left(\balpha-\left(\balpha:\bn\right)\bn\right)\\[5mm]
+\dfrac{\gamma{}h\left(\alpha^b_{n+1}-m\right)}{\norm{\beeta}}\balpha-\left(\gamma{}h\alpha^bn^b\dfrac{\lambda_c}{p}+\dfrac{\gamma{}h\left(\alpha^b_{n+1}-m\right)}{\norm{\beeta}}\left(\balpha:\bn\right)\right)\bn
+\end{bmatrix},
+\end{gather}
+\begin{gather}
+\pdfrac{\mb{R}}{\bs}=\begin{bmatrix}
+\bn^\mT\circ\bc^\mT\\[5mm]
+\dfrac{KA\gamma}{\norm{\beeta}}\left(\left(\balpha:\bn\right)\bn-\balpha\right)^\mT\circ\bc^\mT\\[5mm]
+\mb{I}+\dfrac{2G\gamma}{\norm{\beeta}}\left(\mb{I}-\bn\bn^\mT\diag{\bc}\right)\\[5mm]
+\dfrac{\gamma{}h\left(\alpha^b_{n+1}-m\right)}{\norm{\beeta}}\left(\mb{I}-\bn\bn^\mT\diag{\bc}\right)
+\end{bmatrix},
+\end{gather}
+\begin{gather}
+\pdfrac{\mb{R}}{\balpha}=\begin{bmatrix}
+p~\bn^\mT\circ\bc^\mT\\[5mm]
+KA\gamma\left(\left(1+\dfrac{p}{\norm{\beeta}}\left(\balpha:\bn\right)\right)\bn-\dfrac{p}{\norm{\beeta}}\balpha\right)^\mT\circ\bc^\mT\\[5mm]
+2G\gamma\dfrac{p}{\norm{\beeta}}\left(\mb{I}-\bn\bn^\mT\diag{\bc}\right)\\[5mm]
+\dfrac{\gamma{}h\left(\alpha^b_{n+1}-m\right)p}{\norm{\beeta}}\left(\mb{I}-\bn\bn^\mT\diag{\bc}\right)-\left(\gamma{}h+1\right)\mb{I}
+\end{bmatrix}.
+\end{gather}
+
+For simplicity, the double contraction is not explicitly expressed, one shall always use $\mb{A}^\mT\diag{\mb{c}}\mb{B}$ (in compressed matrix representation) for $\mb{A}:\mb{B}$. The Jacobian has a size of $1+1+6+6=14$.
+\subsubsection{Consistent Tangent Stiffness}
+The consistent tangent stiffness can be derived from the decomposition
+\begin{gather}
+\bsigma_{n+1}=\bs_{n+1}+p_{n+1}\mb{1}.
+\end{gather}
+From which,
+\begin{gather}\label{eq:ss_stiffness}
+\pdfrac{\bsigma_{n+1}}{\bvarepsilon_{n+1}}=\pdfrac{\bs_{n+1}}{\bvarepsilon_{n+1}}+\mb{1}\otimes\pdfrac{p_{n+1}}{\bvarepsilon_{n+1}}.
+\end{gather}
+Since $\bs$ and $p$ are local independent variables, from local residual,
+\begin{gather}
+\pdfrac{\mb{R}}{\bvarepsilon_{n+1}}+\pdfrac{\mb{R}}{\mb{x}}\pdfrac{\mb{x}}{\bvarepsilon_{n+1}}=\mb{0},
+\end{gather}
+then
+\begin{gather}
+\pdfrac{\mb{x}}{\bvarepsilon_{n+1}}=\begin{bmatrix}
+\pdfrac{\gamma}{\bvarepsilon_{n+1}}\\[4mm]
+\pdfrac{p_{n+1}}{\bvarepsilon_{n+1}}\\[4mm]
+\pdfrac{\bs_{n+1}}{\bvarepsilon_{n+1}}\\[4mm]
+\pdfrac{\balpha_{n+1}}{\bvarepsilon_{n+1}}
+\end{bmatrix}=-\left(\pdfrac{\mb{R}}{\mb{x}}\right)^{-1}\pdfrac{\mb{R}}{\bvarepsilon_{n+1}}.
+\end{gather}
+
+From the above equation, $\pdfrac{\bs_{n+1}}{\bvarepsilon_{n+1}}$ and $\pdfrac{p_{n+1}}{\bvarepsilon_{n+1}}$ can be extracted. The term $\pdfrac{\mb{R}}{\bvarepsilon_{n+1}}$ can be computed as
+\begin{gather}
+\pdfrac{\mb{R}}{\bvarepsilon_{n+1}}=\begin{bmatrix}
+0\\[4mm]
+\left(KA\gamma\alpha^dn^dv_0-K\right)\mb{1}^\mT\\[4mm]
+-2G\mathbb{I}^\text{dev}\\[4mm]
+-\gamma{}h\alpha^bn^bv_0\mb{1}^\mT
+\end{bmatrix}
+\end{gather}
+\subsection{Implementation}
+The implementation of this simple sand model is presented in \algoref{algo:ss_model}. Please note since the local iteration uses $\bs$ and $p$ as independent variables, the plastic strain history does not need to be explicitly stored. It can always be recovered via $\bvarepsilon^p=\bvarepsilon-\mb{D}^{-1}:\sigma$.
+\begin{breakablealgorithm}
+\caption{state determination of simple sand model}\label{algo:ss_model}
+\begin{algorithmic}
+\State \textbf{Parameter}: $K$, $G$, $A$, $m$, $h$, $n^d$, $n^b$, $\alpha_c$, $v_0$, $v_c$, $\lambda_c$, $p_c$
+\State \textbf{Input}: $\bvarepsilon_{n+1}$, $\bvarepsilon_n$, $\bsigma_n$, $\balpha_n$
+\State \textbf{Output}: $\mb{D}_{n+1}$, $\bsigma_{n+1}$, $\balpha_{n+1}$
+\State $\bsigma^\text{trial}=\bsigma_n+\mb{D}:\left(\bvarepsilon_{n+1}-\bvarepsilon_n\right)$
+\State $\bs^\text{trial}=\dev{\bsigma^\text{trial}}$
+\State $p^\text{trial}=\dfrac{1}{3}\tr{\bsigma^\text{trial}}$
+\State $\beeta^\text{trial}=\bs^\text{trial}+p^\text{trial}\balpha_n$
+\State compute $f^\text{trial}$\Comment{\eqsref{eq:ss_yield}}
+\If {$f^\text{trial}\geqslant0$}
+\State $\gamma=0$
+\State $p_{n+1}=p^\text{trial}$
+\State $\bs_{n+1}=\bs^\text{trial}$
+\State $\balpha_{n+1}=\balpha^\text{trial}$
+\While{true}
+\State  $\bn=\dfrac{\beeta_{n+1}}{\norm{\beeta_{n+1}}}$
+\State compute $\mb{R}$ and $\pdfrac{\mb{R}}{\mb{x}}$\Comment{\eqsref{eq:ss_f} and \eqsref{eq:ss_df}}
+\State $\Delta\mb{x}=\left(\pdfrac{\mb{R}}{\mb{x}}\right)^{-1}\mb{R}$
+\If {$\norm{\Delta\mb{x}}<\text{tolerance}$}
+\State break
+\EndIf
+\State update $\gamma$, $p_{n+1}$, $\bs_{n+1}$ and $\balpha_{n+1}$ using the increment $\Delta\mb{x}$
+\EndWhile\Comment{Once this while exists, $p_{n+1}$, $\bs_{n+1}$ and $\balpha_{n+1}$ are all new states.}
+\State $\bsigma_{n+1}=\bs_{n+1}+p_{n+1}\mb{1}$
+\State compute $\mb{D}_{n+1}$\Comment{\eqsref{eq:ss_stiffness}}
+\Else
+\State $\bsigma_{n+1}=\bsigma^\text{trial}$
+\State $\balpha^p_{n+1}=\balpha^p_n$
+\State $\mb{D}_{n+1}=\mb{D}$
+\EndIf
+\end{algorithmic}
+\end{breakablealgorithm}
+
+It can be seen that with such a framework, the state determination can be kept quite concise.
+\section{Dafalias--Manzari Sand Model}
+\subsection{Theory}
+\subsubsection{Hyperelasticity}
+The hyperelastic response is defined as
+\begin{gather}
+G=G_0\dfrac{\left(2.97-e\right)^2}{1+e}\sqrt{pp_{at}},\qquad
+K=\dfrac{2}{3}\dfrac{1+\nu}{1-2\nu}G.
+\end{gather}
+The corresponding derivatives are
+\begin{gather}
+\pdfrac{G}{e}=G_0\sqrt{pp_{at}}\dfrac{e^2+2e-14.7609}{(1+e)^2},\qquad
+\pdfrac{G}{p}=G_0\dfrac{\left(2.97-e\right)^2}{1+e}\dfrac{1}{2}\sqrt{\dfrac{p_{at}}{p}}.
+\end{gather}
+The void ratio can be associated to strain so that
+\begin{gather}
+e=e_0+\left(1+e_0\right)\tr{\bvarepsilon_{n+1}}.
+\end{gather}
+
+The strain increment can be decomposed into elastic and plastic parts.
+\begin{gather}
+\bvarepsilon_{n+1}=\bvarepsilon_n+\dot\bvarepsilon=\bvarepsilon_n+\dot{\bvarepsilon^{e}}+\dot{\bvarepsilon^{p}}.
+\end{gather}
+As such, the stress increment can be expressed accordingly,
+\begin{gather}
+\bsigma_{n+1}=\bsigma_n+\dot{\bsigma}=\bsigma_n+2G\left(\dot{\bvarepsilon^d}-\dot{\bvarepsilon^{d,p}}\right)+K\left(\dot{\varepsilon^v}-\dot{\varepsilon^{v,p}}\right)\mb{1}.
+\end{gather}
+We do not use trial state any more since in this model the elastic part is not linear.
+
+In derivatoric and spherical components,
+\begin{gather}
+\bsigma_{n+1}=\bs_{n+1}+p_{n+1}\mb{1},\\[2mm]
+p_{n+1}=p_n+K\left(\dot{\varepsilon^v}-\dot{\varepsilon^{v,p}}\right),\\[2mm]
+\bs_{n+1}=\bs_n+2G\left(\dot{\bvarepsilon^d}-\dot{\bvarepsilon^{d,p}}\right),
+\end{gather}
+with
+\begin{gather}
+\dot{\bvarepsilon}=\dot{\bvarepsilon^d}+\dfrac{1}{3}\dot{\varepsilon^v}\mb{1},
+\end{gather}
+where $\bs=\dev{\bsigma}$ is the deviatoric stress, $p=\dfrac{1}{3}\tr{\bsigma}$ is the hydrostatic stress.
+\subsubsection{Critical State}
+The critical state parameter is chosen as
+\begin{gather}
+\psi=e-e_0+\lambda_c\left(\dfrac{p}{p_{at}}\right)^\xi.
+\end{gather}
+The derivatives are
+\begin{gather}
+\pdfrac{\psi}{e}=1,\qquad
+\pdfrac{\psi}{p}=\lambda_c\xi\left(\dfrac{p}{p_{at}}\right)^{\xi-1}\dfrac{1}{p_{at}}.
+\end{gather}
+
+The dilatancy surface is defined as
+\begin{gather}
+\alpha^d=\alpha^c\exp\left(n^d\psi\right).
+\end{gather}
+
+The bounding surface is defined as
+\begin{gather}
+\alpha^b=\alpha^c\exp\left(-n^b\psi\right).
+\end{gather}
+
+The corresponding derivatives are
+\begin{gather}
+\pdfrac{\alpha^d}{\psi}=n^d\alpha^d,\qquad\pdfrac{\alpha^b}{\psi}=-n^b\alpha^b.
+\end{gather}
+\subsubsection{Yield Function}
+A wedge-like function is chosen to be the yield surface.
+\begin{gather}
+F=\norm{\bs+p\balpha}+mp=\norm{\beeta}+mp,
+\end{gather}
+where $\balpha$ is the so called back stress and $m$ characterises the size of the wedge. For simplicity, $m$ is assumed to be a constant in this model.
+
+By denoting $\beeta=\bs+p\balpha$, the directional unit tensor is defined as
+\begin{gather}
+\bn=\dfrac{\beeta}{\norm{\beeta}}.
+\end{gather}
+\subsubsection{Flow Rule}
+A non-associated plastic flow is used, the corresponding flow rule is defined as follows.
+\begin{gather}
+\dot{\bvarepsilon^p}=\gamma\left(\bn+\dfrac{1}{3}D\mb{1}\right),
+\end{gather}
+where $D$ is the dilatancy parameter.
+\begin{gather}
+D=A_d\left(\alpha^d-m-\balpha:\bn\right)=A_0\left(1+\left\langle\mb{z}:\bn\right\rangle\right)\left(\alpha^d-m-\balpha:\bn\right).
+\end{gather}
+
+For $\mb{z}:\bn\geqslant0$,
+\begin{align}
+\pdfrac{D}{p}&=A_0\left(\alpha^d-m-\balpha:\bn\right)\left(\mb{z}:n_p\right)+A_0\left(1+\mb{z}:\bn\right)\left(\pdfrac{\alpha^d}{p}-\balpha:n_p\right),\\
+\pdfrac{D}{\bs}&=A_0\left(\alpha^d-m-\balpha:\bn\right)\left(\mb{z}:n_s\right)-A_0\left(1+\mb{z}:\bn\right)\left(\balpha:n_s\right),\\
+\pdfrac{D}{\balpha}&=A_0\left(\alpha^d-m-\balpha:\bn\right)\left(\mb{z}:n_\alpha\right)-A_0\left(1+\mb{z}:\bn\right)\left(\balpha:n_\alpha+\bn:\mathbb{I}\right),\\
+\pdfrac{D}{\mb{z}}&=A_0\left(\alpha^d-m-\balpha:\bn\right)\left(\bn:\mathbb{I}\right).
+\end{align}
+
+For $\mb{z}:\bn<0$,
+\begin{align}
+\pdfrac{D}{p}&=A_0\left(\pdfrac{\alpha^d}{p}-\balpha:n_p\right),\\
+\pdfrac{D}{\bs}&=-A_0\left(\balpha:n_s\right),\\
+\pdfrac{D}{\balpha}&=-A_0\left(\balpha:n_\alpha+\bn:\mathbb{I}\right),\\
+\pdfrac{D}{\mb{z}}&=\mb{0}.
+\end{align}
+
+In the above expressions, $n_p$, $n_s$ and $n_\alpha$ are partial derivatives of $\bn$ against $p$, $\bs$ and $\balpha$. Note due to the change of sign convention, a negative $D$ leads to contractive response. Thus, $A_0$ often needs to be negative.
+\subsubsection{Hardening Law}
+The evolution rate of the back stress $\balpha$ is defined in terms of a proper distance measure from the bounding surface,
+\begin{gather}
+\dot{\balpha}=\gamma{}h\left(\left(\alpha^b-m\right)\bn-\balpha\right),
+\end{gather}
+where $h$ controls the hardening rate,
+\begin{gather}
+h=b_0\exp\left(h_1\left(\balpha_{in}:\bn-\balpha:\bn\right)\right).
+\end{gather}
+The constant $\balpha_{in}$ is updated whenever load reversal occurs.
+
+The parameter $b_0$ is defined as a function of current state,
+\begin{gather}
+b_0=G_0h_0\left(1-c_he\right)\sqrt{\dfrac{p_{at}}{p}}.
+\end{gather}
+The derivatives are
+\begin{gather}
+\pdfrac{b_0}{e}=-G_0h_0c_h\sqrt{\dfrac{p_{at}}{p}},\qquad
+\pdfrac{b_0}{p}=-G_0h_0\left(1-c_he\right)\dfrac{\sqrt{pp_{at}}}{2p^2}=-\dfrac{b_0}{2p}.
+\end{gather}
+Hence,
+\begin{align}
+\pdfrac{h}{p}&=\pdfrac{b_0}{p}\exp\left(h_1\left(\balpha_{in}:\bn-\balpha:\bn\right)\right),\\
+\pdfrac{h}{\bs}&=hh_1\left(\balpha_{in}-\balpha\right):n_s,\\
+\pdfrac{h}{\balpha}&=hh_1\left(\left(\balpha_{in}-\balpha\right):n_a-\bn:\mathbb{I}\right).
+\end{align}
+\subsubsection{Fabric Effect}
+The fabric tensor changes when $\Delta\varepsilon^p_v$ is positive,
+\begin{gather}
+\dot{\mb{z}}=c_z\left\langle\dot{\varepsilon^{v,p}}\right\rangle\left(z_m\bn-\mb{z}\right)=c_z\gamma\left\langle{}D\right\rangle\left(z_m\bn-\mb{z}\right).
+\end{gather}
+The sign is flipped compared to the original definition for consistency with other parts.
+\subsection{Formulation}
+The governing equations of this model are
+\begin{table}[ht]
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{rl}
+\toprule
+Constitutive Law&$\bsigma=\bsigma_n+2G\left(\dot{\bvarepsilon^d}-\dot{\bvarepsilon^{d,p}}\right)+K\left(\dot{\varepsilon^v}-\dot{\varepsilon^{v,p}}\right)\mb{1}$\\
+Yield Function&$f=\norm{\bs+p\balpha}+mp=\norm{\mb{\eta}}+mp$\\
+Flow Rule&$\dot{\bvarepsilon^p}=\gamma\left(\bn+\dfrac{1}{3}\left(A_0\left(1+\left\langle\mb{z}:\bn\right\rangle\right)\left(\alpha^d-m-\balpha:\bn\right)\right)\mb{1}\right)$\\
+Hardening Law&$\dot{\balpha}=\gamma{}b_0\exp\left(h_1\left(\balpha_{in}:\bn-\balpha:\bn\right)\right)\left(\left(\alpha^b-m\right)\bn-\balpha\right)$\\
+Fabric Effect&$\dot{\mb{z}}=c_z\left\langle\dot{\varepsilon^{v,p}}\right\rangle\left(z_m\bn-\mb{z}\right)$\\
+Critical State&$\psi=e-e_0+\lambda_c\left(\dfrac{p}{p_{at}}\right)^\xi$\\
+&$\alpha^d=\alpha^c\exp\left(n^d\psi\right)$\\
+&$\alpha^b=\alpha^c\exp\left(-n^b\psi\right)$\\\bottomrule
+\end{tabular}
+\end{table}
+\subsubsection{Elastic Residual}
+The new state shall be computed assuming there is no plasticity. In which case,
+\begin{gather}
+p_{n+1}=p_n+K\dot{\varepsilon^v},\\
+\bs_{n+1}=\bs_n+2G\dot{\bvarepsilon^d}.
+\end{gather}
+\subsubsection{Elastic Local Iteration}
+The independent variables are chosen to be $\mb{x}=\begin{bmatrix}
+p&\bs
+\end{bmatrix}^\mT$, then the local residual is
+\begin{gather}\label{eq:dm_er}
+\mb{R}=\left\{
+\begin{array}{l}
+p_{n+1}-p_n-K\dot{\varepsilon^v},\\
+\bs_{n+1}-\bs_n-2G\dot{\bvarepsilon^d}.
+\end{array}
+\right.
+\end{gather}
+The Jacobian can be expressed as
+\begin{gather}\label{eq:dm_edr}
+\mb{J}=\begin{bmatrix}
+1-\dot{\varepsilon^v}\dfrac{2+2\nu}{3-6\nu}\pdfrac{G}{p}&\mb{0}\\[4mm]
+-2\dot{\bvarepsilon^d}\pdfrac{G}{p}&\mb{I}
+\end{bmatrix}.
+\end{gather}
+and
+\begin{gather}\label{eq:dm_estiffness}
+\pdfrac{\mb{R}}{\bvarepsilon_{n+1}}=
+\begin{bmatrix}
+-K\mb{1}^\mT-\dot{\varepsilon^v}\pdfrac{K}{\bvarepsilon_{n+1}}\\[4mm]
+-2G\mathbb{I}^\text{dev}-2\dot{\bvarepsilon^d}\pdfrac{G}{\bvarepsilon_{n+1}}
+\end{bmatrix},
+\end{gather}
+which will be used in computation of consistent tangent stiffness.
+
+When elastic state is computed, the trial yield function can be calculated.
+\begin{gather}\label{eq:dm_trial}
+f^\text{trial}=\norm{\bs_{n+1}+p_{n+1}\balpha_n}+mp_{n+1}.
+\end{gather}
+\subsubsection{Plastic Residual}
+The are five local residual equations.
+\begin{gather}\label{eq:dm_r}
+\mb{R}=\left\{\begin{array}{ll}
+\norm{\beeta}+mp,\\[2mm]
+p-p_n+K\left(\gamma{}D-\dot{\bvarepsilon^v}\right),\\[2mm]
+\bs-\bs_n+2G\left(\gamma\bn-\dot{\bvarepsilon^d}\right),\\[2mm]
+\balpha-\balpha_n+\gamma{}h\left(\balpha-\left(\alpha^b-m\right)\bn\right),\\[2mm]
+\mb{z}-\mb{z}_n+c_z\gamma{}\left\langle{}D\right\rangle\left(\mb{z}-z_m\bn\right).
+\end{array}
+\right.
+\end{gather}
+\subsubsection{Plastic Local Iteration}
+By choosing $\mb{x}=\begin{bmatrix}\gamma&p&\bs&\balpha&\mb{z}\end{bmatrix}^\mT$, the Jacobian consists of the entries that can be listed as follows.
+\begin{gather}\label{eq:dm_dr}
+\pdfrac{\mb{R}}{\mb{x}}=\begin{bmatrix}
+\pdfrac{\mb{R}}{\gamma}&\pdfrac{\mb{R}}{p}&\pdfrac{\mb{R}}{\bs}&\pdfrac{\mb{R}}{\balpha}&\pdfrac{\mb{R}}{\mb{z}}
+\end{bmatrix}
+\end{gather}
+with
+\begin{gather}
+\pdfrac{\mb{R}}{\gamma}=
+\begin{bmatrix}
+	\cdot                                           \\[3mm]
+	DK                                              \\[3mm]
+	2G\bn                                  \\[3mm]
+	h\left(\balpha-\alpha^{bm}\bn\right)   \\[3mm]
+	c_z\left\langle{}D\right\rangle{}\mb{z}_z
+\end{bmatrix},
+\end{gather}
+\begin{gather}
+\pdfrac{\mb{R}}{p}=
+\begin{bmatrix}
+	\eta_p+m                                                                                                                                \\[3mm]
+	1+\pdfrac{K}{p}\left(\gamma{}D-\dot{\varepsilon^v}\right)+K\gamma\pdfrac{D}{p}                                                          \\[3mm]
+	2\pdfrac{G}{p}\left(\gamma\bn-\dot{\bvarepsilon^d}\right)+2G\gamma{}n_p                                                          \\[3mm]
+	\gamma{}\pdfrac{h}{p}\left(\balpha-\alpha^{bm}\bn\right)-\gamma{}h\left(\pdfrac{\alpha^b}{p}\bn+\alpha^{bm}n_p\right) \\[3mm]
+	c_z\gamma{}\pdfrac{\left\langle{}D\right\rangle}{p}\mb{z}_z-c_z\gamma{}\left\langle{}D\right\rangle{}z_m{}n_p
+\end{bmatrix},
+\end{gather}
+\begin{gather}
+\pdfrac{\mb{R}}{\bs}=
+\begin{bmatrix}
+	\eta_s                                                                                                              \\[3mm]
+	\gamma{}K\left(\pdfrac{D}{\bs}\right)^\mT                                                                                            \\[3mm]
+	\mb{I}+2G\gamma{}n_s                                                                                            \\[3mm]
+	\gamma\left(\balpha-\alpha^{bm}\bn\right)\otimes\pdfrac{h}{\bs}-\gamma{}h\alpha^{bm}n_s                           \\[3mm]
+	c_z\gamma{}\mb{z}_z\otimes\pdfrac{\left\langle{}D\right\rangle}{\bs}-c_z\gamma{}\left\langle{}D\right\rangle{}z_mn_s
+\end{bmatrix},
+\end{gather}
+\begin{gather}
+\pdfrac{\mb{R}}{\balpha}=
+\begin{bmatrix}
+	\eta_\alpha                                                                                                                      \\[3mm]
+	\gamma{}K\left(\pdfrac{D}{\balpha}\right)^\mT                                                                                                     \\[3mm]
+	2G\gamma{}n_\alpha                                                                                                               \\[3mm]
+	\left(1+\gamma{}h\right)\mb{I}+\gamma\left(\balpha-\alpha^{bm}\bn\right)\otimes\pdfrac{h}{\balpha}-\gamma{}h\alpha^{bm}n_a \\[3mm]
+	c_z\gamma{}\mb{z}_z\otimes\pdfrac{\left\langle{}D\right\rangle}{\balpha}-c_z\gamma{}\left\langle{}D\right\rangle{}z_mn_\alpha
+\end{bmatrix},
+\end{gather}
+\begin{gather}
+\pdfrac{\mb{R}}{\mb{z}}=
+\begin{bmatrix}
+	\cdot                                                                                                                             \\[3mm]
+	\gamma{}K\left(\pdfrac{D}{\mb{z}}\right)^\mT                                                                                                       \\[3mm]
+	\cdot                                                                                                                             \\[3mm]
+	\cdot                                                                                                                             \\[3mm]
+	\left(1+c_z\gamma{}\left\langle{}D\right\rangle\right)\mb{I}+c_z\gamma{}\mb{z}_z\otimes\pdfrac{\left\langle{}D\right\rangle}{\mb{z}}
+\end{bmatrix}.
+\end{gather}
+In which,
+\begin{gather}
+\alpha^{bm}=\alpha^b-m,\\
+\mb{z}_z=\mb{z}-z_m\bn.
+\end{gather}
+And $\eta_p$, $\eta_s$ and $\eta_\alpha$ are partial derivatives of $\norm{\beeta}$ against $p$, $\bs$ and $\balpha$.
+\subsubsection{Consistent Tangent Operator}
+\begin{gather}
+\pdfrac{\mb{R}}{\bvarepsilon_{n+1}}=
+\begin{bmatrix}
+\cdot\\[3mm]
+\left(\left(\gamma{}D-\dot{\varepsilon^v}\right)\pdfrac{K}{\bvarepsilon_{n+1}}+K\left(\gamma{}\pdfrac{D}{\bvarepsilon_{n+1}}-\mb{1}\right)\right)^\mT,\\[3mm]
+2\left(\gamma\bn-\dot{\bvarepsilon^d}\right)\otimes\pdfrac{G}{\bvarepsilon_{n+1}}-2G\mathbb{I}^\text{dev},\\[3mm]
+\gamma{}\left(\balpha-\alpha^{bm}\bn\right)\otimes\pdfrac{h}{\bvarepsilon_{n+1}}-\gamma{}h\bn\otimes\pdfrac{\alpha^b}{\bvarepsilon_{n+1}},\\[3mm]
+c_z\gamma{}\mb{z}_z\otimes\pdfrac{\left\langle{}D\right\rangle}{\bvarepsilon_{n+1}}
+\end{bmatrix}.
+\end{gather}
+
+Then,
+\begin{gather}
+\pdfrac{\mb{x}}{\bvarepsilon_{n+1}}=-\mb{J}^{-1}\pdfrac{\mb{R}}{\bvarepsilon_{n+1}}.
+\end{gather}
+
+Similar to the previous procedure,
+\begin{gather}\label{eq:dm_stiffness}
+\pdfrac{\bsigma_{n+1}}{\bvarepsilon_{n+1}}=\pdfrac{\bs_{n+1}}{\bvarepsilon_{n+1}}+\mb{1}\otimes\pdfrac{p_{n+1}}{\bvarepsilon_{n+1}}.
+\end{gather}
+The corresponding quantities can be extracted and be used to formulate consistent tangent stiffness.
+\subsection{Implementation}
+\begin{breakablealgorithm}
+\caption{state determination of Dafalias--Manzari sand model}\label{algo:dm_model}
+\begin{algorithmic}
+\State \textbf{Parameter}: $G_0$, $v$, $p_{at}$, $e_0$, $\lambda_c$, $\xi$, $n^d$, $n^b$, $\alpha_c$, $m$, $A_0$, $h_0$, $h_1$, $c_z$, $z_m$
+\State \textbf{Input}: $\bvarepsilon_{n+1}$, $\bvarepsilon_n$, $\bsigma_n$, $\balpha_n$, $\mb{z}_n$
+\State \textbf{Output}: $\mb{D}_{n+1}$, $\bsigma_{n+1}$, $\balpha_{n+1}$, $\mb{z}_{n+1}$
+\State $\bs_{n+1}=\bs_n=\dev{\bsigma_n}$
+\State $p_{n+1}=p_n=\dfrac{1}{3}\tr{\bsigma_n}$
+\While{true}
+\State compute $\mb{R}$ and $\pdfrac{\mb{R}}{\mb{x}}$\Comment{\eqsref{eq:dm_er} and \eqsref{eq:dm_edr}}
+\State $\Delta\mb{x}=\left(\pdfrac{\mb{R}}{\mb{x}}\right)^{-1}\mb{R}$
+\If {$\norm{\Delta{}\mb{x}}<\text{tolerance}$}
+\State break
+\EndIf
+\State update $p_{n+1}$ and $\bs_{n+1}$ using the increment $\Delta\mb{x}$
+\EndWhile\Comment{Once this while exists, $p_{n+1}$ and $\bs_{n+1}$ are new elastic states.}
+\State compute $f^\text{trial}$\Comment{\eqsref{eq:dm_trial}}
+\State $\balpha_{n+1}=\balpha_n$
+\State $\mb{z}_{n+1}=\mb{z}_n$
+\If {$f^\text{trial}\geqslant0$}\Comment{plastic}
+\State $\gamma=0$
+\While{true}
+\State  $\bn=\dfrac{\beeta_{n+1}}{\norm{\beeta_{n+1}}}$
+\State compute $\mb{R}$ and $\pdfrac{\mb{R}}{\mb{x}}$\Comment{\eqsref{eq:dm_r} and \eqsref{eq:dm_dr}}
+\State $\Delta\mb{x}=\left(\pdfrac{\mb{R}}{\mb{x}}\right)^{-1}\mb{R}$
+\If {$\norm{\Delta{}x}<\text{tolerance}$}
+\State break
+\EndIf
+\State update $\gamma$, $p_{n+1}$, $\bs_{n+1}$, $\balpha_{n+1}$ and $\mb{z}_{n+1}$ using the increment $\Delta\mb{x}$
+\EndWhile\Comment{Once this while exists, $p_{n+1}$, $\bs_{n+1}$, $\balpha_{n+1}$ and $\mb{z}_{n+1}$ are all new states.}
+\State $\bsigma_{n+1}=\bs_{n+1}+p_{n+1}\mb{1}$
+\State compute plastic $\mb{D}_{n+1}$\Comment{\eqsref{eq:dm_stiffness}}
+\Else\Comment{elastic}
+\State $\bsigma_{n+1}=\bs_{n+1}+p_{n+1}\mb{1}$
+\State compute elastic $\mb{D}_{n+1}$\Comment{\eqsref{eq:dm_estiffness}}
+\EndIf
+\end{algorithmic}
+\end{breakablealgorithm}
+
+The Dafalias--Manzari sand model is probably the most complex model so far as it involves heavy computation of tensor quantities. Here is a example implementation of state determination.
+\begin{cppcode}
+int DafaliasManzari::update_trial_status(const vec& t_strain) {
+    incre_strain = (trial_strain = t_strain) - current_strain;
+
+    if(norm(incre_strain) <= tolerance) return SUANPAN_SUCCESS;
+
+    const auto current_p = tensor::mean3(current_stress);
+    const auto current_s = tensor::dev(current_stress);
+    const auto incre_ev = tensor::trace3(incre_strain);
+    const vec incre_ed = unit_dev_tensor * incre_strain;
+
+    // assume no plasticity
+    // compute trial stress
+
+    auto p = current_p + pr * gi * incre_ev;
+    vec s = current_s + 2. * gi * incre_ed;
+
+    const auto void_ratio = e0 + (1. + e0) * tensor::trace3(trial_strain);
+    const auto v_term_a = pow(2.97 - void_ratio, 2.) / (1. + void_ratio);
+    const auto v_term_b = (void_ratio * (void_ratio + 2.) - 14.7609) * pow(1. + void_ratio, -2.) * (1. + e0);
+
+    double g, pgpe, pgpp;
+
+    vec residual(7, fill::none), incre;
+    mat jacobian(7, 7, fill::eye);
+
+    auto counter = 0u;
+    auto ref_error = 1.;
+
+    while(true) {
+        if(max_iteration == ++counter) return SUANPAN_FAIL;
+
+        const auto sqrt_term = shear_modulus * sqrt(std::max(datum::eps, pc * p));
+
+        g = sqrt_term * v_term_a;
+
+        if(g > gi) {
+            pgpe = sqrt_term * v_term_b;
+            pgpp = .5 * g / p;
+        }
+        else {
+            g = gi;
+            pgpe = pgpp = 0.;
+        }
+
+        residual(sa) = p - current_p - pr * g * incre_ev;
+        residual(sb) = s - current_s - 2. * g * incre_ed;
+
+        jacobian(sa, sa) = 1. - pr * incre_ev * pgpp;
+        jacobian(sb, sa) = -2. * pgpp * incre_ed;
+
+        if(!solve(incre, jacobian, residual)) return SUANPAN_FAIL;
+
+        auto error = norm(residual);
+        if(1 == counter) ref_error = std::max(1., error);
+        suanpan_debug("DafaliasManzari local elastic iteration error: %.5E.\n", error /= ref_error);
+        if(error <= tolerance) break;
+
+        p -= incre(sa);
+        s -= incre(sb);
+    }
+
+    // check if yield
+
+    const vec current_alpha(&current_history(0), 6, false, true);
+
+    vec eta = s + p * current_alpha;
+    auto norm_eta = tensor::stress::norm(eta);
+
+    if(norm_eta + m * p < 0.) {
+        trial_stress = s + p * tensor::unit_tensor2;
+
+        mat left(7, 6, fill::none), right;
+
+        left.row(sa) = pr * (incre_ev * pgpe + g) * tensor::unit_tensor2.t();
+        left.rows(sb) = 2. * pgpe * incre_ed * tensor::unit_tensor2.t() + 2. * g * unit_dev_tensor;
+
+        if(!solve(right, jacobian, left)) return SUANPAN_FAIL;
+
+        trial_stiffness = right.rows(sb);
+        trial_stiffness.row(0) += right.row(sa);
+        trial_stiffness.row(1) += right.row(sa);
+        trial_stiffness.row(2) += right.row(sa);
+
+        return SUANPAN_SUCCESS;
+    }
+
+    // yield function violated
+
+    const vec current_z(&current_history(6), 6, false, true);
+
+    trial_history = current_history;
+    vec alpha(&trial_history(0), 6, false, true);
+    vec z(&trial_history(6), 6, false, true);
+    vec ini_alpha(&trial_history(12), 6, false, true);
+
+    residual.set_size(20);
+    jacobian.set_size(20, 20);
+    jacobian(si, si) = 0.;
+    jacobian(si, sm).zeros();
+    jacobian(sk, sm).zeros();
+    jacobian(sl, sm).zeros();
+
+    counter = 0u;
+
+    vec n, zz, aabmn;
+    auto gamma = 0.;
+    double pabpe, d, pdpe, h, phpe;
+    auto update_ini_alpha = false;
+
+    while(true) {
+        if(max_iteration == ++counter) return SUANPAN_FAIL;
+
+        // shear modulus
+
+        auto tmp_term = shear_modulus * sqrt(std::max(datum::eps, pc * p));
+        g = tmp_term * v_term_a;
+
+        if(g > gi) {
+            pgpe = tmp_term * v_term_b;
+            pgpp = .5 * g / p;
+        }
+        else {
+            g = gi;
+            pgpe = pgpp = 0.;
+        }
+
+        // state parameter
+
+        tmp_term = lc * pow(std::max(datum::eps, p / pc), xi);
+        const auto psi = void_ratio - e0 + tmp_term;
+        const auto ppsipp = xi * tmp_term / p;
+
+        // surface
+
+        const auto ad = ac * exp(nd * psi);
+        const auto ab = ac * exp(-nb * psi);
+        const auto adm = ad - m;
+        const auto abm = ab - m;
+
+        auto padpe = nd * ad;
+        pabpe = -nb * ab;
+        const auto padpp = padpe * ppsipp;
+        const auto pabpp = pabpe * ppsipp;
+        padpe *= 1. + e0;
+        pabpe *= 1. + e0;
+
+        // yield function
+
+        eta = s + p * alpha;
+        norm_eta = tensor::stress::norm(eta);
+
+        n = eta / norm_eta;
+        const vec unit_n = n % tensor::stress::norm_weight;
+        const vec unit_alpha = alpha % tensor::stress::norm_weight;
+        const auto alpha_n = dot(n, unit_alpha);
+        aabmn = alpha - abm * n;
+
+        const vec np = (alpha - alpha_n * n) / norm_eta;
+        const mat ns = (eye(6, 6) - n * unit_n.t()) / norm_eta;
+
+        // dilatancy
+
+        const vec unit_z = z % tensor::stress::norm_weight;
+        const auto zn = dot(n, unit_z);
+
+        d = a * (adm - alpha_n);
+
+        double pdpp;
+        rowvec pdps, pdpa, pdpz;
+        if(zn > 0.) {
+            const auto term_a = a * (1. + zn);
+
+            pdpe = term_a * padpe;
+            pdpp = term_a * padpp + dot(d * unit_z - term_a * unit_alpha, np);
+            pdps = (d * unit_z - term_a * unit_alpha).t() * ns;
+            pdpa = p * pdps - term_a * unit_n.t();
+            pdpz = d * unit_n.t();
+
+            d *= 1. + zn;
+        }
+        else {
+            pdpe = a * padpe;
+            pdpp = a * (padpp - dot(unit_alpha, np));
+            pdps = -a * unit_alpha.t() * ns;
+            pdpa = p * pdps - a * unit_n.t();
+            pdpz.zeros(6);
+        }
+
+        // hardening
+
+        tmp_term = shear_modulus * h0 * sqrt(std::max(datum::eps, pc / p));
+        const auto b0 = tmp_term * (1. - ch * void_ratio);
+        const auto pb0pe = -ch * tmp_term * (1. + e0);
+        const auto pb0pp = -.5 * b0 / p;
+
+        update_ini_alpha = false;
+        vec diff_alpha = (ini_alpha - alpha) % tensor::stress::norm_weight;
+        tmp_term = exp(h1 * dot(diff_alpha, n));
+
+        if(tmp_term > 1.) {
+            update_ini_alpha = true;
+            diff_alpha = (current_alpha - alpha) % tensor::stress::norm_weight;
+            tmp_term = exp(h1 * dot(diff_alpha, n));
+        }
+
+        h = tmp_term * b0;
+
+        phpe = tmp_term * pb0pe;
+        const auto phpp = tmp_term * pb0pp;
+        const rowvec phps = h * h1 * diff_alpha.t() * ns;
+        const rowvec phpa = p * phps - h * h1 * unit_n.t();
+
+        // local iteration
+
+        residual(si) = norm_eta + m * p;
+        residual(sj) = p - current_p + pr * g * (gamma * d - incre_ev);
+        residual(sk) = s - current_s + 2. * g * (gamma * n - incre_ed);
+        residual(sl) = alpha - current_alpha + gamma * h * aabmn;
+        residual(sm) = z - current_z;
+
+        jacobian(si, sj) = alpha_n + m;
+        jacobian(si, sk) = unit_n.t();
+        jacobian(si, sl) = p * jacobian(si, sk);
+
+        const auto gk = gamma * pr * g;
+        jacobian(sj, si) = d * pr * g;
+        jacobian(sj, sj) = 1. + pr * pgpp * (gamma * d - incre_ev) + gk * pdpp;
+        jacobian(sj, sk) = gk * pdps;
+        jacobian(sj, sl) = gk * pdpa;
+        jacobian(sj, sm) = gk * pdpz;
+
+        jacobian(sk, si) = 2. * g * n;
+        jacobian(sk, sj) = 2. * pgpp * (gamma * n - incre_ed) + 2. * g * gamma * np;
+        jacobian(sk, sk) = 2. * g * gamma * ns;
+        jacobian(sk, sl) = p * jacobian(sk, sk);
+        jacobian(sk, sk) += eye(6, 6);
+
+        jacobian(sl, si) = h * aabmn;
+        jacobian(sl, sj) = gamma * phpp * aabmn - gamma * h * (pabpp * n + abm * np);
+        jacobian(sl, sk) = gamma * aabmn * phps - gamma * h * abm * ns;
+        jacobian(sl, sl) = (1. + gamma * h) * eye(6, 6) + gamma * aabmn * phpa - gamma * h * abm * p * ns;
+
+        jacobian(sm, sm) = eye(6, 6);
+
+        if(d > 0.) {
+            const auto factor_a = cz * gamma;
+            const auto factor_b = factor_a * d;
+            const auto factor_c = factor_b * zm;
+
+            zz = z - zm * n;
+
+            residual(sm) += factor_b * zz;
+
+            jacobian(sm, si) = cz * d * zz;
+            jacobian(sm, sj) = factor_a * pdpp * zz - factor_c * np;
+            jacobian(sm, sk) = factor_a * zz * pdps - factor_c * ns;
+            jacobian(sm, sl) = factor_a * zz * pdpa - factor_c * p * ns;
+            jacobian(sm, sm) += factor_b * eye(6, 6) + factor_a * zz * pdpz;
+        }
+        else {
+            jacobian(sm, si).zeros();
+            jacobian(sm, sj).zeros();
+            jacobian(sm, sk).zeros();
+            jacobian(sm, sl).zeros();
+        }
+
+        if(!solve(incre, jacobian, residual)) return SUANPAN_FAIL;
+
+        auto error = norm(residual);
+        if(1 == counter) ref_error = std::max(1., error);
+        suanpan_debug("DafaliasManzari local plastic iteration error: %.5E.\n", error /= ref_error);
+        if(error <= tolerance) break;
+
+        gamma -= incre(si);
+        p -= incre(sj);
+        s -= incre(sk);
+        alpha -= incre(sl);
+        z -= incre(sm);
+    }
+
+    trial_stress = s + p * tensor::unit_tensor2;
+
+    mat left(20, 6, fill::none), right;
+
+    left.row(si).zeros();
+    left.row(sj) = pr * (pgpe * (incre_ev - gamma * d) + g - g * gamma * pdpe) * tensor::unit_tensor2.t();
+    left.rows(sk) = 2. * g * unit_dev_tensor + 2. * pgpe * (incre_ed - gamma * n) * tensor::unit_tensor2.t();
+    left.rows(sl) = (gamma * h * n * pabpe - gamma * aabmn * phpe) * tensor::unit_tensor2.t();
+
+    if(d > 0.) left.rows(sm) = -cz * gamma * pdpe * zz * tensor::unit_tensor2.t();
+    else left.rows(sm).zeros();
+
+    if(!solve(right, jacobian, left)) return SUANPAN_FAIL;
+
+    trial_stiffness = right.rows(sk);
+    trial_stiffness.row(0) += right.row(sj);
+    trial_stiffness.row(1) += right.row(sj);
+    trial_stiffness.row(2) += right.row(sj);
+
+    if(update_ini_alpha) ini_alpha = current_alpha;
+
+    return SUANPAN_SUCCESS;
+}
+\end{cppcode}

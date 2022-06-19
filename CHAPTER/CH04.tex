@@ -1,0 +1,347 @@
+\chapter{Metal}
+In this chapter, several frameworks suitable for developing metal models are introduced. The basic one is the von Mises framework, which is also called J2 model in some literature as it adopts the second invariant of the deviatoric stress to characterise yield function. The intermediate one is the VAFCRP model, in which a Voce type nonlinear isotropic hardening, a multiplicative Armstrong--Fredrick type kinematic hardening and a Peric type viscosity are implemented. Thus, this model can account for dynamic effects. The third model is a general framework developed based on the Hoffman criterion, it is suitable for orthotropic materials.
+\section{von Mises Framework}
+Here the uniaxial combined isotropic/kinematic model introduced in \secref{sec:isotropic/kinematic} is reformulated in 3D space. Some difference will be observed, but the final local residual is a scalar equation.
+\subsection{Theory}
+\subsubsection{Yield Function}
+The von Mises yield criterion is adopted,
+\begin{gather}
+f=\norm{\beeta}-\sqrt{\dfrac{2}{3}}\sigma^y,
+\end{gather}
+with $\beeta=\bs-\balpha$ is the shifted stress with $\balpha$ denoting the back stress and $\bs=\dev{\bsigma}$ denoting the deviatoric stress. The only purpose of the constant $\sqrt{\dfrac{2}{3}}$ is to produce consistent response under uniaxial loading compared to the uniaxial version with the same set of model parameters. By definition, the back stress $\balpha$ is also a deviatoric stress, thus $\tr{\balpha}=0$.
+\subsubsection{Flow Rule}
+Assuming associative rule, the flow rule is
+\begin{gather}
+\dot{\bvarepsilon^p}=\gamma\pdfrac{f}{\bsigma}=\gamma\dfrac{1}{2}\dfrac{\mathbb{I}^\text{dev}:\beeta}{\norm{\beeta}}=\gamma\dfrac{\beeta}{\norm{\beeta}}=\gamma\bn.
+\end{gather}
+All analytical formulations are based on tensor notation. However, compressed matrix representation is used in implementation. One shall note the difference due to the Voigt notation.
+\begin{gather}
+\underbrace{\begin{bmatrix}
+\dot{\varepsilon^p}_{11}&\dot{\varepsilon^p}_{12}&\dot{\varepsilon^p}_{31}\\
+\dot{\varepsilon^p}_{12}&\dot{\varepsilon^p}_{22}&\dot{\varepsilon^p}_{23}\\
+\dot{\varepsilon^p}_{31}&\dot{\varepsilon^p}_{23}&\dot{\varepsilon^p}_{33}
+\end{bmatrix}}_{\dot{\bvarepsilon^p}}
+=
+\gamma
+\underbrace{\begin{bmatrix}
+n_{11}&n_{12}&n_{31}\\
+n_{12}&n_{22}&n_{23}\\
+n_{31}&n_{23}&n_{33}
+\end{bmatrix}}_{\bn},\qquad\text{expressed in components}
+\end{gather}
+We define the scaling vector $\mb{c}=\begin{bmatrix}
+1&1&1&2&2&2
+\end{bmatrix}^\mT$ and let $\circ$ be the Hadamard (element--wise) product operator, then the above expression is equivalent to
+\begin{gather}
+\underbrace{\begin{bmatrix}
+\dot{\varepsilon^p}_{11}\\
+\dot{\varepsilon^p}_{22}\\
+\dot{\varepsilon^p}_{33}\\
+2\dot{\varepsilon^p}_{12}\\
+2\dot{\varepsilon^p}_{23}\\
+2\dot{\varepsilon^p}_{31}
+\end{bmatrix}}_{\dot{\bvarepsilon^p}}
+=
+\gamma\begin{bmatrix}
+1&&&&&\\
+&1&&&&\\
+&&1&&&\\
+&&&2&&\\
+&&&&2&\\
+&&&&&2
+\end{bmatrix}
+\underbrace{
+\begin{bmatrix}
+n_{11}\\
+n_{22}\\
+n_{33}\\
+n_{12}\\
+n_{23}\\
+n_{31}
+\end{bmatrix}}_{\bn}=\gamma~\mb{c}\circ\bn.\qquad\text{expressed in the Voigt notation}
+\end{gather}
+This agrees with \eqsref{eq:norm_derivative2}.
+
+It can be observed that $\dot{\bvarepsilon^p}$ has a magnitude of $\gamma$ while $\bn$ is a unit tensor in $\mathbb{R}^3\times\mathbb{R}^3$ hyper space. Thus $\bn$ serves as a direction indicator, $\bvarepsilon^p$ evolves towards $\bn$ by the amount of $\gamma$. Since $\bn$ is deviatoric, $\bvarepsilon^p$ is also deviatoric.
+\subsubsection{Hardening Law}
+For internal variable $q$, the hardening law takes the accumulated magnitude of $\bvarepsilon^p$.
+\begin{gather}
+\dot{q}=\sqrt{\dfrac{2}{3}}\norm{\dot{\bvarepsilon^p}}=\sqrt{\dfrac{2}{3}}\gamma.
+\end{gather}
+
+For isotropic hardening, $\sigma^y$ is defined as a general function of $q$,
+\begin{gather}
+\sigma^y=\sigma^y\left(q\right).
+\end{gather}
+
+For kinematic hardening, the evolution law of back stress $\balpha$ is defined to be
+\begin{gather}
+\dot{\balpha}=\sqrt{\dfrac{2}{3}}\dot{H}\bn.
+\end{gather}
+in which $H=H\left(q\right)$ is now a scalar--valued function of $q$ that controls the development of $\norm{\balpha}$, $\balpha$ always evolves towards $\bn$ by the amount $\dot{H}=H\left(q_{n+1}\right)-H\left(q_n\right)$ characterising the increment of $H$. The fraction $\sqrt{\dfrac{2}{3}}$ is introduced for consistent response as stated early. Since $\dot{\balpha}$ and $\bn$ are coaxial, $\balpha$ stays deviatoric but may not be coaxial with all $\bn$ through the loading process.
+\subsection{Formulation}
+The summation of the von Mises model is listed as follows.
+\begin{table}[ht]
+\centering
+\begin{tabular}{rl}
+\toprule
+Constitutive Law&$\bsigma=\mb{D}:\left(\bvarepsilon-\bvarepsilon^p\right)$\\
+Yield Function&$f=\norm{\beeta}-\sqrt{\dfrac{2}{3}}\sigma^y$\\
+Flow Rule&$\dot{\bvarepsilon^p}=\gamma\bn$\\
+Hardening Law&$\dot{q}=\sqrt{\dfrac{2}{3}}\gamma$\\
+&$\dot{\balpha}=\sqrt{\dfrac{2}{3}}\gamma\dot{H}\bn$\\\bottomrule
+\end{tabular}
+\end{table}
+\subsubsection{Elastic Loading/Unloading}
+The trial stress can be computed such as
+\begin{gather}\label{eq:j2_tsigma}
+\bsigma^\text{trial}=\mb{D}:\left(\bvarepsilon_{n+1}-\bvarepsilon^p_n\right)=\bsigma_n+\mb{D}:\left(\bvarepsilon_{n+1}-\bvarepsilon_n\right).
+\end{gather}
+In matrix representation, it is
+\begin{gather}
+\underbrace{
+\begin{bmatrix}
+\sigma^\text{trial}_{11}\\
+\sigma^\text{trial}_{22}\\
+\sigma^\text{trial}_{33}\\
+\sigma^\text{trial}_{12}\\
+\sigma^\text{trial}_{23}\\
+\sigma^\text{trial}_{31}
+\end{bmatrix}}_{\bsigma^\text{trial}}
+=
+\underbrace{\begin{bmatrix}
+\lambda+2G&\lambda&\lambda&\cdot&\cdot&\cdot\\
+\lambda&\lambda+2G&\lambda&\cdot&\cdot&\cdot\\
+\lambda&\lambda&\lambda+2G&\cdot&\cdot&\cdot\\
+\cdot&\cdot&\cdot&G&\cdot&\cdot\\
+\cdot&\cdot&\cdot&\cdot&G&\cdot\\
+\cdot&\cdot&\cdot&\cdot&\cdot&G
+\end{bmatrix}}_{\mb{D}}
+\underbrace{\left(\begin{bmatrix}
+\varepsilon_{11,n+1}\\
+\varepsilon_{22,n+1}\\
+\varepsilon_{33,n+1}\\
+     \gamma_{12,n+1}\\
+     \gamma_{23,n+1}\\
+     \gamma_{31,n+1}
+\end{bmatrix}-\begin{bmatrix}
+\varepsilon^p_{11,n}\\
+\varepsilon^p_{22,n}\\
+\varepsilon^p_{33,n}\\
+     \gamma^p_{12,n}\\
+     \gamma^p_{23,n}\\
+     \gamma^p_{31,n}
+\end{bmatrix}.
+\right)}_{\dot{\bvarepsilon_{n+1}}-\dot{\bvarepsilon^p_n}}
+\end{gather}
+Then $\beeta^\text{trial}=\dev{\bsigma^\text{trial}}-\balpha_n$, which gives trial yield function
+\begin{gather}\label{eq:j2_tf}
+f^\text{trial}=\norm{\beeta^\text{trial}}-\sqrt{\dfrac{2}{3}}\sigma^y_n
+\end{gather}
+with $\sigma^y_n=\sigma^y\left(q_n\right)$ evaluated with current $q_n$.
+\subsubsection{Plastic Evolution}
+By default, we present the formulation with the implicit Euler method.
+
+The yield function evaluated at the new state reads
+\begin{gather}\label{eq:j2_f}
+\begin{split}
+f&=\norm{\dev{\bsigma_{n+1}}-\balpha_{n+1}}-\sqrt{\dfrac{2}{3}}\sigma^y_{n+1}\\
+&=\norm{\dev{\bsigma^\text{trial}}-\gamma2G\bn-\balpha_n-\sqrt{\dfrac{2}{3}}\left(H_{n+1}-H_n\right)\bn}-\sqrt{\dfrac{2}{3}}\sigma^y_{n+1}\\
+&=\norm{\beeta^\text{trial}-\left(2G\gamma+\sqrt{\dfrac{2}{3}}\left(H_{n+1}-H_n\right)\right)\bn}-\sqrt{\dfrac{2}{3}}\sigma^y_{n+1}\\
+&=\norm{\beeta^\text{trial}}-\left(2G\gamma+\sqrt{\dfrac{2}{3}}\left(H_{n+1}-H_n\right)\right)-\sqrt{\dfrac{2}{3}}\sigma^y_{n+1},
+\end{split}
+\end{gather}
+given that it can be proved that $\beeta^\text{trial}$ and $\beeta$ are coaxial, following a similar derivation as shown previously.
+
+The Jacobian reads
+\begin{gather}
+\pdfrac{f}{\gamma}=-2G-\sqrt{\dfrac{2}{3}}\pdfrac{H_{n+1}}{q_{n+1}}\pdfrac{q_{n+1}}{\gamma}-\sqrt{\dfrac{2}{3}}\pdfrac{\sigma^y_{n+1}}{q_{n+1}}\pdfrac{q_{n+1}}{\gamma}.
+\end{gather}
+Since $q_{n+1}=q_n+\sqrt{\dfrac{2}{3}}\gamma$, $\pdfrac{q_{n+1}}{\gamma}=\sqrt{\dfrac{2}{3}}$. Hence,
+\begin{gather}\label{eq:j2_df}
+\pdfrac{f}{\gamma}=-2G-\dfrac{2}{3}\pdfrac{H_{n+1}}{q_{n+1}}-\dfrac{2}{3}\pdfrac{\sigma^y_{n+1}}{q_{n+1}}.
+\end{gather}
+\subsubsection{Consistent Tangent Stiffness}
+From $\bsigma_{n+1}=\bsigma^\text{trial}-\gamma2G\bn$, as $\bn=\dfrac{\beeta}{\norm{\beeta}}=\dfrac{\beeta^\text{trial}}{\norm{\beeta^\text{trial}}}$, the consistent tangent stiffness can be computed via the chain rule as
+\begin{gather}
+\pdfrac{\bsigma_{n+1}}{\bvarepsilon_{n+1}}=\pdfrac{\bsigma_{n+1}^\text{trial}}{\bvarepsilon_{n+1}}-2G\bn\otimes\pdfrac{\gamma}{\bvarepsilon_{n+1}}=\mb{D}-2G\left(\bn\otimes\pdfrac{\gamma}{\bvarepsilon_{n+1}}+\gamma\pdfrac{\bn}{\bvarepsilon_{n+1}}\right).
+\end{gather}
+In which, according to \eqsref{eq:unit_derivative},
+\begin{gather}
+\begin{split}
+\pdfrac{\bn}{\bvarepsilon_{n+1}}&=\dfrac{1}{\norm{\beeta^\text{trial}}}\left(\mathbb{I}-\bn\otimes\bn\right):\pdfrac{\mb{\beeta}^\text{trial}}{\bvarepsilon_{n+1}}\\
+&=\dfrac{2G}{\norm{\beeta^\text{trial}}}\left(\mathbb{I}-\bn\otimes\bn\right):\mathbb{I}^\text{dev}\\
+&=\dfrac{2G}{\norm{\beeta^\text{trial}}}\left(\mathbb{I}^\text{dev}-\bn\otimes\bn\right).
+\end{split}
+\end{gather}
+
+From converged local residual (yield function),
+\begin{gather}
+\begin{split}
+\pdfrac{\gamma}{\bvarepsilon_{n+1}}&=-\left(\pdfrac{f}{\gamma}\right)^{-1}\pdfrac{f}{\bvarepsilon_{n+1}}=-\left(\pdfrac{f}{\gamma}\right)^{-1}2G\bn.
+\end{split}
+\end{gather}
+
+Thus the final expression for consistent tangent stiffness can be assembled as
+\begin{gather}\label{eq:j2_stiffness}
+\begin{split}
+\pdfrac{\bsigma_{n+1}}{\bvarepsilon_{n+1}}&=\mb{D}-2G\left(-2G\left(\pdfrac{f}{\gamma}\right)^{-1}\bn\otimes\bn+\gamma\dfrac{2G}{\norm{\beeta^\text{trial}}}\left(\mathbb{I}^\text{dev}-\bn\otimes\bn\right)\right)\\
+&=\mb{D}+4G^2\left(\pdfrac{f}{\gamma}\right)^{-1}\bn\otimes\bn+\dfrac{4G^2\gamma}{\norm{\beeta^\text{trial}}}\left(\bn\otimes\bn-\mathbb{I}^\text{dev}\right)\\
+&=\mb{D}+4G^2\left(\left(\pdfrac{f}{\gamma}\right)^{-1}+\dfrac{\gamma}{\norm{\beeta^\text{trial}}}\right)\bn\otimes\bn-\dfrac{4G^2\gamma}{\norm{\beeta^\text{trial}}}\mathbb{I}^\text{dev}\\
+&=\mb{D}+4G^2\left(\dfrac{\gamma}{\norm{\beeta^\text{trial}}}-\dfrac{1}{2G+\dfrac{2}{3}\pdfrac{H_{n+1}}{q_{n+1}}+\dfrac{2}{3}\pdfrac{\sigma^y_{n+1}}{q_{n+1}}}\right)\bn\otimes\bn-\dfrac{4G^2\gamma}{\norm{\beeta^\text{trial}}}\mathbb{I}^\text{dev}.
+\end{split}
+\end{gather}
+It shall be noted that $\mathbb{I}^\text{dev}$ takes the form as presented in \eqsref{eq:dev_tensor_se}. Readers are strongly suggested to derive it via both tensor notation and compression matrix representation as a practice. Both leads to identical results.
+
+Since the local iteration is a scalar function, the closed--form of consistent tangent stiffness is relatively easy to compute. It will be seen in more complex models that closed--forms do not always possess simple forms.
+
+As a general framework, the above formulation does not require explicit forms of $H\left(q\right)$ and $\sigma^y\left(q\right)$. Thus, various types of scalar--valued functions can be adopted.
+\subsection{Implementation}
+The state determination algorithm of this general model incorporating von Mises criterion is given in \algoref{algo:j2_model}.
+\begin{breakablealgorithm}
+\caption{state determination of general von Mises model}\label{algo:j2_model}
+\begin{algorithmic}
+\State \textbf{Parameter}: $\lambda$, $G$
+\State \textbf{Input}: $\bvarepsilon_{n+1}$, $\bvarepsilon_n$, $\bvarepsilon^p_n$, $\bsigma_n$, $\balpha_n$, $q_n$
+\State \textbf{Output}: $\mb{D}_{n+1}$, $\bvarepsilon^p_{n+1}$, $\bsigma_{n+1}$, $\balpha_{n+1}$, $q_{n+1}$
+\State compute $\bsigma^\text{trial}$, $\beeta^\text{trial}$, $\bn$ and $f^\text{trial}$\Comment{\eqsref{eq:j2_tsigma} and \eqsref{eq:j2_tf}}
+\If {$f^\text{trial}\geqslant0$}
+\State $\gamma=0$
+\While{true}
+\State compute $f$ and $\pdfrac{f}{\gamma}$\Comment{\eqsref{eq:j2_f} and \eqsref{eq:j2_df}}
+\State update $\Delta{}H=H\left(q_{n+1}\right)-H\left(q_n\right)$
+\State $\Delta\gamma=\left(\pdfrac{f}{\gamma}\right)^{-1}f$
+\If {$\abs{\Delta\gamma}<\text{tolerance}$}
+\State break
+\EndIf
+\State $\gamma\leftarrow\gamma-\Delta\gamma$
+\State $q_{n+1}=q_n+\sqrt{\dfrac{2}{3}}\gamma$
+\EndWhile
+\State $\bsigma_{n+1}=\bsigma^\text{trial}-\gamma2G\bn$
+\State $\bvarepsilon^p_{n+1}=\bvarepsilon^p_n+\gamma\bn$
+\State $\balpha^p_{n+1}=\balpha^p_n+\sqrt{\dfrac{2}{3}}\Delta{}H\bn$
+\State compute $\mb{D}_{n+1}$\Comment{\eqsref{eq:j2_stiffness}}
+\Else
+\State $\bsigma_{n+1}=\bsigma^\text{trial}$
+\State $\bvarepsilon^p_{n+1}=\bvarepsilon^p_n$
+\State $\balpha^p_{n+1}=\balpha^p_n$
+\State $q_{n+1}=q_n$
+\State $\mb{D}_{n+1}=\mb{D}$
+\EndIf
+\end{algorithmic}
+\end{breakablealgorithm}
+It shall be noted that the algorithm does not implement $H\left(q\right)$ and $\sigma^y\left(q\right)$. It is assumed those two functions are defined somewhere else and are able to provide derivatives.
+\subsection{Closing Remarks}
+As the first 3D material model introduced, the von Mises framework allows beginners to get familiar with multiaxial constitutive modelling with a relatively smooth learning curve. The formulation is expressed in tensor notation. Readers are strongly encouraged to derive the formulation from three governing equations independently in both tensor and compressed matrix notions separately. It is a good practice to get each tiny detail correct.
+\begin{cppcode}
+int NonlinearJ2::update_trial_status(const vec& t_strain) {
+    incre_strain = (trial_strain = t_strain) - current_strain;
+
+    if(norm(incre_strain) <= tolerance) return SUANPAN_SUCCESS;
+
+    trial_stress = current_stress + (trial_stiffness = initial_stiffness) * incre_strain;
+
+    trial_history = current_history;
+    auto& plastic_strain = trial_history(0);
+    vec back_stress(&trial_history(1), 6, false, true);
+
+    const vec rel_stress = tensor::dev(trial_stress) - back_stress;
+    const auto norm_rel_stress = tensor::stress::norm(rel_stress);
+
+    auto yield_func = norm_rel_stress - root_two_third * std::max(0., compute_k(plastic_strain));
+
+    if(yield_func < 0.) return SUANPAN_SUCCESS;
+
+    const auto current_h = compute_h(plastic_strain);
+    auto gamma = 0., incre_h = 0., denom = 0.;
+    unsigned counter = 0;
+    while(++counter < max_iteration) {
+        denom = double_shear + two_third * (compute_dk(plastic_strain) + compute_dh(plastic_strain));
+        const auto incre_gamma = yield_func / denom;
+        const auto abs_error = fabs(incre_gamma);
+        suanpan_extra_debug("NonlinearJ2 local iteration error: %.5E.\n", abs_error);
+        if(abs_error <= tolerance) break;
+        incre_h = compute_h(plastic_strain = current_history(0) + root_two_third * (gamma += incre_gamma)) - current_h;
+        yield_func = norm_rel_stress - double_shear * gamma - root_two_third * (std::max(0., compute_k(plastic_strain)) + incre_h);
+    }
+
+    if(max_iteration == counter) {
+        suanpan_error("NonlinearJ2 cannot converge within %u iterations.\n", max_iteration);
+        return SUANPAN_FAIL;
+    }
+
+    back_stress += root_two_third * incre_h / norm_rel_stress * rel_stress;
+
+    auto t_factor = double_shear * gamma / norm_rel_stress;
+    trial_stress -= t_factor * rel_stress;
+
+    t_factor *= double_shear;
+    trial_stiffness += (t_factor - square_double_shear / denom) / norm_rel_stress / norm_rel_stress * rel_stress * rel_stress.t() - t_factor * unit_dev_tensor;
+
+    return SUANPAN_SUCCESS;
+}
+\end{cppcode}
+\section{Hoffman J2 Model}
+\subsection{Theory}
+\subsection{Formulation}
+\subsection{Implementation}
+\begin{cppcode}
+int NonlinearHoffman::update_trial_status(const vec& t_strain) {
+    incre_strain = (trial_strain = t_strain) - current_strain;
+
+    if(norm(incre_strain) <= tolerance) return SUANPAN_SUCCESS;
+
+    trial_stress = current_stress + (trial_stiffness = initial_stiffness) * incre_strain;
+
+    trial_history = current_history;
+    auto& plastic_strain = trial_history(0);
+    const auto& current_plastic_strain = current_history(0);
+
+    auto k = compute_k(plastic_strain);
+
+    auto residual = compute_yield_function(trial_stress) - k * k;
+
+    if(residual <= 0.) return SUANPAN_SUCCESS;
+
+    const vec e_strain = solve(initial_stiffness, trial_stress);
+
+    auto gamma = 0.;
+
+    double factor;
+
+    auto hessian = initial_stiffness;
+    auto t_stress = trial_stress;
+    vec n = proj_a * trial_stress + proj_b;
+    auto eta = root_two_third * tensor::strain::norm(n);
+    auto dk = compute_dk(plastic_strain);
+    auto gradient = dot(n, initial_stiffness * n) + (factor = 2. * k * dk * eta);
+
+    unsigned counter = 0;
+    while(++counter < max_iteration) {
+        const auto incre_gamma = residual / gradient;
+        const auto error = fabs(incre_gamma);
+        suanpan_extra_debug("Hoffman local iterative loop error: %.5E.\n", error);
+        if(error <= tolerance || fabs(residual) <= tolerance) break;
+        hessian = inv(inv_stiffness + (gamma += incre_gamma) * proj_a);
+        n = proj_a * (t_stress = hessian * (e_strain - gamma * proj_b)) + proj_b;
+        plastic_strain = current_plastic_strain + gamma * (eta = root_two_third * tensor::strain::norm(n));
+        k = compute_k(plastic_strain);
+        dk = compute_dk(plastic_strain);
+        residual = compute_yield_function(t_stress) - k * k;
+        gradient = dot(n, hessian * n) + (factor = 2. * k * dk * eta);
+    }
+
+    if(max_iteration == counter) {
+        suanpan_error("Hoffman cannot converge within %u iterations.\n", max_iteration);
+        return SUANPAN_FAIL;
+    }
+
+    trial_stress = t_stress;
+
+    const rowvec nts = (n.t() - four_third * k * dk * gamma / eta * (n % tensor::strain::norm_weight).t() * proj_a) * hessian;
+
+    trial_stiffness = hessian * (eye(6, 6) - n * nts / (dot(nts, n) + factor));
+
+    return SUANPAN_SUCCESS;
+}
+\end{cppcode}

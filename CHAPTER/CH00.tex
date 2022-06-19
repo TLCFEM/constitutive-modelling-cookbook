@@ -1,0 +1,324 @@
+\chapter{Tensor Basics}
+In engineering, often tensors are defined in Euclidean spaces and belong to Cartesian tensor (type). Transformation between covariant and contravariant bases, thus raising/lowering indices, is somehow not emphasised (but implied). The most likely reason is that, often orthonormal bases are used so that covariant and contravariant bases lead to the same coordinates. Thus, only subscripts ($i$, $j$, $k$, $l$, etc.) are used to represent tensor indices, implying that contravariant bases are used. Furthermore, scalars are denoted by normal symbols such as $A$ while vectors and tensors are not distinguished, all denoted by boldface symbols such as $\mb{A}$. 
+\section{Notations}
+Let $\mb{A}\in\mathbb{R}^2\times\mathbb{R}^2$ denote a second order tensor with contravariant bases $\mb{e}^1$ and $\mb{e}^2$. With that, $\mb{A}$ has four components that can be arranged in the following matrix.
+\begin{gather}\label{eq:matrix_tensor}
+\mb{A}=A_{ij}\mb{e}^i\otimes\mb{e}^j=\begin{bmatrix}
+A_{11}&A_{12}\\
+A_{21}&A_{22}
+\end{bmatrix}.
+\end{gather}
+The tensor notation of $\mb{A}$ is the notation with indices, which refers to coordinates $A_{ij}$. The matrix representation refers to the 2D matrix of size two. The operator $\otimes$ stands for tensor product which will be introduced later. In some literature, it is omitted for simplicity, resulting in
+\begin{gather}
+\mb{A}=A_{ij}\mb{e}^i\mb{e}^j.
+\end{gather}
+This notation will be used in this book. In this case, $\mb{e}^i\mb{e}^j$ does not represent the dot product of two vectors. Rather, the operator $\cdot$ shall be explicitly shown as $\mb{e}^i\cdot\mb{e}^j$ to avoid potential confusion.
+
+The Einstein summation convention is adopted, that is, in each single term, if the same index appears exactly twice, the summation of that term over all values of that index. In this example, $i,j=\{1,2\}$. Thus,
+\begin{gather}
+\mb{A}=A_{ij}\mb{e}^i\mb{e}^j=\sum_{i,j=1}^{2}A_{ij}\mb{e}^i\mb{e}^j=A_{11}\mb{e}^1\mb{e}^1+A_{12}\mb{e}^1\mb{e}^2+A_{21}\mb{e}^2\mb{e}^1+A_{22}\mb{e}^2\mb{e}^2.
+\end{gather}
+Since indices only act as placeholders, it does not matter which symbol is used. The following expressions are equivalent.
+\begin{gather}
+\mb{A}=A_{ij}\mb{e}^i\mb{e}^j=A_{ik}\mb{e}^i\mb{e}^k=A_{ji}\mb{e}^j\mb{e}^i=A_{jk}\mb{e}^j\mb{e}^k=A_{ki}\mb{e}^k\mb{e}^i=A_{kj}\mb{e}^k\mb{e}^j.
+\end{gather}
+But it is not equivalent to
+\begin{gather}
+\mb{A}\neq{}A_{ii}\mb{e}^i\mb{e}^i=A_{jj}\mb{e}^j\mb{e}^j=A_{kk}\mb{e}^k\mb{e}^k.
+\end{gather}
+
+If $\mb{A}$ represents a symmetric stress tensor $\mb{\sigma}$, it can be expressed in both matrix and vector representations such as
+\begin{gather}
+\mb{\sigma}=\sigma_{ij}\mb{e}^i\mb{e}^j=\begin{bmatrix}
+\sigma_{11}&\sigma_{12}\\
+\sigma_{21}&\sigma_{22}
+\end{bmatrix}=\begin{bmatrix}
+\sigma_x&\tau_{xy}\\
+\tau_{xy}&\sigma_y
+\end{bmatrix}\quad\text{matrix representation},\\
+\mb{\sigma}=\begin{bmatrix}
+\sigma_x\\\sigma_y\\\tau_{xy}
+\end{bmatrix}=\begin{bmatrix}
+\sigma_{11}\\\sigma_{22}\\\sigma_{12}=\sigma_{21}
+\end{bmatrix}\quad\text{Voigt notation},\\
+\mb{\sigma}=\begin{bmatrix}
+\sigma_x\\\sigma_y\\\sqrt{2}\tau_{xy}
+\end{bmatrix}=\begin{bmatrix}
+\sigma_{11}\\\sigma_{22}\\\sqrt{2}\sigma_{12}=\sqrt{2}\sigma_{21}
+\end{bmatrix}\quad\text{Mandel notation}.
+\end{gather}
+Readers shall be familiar with the Voigt notation as it is widely used due to simplicity. The Mandel notation is an alternative that provides convenience when it comes to some tensor algebra operations. Examples will be shown later. It shall be noted that different vector/matrix representations of a tensor may have different components.
+
+If $\mb{A}$ represents a symmetric strain tensor $\mb{\varepsilon}$, then its matrix and vector representations are
+\begin{gather}
+\mb{\varepsilon}=\varepsilon_{ij}\mb{e}^i\mb{e}^j=\begin{bmatrix}
+\varepsilon_{11}&\varepsilon_{12}\\
+\varepsilon_{21}&\varepsilon_{22}
+\end{bmatrix}=\begin{bmatrix}
+\varepsilon_x&\dfrac{1}{2}\gamma_{xy}\\
+\dfrac{1}{2}\gamma_{xy}&\varepsilon_y
+\end{bmatrix}\quad\text{matrix representation},\\
+\mb{\varepsilon}=\begin{bmatrix}
+\varepsilon_x\\\varepsilon_y\\\gamma_{xy}
+\end{bmatrix}=\begin{bmatrix}
+\varepsilon_{11}\\\varepsilon_{22}\\2\varepsilon_{12}=2\varepsilon_{21}
+\end{bmatrix}\quad\text{Voigt notation},\\
+\mb{\varepsilon}=\begin{bmatrix}
+\varepsilon_x\\\varepsilon_y\\\dfrac{\sqrt{2}}{2}\gamma_{xy}
+\end{bmatrix}=\begin{bmatrix}
+\varepsilon_{11}\\\varepsilon_{22}\\\sqrt{2}\varepsilon_{12}=\sqrt{2}\varepsilon_{21}
+\end{bmatrix}\quad\text{Mandel notation}.
+\end{gather}
+In above, $\gamma_{xy}=2\varepsilon_{12}=2\varepsilon_{21}$ is commonly known as the engineering shear strain.
+
+\cite{Helnwein2001} presents a great discussion on compressed matrix representation covering both second order and fourth order tensors.
+\section{Tensor Operations}
+\subsection{Tensor Product}
+\subsubsection{Definition}
+The tensor product is also called dyadic product, which is an operation to construct high order tensor from low order tensors. Let $\mb{A}=A_i\mb{e}^i$ and $\mb{B}=B_i\mb{e}^i$ be two first order tensors (vectors), then tensor product of $\mb{A}$ and $\mb{B}$ gives a second order tensor $\mb{C}$
+\begin{gather}
+\mb{C}=\mb{A}\otimes\mb{B}=A_i\mb{e}^i\otimes{}B_j\mb{e}^j=A_iB_j\mb{e}^i\otimes{}\mb{e}^j=C_{ij}\mb{e}^i\otimes{}\mb{e}^j.
+\end{gather}
+The simplified notation can also be adopted
+\begin{gather}\label{eq:1st_tensor_product}
+\mb{C}=\mb{A}\mb{B}=A_i\mb{e}^iB_j\mb{e}^j=A_iB_j\mb{e}^i\mb{e}^j=C_{ij}\mb{e}^i\mb{e}^j.
+\end{gather}
+The components of $\mb{C}$ can be expressed as
+\begin{gather}
+C_{ij}=A_{i}B_{j}.
+\end{gather}
+
+If $\mb{A}=A_{ij}\mb{e}^i\mb{e}^j$ and $\mb{B}=B_{ij}\mb{e}^i\mb{e}^j$ are two second order tensors, then the result is a fourth order tensor
+\begin{gather}\label{eq:2nd_tensor_product}
+\mb{C}=\mb{A}\mb{B}=A_{ij}\mb{e}^i\mb{e}^jB_{kl}\mb{e}^k\mb{e}^l=A_{ij}B_{kl}\mb{e}^i\mb{e}^j\mb{e}^k\mb{e}^l=C_{ijkl}\mb{e}^i\mb{e}^j\mb{e}^k\mb{e}^l
+\end{gather}
+with components $C_{ijkl}=A_{ij}B_{kl}$. If both $\mb{A}$ and $\mb{B}$ are symmetric tensors, then $\mb{C}$ possesses major symmetry
+\begin{gather}
+C_{ijkl}=C_{klij}
+\end{gather}
+and minor symmetry
+\begin{gather}
+C_{ijkl}=C_{jikl}=C_{ijlk}.
+\end{gather}
+\subsubsection{Vector/Matrix Representation}
+Let $\mb{A}=A_i\mb{e}^i\in\mathbb{R}^2$ and $\mb{B}=B_i\mb{e}^i\in\mathbb{R}^2$ be two first order tensors. Their column vector representations can be expressed as
+\begin{gather}
+\mb{A}=A_i\mb{e}^i=\begin{bmatrix}
+A_1&A_2
+\end{bmatrix}^\mT,\qquad
+\mb{B}=B_i\mb{e}^i=\begin{bmatrix}
+B_1&B_2
+\end{bmatrix}^\mT.
+\end{gather}
+The tensor product \eqsref{eq:1st_tensor_product} gives a second order tensor $\mb{C}\in\mathbb{R}^2\times\mathbb{R}^2$ that can be represented by a matrix as shown in \eqsref{eq:matrix_tensor}, which is
+\begin{gather}
+\mb{C}=C_{ij}\mb{e}^i\mb{e}^j=\begin{bmatrix}
+C_{11}&C_{12}\\
+C_{21}&C_{22}
+\end{bmatrix}=\begin{bmatrix}
+A_1B_1&A_1B_2\\
+A_2B_1&A_2B_2
+\end{bmatrix}.
+\end{gather}
+Now if tensor $\mb{C}$ is treated as a matrix while tensors $\mb{A}$ and $\mb{B}$ are treated as column vectors, the tensor product is exactly the outer product between $\mb{A}$ and $\mb{B}$. That is,
+\begin{gather}\label{eq:tensor_product}
+\underbrace{\mb{C}=\mb{A}\otimes\mb{B}=\mb{A}\mb{B}}_\text{tensor product between tensors}\qquad\longleftrightarrow\qquad\underbrace{\mb{C}=\mb{A}\mb{B}^\mT.}_\text{{vector/matrix representation}}
+\end{gather}
+
+Now let $\mb{A}=A_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ and $\mb{B}=B_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ be two symmetric second order \textbf{stress} tensors, adopting the Voigt notation, their column vector representation can be shown as
+\begin{gather}
+\mb{A}=A_{ij}\mb{e}^i\mb{e}^j=\begin{bmatrix}
+A_{11}&A_{22}&A_{33}&A_{12}&A_{23}&A_{31}
+\end{bmatrix}^\mT,\\
+\mb{B}=B_{ij}\mb{e}^i\mb{e}^j=\begin{bmatrix}
+B_{11}&B_{22}&B_{33}&B_{12}&B_{23}&B_{31}
+\end{bmatrix}^\mT.
+\end{gather}
+The tensor product \eqsref{eq:2nd_tensor_product} between $\mb{A}$ and $\mb{B}$ gives the fourth order tensor $\mb{C}\in\mathbb{R}^3\times\mathbb{R}^3\times\mathbb{R}^3\times\mathbb{R}^3$ which can be arranged in a 2D matrix accounting for both major and minor symmetries.
+\begin{gather}
+\mb{C}=C_{ijkl}\mb{e}^i\mb{e}^j\mb{e}^k\mb{e}^l=\begin{bmatrix}
+C_{1111}&C_{1122}&C_{1133}&C_{1112}&C_{1123}&C_{1131}\\
+C_{2211}&C_{2222}&C_{2233}&C_{2212}&C_{2223}&C_{2231}\\
+C_{3311}&C_{3322}&C_{3333}&C_{3312}&C_{3323}&C_{3331}\\
+C_{1211}&C_{1222}&C_{1233}&C_{1212}&C_{1223}&C_{1231}\\
+C_{2311}&C_{2322}&C_{2333}&C_{2312}&C_{2323}&C_{2331}\\
+C_{3111}&C_{3122}&C_{3133}&C_{3112}&C_{3123}&C_{3131}
+\end{bmatrix}.
+\end{gather}
+It can be observed \eqsref{eq:tensor_product} still applies since $C_{ijkl}=A_{ij}B_{kl}$. It is thus convenient to adopt the Voigt notation to perform tensor product between stress tensors.
+
+However, if $\mb{A}$ and $\mb{B}$ are \textbf{strain} tensors, the Voigt notation leads to the following result of the outer product
+\begin{gather}
+\hat{\mb{C}}=\begin{bmatrix}
+C_{1111}&C_{1122}&C_{1133}&2C_{1112}&2C_{1123}&2C_{1131}\\
+C_{2211}&C_{2222}&C_{2233}&2C_{2212}&2C_{2223}&2C_{2231}\\
+C_{3311}&C_{3322}&C_{3333}&2C_{3312}&2C_{3323}&2C_{3331}\\
+2C_{1211}&2C_{1222}&2C_{1233}&4C_{1212}&4C_{1223}&4C_{1231}\\
+2C_{2311}&2C_{2322}&2C_{2333}&4C_{2312}&4C_{2323}&4C_{2331}\\
+2C_{3111}&2C_{3122}&2C_{3133}&4C_{3112}&4C_{3123}&4C_{3131}
+\end{bmatrix}.
+\end{gather}
+Fundamentally, different base tensors are used for stress tensors (contravariant) and strain tensors (covariant).
+
+With the compressed matrix representations, one must be clear about such difference and apply proper scaling vectors/matrices when necessary.
+\subsection{Double Contraction}
+\subsubsection{Definition}
+The double contraction, also known as the double dot product, is a tensor operation to construct low order tensors from high order tensors. Let $\mb{A}=A_i\mb{e}^i$ and $\mb{B}=B_i\mb{e}^i$ be two first order tensors (vectors), then dot product of $\mb{A}$ and $\mb{B}$ gives a zeroth order tensor (scalar) $C$ as
+\begin{gather}
+C=\mb{A}\cdot\mb{B}=A_i\mb{e}^i\cdot{}B_j\mb{e}^j=A_iB_j\mb{e}^i\cdot\mb{e}^j=\delta_{ij}A_iB_j=A_iB_i,
+\end{gather}
+where $\delta_{ij}$ is the Kronecker delta which equals \num{1} if $i=j$ or \num{0} otherwise.
+
+If $\mb{A}=A_{ij}\mb{e}^i\mb{e}^j$ and $\mb{B}=B_{ij}\mb{e}^i\mb{e}^j$ are two second order tensors, then the double contraction performs dot product twice on different indices, resulting in a zeroth order tensor (scalar) as
+\begin{gather}\label{eq:double_contraction}
+\begin{split}
+C&=\mb{A}:\mb{B}=A_{ij}\mb{e}^i\mb{e}^j:B_{kl}\mb{e}^k\mb{e}^l=A_{ij}B_{kl}(\mb{e}^i\cdot\mb{e}^k)(\mb{e}^j\cdot\mb{e}^l)\\&=\delta_{ik}\delta_{jl}A_{ij}B_{kl}=A_{ij}B_{ij}.
+\end{split}
+\end{gather}
+\subsubsection{Vector/Matrix Representation}
+Let $\mb{A}=A_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ and $\mb{B}=B_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ be two symmetric second order \textbf{stress} tensors. According to \eqsref{eq:double_contraction}, the double contraction of two gives
+\begin{multline}
+C=\mb{A}:\mb{B}=A_{ij}B_{ij}=A_{11}B_{11}+A_{22}B_{22}+A_{33}B_{33}\\+A_{12}B_{12}+A_{13}B_{13}+A_{21}B_{21}+A_{23}B_{23}+A_{31}B_{31}+A_{32}B_{32}.
+\end{multline}
+It can be expressed via column vector representations (in the Voigt notation) of $\mb{A}$ and $\mb{B}$ as
+\begin{gather}
+C=\mb{A}^\mT\mb{S}\mb{B}=\begin{bmatrix}
+A_{11}&A_{22}&A_{33}&A_{12}&A_{23}&A_{31}
+\end{bmatrix}
+\begin{bmatrix}
+1&&&&&\\
+&1&&&&\\
+&&1&&&\\
+&&&2&&\\
+&&&&2&\\
+&&&&&2
+\end{bmatrix}
+\begin{bmatrix}
+B_{11}\\B_{22}\\B_{33}\\B_{12}\\B_{23}\\B_{31}
+\end{bmatrix}.
+\end{gather}
+Its derivative reads
+\begin{gather}
+\pdfrac{C}{\mb{A}}=\mb{B}^\mT\mb{S},\qquad
+\pdfrac{C}{\mb{B}}=\mb{A}^\mT\mb{S}.
+\end{gather}
+
+However, if the Mandel notation is adopted, it is simply
+\begin{gather}
+C=\mb{A}^\mT\mb{B}=\begin{bmatrix}
+A_{11}&A_{22}&A_{33}&\sqrt{2}A_{12}&\sqrt{2}A_{23}&\sqrt{2}A_{31}
+\end{bmatrix}
+\begin{bmatrix}
+B_{11}\\B_{22}\\B_{33}\\\sqrt{2}B_{12}\\\sqrt{2}B_{23}\\\sqrt{2}B_{31}
+\end{bmatrix}.
+\end{gather}
+
+If $\mb{A}$ and $\mb{B}$ represent \textbf{strain} tensors, a similar expression can be obtained with a different scaling matrix $\mb{S}$ using the Voigt notation.
+\begin{gather}
+\mb{S}=\diag{
+\begin{matrix}
+1&1&1&\dfrac{1}{2}&\dfrac{1}{2}&\dfrac{1}{2}
+\end{matrix}}.
+\end{gather}
+With the Mandel notation, again no additional scaling matrix is required, $C=\mb{A}^\mT\mb{B}$.
+
+The Mandel notation is constructed on top of orthonormal basis of second order tensors. The advantage in obvious: there is no need to handle covariant and contravariant representations. However, it is not widely used as its physical meaning is not that obvious. In this book, the Voigt notation is used by default.
+\section{Stress Tensor Norm}
+The double contraction between a second order tensor $\mb{A}$ and itself results in a scalar that can be used to characterise the norm of $\mb{A}$. In this sense, double contraction of second order tensors can be deemed as an equivalent version of dot product of vectors.
+
+Let $\mb{\sigma}\in\mathbb{R}^3\times\mathbb{R}^3$ denote the symmetric stress tensor, define its Euclidean norm as
+\begin{gather}
+\begin{split}
+\norm{\mb{\sigma}}&=\sqrt{\mb{\sigma}:\mb{\sigma}}\\
+&=\sqrt{\sigma_{11}^2+\sigma_{22}^2+\sigma_{33}^2+2\sigma_{12}^2+2\sigma_{23}^2+2\sigma_{31}^2}.
+\end{split}
+\end{gather}
+Accordingly, its normalised version
+\begin{gather}
+\mb{n}=\dfrac{\mb{\sigma}}{\norm{\mb{\sigma}}}.
+\end{gather}
+
+The derivative of $\norm{\mb{\sigma}}$ can be computed accordingly via the chain rule.
+\begin{gather}\label{eq:norm_derivative}
+\ddfrac{\norm{\mb{\sigma}}}{\mb{\sigma}}=\dfrac{1}{2}\dfrac{2\mb{\sigma}:\mathbb{I}}{\norm{\mb{\sigma}}}=\mb{n}\qquad\text{in tensor notation},
+\end{gather}
+where $\mathbb{I}$ is the fourth order identity tensor. It shall be noted \eqsref{eq:norm_derivative} is shown in tensor notation. For column vector representation in the Voigt notation, it shall be expressed as
+\begin{gather}\label{eq:norm_derivative2}
+\begin{split}
+\ddfrac{\norm{\mb{\sigma}}}{\mb{\sigma}}&=\dfrac{1}{2}\dfrac{1}{\norm{\mb{\sigma}}}\begin{bmatrix}
+2\sigma_{11}&2\sigma_{22}&2\sigma_{33}&4\sigma_{12}&4\sigma_{23}&4\sigma_{31}
+\end{bmatrix}\\
+&=\left(\dfrac{\mb{\sigma}}{\norm{\mb{\sigma}}}\right)^\mT\diag{\begin{pmatrix}
+1&1&1&2&2&2
+\end{pmatrix}}\\
+&=\dfrac{1}{\norm{\mb{\sigma}}}\begin{bmatrix}
+\sigma_{11}&\sigma_{22}&\sigma_{33}&\sigma_{12}&\sigma_{23}&\sigma_{31}
+\end{bmatrix}\begin{bmatrix}
+1&&&&&\\
+&1&&&&\\
+&&1&&&\\
+&&&2&&\\
+&&&&2&\\
+&&&&&2
+\end{bmatrix}.
+\end{split}
+\end{gather}
+It is clear that with the Voigt notation, the vector/matrix representation differs from the corresponding tensor representation. However, with the Mandel notation,
+\begin{gather}
+\ddfrac{\norm{\mb{\sigma}}}{\mb{\sigma}}=\dfrac{1}{\norm{\mb{\sigma}}}\begin{bmatrix}
+\sigma_{11}&\sigma_{22}&\sigma_{33}&\sqrt{2}\sigma_{12}&\sqrt{2}\sigma_{23}&\sqrt{2}\sigma_{31}
+\end{bmatrix},
+\end{gather}
+which matches the tensor notation.
+
+Now we proceed to compute the derivative of $\mb{n}$ with respect to $\mb{\sigma}$.
+\begin{gather}
+\ddfrac{\mb{n}}{\mb{\sigma}}
+=\dfrac{\ddfrac{\mb{\sigma}}{\mb{\sigma}}\norm{\mb{\sigma}}-\mb{\sigma}\ddfrac{\norm{\mb{\sigma}}}{\mb{\sigma}}}{\norm{\mb{\sigma}}^2}
+=\dfrac{1}{\norm{\mb{\sigma}}}\left(\mathbb{I}-\mb{n}\otimes\mb{n}\right)\qquad\text{in tensor notation}.
+\end{gather}
+
+With the Voigt notation, it can be computed as follows.
+\begin{small}
+\begin{gather}
+\ddfrac{\mb{n}}{\mb{\sigma}}=
+\dfrac{1}{\norm{\mb{\sigma}}}\diag{
+\begin{matrix}
+1\\1\\1\\1\\1\\1
+\end{matrix}}-
+\dfrac{1}{\norm{\mb{\sigma}}^3}
+\begin{bmatrix}
+\sigma_{11}^{2}&\sigma_{11}\sigma_{22}&\sigma_{11}\sigma_{33}&2\sigma_{11}\sigma_{12}&2\sigma_{11}\sigma_{23}&2\sigma_{11}\sigma_{31}\\
+\sigma_{11}\sigma_{22}&\sigma_{22}^{2}&\sigma_{22}\sigma_{33}&2\sigma_{12}\sigma_{22}&2\sigma_{22}\sigma_{23}&2\sigma_{22}\sigma_{31}\\
+\sigma_{11}\sigma_{33}&\sigma_{22}\sigma_{33}&\sigma_{33}^{2}&2\sigma_{12}\sigma_{33}&2\sigma_{23}\sigma_{33}&2\sigma_{31}\sigma_{33}\\
+\sigma_{11}\sigma_{12}&\sigma_{12}\sigma_{22}&\sigma_{12}\sigma_{33}&2\sigma_{12}^{2}&2\sigma_{12}\sigma_{23}&2\sigma_{12}\sigma_{31}\\
+\sigma_{11}\sigma_{23}&\sigma_{22}\sigma_{23}&\sigma_{23}\sigma_{33}&2\sigma_{12}\sigma_{23}&2\sigma_{23}^{2}&2\sigma_{23}\sigma_{31}\\
+\sigma_{11}\sigma_{31}&\sigma_{22}\sigma_{31}&\sigma_{31}\sigma_{33}&2\sigma_{12}\sigma_{31}&2\sigma_{23}\sigma_{31}&2\sigma_{31}^{2}
+\end{bmatrix}.
+\end{gather}
+\end{small}
+It is essentially
+\begin{gather}
+\ddfrac{\mb{n}}{\mb{\sigma}}=
+\dfrac{1}{\norm{\mb{\sigma}}}\left(\mb{I}-\mb{n}\mb{n}^\mT
+\begin{bmatrix}
+1&&&&&\\
+&1&&&&\\
+&&1&&&\\
+&&&2&&\\
+&&&&2&\\
+&&&&&2
+\end{bmatrix}\right),
+\end{gather}
+where $\mb{I}$ is the identity matrix of size \num{6}.
+\section{Tensor Function of Stress Tensors}
+Some tensor--valued functions of stress tensors are frequently used in the analysis of plasticity. Let $\mb{\beta}=f\left(\mb{\sigma},\mb{\alpha}\right)$ denote a tensor-valued function of the stress tensor $\mb{\sigma}$ and some other tensors denoted by $\mb{\alpha}$. Let the tensor--valued function $\mb{\gamma}=g\left(\mb{\beta}\right)$ be the normalised version of $\mb{\beta}$, that is
+\begin{gather}
+\mb{\gamma}=\dfrac{\mb{\beta}}{\norm{\mb{\beta}}}=\dfrac{\mb{\beta}}{\sqrt{\mb{\beta}:\mb{\beta}}}.
+\end{gather}
+The partial derivative can be expressed as
+\begin{gather}\label{eq:unit_derivative}
+\pdfrac{\mb{\gamma}}{}=\pdfrac{\mb{\gamma}}{\mb{\beta}}:\pdfrac{\mb{\beta}}{}=\dfrac{1}{\norm{\mb{\beta}}}\left(\mathbb{I}-\bgamma\otimes\bgamma\right):\pdfrac{\mb{\beta}}{}\qquad\text{in tensor notation}.
+\end{gather}
+
+Depending on the form of $\mb{\beta}$, the compressed vector/matrix representation would differ. This will be dealt in specific context.

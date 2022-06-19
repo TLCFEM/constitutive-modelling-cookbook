@@ -1,0 +1,51 @@
+\chapter{Preface}
+Most books/papers present constitutive models analytically, leaving the implementation to readers to address.
+
+This book aims to provide practical guidance to numerical implementation of plasticity models.
+
+Readers are expected to have undergraduate level background of linear algebra, numerical analysis, elasticity and some programming knowledge.
+\section{Overview}
+The book presents a collection of constitutive models covering both uniaxial and triaxial and a wide range of common materials used in engineering. The implementation details are derived for each model.
+
+The ultimate target is to provide an easy--to--follow, error and confusion free reference for readers who are interested in implementing constitutive models under the modern plasticity framework.
+
+However, a wide range of different constitutive models are covered in this book, not only formulations but also implementations, some of which are very lengthy. There are a huge amount of symbols and formulae.
+\section{Implementation}
+For scientific computation that involves a significant amount of linear algebra operations, in my opinion, operator overloading is essential. Lengthy implementation is almost inevitable if the language does not support operator overloading. In this sense, account for performance, C++ is perhaps the first choice. However, Rust may be another candidate in the future.
+
+Python and MATLAB, in the author's opinion, are ideal for experimenting. Due to performance related issues, they are not ready for production development.
+
+For models only involve scalar operations, such as most uniaxial models, C/Fortran can be equivalently chosen. All variables can be grouped into structs and a typical state determination interface in C may look like this.
+\begin{cppcode}
+struct State
+{
+    double strain;
+    double stress;
+    double stiffness;
+    // more history variables
+    double elastic_modulus;
+    // more model constants and parameters
+};
+
+int update_state(const struct State *const current, struct State *const trial){
+    // update trial state
+    trial->stress = 2.;
+
+    return 0;
+}
+
+int main()
+{
+    struct State current, trial;
+
+    // set trial strain
+    trial.strain = 1.;
+    // call state determination
+    int err = update_state(&current, &trial);
+    // handle error
+}
+\end{cppcode}
+
+In all the state determination algorithms presented in this book, by default it is assumed all local iteraions eventually converge. Thus the handling of failure of convergence is not presented for brevity. One shall always bear in mind that not all algorithms converge, and for robust, practical algorithms, more numerical processes are required.
+\section{Digest}
+As the title indicates, this book is drafted as a reference book on constitutive modelling, it shall be self--complete in terms of theoretical part. For practical implementation, algorithms in pseudo code are given for most models. Core CPP implementations are also provided as references/comparisons for readers who are familiar with CPP and scientific computation with relevant tools. The code snippets are taken from the implementations from \texttt{suanPan} \cite{Chang2022}. In this regard, this book can also be used as the program manual.

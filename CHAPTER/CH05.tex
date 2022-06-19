@@ -1,0 +1,674 @@
+\chapter{Concrete}
+\section{Concrete Damage Plasticity Model}
+In this section, the concrete damage plasticity model proposed by \cite{Lee1998} is presented. A slight different version (with Lode angle dependency and others) is implemented in ABAQUS.
+
+The CDP model follows Lemaitre's damage theory \cite{Lemaitre1985} and is developed under the assumption of isotropic damage. Accordingly, the final stress $\bsigma$ can be expressed as the product of the effective stress $\bar{\bsigma}$ and some function of damage measure.
+\begin{gather}
+\bsigma=h\left(d_t,d_c\right)\bar{\bsigma},
+\end{gather}
+where $h\left(d_t,d_c\right)$ is a function of two damage variables $d_t$ and $d_c$, which depend on some internal history variables.
+
+The effective part $\bar{\bsigma}$ fully resembles the conventional plasticity. Thus $h\left(d_t,d_c\right)$ and $\bar{\bsigma}$ can be handled in a relatively independent manner.
+\subsection{Plasticity Theory}
+\subsubsection{Yield Function}
+The yield function is defined as
+\begin{gather}
+f=\alpha\bar{I}_1+\sqrt{\dfrac{3}{2}}\norm{\bar{\bs}}+\beta\left\langle\bar{\sigma}_1\right\rangle-\left(1-\alpha\right)c_c,
+\end{gather}
+with $\bar{I}_1=\tr{\bar{\bsigma}}$ is the first invariant of effective stress tensor $\bar{\bsigma}$, $\hat{\sigma}_1$ is the major effective principal stress, $c_c=-\bar{f}_c$ denotes cohesion and $\beta=\dfrac{\bar{f}_c}{\bar{f}_t}(\alpha-1)-(\alpha+1)$. The effective backbone stresses (both positive) $\bar{f}_c$ and $\bar{f}_t$ will be defined later.
+\subsubsection{Flow Rule}
+The flow potential $g$ is chosen to be
+\begin{gather}
+g=\sqrt{2\bar{J}_2}+\alpha_p\bar{I}_1=\norm{\bar{\bs}}+\tr{\alpha_p\bar{\bsigma}}.
+\end{gather}
+The flow rule is accordingly defined as
+\begin{gather}
+\dot{\bvarepsilon^p}=\gamma\pdfrac{g}{\bar{\bsigma}}=\gamma\left(\dfrac{\bar{\bs}}{\norm{\bar{\bs}}}+\alpha_p\mb{1}\right)=\gamma\left(\bn+\alpha_p\mb{1}\right).
+\end{gather}
+In deviatoric and spherical components,
+\begin{gather}
+\dot{\bvarepsilon^{d,p}}=\gamma\bn,\quad\dot{\varepsilon^{v,p}}=\gamma3\alpha_p.
+\end{gather}
+
+Noting that
+\begin{gather}
+\bar{\bs}=\bar{\bs}^\text{trial}-2G\dot{\bvarepsilon^{d,p}}=\bar{\bs}^\text{trial}-\gamma2G\bn,\\
+\bar{p}=\bar{p}^\text{trial}-K\dot{\varepsilon^{v,p}}=\bar{p}^\text{trial}-\gamma3K\alpha_p,
+\end{gather}
+equivalently,
+\begin{gather}
+\norm{\bar{\bs}}+\gamma2G=\norm{\bar{\bs}^\text{trial}},\\
+\bar{I}_1+\gamma9K\alpha_p=\bar{I}_1^\text{trial}.
+\end{gather}
+Furthermore, $\bs$ and $\bs^\text{trial}$ are coaxial, thus,
+\begin{gather}
+\dfrac{\bar{\bs}}{\norm{\bar{\bs}}}=\dfrac{\bar{\bs}^\text{trial}}{\norm{\bar{\bs}^\text{trial}}}\equiv{}\bn.
+\end{gather}
+It simply means the flow direction is fixed for all iterations in each sub-step. And due to the coaxiality, $\bar{\bs}$ and $\bar{\bs}^\text{trial}$ share the same eigen space. More importantly, the eigenvectors remain constant for each iteration. Thus,
+\begin{gather}
+\dfrac{\bar{\bs}}{\norm{\bar{\bs}}}=\dfrac{\bar{\bs}^\text{trial}}{\norm{\bar{\bs}^\text{trial}}},\qquad
+\dfrac{\hat{\bs}}{\norm{\hat{\bs}}}=\dfrac{\hat{\bs}^\text{trial}}{\norm{\hat{\bs}^\text{trial}}},
+\end{gather}
+where $\hat{\bs}$ denotes the principal stress tensor of the deviatoric stress tensor $\bar{\bs}$. As the yield function $f$ can be equivalently expressed with the principal stresses, in the following derivation, $\hat{\bn}$ is used to represent the unit principal deviatoric stress which has three components. The transformation matrix $\mb{T}$ is defined as
+\begin{gather}
+\underbrace{\hat{\bsigma}}_\text{\numproduct{3x1}}=\underbrace{\mb{T}}_\text{\numproduct{3x6}}\underbrace{\bar{\bsigma}}_\text{\numproduct{6x1}},\qquad
+\underbrace{\hat{\bs}}_\text{\numproduct{3x1}}=\underbrace{\mb{T}}_\text{\numproduct{3x6}}\underbrace{\bar{\bs}}_\text{\numproduct{6x1}},
+\end{gather}
+and can be formulated from eigenanalysis.
+\subsubsection{Hardening Law}
+Since concrete shows different behaviour under compression and tension, the subscript $\left(\cdot\right)_\aleph$ is used to denoted either tension $\left(\cdot\right)_t$ or compression $\left(\cdot\right)_c$.
+
+Internal hardening parameters $\kappa_\aleph$ shall satisfy the following expression,
+\begin{gather}
+\dot{\kappa_\aleph}=\gamma{}H_\aleph,
+\end{gather}
+where $H_\aleph$ defines the hardening law. Different $H_\aleph$ shall be used for compression/tension.
+\begin{gather}
+H_t=r\dfrac{f_t}{g_t}\left(\hat{n}_1+\alpha_p\right),\\
+H_c=\left(1-r\right)\dfrac{f_c}{g_c}\left(\hat{n}_3+\alpha_p\right).
+\end{gather}
+In which $\hat{n}_1$ and $\hat{n}_3$ denotes the maximum and minimum components in $\hat{\bn}$ and $r$ is a scalar valued function of the effective principal stress. In the original model, it is defined as
+\begin{gather}
+r\left(\hat{\bsigma}\right)=\dfrac{\left\langle\hat{\sigma}_1\right\rangle+\left\langle\hat{\sigma}_2\right\rangle+\left\langle\hat{\sigma}_3\right\rangle}{\abs{\hat{\sigma}_1}+\abs{\hat{\sigma}_2}+\abs{\hat{\sigma}_3}}.
+\end{gather}
+The purpose of $r$ is to characterise the proportion of tension in a multiaxial loading case.
+\subsubsection{Backbone Curve}
+The backbone curve $f_\aleph$ is related to the internal parameter $\kappa_\aleph$.
+\begin{gather*}
+f_\aleph=f_{\aleph,0}\sqrt{\phi_\aleph}\Phi_\aleph,
+\end{gather*}
+with
+\begin{gather*}
+\phi_\aleph=1+a_\aleph\left(2+a_\aleph\right)\kappa_\aleph,\qquad
+\Phi_\aleph=\dfrac{1+a_\aleph-\sqrt{\phi_\aleph}}{a_\aleph}.
+\end{gather*}
+
+The effective counterpart $\bar{f}_\aleph$ is defined as
+\begin{gather*}
+\bar{f}_\aleph=\dfrac{f_\aleph}{1-d_\aleph}=f_{\aleph,0}\sqrt{\phi_\aleph}\Phi_\aleph^{1-c_\aleph/b_\aleph},
+\end{gather*}
+with
+\begin{gather*}
+d_\aleph=1-\Phi_\aleph^{c_\aleph/b_\aleph}.
+\end{gather*}
+
+In general, the backbone curve can be customised. The main algorithm has no interested in how the backbone curve is computed, only $f_\aleph$, $\bar{f}_\aleph$ and $d_\aleph$ and their derivatives with regard to $\kappa_\aleph$ need to be provided. The exponential form adopted in the original model may encounter some numerical difficulties, which in the author's opinion is not ideal. One can always choose another form, such as providing those quantities in a tabulated fashion. This is also what ABAQUS offers.
+\subsection{Damage Theory}
+The damage measure takes the form
+\begin{gather}
+h\left(d_t,d_c\right)=\left(1-d_c\right)\left(1-sd_t\right)
+\end{gather}
+with $s=s_0+\left(1-s_0\right)r$ is the recovery factor.
+\subsection{Plasticity Formulation}
+The CDP model is driven by three quantities $\kappa_t$, $\kappa_c$ and $\bvarepsilon^p$. The governing equations are listed as follows.
+\begin{table}[ht]
+\centering
+\begin{tabular}{rl}
+\toprule
+Yield Function&$f=\alpha\bar{I}_1+\sqrt{\dfrac{3}{2}}\norm{\bar{\bs}}+\beta\left\langle\hat{\sigma}_1\right\rangle-\left(1-\alpha\right)c_c$\\
+Flow Rule&$\dot{\bvarepsilon^p}=\gamma\left(\dfrac{\bar{\bs}}{\norm{\bar{\bs}}}+\alpha_p\mb{1}\right)$\\
+Hardening Law&$\dot{\kappa_\aleph}=\gamma{}H_\aleph$\\
+\bottomrule
+\end{tabular}
+\end{table}
+\subsubsection{Elastic Loading/Unloading}
+Assuming elastic loading/unloading, the trial state of the effective part can be computed as done in other plasticity models.
+\begin{gather}
+\bar{\bsigma}^\text{trial}=\mb{D}:\left(\bvarepsilon_{n+1}-\bvarepsilon^p_n\right).
+\end{gather}
+Then by performing eigenanalysis, $\hat{\bsigma}^\text{trial}$ can be computed. The trial yield function is
+\begin{gather}\label{eq:cdp_tf}
+f^\text{trial}=\alpha\bar{I}_1^\text{trial}+\sqrt{\dfrac{3}{2}}\norm{\bar{\bs}^\text{trial}}+\beta\left\langle\hat{\sigma}_1^\text{trial}\right\rangle-\left(1-\alpha\right)c_c,
+\end{gather}
+with $\beta$ and $c_c$ computed by using $\kappa_{t,n}$ and $\kappa_{c,n}$. If $f^\text{trial}<0$, indicating elastic loading/unloading, then $\bar{\bsigma}_{n+1}=\bar{\bsigma}^\text{trial}$, the final stress is simply
+\begin{gather}
+\bsigma_{n+1}=\left(1-d_{c,n}\right)\left(1-sd_{t,n}\right)\bar{\bsigma}^\text{trial}.
+\end{gather}
+
+The corresponding tangent stiffness is then
+\begin{gather}\label{eq:cdp_ed}
+\begin{split}
+\pdfrac{\bsigma_{n+1}}{\bvarepsilon_{n+1}}&=\pdfrac{\bsigma_{n+1}}{\bar{\bsigma}_{n+1}}:\pdfrac{\bar{\bsigma}_{n+1}}{\bvarepsilon_{n+1}}\\
+&=\left(1-d_{c,n}\right)d_{t,n}\left(s_0-1\right)\bar{\bsigma}^\text{trial}\otimes\ddfrac{r}{\bar{\bsigma}_{n+1}}:\mb{D}+\left(1-d_{c,n}\right)\left(1-sd_{t,n}\right)\mb{D}\\
+&=\left(1-d_{c,n}\right)\left(d_{t,n}\left(s_0-1\right)\bar{\bsigma}^\text{trial}\otimes\ddfrac{r}{\bar{\bsigma}_{n+1}}+\left(1-sd_{t,n}\right)\mathbb{I}\right):\mb{D}.
+\end{split}
+\end{gather}
+\subsubsection{Plasticity Evolution}
+The yield function and the damage evolutions are three local equations shall be satisfied.
+\begin{gather}\label{eq:cdp_r}
+\mb{R}=\left\{
+\begin{array}{l}
+\alpha\bar{I}_1+\sqrt{\dfrac{3}{2}}\norm{\bar{\bs}^\text{trial}}-\gamma\sqrt{6}G+\beta\left\langle\bar{\sigma}_1^\text{trial}-\gamma\left(2G\hat{n}_1+3K\alpha_p\right)\right\rangle+\left(1-\alpha\right)\bar{f}_c,\\[4mm]
+\kappa_{t,n}+\gamma{}r\dfrac{f_t}{g_t}\left(\hat{n}_1+\alpha_p\right)-\kappa_t,\\[4mm]
+\kappa_{c,n}+\gamma\left(1-r\right)\dfrac{f_c}{g_c}\left(\hat{n}_3+\alpha_p\right)-\kappa_c.
+\end{array}
+\right.
+\end{gather}
+
+By choosing $\mb{x}=\begin{bmatrix}
+\gamma&\kappa_t&\kappa_c
+\end{bmatrix}^\mT$ as the independent variables and assuming $\hat{\bn}=\dfrac{\hat{\bs}^\text{trial}}{\norm{\hat{\bs}^\text{trial}}}$ that is a function of $\bvarepsilon_{n+1}$ only thus does not contain $\gamma$, the Jacobian can be computed as
+\begin{footnotesize}
+\begin{gather}\label{eq:cdp_dr}
+\mb{J}=\begin{bmatrix}
+-9K\alpha\alpha_p-\sqrt{6}G-\beta\left(2G\hat{n}_1+3K\alpha_p\right)H\left(\hat{\sigma}_1\right)&\left\langle\hat{\sigma}_1\right\rangle\pdfrac{\beta}{\kappa_t}&\left(1-\alpha\right)\bar{f}_c'+\left\langle\hat{\sigma}_1\right\rangle\pdfrac{\beta}{\kappa_c}\\[4mm]
+f_t\dfrac{\hat{n}_1+\alpha_p}{g_t}\left(r+\gamma\pdfrac{r}{\gamma}\right)&\gamma{}r\dfrac{\hat{n}_1+\alpha_p}{g_t}f_t'-1&\cdot\\[4mm]
+f_c\dfrac{\hat{n}_3+\alpha_p}{g_c}\left(1-r-\gamma\pdfrac{r}{\gamma}\right)&\cdot&\gamma\left(1-r\right)\dfrac{\hat{n}_3+\alpha_p}{g_c}f_c'-1
+\end{bmatrix},
+\end{gather}
+\end{footnotesize}
+where $H\left(\cdot\right)$ is the heaviside function and
+\begin{gather*}
+\pdfrac{\beta}{\kappa_t}=\left(1-\alpha\right)\dfrac{\bar{f}_c}{\bar{f}_t^2}\bar{f}_t',\\
+\pdfrac{\beta}{\kappa_c}=\left(\alpha-1\right)\dfrac{1}{\bar{f}_t}\bar{f}_c'.
+\end{gather*}
+In the explicit form, if $\hat{\sigma}_1>0$,
+\begin{footnotesize}
+\begin{gather}
+\mb{J}=\begin{bmatrix}
+-9K\alpha\alpha_p-\sqrt{6}G-\beta\left(2G\hat{n}_1+3K\alpha_p\right)&(1-\alpha)\dfrac{\bar{f}_c\hat{\sigma}_1}{\bar{f}_t^2}\bar{f}_t'&\left(1-\alpha\right)\left(1-\dfrac{\hat{\sigma}_1}{\bar{f}_t}\right)\bar{f}_c'\\[4mm]
+f_t\dfrac{\hat{n}_1+\alpha_p}{g_t}\left(r+\gamma\pdfrac{r}{\gamma}\right)&r\gamma\dfrac{\hat{n}_1+\alpha_p}{g_t}f_t'-1&\cdot\\[4mm]
+f_c\dfrac{\hat{n}_3+\alpha_p}{g_c}\left(1-r-\gamma\pdfrac{r}{\gamma}\right)&\cdot&\left(1-r\right)\gamma\dfrac{\hat{n}_3+\alpha_p}{g_c}f_c'-1
+\end{bmatrix},
+\end{gather}
+\end{footnotesize}
+otherwise,
+\begin{footnotesize}
+\begin{gather}
+\mb{J}=\begin{bmatrix}
+-9K\alpha\alpha_p-\sqrt{6}G&\cdot&\left(1-\alpha\right)\bar{f}_c'\\[4mm]
+f_t\dfrac{\hat{n}_1+\alpha_p}{g_t}\left(r+\gamma\pdfrac{r}{\gamma}\right)&r\gamma\dfrac{\hat{n}_1+\alpha_p}{g_t}f_t'-1&\cdot\\[4mm]
+f_c\dfrac{\hat{n}_3+\alpha_p}{g_c}\left(1-r-\gamma\pdfrac{r}{\gamma}\right)&\cdot&\left(1-r\right)\gamma\dfrac{\hat{n}_3+\alpha_p}{g_c}f_c'-1
+\end{bmatrix}.
+\end{gather}
+\end{footnotesize}
+\subsection{Damage Formulation}
+There is no local iteration required in the damage part. Once $\kappa_t$ and $\kappa_c$ are determined, the effective part $\bar\bsigma$ can be determined. Damage measures $d_t$ and $d_c$ can be computed accordingly.
+\subsection{Consistent Tangent Stiffness}
+In order to take derivatives with regard to trial strain, one can replace $\norm{\hat{\bs}^\text{trial}}$ and $\norm{\bar{\bs}^\text{trial}}$, which yields
+\begin{gather}
+\pdfrac{\mb{R}}{\bvarepsilon_{n+1}}=\left\{
+\begin{array}{l}
+3K\alpha{}\mb{1}+\sqrt{6}G\bn+H\left(\hat{\sigma}_1\right)\beta\ddfrac{\hat\sigma_1^\text{trial}}{\bar{\bsigma}^\text{trial}}:\pdfrac{\bar{\bsigma}^\text{trial}}{\bvarepsilon_{n+1}},\\[4mm]
+\gamma\dfrac{f_t}{g_t}\left(r\ddfrac{\hat{n}_1}{\bvarepsilon_{n+1}}+\left(\hat{n}_1+\alpha_p\right)\ddfrac{r}{\bar{\bsigma}^\text{trial}}:\pdfrac{\bar{\bsigma}^\text{trial}}{\bvarepsilon_{n+1}}\right),\\[4mm]
+\gamma\dfrac{f_c}{g_c}\left(\left(1-r\right)\ddfrac{\hat{n}_3}{\bvarepsilon_{n+1}}-\left(\hat{n}_3+\alpha_p\right)\ddfrac{r}{\bar{\bsigma}^\text{trial}}:\pdfrac{\bar{\bsigma}^\text{trial}}{\bvarepsilon_{n+1}}\right).
+\end{array}
+\right.
+\end{gather}
+so that
+\begin{gather}
+\pdfrac{\mb{x}}{\bvarepsilon_{n+1}}=\begin{bmatrix}
+\pdfrac{\gamma}{\bvarepsilon_{n+1}}\\[3mm]
+\pdfrac{\kappa_t}{\bvarepsilon_{n+1}}\\[3mm]
+\pdfrac{\kappa_c}{\bvarepsilon_{n+1}}
+\end{bmatrix}=-\left(\pdfrac{\mb{R}}{\mb{x}}\right)^{-1}\pdfrac{\mb{R}}{\bvarepsilon_{n+1}}.
+\end{gather}
+
+The effective stress $\bar{\bsigma}_{n+1}$ only depends on $\bvarepsilon_{n+1}$ and $\gamma$.
+\begin{gather}
+\begin{split}
+\pdfrac{\bar{\bsigma}_{n+1}}{\bvarepsilon_{n+1}}&=\pdfrac{}{\bvarepsilon_{n+1}}\left(\bs^\text{trial}-2G\gamma\dfrac{\bs^\text{trial}}{\norm{\bs^\text{trial}}}+\left(p^\text{trial}-3K\alpha_p\gamma\right)\mb{1}\right)\\
+&=\mb{D}-\dfrac{4G^2\gamma}{\norm{\bs^\text{trial}}}\left(\mathbb{I}^\text{dev}-\bn\otimes{}\bn\right)-\left(2G\bn+3K\alpha_p\mb{1}\right)\otimes\pdfrac{\gamma}{\bvarepsilon_{n+1}}
+\end{split}.
+\end{gather}
+
+The derivative of the damage factor can be expressed as
+\begin{gather}
+\begin{split}
+\pdfrac{h}{\bvarepsilon_{n+1}}&=\left(1-d_c\right)\pdfrac{\left(1-sd_t\right)}{\bvarepsilon_{n+1}}+\left(1-sd_t\right)\pdfrac{\left(1-d_c\right)}{\bvarepsilon_{n+1}}\\
+&=\left(d_c-1\right)\left(s\pdfrac{d_t}{\bvarepsilon_{n+1}}+d_t\pdfrac{s}{\bvarepsilon_{n+1}}\right)+\left(sd_t-1\right)\pdfrac{d_c}{\bvarepsilon_{n+1}}
+\end{split},
+\end{gather}
+with
+\begin{gather}
+\pdfrac{d_t}{\bvarepsilon_{n+1}}=\ddfrac{d_t}{\kappa_t}\pdfrac{\kappa_t}{\bvarepsilon_{n+1}},\\
+\pdfrac{d_c}{\bvarepsilon_{n+1}}=\ddfrac{d_c}{\kappa_c}\pdfrac{\kappa_c}{\bvarepsilon_{n+1}},\\
+\pdfrac{s}{\bvarepsilon_{n+1}}=\left(1-s_0\right)\ddfrac{r}{\bar{\bsigma}_{n+1}}:\pdfrac{\bar{\bsigma}_{n+1}}{\bvarepsilon_{n+1}}.
+\end{gather}
+
+The following derivatives would be useful.
+\begin{gather}
+\ddfrac{d_\aleph}{\kappa_\aleph}=\dfrac{c_\aleph}{b_\aleph}\dfrac{a_\aleph+2}{2\sqrt{\phi_\aleph}}\Phi_\aleph^{c_\aleph/b_\aleph-1},\\
+\ddfrac{f_\aleph}{\kappa_\aleph}=f_{\aleph,0}\dfrac{a_\aleph+2}{2\sqrt{\phi_\aleph}}\left(a_\aleph-2\sqrt{\phi_\aleph}+1\right),\\
+\ddfrac{\bar{f}_\aleph}{\kappa_\aleph}=f_{\aleph,0}\dfrac{a_\aleph+2}{2\sqrt{\phi_\aleph}}\dfrac{\left(a_\aleph+1+\left(\dfrac{c_\aleph}{b_\aleph}-2\right)\sqrt{\phi_\aleph}\right)}{\Phi_\aleph^{c_\aleph/b_\aleph}}.
+\end{gather}
+
+Given that the stress update is computed as follows,
+\begin{gather}
+\bsigma_{n+1}=h\bar{\bsigma}_{n+1},
+\end{gather}
+the consistent tangent stiffness is then
+\begin{gather}
+\begin{split}
+\pdfrac{\bsigma_{n+1}}{\bvarepsilon_{n+1}}&=\bar{\bsigma}_{n+1}\otimes\pdfrac{h}{\bvarepsilon_{n+1}}+h\pdfrac{\bar{\bsigma}_{n+1}}{\bvarepsilon_{n+1}}\\
+&=\bar{\bsigma}_{n+1}\otimes\left(\left(d_c-1\right)\left(s\pdfrac{d_t}{\bvarepsilon_{n+1}}+d_t\pdfrac{s}{\bvarepsilon_{n+1}}\right)+\left(sd_t-1\right)\pdfrac{d_c}{\bvarepsilon_{n+1}}\right)+h\pdfrac{\bar{\bsigma}_{n+1}}{\bvarepsilon_{n+1}},
+\end{split}
+\end{gather}
+which is equivalently,
+\begin{multline}\label{eq:cdp_pd}
+\pdfrac{\bsigma_{n+1}}{\bvarepsilon_{n+1}}=\bar{\bsigma}_{n+1}\otimes\underbrace{\left(\begin{bmatrix}
+s\left(d_c-1\right)\ddfrac{d_t}{\kappa_t}&
+\left(sd_t-1\right)\ddfrac{d_c}{\kappa_c}
+\end{bmatrix}
+\begin{bmatrix}
+\pdfrac{\kappa_t}{\bvarepsilon_{n+1}}\\[4mm]
+\pdfrac{\kappa_c}{\bvarepsilon_{n+1}}
+\end{bmatrix}\right)}_\text{dot product in vector representation}\\+\left(d_t\left(d_c-1\right)\left(1-s_0\right)\bar{\bsigma}_{n+1}\otimes\ddfrac{r}{\bar{\bsigma}_{n+1}}+h\mathbb{I}\right)\pdfrac{\bar{\bsigma}_{n+1}}{\bvarepsilon_{n+1}}.
+\end{multline}
+
+The CDP model has no kinematic hardening, the effective part resembles the bounding surface concept. Due to the coaxiality, the model can be constructed in the eigen space, which brings some convenience in terms of implementation.
+\subsection{Implementation}
+The state determination of the CDP model is shown in \algoref{algo:cdp_model}. Compared with the original implementation, the presented one is much more concise and is able to avoid lengthy computation of consistent tangent stiffness.
+
+It is worth noting some quantities remain constant in the local iteration, for example,
+\begin{gather}
+2G\hat{n}_1+3K\alpha_p,\qquad
+\dfrac{\hat{n}_1+\alpha_p}{g_t},\qquad
+\dfrac{\hat{n}_3+\alpha_p}{g_c}.
+\end{gather}
+They can be computed as stored before entering local iteration.
+\begin{breakablealgorithm}
+\caption{state determination of the CDP model}\label{algo:cdp_model}
+\begin{algorithmic}
+\State \textbf{Parameter}: $\lambda$, $G$
+\State \textbf{Input}: $\bvarepsilon_{n+1}$, $\bvarepsilon_n$, $\bvarepsilon^p_n$, $\bsigma_n$, $\kappa_{\aleph,n}$
+\State \textbf{Output}: $\mb{D}_{n+1}$, $\bvarepsilon^p_{n+1}$, $\bsigma_{n+1}$, $\kappa_{\aleph,n+1}$
+\State $\bar{\bsigma}^\text{trial}=\mb{D}:\left(\bvarepsilon_{n+1}-\bvarepsilon^p_n\right)$
+\State $\bs^\text{trial}=\dev{\bar{\bsigma}^\text{trial}}$
+\State perform eigenanalysis on $\bar{\bsigma}^\text{trial}$ and compute $\mb{T}$, $\bar{\bs}^\text{trial}$
+\State $\hat{\bn}=\dfrac{\bar{\bs}^\text{trial}}{\norm{\bar{\bs}^\text{trial}}}$
+\State compute $f^\text{trial}$\Comment{\eqsref{eq:cdp_tf}}
+\State $\kappa_{\aleph,n+1}=\kappa_{\aleph,n}$
+\If {$f^\text{trial}\geqslant0$}\Comment{plasticity evolution}
+\State compute $f_\aleph$, $\bar{f}_\aleph$ and $d_\aleph$ and their derivatives\Comment{This can be an independent overridable method.}
+\While{true}
+\State $\gamma=0$
+\State compute $\mb{R}$ and $\pdfrac{\mb{R}}{\mb{x}}$\Comment{\eqsref{eq:cdp_r} and \eqsref{eq:cdp_dr}}
+\State $\Delta=\left(\pdfrac{\mb{R}}{\mb{x}}\right)^{-1}\mb{R}$\Comment{$\Delta=\begin{bmatrix}
+\delta\gamma&\delta\kappa_t&\delta\kappa_c
+\end{bmatrix}$}
+\If {$\norm{\Delta}<\text{tolerance}$}
+\State break
+\EndIf
+\State $\gamma\leftarrow\gamma-\delta\gamma$
+\State $\kappa_{t,n+1}\leftarrow\kappa_{t,n+1}-\delta\kappa_t$
+\State $\kappa_{t,n+1}\leftarrow\kappa_{t,n+1}-\delta\kappa_c$
+\EndWhile
+\State $\bsigma_{n+1}=\bsigma^\text{trial}-\gamma\left(2G\bn+3K\alpha_p\mb{1}\right)$
+\State $\bvarepsilon^p_{n+1}=\bvarepsilon^p_n+\gamma\left(\bn+\alpha_p\mb{1}\right)$
+\State compute $\mb{D}_{n+1}$\Comment{\eqsref{eq:cdp_pd}}
+\Else\Comment{elastic loading/unloading}
+\State $\bsigma_{n+1}=\bsigma^\text{trial}$
+\State $\bvarepsilon^p_{n+1}=\bvarepsilon^p_n$
+\State compute $\mb{D}_{n+1}$\Comment{\eqsref{eq:cdp_ed}}
+\EndIf
+\end{algorithmic}
+\end{breakablealgorithm}
+
+The CPP implementation of state determination can be found as follows.
+\begin{cppcode}
+int NonlinearCDP::update_trial_status(const vec& t_strain) {
+	incre_strain = (trial_strain = t_strain) - current_strain;
+
+	if(norm(incre_strain) <= datum::eps) return SUANPAN_SUCCESS;
+
+	trial_history = current_history;
+	auto& d_t = trial_history(0);
+	auto& d_c = trial_history(1);
+	auto& kappa_t = trial_history(2);
+	auto& kappa_c = trial_history(3);
+	vec plastic_strain(&trial_history(4), 6, false, true);
+
+	const auto& current_kappa_t = current_history(2);
+	const auto& current_kappa_c = current_history(3);
+
+	trial_stress = (trial_stiffness = initial_stiffness) * (trial_strain - plastic_strain); // 6
+
+	vec principal_stress;    // 3
+	mat principal_direction; // 3x3
+	if(!eig_sym(principal_stress, principal_direction, tensor::stress::to_tensor(trial_stress), "std")) return SUANPAN_FAIL;
+
+	const auto trans = transform::compute_jacobian_nominal_to_principal(principal_direction);
+
+	const auto s = tensor::dev(trial_stress);    // 6
+	const auto norm_s = tensor::stress::norm(s); // 1
+	vec n = s / norm_s;                          // 6
+	if(!n.is_finite()) n.zeros();
+
+	const auto ps = tensor::dev(principal_stress); // 3
+	const vec pn = normalise(ps);                  // 3
+
+	const vec dsigmadlambda = -double_shear * pn - three_alpha_p_bulk; // 6
+
+	const auto dgdsigma_t = (pn(2) + alpha_p) / g_t;
+	const auto dgdsigma_c = (pn(0) + alpha_p) / g_c;
+
+	auto new_stress = principal_stress;     // converged principal stress
+	const auto& max_stress = new_stress(2); // algebraically maximum principal stress
+
+	const auto const_yield = alpha * accu(principal_stress) + root_three_two * norm_s;
+
+	vec residual(3), incre;
+	mat jacobian(3, 3, fill::zeros);
+	mat left(3, 6);
+
+	podarray<double> t_para, c_para;
+
+	auto lambda = 0., ref_error = 0.;
+	double r, beta;
+	vec dr;
+
+	unsigned counter = 0;
+	while(true) {
+		if(max_iteration == ++counter) {
+			suanpan_error("NonlinearCDP cannot converge within %u iterations.\n", max_iteration);
+			return SUANPAN_FAIL;
+		}
+
+		t_para = compute_tension_backbone(kappa_t);
+		c_para = compute_compression_backbone(kappa_c);
+
+		const auto tension_flag = max_stress > 0.;
+
+		beta = -one_minus_alpha * c_para(2) / t_para(2) - alpha - 1.;
+
+		residual(0) = const_yield + pfplambda * lambda + one_minus_alpha * c_para(2);
+
+		if(tension_flag) residual(0) += beta * max_stress;
+
+		r = compute_r(new_stress);
+
+		if(1 == counter && residual(0) < 0.) {
+			const auto damage_c = scale * d_c - 1.;
+			const auto damage_t = compute_s(r) * scale * d_t - 1.;
+			const auto damage = damage_c * damage_t;
+			trial_stiffness = (damage * eye(6, 6) + damage_c * scale * d_t * (1. - s0) * trial_stress * compute_dr(new_stress).t() * trans) * initial_stiffness;
+			trial_stress *= damage;
+			return SUANPAN_SUCCESS;
+		}
+
+		const auto t_term = t_para(1) * dgdsigma_t;
+		const auto c_term = c_para(1) * dgdsigma_c;
+
+		residual(1) = r * t_term * lambda + current_kappa_t - kappa_t;
+		residual(2) = (c_term - r * c_term) * lambda + current_kappa_c - kappa_c;
+
+		if(tension_flag) {
+			jacobian(0, 0) = pfplambda + beta * dsigmadlambda(2);
+			const auto tmp_term = one_minus_alpha * max_stress / t_para(2);
+			jacobian(0, 1) = tmp_term * c_para(2) / t_para(2) * t_para(5);
+			jacobian(0, 2) = (one_minus_alpha - tmp_term) * c_para(5);
+		}
+		else {
+			jacobian(0, 0) = pfplambda;
+			jacobian(0, 1) = 0.;
+			jacobian(0, 2) = one_minus_alpha * c_para(5);
+		}
+
+		const auto dlambda = r + lambda * dot(dr = compute_dr(new_stress), dsigmadlambda);
+		jacobian(1, 0) = t_term * dlambda;
+		jacobian(2, 0) = c_term - c_term * dlambda;
+		jacobian(1, 1) = r * lambda * dgdsigma_t * t_para(4) - 1.;
+		jacobian(2, 2) = (lambda - r * lambda) * dgdsigma_c * c_para(4) - 1.;
+
+		if(!solve(incre, jacobian, residual)) return SUANPAN_FAIL;
+
+		auto error = norm(residual);
+		if(1 == counter) ref_error = std::max(1., error);
+		suanpan_debug("NonlinearCDP local iteration error: %.5E.\n", error /= ref_error);
+		if(error <= tolerance || norm(incre) <= tolerance) break;
+
+		lambda -= incre(0);
+		kappa_t -= incre(1);
+		kappa_c -= incre(2);
+		new_stress -= dsigmadlambda * incre(0);
+
+		if(kappa_t > 1.) kappa_t = .999; // avoid overshoot
+		if(kappa_c > 1.) kappa_c = .999; // avoid overshoot
+	}
+
+	// update damage indices
+	d_t = t_para(0);
+	d_c = c_para(0);
+	// update plastic strain
+	plastic_strain += lambda * (n % tensor::stress::norm_weight + unit_alpha_p);
+
+	const auto recovery = compute_s(r);
+	const auto damage_c = scale * d_c - 1.;
+	const auto damage_t = recovery * scale * d_t - 1.;
+	const auto damage = damage_c * damage_t;
+
+	// update trial stress
+	trial_stress = transform::compute_jacobian_principal_to_nominal(principal_direction) * new_stress;
+
+	const mat dnde = double_shear / norm_s * (unit_dev_tensor - n * n.t());
+
+	// \dfrac{\partial\bar{\sigma}}{\partial\varepsilon^{tr}}
+	trial_stiffness -= double_shear * lambda * dnde;
+
+	const rowvec drdsigma = dr.t() * trans;
+	const rowvec prpe = drdsigma * trial_stiffness;
+
+	// compute local derivatives
+	left.row(0) = 3. * alpha * bulk * tensor::unit_tensor2.t() + root_three_two * double_shear * n.t();
+	left.row(1) = t_para(1) * lambda * (r / g_t * trans.row(2) * dnde + dgdsigma_t * prpe);
+	left.row(2) = c_para(1) * lambda * ((1. - r) / g_c * trans.row(0) * dnde - dgdsigma_c * prpe);
+
+	if(max_stress > 0.) left.row(0) += beta * trans.row(2) * trial_stiffness;
+
+	const mat right = -solve(jacobian, left);
+	const auto& dlambdade = right.row(0);
+	const auto& dkappade = right.rows(1, 2);
+
+	// \dfrac{\mathrm{d}\bar{\sigma}}{\mathrm{d}\varepsilon^{tr}}
+	trial_stiffness -= (double_shear * n + three_alpha_p_bulk * tensor::unit_tensor2) * dlambdade;
+
+	trial_stiffness = (damage * eye(6, 6) + scale * d_t * damage_c * (1. - s0) * trial_stress * drdsigma) * trial_stiffness + trial_stress * scale * rowvec{recovery * damage_c * t_para(3), damage_t * c_para(3)} * dkappade;
+
+	trial_stress *= damage;
+
+	return SUANPAN_SUCCESS;
+}
+\end{cppcode}
+\section{CDPM2 Model}
+The CDP adopts an isotropic damage, which leads to, for example, degradation of compressive/tensile strength due to tensile/compressive damage. In cyclic loading cases, it may not be ideal. The CDPM2 model uses a different approach that applies tensile damage to tensile part of stress and compressive damage to compressive part of stress.
+\subsection{Theory}
+\subsection{Formulation}
+\subsection{Implementation}
+The CPP implementation of state determination can be found as follows.
+\begin{cppcode}
+int CDPM2::update_trial_status(const vec& t_strain) {
+	incre_strain = (trial_strain = t_strain) - current_strain;
+
+	if(norm(incre_strain) <= tolerance) return SUANPAN_SUCCESS;
+
+	trial_history = current_history;
+	const auto& current_kp = current_history(0);
+	auto& kp = trial_history(0);
+	vec plastic_strain(&trial_history(1), 6, false, true);
+
+	trial_stress = (trial_stiffness = initial_stiffness) * (trial_strain - plastic_strain);
+
+	//
+	// plasticity part
+	//
+
+	const auto dev_stress = tensor::dev(trial_stress);
+	const auto hydro_stress = tensor::mean3(trial_stress);
+	const auto trial_s = tensor::stress::norm(dev_stress);
+	const auto trial_p = hydro_stress;
+	const vec n = dev_stress / trial_s;
+
+	auto gamma = 0., s = trial_s, p = trial_p;
+
+	mat jacobian(4, 4, fill::none), left(4, 6, fill::zeros);
+	jacobian(0, 0) = 0.;
+
+	vec residual(4), incre;
+
+	podarray<double> data(15);
+	const auto& f = data(0);
+	const auto& pfps = data(1);
+	const auto& pfpp = data(2);
+	const auto& pfpkp = data(3);
+	const auto& gs = data(4);
+	const auto& gp = data(5);
+	const auto& gg = data(6);
+	const auto& pgsps = data(7);
+	const auto& pgspp = data(8);
+	const auto& pgspkp = data(9);
+	const auto& pgpps = data(10);
+	const auto& pgppp = data(11);
+	const auto& pgppkp = data(12);
+	const auto& xh = data(13);
+	const auto& dxhdp = data(14);
+
+	auto counter = 0u;
+
+	while(true) {
+		if(max_iteration == ++counter) return SUANPAN_FAIL;
+
+		compute_plasticity(s, p, kp, data);
+
+		if(1 == counter && f < 0.) break;
+
+		residual(0) = f;
+		residual(1) = s + double_shear * gamma * gs - trial_s;
+		residual(2) = p + bulk * gamma * gp - trial_p;
+		residual(3) = xh * (current_kp - kp) + gamma * gg;
+
+		jacobian(0, 1) = pfps;
+		jacobian(0, 2) = pfpp;
+		jacobian(0, 3) = pfpkp;
+
+		jacobian(1, 0) = double_shear * gs;
+		jacobian(1, 1) = double_shear * gamma * pgsps + 1.;
+		jacobian(1, 2) = double_shear * gamma * pgspp;
+		jacobian(1, 3) = double_shear * gamma * pgspkp;
+
+		jacobian(2, 0) = bulk * gp;
+		jacobian(2, 1) = bulk * gamma * pgpps;
+		jacobian(2, 2) = bulk * gamma * pgppp + 1.;
+		jacobian(2, 3) = bulk * gamma * pgppkp;
+
+		jacobian(3, 0) = gg;
+		jacobian(3, 1) = gamma / gg * (gs * pgsps + gp / 3. * pgpps);
+		jacobian(3, 2) = gamma / gg * (gs * pgspp + gp / 3. * pgppp) + (current_kp - kp) * dxhdp;
+		jacobian(3, 3) = gamma / gg * (gs * pgspkp + gp / 3. * pgppkp) - xh;
+
+		if(!solve(incre, jacobian, residual)) return SUANPAN_FAIL;
+
+		const auto error = norm(residual);
+		suanpan_debug("CDPM2 local plasticity iteration error: %.5E.\n", error);
+
+		if(error <= tolerance) {
+			const vec unit_n = n % tensor::stress::norm_weight;
+
+			plastic_strain += gamma * gs * unit_n + gamma * gp / 3. * tensor::unit_tensor2;
+
+			trial_stress = s * n + p * tensor::unit_tensor2;
+
+			mat right(4, 6, fill::none);
+
+			right.row(0).zeros();
+			right.row(1) = double_shear * unit_n.t() * unit_dev_tensor;
+			right.row(2) = bulk * tensor::unit_tensor2.t();
+			right.row(3).zeros();
+
+			if(!solve(left, jacobian, right)) return SUANPAN_FAIL;
+
+			trial_stiffness = n * (left.row(1) - s / trial_s * right.row(1)) + s / trial_s * double_shear * unit_dev_tensor;
+			trial_stiffness.row(0) += left.row(2);
+			trial_stiffness.row(1) += left.row(2);
+			trial_stiffness.row(2) += left.row(2);
+
+			break;
+		}
+
+		gamma -= incre(0);
+		s -= incre(1);
+		p -= incre(2);
+		kp -= incre(3);
+	}
+
+	//
+	// damage part
+	//
+
+	vec principal_stress;    // 3
+	mat principal_direction; // 3x3
+	if(!eig_sym(principal_stress, principal_direction, tensor::stress::to_tensor(trial_stress), "std")) return SUANPAN_FAIL;
+
+	vector<uword> tp, cp;
+	tp.reserve(3);
+	cp.reserve(3);
+	for(auto I = 0llu; I < 3llu; ++I)
+		if(principal_stress(I) > 0.) tp.emplace_back(I);
+		else cp.emplace_back(I);
+
+	const uvec t_pattern(tp), c_pattern(cp);
+
+	const auto aca = accu(square(principal_stress(c_pattern)));
+	const auto acb = accu(square(principal_stress));
+	const auto ac = aca / acb;
+	rowvec daca = 2. * principal_stress.t();
+	daca(t_pattern).fill(0.);
+	const rowvec dac = (daca - 2. * ac * principal_stress.t()) / acb;
+
+	if(SUANPAN_SUCCESS != compute_damage(gamma, s, p, kp, ac, data)) return SUANPAN_FAIL;
+
+	if(DamageType::NODAMAGE == damage_type) return SUANPAN_SUCCESS;
+
+	const auto& omegat = trial_history(16);
+	const auto& omegac = trial_history(17);
+	const rowvec pot(&data(0), 4, false, true);
+	const rowvec poc(&data(4), 4, false, true);
+	const auto& pocpac = data(8);
+
+	const rowvec potpe = pot * left;
+	const rowvec pocpe = poc * left + pocpac * dac * transform::compute_jacobian_nominal_to_principal(principal_direction) * trial_stiffness;
+
+	if(DamageType::ISOTROPIC == damage_type) {
+		trial_stiffness *= (1. - omegat) * (1. - omegac);
+		trial_stiffness -= trial_stress * ((1. - omegat) * pocpe + (1. - omegac) * potpe);
+
+		trial_stress *= (1. - omegat) * (1. - omegac);
+	}
+	else if(DamageType::ANISOTROPIC == damage_type) {
+		const auto compute_fraction = [&](const double a, const double b) { return suanpan::approx_equal(a, b, 4) ? a + b <= 0. ? 0. : 2. : 2. * (suanpan::ramp(a) - suanpan::ramp(b)) / (a - b); };
+		const auto get_fraction = [&](const vec& p_stress) { return vec{compute_fraction(p_stress(0), p_stress(1)), compute_fraction(p_stress(1), p_stress(2)), compute_fraction(p_stress(2), p_stress(0))}; };
+
+		const mat pnn = [](const mat& eig_vec) {
+			const mat n12 = eig_vec.col(0) * eig_vec.col(1).t();
+			const mat n23 = eig_vec.col(1) * eig_vec.col(2).t();
+			const mat n31 = eig_vec.col(2) * eig_vec.col(0).t();
+
+			mat pij(6, 6);
+
+			pij.col(0) = tensor::stress::to_voigt(eig_vec.col(0) * eig_vec.col(0).t());
+			pij.col(1) = tensor::stress::to_voigt(eig_vec.col(1) * eig_vec.col(1).t());
+			pij.col(2) = tensor::stress::to_voigt(eig_vec.col(2) * eig_vec.col(2).t());
+			pij.col(3) = tensor::stress::to_voigt(.5 * (n12 + n12.t()));
+			pij.col(4) = tensor::stress::to_voigt(.5 * (n23 + n23.t()));
+			pij.col(5) = tensor::stress::to_voigt(.5 * (n31 + n31.t()));
+
+			return pij;
+		}(principal_direction);
+
+		mat tension_projector = pnn.cols(t_pattern) * pnn.cols(t_pattern).t();
+		mat tension_derivative = tension_projector + pnn.tail_cols(3) * diagmat(get_fraction(principal_stress)) * pnn.tail_cols(3).t();
+
+		tension_projector.tail_cols(3) *= 2.;
+		tension_derivative.tail_cols(3) *= 2.;
+
+		const vec tension_stress = tension_projector * trial_stress;
+
+		trial_stiffness = (1. - omegac) * trial_stiffness - trial_stress * pocpe + (omegac - omegat) * tension_derivative * trial_stiffness + tension_stress * (pocpe - potpe);
+
+		trial_stress *= 1. - omegac;
+		trial_stress += (omegac - omegat) * tension_stress;
+	}
+
+	return SUANPAN_SUCCESS;
+}
+\end{cppcode}
