@@ -107,125 +107,495 @@ The traditional constitutive theory is, as can be seen in previous models, often
 
 An example of beam section constitutive models based on the generalised plasticity theory \cite{Auricchio1994} is presented.
 \subsection{Theory}
-\subsubsection{Kinematics and Elasticity}
-For a 3D section involving axial and flexural deformation of a two--node beam element with its chord aligned with the $x$-axis, the sectional deformation can be arranged into a vector such that
-\begin{gather}
+\subsubsection{Assumptions and Definitions}
+Consider the two--node beam connecting nodes $i$ and $j$ with its rigid body motion removed, the resulting degrees of freedom are axial deformation, rotational deformation of end $i$ and rotational deformation of end $j$, and additional two end rotations about weak axis in case of a 3D beam. It is assumed the beam is rigid against torsion (no torsion deformation).
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\CoorOrigin{-3,-1}
+\begin{scope}[rotate=8]
+\setstructmech{convention=direction}
+\draw[line width=1mm](0,0)to[in=200,out=15](4,0);
+\draw[dashed](0,0)--(4,0);
+\node[ultra thick]at(0,0)[circle,draw,inner sep=0,minimum size=2mm,fill=white]{};
+\node[ultra thick]at(4,0)[circle,draw,inner sep=0,minimum size=2mm,fill=white]{};
+\NodalForce{0,0}[u(P)][N][\theta_{z,i}(M_{z,i})][1.4];
+\NodalForce{4,0}[-u(P)][N][\theta_{z,j}(M_{z,j})]{180}[1.4];
+\end{scope}
+\end{tikzpicture}
+\caption{deformation and resistance of a 2D beam}
+\end{figure}
+
+For a 3D beam with its chord aligned with the $x$-axis, conventionally, the element deformation vector is defined as
+\begin{gather*}
 \mb{v}=\begin{bmatrix}
-\varepsilon&\chi_{z,i}&\chi_{z,j}&\chi_{y,i}&\chi_{y,j}
+u&\theta_{z,i}&\theta_{z,j}&\theta_{y,i}&\theta_{y,j}
+\end{bmatrix}^\mT,
+\end{gather*}
+where $u$ is the axial deformation and $\theta$ is the nodal deformation about its chord, subscripts $\left(\cdot\right)_i$ and $\left(\cdot\right)_j$ denote two nodes, $\left(\cdot\right)_z$ and $\left(\cdot\right)_y$ denote strong and weak axis, respectively. Accordingly, the element resistance can be defined as
+\begin{gather}
+\mb{q}=\begin{bmatrix}
+P&M_{z,i}&M_{z,j}&M_{y,i}&M_{y,j}
 \end{bmatrix}^\mT,
 \end{gather}
-where $\varepsilon$ is the axial strain while $\chi=\theta/L$ is the section rotation over the length of the element, subscripts $\left(\cdot\right)_i$ and $\left(\cdot\right)_j$ denote two nodes, $\left(\cdot\right)_z$ and $\left(\cdot\right)_y$ denote strong and weak axis, respectively.
+where $P$ is used to denote axial force while $M$ is used to denote end moment. The corresponding yield forces are denoted as $P^y$, $M_z^y$ and $M_y^y$. Such a definition of deformation and resistance can be combined with either linear or corotational transformation.
+
+The constitutive relationship is widely known as
+\begin{gather*}
+\mb{q}=\mb{E}\mb{v},\qquad\mb{E}=\begin{bmatrix}
+\dfrac{EA}{L}&\cdot&\cdot&\cdot&\cdot\\[3mm]
+\cdot&\dfrac{4EI_z}{L}&\dfrac{2EI_z}{L}&\cdot&\cdot\\[3mm]
+\cdot&\dfrac{2EI_z}{L}&\dfrac{4EI_z}{L}&\cdot&\cdot\\[3mm]
+\cdot&\cdot&\cdot&\dfrac{4EI_y}{L}&\dfrac{2EI_y}{L}\\[3mm]
+\cdot&\cdot&\cdot&\dfrac{2EI_y}{L}&\dfrac{4EI_y}{L}
+\end{bmatrix},
+\end{gather*}
+where $L$ is the initial length of beam element.
+
+The above definition is widely adopted as the basic quantities for beam elements. However, it complicates the plasticity formulation due to the coupling of DoFs. The definition of elemental deformation can be better \textbf{redefined} as
+\begin{gather}
+\mb{v}=\begin{bmatrix}
+2\varepsilon\\\chi_{z,i}\\\chi_{z,j}\\\chi_{y,i}\\\chi_{y,j}
+\end{bmatrix}=\mb{S}\begin{bmatrix}
+u\\\theta_{z,i}\\\theta_{z,j}\\\theta_{y,i}\\\theta_{y,j}
+\end{bmatrix},\qquad\mb{S}=\dfrac{1}{L}\begin{bmatrix}
+2&\cdot&\cdot&\cdot&\cdot\\
+\cdot&4&2&\cdot&\cdot\\
+\cdot&2&4&\cdot&\cdot\\
+\cdot&\cdot&\cdot&4&2\\
+\cdot&\cdot&\cdot&2&4
+\end{bmatrix}.
+\end{gather}
+We define $\chi$ as the generalised curvature. As a result, the coupling of rotational degrees of freedom is removed.
 
 For each end, the nodal local deformation can be extracted as
 \begin{gather}
 \mb{v}_i=\begin{bmatrix}
 \varepsilon\\\chi_{z,i}\\\chi_{y,i}
 \end{bmatrix}=\begin{bmatrix}
-1&\cdot&\cdot&\cdot&\cdot\\
+\frac{1}{2}&\cdot&\cdot&\cdot&\cdot\\
 \cdot&1&\cdot&\cdot&\cdot\\
 \cdot&\cdot&\cdot&1&\cdot
 \end{bmatrix}\mb{v}=\mb{T}_i\mb{v},\\
 \mb{v}_j=\begin{bmatrix}
 \varepsilon\\\chi_{z,j}\\\chi_{y,j}
 \end{bmatrix}=\begin{bmatrix}
-1&\cdot&\cdot&\cdot&\cdot\\
+\frac{1}{2}&\cdot&\cdot&\cdot&\cdot\\
 \cdot&\cdot&1&\cdot&\cdot\\
 \cdot&\cdot&\cdot&\cdot&1
 \end{bmatrix}\mb{v}=\mb{T}_j\mb{v},
 \end{gather}
 
-Accordingly, the section resistance can be defined as
+Since $\mb{v}_i$ is decoupled from $\mb{v}_j$, the nodal elasticity can now be expressed as
 \begin{gather}
-\mb{q}=\begin{bmatrix}
-P&M_{z,i}&M_{z,j}&M_{y,i}&M_{y,j}
-\end{bmatrix}^\mT,
+\mb{q}_\aleph=\mb{E}_\aleph\mb{v}_\aleph^e=\mb{E}_\aleph\left(\mb{v}_\aleph-\mb{v}_\aleph^p\right),\qquad\mb{E}_\aleph=\diag{\begin{matrix}
+EA&EI_z&EI_y
+\end{matrix}},
 \end{gather}
-where $P$ is used to denote axial force while $M$ is used to denote end moment.
+where $\aleph$ denotes either $i$ or $j$.
 
-The same transformation matrices can be applied to obtain nodal local resistance.
-\begin{gather}
-\mb{q}_i=\mb{T}_i\mb{q},\qquad
-\mb{q}_j=\mb{T}_j\mb{q}.
+The same transformation matrices can be applied to obtain element resistance $\mb{q}$ from nodal resistances $\mb{q}_\aleph$.
+\begin{gather}\label{nm:total_q}
+\mb{q}=\mb{T}_i^\mT\mb{q}_i+\mb{T}_j^\mT\mb{q}_j=\sum\mb{T}_\aleph^\mT\mb{q}_\aleph.
 \end{gather}
-
-According to convention, the elastic response can be defined as
+We define $\mb{T}_i$ and $\mb{T}_j$ to be transformation matrices. It could be noted that
 \begin{gather}
-\mb{q}=\mb{E}\left(\mb{v}-\mb{v}^p\right),\qquad\mb{E}=\begin{bmatrix}
-EA&\cdot&\cdot&\cdot&\cdot\\
-\cdot&4EI_z&2EI_z&\cdot&\cdot\\
-\cdot&2EI_z&4EI_z&\cdot&\cdot\\
-\cdot&\cdot&\cdot&4EI_y&2EI_y\\
-\cdot&\cdot&\cdot&2EI_y&4EI_y
-\end{bmatrix}.
+\underbrace{\mb{E}}_{5\times5}=\mb{T}_i^\mT\mb{E}_i\mb{T}_i\mb{S}+\mb{T}_j^\mT\mb{E}_j\mb{T}_j\mb{S}=\sum\underbrace{\mb{T}_\aleph^\mT}_{5\times3}\underbrace{\mb{E}_\aleph}_{3\times3}\underbrace{\mb{T}_\aleph}_{3\times5}\underbrace{\mb{S}}_{5\times5}.
 \end{gather}
+The main purpose of the above redefinition is to decouple nodal response so that plasticity can be developed \textbf{independently} at each end.
 \subsubsection{Yield Function}
-For each node, if the nodal resistance is bounded by the yield surface, it is elastic.
+For each node, if the nodal resistance is bounded by the yield surface $f_\aleph<0$, it is elastic.
 \begin{gather}
-f_\aleph=\Phi_\aleph-q^y_\aleph,
+f_\aleph=\Phi_\aleph,
 \end{gather}
-where $\Phi_\aleph=\Phi_\aleph\left(\mb{s}_\aleph\right)$ is the $N$-$M$ interaction surface based on the shifted resistance $\mb{s}_\aleph=\mb{q}_\aleph-\bbeta_\aleph$, while
-\begin{gather}
-q^y_\aleph=c+H\alpha_\aleph
-\end{gather}
-is the equivalent yield measure which can evolve to account for isotropic hardening. The parameter $H$ controls isotropic hardening, $\alpha_\aleph$ is the equivalent plastic strain, $\bbeta_\aleph$ is similar to the concept of back stress, here back resistance that defines the centre of interaction surface. The subscript $\left(\cdot\right)_\aleph$ denotes either $\left(\cdot\right)_i$ or $\left(\cdot\right)_j$. If $\alpha_\aleph=0$, then $q^y_\aleph=c$. From which it is quite clear that $c$ characterises the initial size of yield surface, thus cannot be negative.
+where $\Phi_\aleph=\Phi_\aleph\left(\mb{s}_\aleph,\alpha_\aleph\right)$ is the $N$-$M$ interaction surface based on the shifted resistance $\mb{s}_\aleph=\mb{q}_\aleph-\bbeta_\aleph$, $\alpha_\aleph$ is the equivalent plastic strain, $\bbeta_\aleph$ is similar to the concept of back stress, here back resistance that defines the centre of interaction/yield surface. The $N$-$M$ interaction surface is a function of $\alpha_\aleph$, thus, it can evolve accordingly. Alternatively, a bounding surface concept can be used to simulate more complex evolution of plasticity.
 
-It is worth noting that plasticity can develop at either end, while two ends are linked with each other due to the shared axial force.
+It is worth noting that plasticity can develop at either end, while two ends are linked with each other via the shared axial force.
+
+Often, $f$ is a non-dimensional function of $\bs$ and $\alpha$. Dimensional analysis shows a plasticity framework based normalised quantities can simplify both formulation and implementation, thus, in this work, the $N$-$M$ interaction surface is defined as follows instead.
+\begin{gather}
+f_\aleph=\Phi_\aleph\left(\mb{\overline{s}}_\aleph,\overline{\alpha}_\aleph\right),
+\end{gather}
+where $\mb{\overline{s}}_\aleph=\mb{\overline{q}}_\aleph-\overline{\bbeta}_\aleph$ with $\mb{\overline{q}}_\aleph$ be the normalised nodal resistance and $\overline{\bbeta}_\aleph$ be the normalised nodal back resistance.
+\begin{gather}
+\mb{q}_\aleph=\begin{bmatrix}
+P^y&\cdot&\cdot\\\cdot&M_z^y&\cdot\\\cdot&\cdot&M_y^y
+\end{bmatrix}\mb{\overline{q}}_\aleph,\qquad
+\bbeta_\aleph=\begin{bmatrix}
+P^y&\cdot&\cdot\\\cdot&M_z^y&\cdot\\\cdot&\cdot&M_y^y
+\end{bmatrix}\overline{\bbeta}_\aleph,
+\end{gather}
+where $P^y$, $M_z^y$ and $M_y^y$ are axial yield force, strong axis yield moment and weak axis yield moment.
 \subsubsection{Flow Rule}
-The associated flow rule is adopted. The evolution of plastic deformation $\mb{v}^p_\aleph$ shall be linked to $\pdfrac{\Phi_\aleph}{\mb{q}_\aleph}$. By denoting $\mb{\zeta}_\aleph=\pdfrac{\Phi_\aleph}{\mb{q}_\aleph}$, one can obtain
+The associated flow rule is adopted. The evolution of plastic deformation $\mb{\overline{v}}^p_\aleph$ shall be linked to $\pdfrac{\Phi_\aleph}{\mb{\overline{q}}_\aleph}$. By denoting $\mb{\zeta}_\aleph=\Gamma\left(\pdfrac{\Phi_\aleph}{\mb{\overline{q}}_\aleph}\right)$, one can obtain
 \begin{gather}
-\dot{\mb{v}^p_\aleph}=\gamma_\aleph\mb{\zeta}_\aleph.
+\dot{\mb{\overline{v}}^p_\aleph}=\gamma_\aleph\mb{\zeta}_\aleph.
 \end{gather}
+It must be noted that since $\Phi_\aleph$ is now based on normalised quantities, $\dot{\mb{\overline{v}}^p_\aleph}$ denotes the normalised plastic deformation increment.
 \subsubsection{Hardening Law}
-For isotropic hardening, $\dot{\alpha_\aleph}$ shall be related to some scalar measure of plastic deformation $\dot{\mb{v}^p_\aleph}$. The simplest one would be
+\paragraph{Isotropic Hardening}
+For isotropic hardening, $\dot{\overline{\alpha}_\aleph}$ shall be related to some scalar measure of plastic deformation $\dot{\mb{\overline{v}}^p_\aleph}$. The simplest one would be
 \begin{gather}
-\dot{\alpha_\aleph}=\norm{\dot{\mb{v}^p_\aleph}}=\gamma_\aleph\norm{\mb{\zeta}_\aleph}.
+\dot{\overline{\alpha}_\aleph}=\norm{\dot{\mb{\overline{v}}^p_\aleph}}=\gamma_\aleph\norm{\mb{\zeta}_\aleph}.
 \end{gather}
-
-For kinematic hardening,
+Furthermore, if
 \begin{gather}
-\dot{\bbeta}=K\mb{E}\sum\gamma_\aleph\mb{\zeta}_\aleph.
+\mb{\zeta}_\aleph=\dfrac{\partial\Phi_\aleph/\partial\mb{\overline{q}}_\aleph}{\norm{\partial\Phi_\aleph/\partial\mb{\overline{q}}_\aleph}},
 \end{gather}
+then $\dot{\overline{\alpha}_\aleph}$ can be expressed as
+\begin{gather}
+\dot{\overline{\alpha}_\aleph}=\gamma_\aleph.
+\end{gather}
+\paragraph{Kinematic Hardening}
+For kinematic hardening, a simple linear hardening can be defined as
+\begin{gather}
+\dot{\bbeta_\aleph}=K\mb{E}_\aleph\gamma_\aleph\mb{\zeta}_\aleph,\qquad\text{or}\qquad
+\dot{\overline{\bbeta}_\aleph}=K\gamma_\aleph\mb{\zeta}_\aleph.
+\end{gather}
+In the above definition, $K$ is the kinematic hardening ratio, $\gamma_\aleph$ and $\mb{\zeta}_\aleph$ have different implications in different spaces (true and normalised resistance spaces). Alternatively, more complex kinematic hardening such as Armstrong--Fredrick type can be used.
+\subsubsection{$N$-$M$ Interaction Surface}
+The initial $N$-$M$ interaction surface is often defined as a non-homogeneous polynomial, for example,
+\begin{gather*}
+\Phi=1.15\left(\overline{P}-\overline{\beta}_P\right)^2+\left(\overline{M}_z-\overline{\beta}_{M_z}\right)^2+3.67\left(\overline{P}-\overline{\beta}_P\right)^2\left(\overline{M}_z-\overline{\beta}_{M_z}\right)^2-c,
+\end{gather*}
+where $\overline{\beta}_P$ and $\overline{\beta}_{M_z}$ denote the corresponding components of $\overline{\bbeta}$.
 
-According to the above definition, $H$ and $K$ are more like two hardening ratios.
+Introducing isotropic hardening to the above equation via $c\left(\overline{\alpha}\right)$ cannot recover the desired hardening behaviour. Instead, one can, for example, define the interaction surface to be
+\begin{gather}
+\Phi=
+1.15\left(\dfrac{\overline{P}-\overline{\beta}_P}{h\left(\overline{\alpha}\right)}\right)^2+
+\left(\dfrac{\overline{M}_z-\overline{\beta}_{M_z}}{h\left(\overline{\alpha}\right)}\right)^2+
+3.67\left(\dfrac{\overline{P}-\overline{\beta}_P}{h\left(\overline{\alpha}\right)}\right)^2\left(\dfrac{\overline{M}_z-\overline{\beta}_{M_z}}{h\left(\overline{\alpha}\right)}\right)^2-c.
+\end{gather}
+A simple linear isotropic hardening rule can be defined as
+\begin{gather}
+h\left(\overline{\alpha}\right)=1+H\overline{\alpha},
+\end{gather}
+where $H$ is the isotropic hardening ratio.
 \subsection{Formulation}
+The following formulation applies to \textbf{both} nodes independently, thus, the subscript $\aleph$ is dropped for brevity.
 \subsubsection{Elastic Loading/Unloading}
 By freezing plasticity, one can compute the trial state as
-\begin{gather}
+\begin{gather}\label{eq:nm_qa}
 \mb{q}^\text{trial}=\mb{q}_n+\mb{E}\left(\mb{v}_{n+1}-\mb{v}_n\right),
 \end{gather}
-and
-\begin{gather}
-f^\text{trial}_\aleph=\Phi_\aleph^\text{trial}-q^y_{\aleph,n},
+the normalised version $\mb{\overline{q}}^\text{trial}$ can be computed accordingly via the relationship
+\begin{gather}\label{eq:nm_qb}
+\mb{q}^\text{trial}=\begin{bmatrix}
+P^y&\cdot&\cdot\\\cdot&M_z^y&\cdot\\\cdot&\cdot&M_y^y
+\end{bmatrix}\mb{\overline{q}}^\text{trial}.
 \end{gather}
-with $\Phi_\aleph^\text{trial}=\Phi_\aleph\left(\bs^\text{trial}_\aleph\right)$ in which $\bs^\text{trial}_\aleph=\mb{q}_\aleph^\text{trial}-\bbeta_{\aleph,n}$.
+
+Then trial surface can be evaluated.
+\begin{gather}
+f^\text{trial}=\Phi^\text{trial},
+\end{gather}
+with $\Phi^\text{trial}=\Phi\left(\mb{\overline{s}}^\text{trial},\overline{\alpha}_n\right)$ in which $\mb{\overline{s}}^\text{trial}=\mb{\overline{q}}^\text{trial}-\mb{\overline{\beta}}_{n}$.
 
 If both $f^\text{trial}_i$ and $f^\text{trial}_j$ are smaller than zero, indicating both ends are undergoing elastic loading/unloading.
 \subsubsection{Plasticity Evolution}
-For resistance and back resistance, one can obtain
-\begin{gather}
-\mb{q}_{n+1}=\mb{q}^\text{trial}-\mb{E}\dot{\mb{v}^p}=\mb{q}^\text{trial}-\mb{E}\sum\gamma_\aleph\mb{\zeta}_{\aleph,n+1},\\
-\bbeta_{n+1}=\bbeta_{n}+K\mb{E}\sum\gamma_\aleph{}\mb{\zeta}_{\aleph,n+1}.
+For resistance and back resistance, one can obtain the following by using the implicit (backward Euler) integration.
+\begin{gather}\label{eq:nm_qc}
+\mb{\overline{q}}_{n+1}=\mb{\overline{q}}^\text{trial}-\dot{\mb{\overline{v}}^p}=\mb{\overline{q}}^\text{trial}-\gamma\mb{\zeta}_{n+1},\\
+\mb{\overline{\beta}}_{n+1}=\mb{\overline{\beta}}_{n}+K\gamma{}\mb{\zeta}_{n+1}.
 \end{gather}
-
-Given that $\Phi_\aleph$ can be arbitrarily defined, there is no guarantee to have coaxiality between two vectors.
-\subsubsection{Local Residual}
-We take $\mb{x}=\begin{bmatrix}
-\mb{q}_{n+1}&\bbeta_{n+1}&\gamma_i&\gamma_j
+\subsubsection{Nodal Residual}
+We take $\underbrace{\mb{x}}_{7}=\begin{bmatrix}
+\underbrace{\mb{\overline{q}}_{n+1}}_{3}&\underbrace{\mb{\overline{\beta}}_{n+1}}_{3}&\underbrace{\gamma}_{1}
 \end{bmatrix}$ as the local variable, the local residual is
-\begin{gather}
+\begin{gather}\label{eq:nm_nodal_residual}
 \mb{R}=\left\{
 \begin{array}{l}
-\mb{q}_{n+1}-\mb{q}^\text{trial}+\mb{E}\sum\gamma_\aleph\mb{\zeta}_{\aleph,n+1},\\[4mm]
-\bbeta_{n+1}-\bbeta_{n}-K\mb{E}\sum\gamma_\aleph{}\mb{\zeta}_{\aleph,n+1},\\[4mm]
-\Phi_{i,n+1}-q^y_{i,n+1},\\[4mm]
-\Phi_{j,n+1}-q^y_{j,n+1}.
+\mb{\overline{q}}_{n+1}-\mb{\overline{q}}^\text{trial}+\gamma\mb{\zeta}_{n+1},\\[4mm]
+\mb{\overline{\beta}}_{n+1}-\mb{\overline{\beta}}_{n}-K\gamma{}\mb{\zeta}_{n+1},\\[4mm]
+\Phi_{n+1}\left(\mb{\overline{s}}_{n+1},\overline{\alpha}_{n+1}\right).
 \end{array}
 \right.
 \end{gather}
 
-The most distinctive difference that can be spotted in the activations of $\gamma_i$ and $\gamma_j$ are independent from each other. Physically, plasticity evolution can be activated when either end yields, or both yield. Thus, each end shall be handled separately.
+The most distinctive difference is that the activations of $\gamma_i$ and $\gamma_j$ are independent from each other. Physically, plasticity evolution can be activated when either end yields, or both yield. Thus, each end shall be handled separately.
+\subsubsection{Conformity}
+A special constraint needs to be applied to the above formulation, given that axial deformation/force is shared by both nodes, which implies
+\begin{gather}
+\mb{\overline{q}}_{i,n+1}^{\langle1\rangle}=\mb{\overline{q}}_{j,n+1}^{\langle1\rangle}
+\end{gather}
+where superscript $\langle1\rangle$ denotes the first element (axial force) in each nodal resistance vector.
 
-The implementation is not complicated with the subview of the matrix can be extracted.
+By enforcing such a constraint, it also implies
+\begin{gather}
+\mb{q}_{i,n+1}^{\langle1\rangle}=\mb{q}_{j,n+1}^{\langle1\rangle},\qquad
+\mb{\overline{\beta}}_{i,n+1}^{\langle1\rangle}=\mb{\overline{\beta}}_{j,n+1}^{\langle1\rangle},\qquad
+\bbeta_{i,n+1}^{\langle1\rangle}=\bbeta_{j,n+1}^{\langle1\rangle}.
+\end{gather}
+Once the constraint is met, the elemental resistance can be assembled as
+\begin{gather}
+\mb{\overline{q}}_{n+1}=\begin{bmatrix}
+\frac{1}{2}&\cdot&\cdot\\
+\cdot&1&\cdot\\
+\cdot&\cdot&\cdot\\
+\cdot&\cdot&1\\
+\cdot&\cdot&\cdot\\
+\end{bmatrix}\mb{\overline{q}}_{i,n+1}+\begin{bmatrix}
+\frac{1}{2}&\cdot&\cdot\\
+\cdot&\cdot&\cdot\\
+\cdot&1&\cdot\\
+\cdot&\cdot&\cdot\\
+\cdot&\cdot&1\\
+\end{bmatrix}\mb{\overline{q}}_{j,n+1}=\mb{T}_i^\mT\mb{\overline{q}}_{i,n+1}+\mb{T}_j^\mT\mb{\overline{q}}_{j,n+1},
+\end{gather}
 
-The consistent tangent operator can be easily extracted at local equilibrium as only the first equation contains non-zero partial derivative with regard to $\mb{v}_{n+1}$.
+The normalised resistance can be mapped back to true elemental resistance.
+\begin{gather}
+\begin{split}
+\mb{q}&=\mb{T}_i^\mT\diag{\begin{matrix}
+P^y&M_z^y&M_y^y
+\end{matrix}}\mb{\overline{q}}_i+\mb{T}_j^\mT\diag{\begin{matrix}
+P^y&M_z^y&M_y^y
+\end{matrix}}\mb{\overline{q}}_j\\
+&=\sum\mb{T}_\aleph^\mT\diag{\begin{matrix}
+P^y&M_z^y&M_y^y
+\end{matrix}}\mb{\overline{q}}_\aleph,
+\end{split}
+\end{gather}
+
+The consistent tangent operator can be derived using the chain rule.
 \subsection{Implementation}
+\subsubsection{Local System}
+The local system accounts for nodal residuals of both nodes, and the conformity constraint. Thus, it is a differential algebraic system. The Jacobian $\mb{J}$ can be expressed as
+\begin{gather}
+\underbrace{\mb{J}}_{14\times14}=\begin{bmatrix}
+\underbrace{\mb{J}_i}_{7\times7}&\cdot\\
+\cdot&\underbrace{\mb{J}_j}_{7\times7}
+\end{bmatrix},
+\end{gather}
+where $\mb{J}_\aleph$ is the corresponding nodal Jacobian derived from \eqsref{eq:nm_nodal_residual}.
+
+The equal axial force constraint can be applied via the multiplier method, thus, the elemental Jacobian $\mb{A}$ could be assembled as
+\begin{gather}
+\underbrace{\mb{A}}_{15\times15}=
+\begin{bmatrix}
+\mb{J}&\mb{C}^\mT\\
+\mb{C}&0
+\end{bmatrix},
+\end{gather}
+where $\mb{C}$ is the border matrix that can be expressed as
+\begin{gather}
+\underbrace{\mb{C}}_{1\times14}=\begin{bmatrix}1&\underbrace{\cdots}_{\text{six zeros}}&-1&\underbrace{\cdots}_{\text{six zeros}}\end{bmatrix}
+\end{gather}
+for a 3D beam element with the presence of back resistance. For other cases, the size of $\mb{A}$ is listed in the following table.
+\begin{table}[H]
+\centering
+\caption{size of $\mb{A}$ of different cases}
+\begin{tabular}{cll}
+    \toprule
+    dimension & back resistance             & size of $\mb{A}$                 \\ \midrule
+       2D     & without $\overline{\bbeta}$ & $7=2\times\left(2+1\right)+1$    \\
+       2D     & with $\overline{\bbeta}$    & $11=2\times\left(2+2+1\right)+1$ \\
+       3D     & without $\overline{\bbeta}$ & $9=2\times\left(3+1\right)+1$    \\
+       3D     & with $\overline{\bbeta}$    & $15=2\times\left(3+3+1\right)+1$ \\ \bottomrule\hline
+\end{tabular}
+\end{table}
+\subsubsection{Solving Procedure}
+The incremental differential algebraic equation can be expressed as
+\begin{gather}
+\mb{A}\begin{bmatrix}
+\Delta\mb{x}\\\Delta\lambda
+\end{bmatrix}=\begin{bmatrix}
+-\mb{R}\\0
+\end{bmatrix}\qquad\longrightarrow\qquad
+\begin{bmatrix}
+\mb{J}&\mb{C}^\mT\\
+\mb{C}&0
+\end{bmatrix}\begin{bmatrix}
+\Delta\mb{x}_i\\\Delta\mb{x}_j\\\Delta\lambda
+\end{bmatrix}=\begin{bmatrix}
+-\mb{R}_i\\-\mb{R}_j\\0
+\end{bmatrix},
+\end{gather}
+where $\Delta\lambda$ is the Lagrangian multiplier.
+
+By a standard static condensation, $\Delta\mb{x}$ can be obtained by
+\begin{gather}
+\Delta\mb{x}=-\mb{J}^{-1}\mb{R}+\mb{J}^{-1}\mb{C}^\mT\left(\mb{C}\mb{J}^{-1}\mb{C}^\mT\right)^{-1}\mb{C}\mb{J}^{-1}\mb{R}.
+\end{gather}
+Denoting $\mb{R}_a=\mb{J}^{-1}\mb{R}$ and $\mb{R}_b=\mb{J}^{-1}\mb{C}^\mT$, then
+\begin{gather}\label{nm:local_solving}
+\Delta\mb{x}=-\mb{R}_a+\mb{R}_b\left(\mb{C}\mb{R}_b\right)^{-1}\mb{C}\mb{R}_a=-\mb{R}_a+\dfrac{\mb{C}\cdot\mb{R}_a}{\mb{C}\cdot\mb{R}_b}\mb{R}_b,
+\end{gather}
+in which $\cdot$ denotes dot product of two vectors. \eqsref{nm:local_solving} involves two calls to matrix solving and two dot products.
+\subsubsection{Consistent Tangent Operator}
+The conventional local equilibrium based approach is adopted.
+\begin{gather}
+\pdfrac{\mb{R}}{\mb{x}}\md{\mb{x}}+\pdfrac{\mb{R}}{\mb{v}_{n+1}}\md{\mb{v}_{n+1}}=\mb{0},\\
+\ddfrac{\mb{x}}{\mb{v}_{n+1}}=-\left(\pdfrac{\mb{R}}{\mb{x}}\right)^{-1}\pdfrac{\mb{R}}{\mb{v}_{n+1}}.
+\end{gather}
+The same static condensation procedure can be applied to efficiently solve for $\ddfrac{\mb{x}}{\mb{v}_{n+1}}$. By denoting
+\begin{gather}
+\mb{R}_v=\mb{J}^{-1}\pdfrac{\mb{R}}{\mb{v}_{n+1}},
+\end{gather}
+in which $\pdfrac{\mb{R}}{\mb{v}_{n+1}}$ can be obtained from \eqsref{eq:nm_qa}, \eqsref{eq:nm_qb} and \eqsref{eq:nm_qc} as
+\begin{gather}
+\pdfrac{\mb{R}}{\mb{v}_{n+1}}=-\begin{bmatrix}
+\pdfrac{\overline{q}_i^\text{trial}}{\mb{v}_{n+1}}\\[2mm]
+\mb{0}\\[2mm]
+0\\[2mm]
+\pdfrac{\overline{q}_j^\text{trial}}{\mb{v}_{n+1}}\\[2mm]
+\mb{0}\\[2mm]
+0
+\end{bmatrix},\qquad
+\pdfrac{\overline{q}_\aleph^\text{trial}}{\mb{v}_{n+1}}=\begin{bmatrix}
+\dfrac{EA}{P^y}&\cdot&\cdot\\
+\cdot&\dfrac{EI_z}{M_z^y}&\cdot\\
+\cdot&\cdot&\dfrac{EI_y}{M_y^y}\\
+\end{bmatrix}\mb{T}_\aleph\mb{S},
+\end{gather}
+one can obtain
+\begin{gather}
+\ddfrac{\mb{x}}{\mb{v}_{n+1}}=-\mb{R}_v+\dfrac{1}{\mb{C}\cdot\mb{R}_b}\mb{R}_b\mb{C}\mb{R}_v.
+\end{gather}
+The corresponding $\ddfrac{\mb{\overline{q}}_\aleph}{\mb{v}_{n+1}}$ can be extracted from $\ddfrac{\mb{x}}{\mb{v}_{n+1}}$ accordingly.
+
+The consistent tangent operator can be computed from \eqsref{nm:total_q} via the chain rule as
+\begin{gather}
+\begin{split}
+\underbrace{\pdfrac{\mb{q}_{n+1}}{\mb{v}_{n+1}}}_{5\times5}&=\mb{T}_i^\mT\diag{\begin{matrix}
+P^y&M_z^y&M_y^y
+\end{matrix}}\ddfrac{\mb{\overline{q}}_i}{\mb{v}_{n+1}}+\mb{T}_j^\mT\diag{\begin{matrix}
+P^y&M_z^y&M_y^y
+\end{matrix}}\ddfrac{\mb{\overline{q}}_j}{\mb{v}_{n+1}}\\
+&=\sum\underbrace{\mb{T}_\aleph^\mT}_{5\times3}
+\underbrace{\diag{\begin{matrix}
+P^y&M_z^y&M_y^y
+\end{matrix}}}_{3\times3}
+\underbrace{\ddfrac{\mb{\overline{q}}_\aleph}{\mb{v}_{n+1}}}_{3\times5}.
+\end{split}
+\end{gather}
+\subsubsection{Example Implementation}
+The core functionality is to formulate Jacobian and residual for each node. This is implemented in the following function.
+\begin{cppcode}
+bool NonlinearNM::update_nodal_quantity(mat& jacobian, vec& residual, const double gm, const vec& q, const vec& b, const double alpha, const vec& trial_q, const vec& bn) const {
+    jacobian = eye(j_size, j_size);
+    residual = zeros(j_size);
+
+    const vec s = q - b;
+    const auto f = compute_f(s, alpha);
+
+    if(gm <= datum::eps && f < 0.) return false;
+
+    const auto g = compute_df(s, alpha);
+    const double n = norm(g);
+    const vec z = g / n;
+
+    const mat gdz = gm / n * (eye(n_size, n_size) - z * z.t()) * compute_ddf(s, alpha);
+
+    residual(sa) = q - trial_q + gm * z;
+    residual(sc).fill(f);
+
+    jacobian(sa, sa) += gdz;
+    jacobian(sa, sc) += z;
+
+    jacobian(sc, sa) = g.t();
+    jacobian(sc, sc).fill(compute_dh(s, alpha));
+
+    if(has_kinematic) {
+        residual(sb) = b - bn - kinematic_modulus * gm * z;
+
+        jacobian(sa, sb) -= gdz;
+
+        jacobian(sb, sa) -= kinematic_modulus * gdz;
+        jacobian(sb, sb) += kinematic_modulus * gdz;
+        jacobian(sb, sc) -= kinematic_modulus * z;
+
+        jacobian(sc, sb) = -g.t();
+    }
+
+    return true;
+}
+\end{cppcode}
+
+The element level local system can be formulated and solved via the multiplier method.
+\begin{cppcode}
+int NonlinearNM::update_trial_status(const vec& t_deformation) {
+    const vec incre_deformation = (trial_deformation = t_deformation) - current_deformation;
+
+    if(norm(incre_deformation) <= datum::eps) return SUANPAN_SUCCESS;
+
+    trial_history = current_history;
+    const vec current_betai(&current_history(0), n_size, false, true);
+    const vec current_betaj(&current_history(n_size), n_size, false, true);
+
+    vec betai(&trial_history(0), n_size, false, true);
+    vec betaj(&trial_history(n_size), n_size, false, true);
+    auto& alphai = trial_history(2llu * n_size);
+    auto& alphaj = trial_history(2llu * n_size + 1);
+    auto& flagi = trial_history(2llu * n_size + 2);
+    auto& flagj = trial_history(2llu * n_size + 3);
+
+    trial_resistance = current_resistance + initial_stiffness * incre_deformation;
+
+    const vec trial_qi = trial_resistance(si) / yield_force;
+    const vec trial_qj = trial_resistance(sj) / yield_force;
+
+    vec qi = trial_qi;
+    vec qj = trial_qj;
+
+    mat jacobian(g_size, g_size, fill::zeros);
+    vec residual(g_size), gamma(2, fill::zeros);
+
+    auto counter = 0u;
+    auto ref_error = 1.;
+    while(true) {
+        if(max_iteration == ++counter) {
+            suanpan_error("NonlinearNM2D cannot converge within %u iterations.\n", max_iteration);
+            return SUANPAN_FAIL;
+        }
+
+        mat t_jacobian;
+        vec t_residual;
+
+        if(update_nodal_quantity(t_jacobian, t_residual, gamma(0), qi, betai, alphai, trial_qi, current_betai)) flagi = 1.;
+        jacobian(0, 0, size(j_size, j_size)) = t_jacobian;
+        residual.head(j_size) = t_residual;
+
+        if(update_nodal_quantity(t_jacobian, t_residual, gamma(1), qj, betaj, alphaj, trial_qj, current_betaj)) flagj = 1.;
+        jacobian(j_size, j_size, size(j_size, j_size)) = t_jacobian;
+        residual.tail(j_size) = t_residual;
+
+        const vec ra = solve(jacobian, residual), rb = solve(jacobian, border);
+        const vec incre = ra - dot(border, ra) / dot(border, rb) * rb;
+
+        auto error = norm(residual);
+        if(1 == counter) ref_error = std::max(1., error);
+        suanpan_debug("NonlinearNM2D local iteration error: %.5E.\n", error /= ref_error);
+        if(error <= tolerance && norm(incre) <= tolerance) break;
+
+        qi -= incre(sa);
+        qj -= incre(sa + j_size);
+        if(has_kinematic) {
+            betai -= incre(sb);
+            betaj -= incre(sb + j_size);
+        }
+        gamma(0) -= incre(sc(0));
+        gamma(1) -= incre(sc(0) + j_size);
+        alphai -= incre(sc(0));
+        alphaj -= incre(sc(0) + j_size);
+    }
+
+    if(const mat right = [&] {
+        const mat ra = solve(jacobian, rabbit);
+        const vec rb = solve(jacobian, border);
+        return mat(ra - rb * border.t() * ra / dot(rb, border));
+    }(); SectionType::NM2D == section_type) {
+        trial_resistance = ti * (yield_force % qi) + tj * (yield_force % qj);
+
+        trial_stiffness = ti * diagmat(yield_force) * right.rows(sa) + tj * diagmat(yield_force) * right.rows(sa + j_size);
+    }
+    else {
+        trial_resistance.head(5) = ti * (yield_force % qi) + tj * (yield_force % qj);
+
+        trial_stiffness(0, 0, size(5, 5)) = ti * diagmat(yield_force) * right.rows(sa) + tj * diagmat(yield_force) * right.rows(sa + j_size);
+    }
+
+    return SUANPAN_SUCCESS;
+}
+\end{cppcode}
