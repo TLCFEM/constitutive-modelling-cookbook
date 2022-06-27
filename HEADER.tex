@@ -20,7 +20,8 @@
 \pgfplotsset{compat=1.18}
 \usepackage{DejaVuSansMono}
 \usepackage[T1]{fontenc}
-\usetikzlibrary{decorations.pathmorphing}
+\hypersetup{colorlinks}
+\usetikzlibrary{decorations.pathmorphing,shapes.geometric}
 \bibliographystyle{elsarticle-num}
 \usemintedstyle{manni}
 \definecolor{manni-bg}{RGB}{240,243,243}
@@ -34,6 +35,7 @@
 \newcommand*{\eqsref}[1]{Eq.~(\ref{#1})}
 \newcommand*{\figref}[1]{Fig.~\ref{#1}}
 \newcommand*{\algoref}[1]{Algorithm~\ref{#1}}
+\newcommand*{\tabref}[1]{Table~\ref{#1}}
 \newcommand*{\secref}[1]{\S~\ref{#1}}
 \newcommand*{\diag}[1]{\text{diag}\left(#1\right)}
 \newcommand*{\sign}[1]{\text{sign}\left(#1\right)}
@@ -52,6 +54,7 @@
 \newcommand{\bs}{\mb{s}}
 \newcommand{\bc}{\mb{c}}
 \newcommand{\be}{\mb{e}}
+\newcommand{\bv}{\mb{v}}
 \DeclarePairedDelimiter\abs{\lvert}{\rvert}
 \DeclarePairedDelimiter\norm{\lVert}{\rVert}
 \makeatletter
