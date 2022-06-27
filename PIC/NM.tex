@@ -1,0 +1,17 @@
+\begin{tikzpicture}[>=latex]
+\draw[->](-4,0)--(4,0)node[below]{$\overline{M}_z$};
+\draw[->](0,-2)--(0,3)node[right]{$\overline{P}$};
+\coordinate(A)at(0,0);
+\coordinate(B)at(-1,1);
+\node[fill=black,circle,inner sep=0,minimum size=2mm]at(A){};
+\node[fill=black,circle,inner sep=0,minimum size=2mm]at(B){};
+\draw[->,draw=red,line width=.6mm](A)--(B);
+\node[dotted,circle,draw=blue,line width=1mm,minimum width=2cm,minimum height=2cm]at(A){};
+\node[ellipse,draw=blue,line width=1mm,minimum width=5cm,minimum height=3cm](e)at(B){};
+\node[align=center]at(4,-1.5){$\Phi=\left(\dfrac{\overline{P}-\overline{\beta}_P}{h_P}\right)^2+\left(\dfrac{\overline{M}_z-\overline{\beta}_{M_z}}{h_M}\right)^2-1$\\[3mm]$h_P=1+\overline{\alpha}\qquad{}h_M=1+3\overline{\alpha}$};
+\draw[dotted,draw=blue,line width=1mm](2,2)--++(1,0)node[right]{initial surface};
+\draw[draw=blue,line width=1mm](2,1.5)--++(1,0)node[right,align=left]{subsequent surface};
+\draw[->,draw=red,line width=.6mm](2,1)--++(1,0)node[right]{change of centre};
+\draw[<-](-2,-.5)--++(-1,-1)node[fill=white,align=center,font=\tiny]{change shape and size due to\\(an)isotropic hardening};
+\draw[<-](B)++(0,.2)--++(.5,.7)node[fill=white,align=center,font=\tiny]{change centre due to\\kinematic hardening};
+\end{tikzpicture}

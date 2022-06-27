@@ -1,0 +1,24 @@
+\begin{tikzpicture}[]
+\begin{axis}[
+view={65}{10},
+axis lines=center,
+axis equal image,
+axis on top,
+y dir=reverse,
+xmin=0,ymin=0,zmin=0,
+xmax=.5,ymax=.6,zmax=.4,
+xticklabel=\empty,
+yticklabel=\empty,
+zticklabel=\empty,
+xlabel=$\overline{\mb{e}}^p_{M_{z,j}}$,
+ylabel=$\overline{\mb{e}}^p_{M_{z,i}}$,
+zlabel=$\overline{\mb{e}}^p_{P}$,
+every axis y label/.append style={at=(ticklabel* cs:0)}]
+\addplot3[smooth,line width=.4mm,red,dotted]file{PIC/XZ.txt};
+\addplot3[smooth,line width=.4mm,blue,dashed]file{PIC/YZ.txt};
+\addplot3[smooth,line width=.8mm]file{PIC/XYZ.txt};
+\end{axis}
+\draw[line width=.4mm,blue,dashed](8,2)--++(.5,0)node[right=2mm]{$\overline{\alpha}_i$ history};
+\draw[line width=.4mm,red,dotted](8,1.5)--++(.5,0)node[right=2mm]{$\overline{\alpha}_j$ history};
+\draw[line width=.8mm](8,.7)--++(.5,0)node[right=2mm,align=left]{$\overline{\alpha}$ history characterises\\the length of path};
+\end{tikzpicture}

@@ -1,0 +1,23 @@
+\begin{tikzpicture}[>=latex]
+\draw[->](-4,0)--(4,0)node[below]{$\overline{M}_z$};
+\draw[->](0,-3)--(0,3)node[right]{$\overline{P}$};
+\draw[<->,line width=.4mm,draw=blue]($(A)+(30:2.5)$)node[above right,font=\scriptsize,align=center]{may revolve during\\evolution}arc(30:90:2.5);
+\coordinate(A)at(0,0);
+\coordinate(B)at(1.8,-.3);
+\coordinate(C)at(60:2.5);
+\draw[|<->|](A)--++(150:2.5)node[midway,fill=white]{$B_s$};
+\node[fill=black,circle,inner sep=0,minimum size=2mm]at(A){};
+\node[fill=black,circle,inner sep=0,minimum size=2mm]at(B){};
+\node[fill=black,circle,inner sep=0,minimum size=2mm]at(C){};
+\node[dashed,circle,draw=black,minimum width=5cm,minimum height=5cm]at(A){};
+\node[circle,draw,line width=.6mm,minimum width=1cm,minimum height=1cm]at(A){};
+\node[circle,draw=blue,line width=.6mm,minimum width=1.2cm,minimum height=1.2cm]at(B){};
+\node[dotted,circle,draw=blue,line width=.6mm,minimum width=1.2cm,minimum height=1.2cm]at(C){};
+\draw[->,draw=red,line width=.6mm](A)--(B)node[midway,below]{$\overline{\bbeta}$};
+\draw[->,draw=red,line width=.6mm](B)--($(B)!.4!(C)$)node[right]{$\dot{\overline{\bbeta}}$};
+\draw[->,draw=red,line width=.6mm](A)--($(A)!.5!(C)$)node[right]{$\dot{\mb{\overline{e}}^p}$};
+\draw[<-](135:2.6)--++(-1,1)node[fill=white,align=center,font=\scriptsize]{bounding limit of\\centre of $\Phi$};
+\draw[<-]($(B)+(-135:.7)$)--++(-.5,-.5)node[anchor=north,fill=white,align=center,font=\scriptsize]{current $\Phi$\\may change\\size and shape};
+\draw[<-]($(A)+(-135:.6)$)--++(-.5,-.5)node[fill=white,align=center,font=\scriptsize]{initial $\Phi$};
+\draw[<-]($(C)+(45:.7)$)--++(.8,.6)node[fill=white,align=center,font=\scriptsize]{current projected\\image of $\Phi$};
+\end{tikzpicture}
