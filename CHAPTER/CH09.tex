@@ -103,6 +103,7 @@ int NonlinearGurson::update_trial_status(const vec& t_strain) {
 }
 \end{cppcode}
 \section{The \texorpdfstring{$N$-$M$}{N-M} Frame Element}
+In this section, we present a frame element that supports customisation of the $N$-$M$ interaction with the generalised plasticity theory. The core model is taken mainly from the literature, further discussions can be seen elsewhere \cite{Chang2023}.
 \subsection{Preliminaries}
 \subsubsection{Definitions and Kinematics}
 Consider a two--node beam\footnote{The word `beam' is used interchangeably with `frame' and/or `beam--column'.} element connecting nodes $i$ and $j$ with its rigid body motions removed, the resulting degrees of freedom are axial deformation $u$, rotational deformation $\theta_{z,i}$ of end $i$ and rotational deformation $\theta_{z,j}$ of end $j$, and additional two end rotations, $\theta_{y,i}$ and $\theta_{y,j}$ about weak axis in case of a 3D beam.
@@ -117,7 +118,7 @@ It is assumed that the beam is rigid against torsion (no torsion deformation).
 \draw[dashed](0,0)--(4,0);
 \node[ultra thick]at(0,0)[circle,draw,inner sep=0,minimum size=2mm,fill=white]{};
 \node[ultra thick]at(4,0)[circle,draw,inner sep=0,minimum size=2mm,fill=white]{};
-\NodalForce{0,0}[u(P)][N][\theta_{z,i}(M_{z,i})][1.4];
+\NodalForce{0,0}[N][N][\theta_{z,i}(M_{z,i})][1.4];
 \NodalForce{4,0}[-u(P)][N][\theta_{z,j}(M_{z,j})]{180}[1.4];
 \end{scope}
 \end{tikzpicture}
@@ -226,10 +227,6 @@ We further rewrite the above expression in the normalised space (normalised by y
 where the overbar $\overline{\left(\cdot\right)}$ denotes the normalised counterpart, for example,
 \begin{gather}\label{eq:nm_normalisedq}
 \mb{q}_\aleph=\begin{bmatrix}
-\overline{P}\\
-\overline{M}_{z,\aleph}\\
-\overline{M}_{y,\aleph}
-\end{bmatrix}=\begin{bmatrix}
 P^y&\cdot&\cdot\\\cdot&M_z^y&\cdot\\\cdot&\cdot&M_y^y
 \end{bmatrix}\mb{\overline{q}}_\aleph.
 \end{gather}
@@ -583,43 +580,24 @@ in which $\left(\cdot\right)^{\langle1-5\rangle}$ denotes the first five rows of
 \ddfrac{\mb{q}_{n+1}}{\bv_{n+1}}=\ddfrac{\mb{q}_{n+1}}{\be_{n+1}}\ddfrac{\be_{n+1}}{\bv_{n+1}}=\ddfrac{\mb{q}_{n+1}}{\be_{n+1}}\mb{S}.
 \end{gather}
 \subsection{Summary of The Proposed Model}
-The key expressions of both the previous and proposed models are listed in \tabref{tab:nm_key_eq} for comparison using the notation of this work.
+The key expressions of the proposed model are listed in \tabref{tab:nm_key_eq}.
 \begin{table}[H]
 \centering\footnotesize\renewcommand{\arraystretch}{2}
 \caption{summary of key expressions and parameters}\label{tab:nm_key_eq}
-\begin{tabular}{r|l|l}
+\begin{tabular}{r|l}
     \toprule
-                        & previous model \cite{Kostic2013}                                  & revised model                                                                                                                                                   \\ \midrule
-       nodal extraction &                                                                                         & $\left(\cdot\right)_\aleph=\mb{T}_\aleph\left(\cdot\right)$ for all nodal quantities                                                                            \\
-             kinematics & $\mb{q}=\mb{K}\left(\bv-\bv^p\right)$                                                   & $\mb{\overline{q}}=\overline{\be}-\overline{\be}^p$                                                                                                             \\
-          yield surface & $f_\aleph=\Phi_\aleph-H\alpha_\aleph$                                                   & $f=\langle\Phi_i\rangle+\langle\Phi_j\rangle$                                                                                                                   \\
-    interaction surface & $\Phi_\aleph=\Phi_\aleph\left(\mb{q}_\aleph,\bbeta_\aleph\right)$                       & $\Phi_\aleph=\Phi_\aleph\left(\mb{\overline{q}}_\aleph,\mb{\overline{\beta}}_\aleph,\overline{\alpha}_\aleph\right)$                                            \\
-                        & $\Phi_\aleph=\sum_{i=1}^{n}\left(a_i\prod_{r}\left(r-\beta_r\right)^{b_{i,r}}\right)-c$ & $\Phi_\aleph=\sum_{i=1}^{n}\left(a_i\prod_{r}\left(\dfrac{\overline{r}-\overline{\beta}_r}{h_r\left(\overline{\alpha}_\aleph\right)}\right)^{b_{i,r}}\right)-c$ \\
-              flow rule & $\dot{\overline{\bv}^p_\aleph}=\gamma_\aleph\pdfrac{f_\aleph}{\mb{q}_\aleph}$           & $\dot{\overline{\be}^p}=\gamma\mb{\zeta}=\gamma\pdfrac{f}{\mb{\overline{q}}}$                                                                                   \\
-    isotropic hardening & $\dot{\overline{\alpha}_\aleph}=\norm{\dot{\overline{\bv}^p_\aleph}}$                   & $\dot{\overline{\alpha}_\aleph}=\norm{\dot{\overline{\be}^p_\aleph}}=\norm{\mb{T}_\aleph\dot{\overline{\be}^p}}=\gamma\norm{\mb{T}_\aleph\mb{\zeta}}$           \\
-                        &                                                                                         & $h\left(\overline{\alpha}_\aleph\right)=1+H\overline{\alpha}+s-se^{-m\overline{\alpha}_\aleph}$                                                                 \\
-    kinematic hardening & $\dot{\overline{\bbeta}_\aleph}=K\mb{\varPi}\dot{\overline{\bv}^p_\aleph}$              & $\dot{\overline{\bbeta}}=K_b\dot{\overline{\be}^p}-K_a\norm{\dot{\overline{\be}^p}}\overline{\bbeta}$                                                           \\ \bottomrule
+                        & proposed model                                                                                                                                                  \\ \midrule
+       nodal extraction & $\left(\cdot\right)_\aleph=\mb{T}_\aleph\left(\cdot\right)$ for all nodal quantities                                                                            \\
+             kinematics & $\mb{\overline{q}}=\overline{\be}-\overline{\be}^p$                                                                                                             \\
+          yield surface & $f=\langle\Phi_i\rangle+\langle\Phi_j\rangle$                                                                                                                   \\
+    interaction surface & $\Phi_\aleph=\Phi_\aleph\left(\mb{\overline{q}}_\aleph,\mb{\overline{\beta}}_\aleph,\overline{\alpha}_\aleph\right)$                                            \\
+                        & $\Phi_\aleph=\sum_{i=1}^{n}\left(a_i\prod_{r}\left(\dfrac{\overline{r}-\overline{\beta}_r}{h_r\left(\overline{\alpha}_\aleph\right)}\right)^{b_{i,r}}\right)-c$ \\
+              flow rule & $\dot{\overline{\be}^p}=\gamma\mb{\zeta}=\gamma\pdfrac{f}{\mb{\overline{q}}}$                                                                                   \\
+    isotropic hardening & $\dot{\overline{\alpha}_\aleph}=\norm{\dot{\overline{\be}^p_\aleph}}=\norm{\mb{T}_\aleph\dot{\overline{\be}^p}}=\gamma\norm{\mb{T}_\aleph\mb{\zeta}}$           \\
+                        & $h\left(\overline{\alpha}_\aleph\right)=1+H\overline{\alpha}+s-se^{-m\overline{\alpha}_\aleph}$                                                                 \\
+    kinematic hardening & $\dot{\overline{\bbeta}}=K_b\dot{\overline{\be}^p}-K_a\norm{\dot{\overline{\be}^p}}\overline{\bbeta}$                                                           \\ \bottomrule
 \end{tabular}
 \end{table}
-The revisions and the corresponding justifications, along with the resulting improvements, are summarised as follows.
-\begin{enumerate}
-\item The previous model is developed on dimensional quantities $\bv$ and $\mb{q}$, but the yield surface is non-dimensional, resulting in the associative plastic flow be normalised by yield deformation (dimensionless).
-The hardening response then becomes dependent on element rigidities and yield forces.
-The new model is formulated in a non-dimensional space ($\overline{\be}$ and $\mb{\overline{q}}$), which corrects hardening response.
-\item The previous model uses \textbf{two} yield functions, each corresponds to an interaction surface.
-Each end has its own yield surface and plasticity history, the associative plastic flow is valid for each end but does not hold for elemental quantities since axial plastic deformation needs to be summed up.
-The proposed model uses only \text{one} yield function that accounts for both interaction surfaces, the plastic flow is truly associative and is valid at either element or node level.
-\item The previous model uses two plastic multipliers ($\gamma_\aleph$) due to two yield surfaces, which causes local bifurcation issue when two nodes are experiencing identical axial plastic history.
-The proposed model uses one $\gamma$ and is free from local numerical instability.
-\item The previous model uses a constant $H$ for isotropic hardening, but fails to generate linear isotropic hardening behaviour due to non-homogeneous attribute of interaction surface.
-The proposed model revises the definition of isotropic hardening and manages to generate desired isotropic hardening response.
-\item The previous model uses inconsistent constitutive expression for $\mb{q}$ and $\bbeta$ as scaling matrix $\mb{\varPi}$ is diagonal while elasticity matrix $\mb{K}$ is not.
-The desired kinematic hardening is not achievable.
-The proposed model adopts consistent evolution for $\bbeta$.
-\item The previous model further adopts a limiting/bounding surface, which originates from the generalised plasticity framework in the original literature \cite{Auricchio1994}, to generate nonlinear hardening response.
-The new model achieves the same response by adopting an Armstrong--Fredrick type kinematic hardening rule instead.
-The underlying concept is still a bounding surface but applied to back resistance instead.
-\end{enumerate}
 
 An example implementation of the proposed frame element can be seen in \algoref{algo:beam_model}.
 Additional stabilisation considerations, such as line search \cite{Dutko1993}, can be accounted for to improve numerical performance.
