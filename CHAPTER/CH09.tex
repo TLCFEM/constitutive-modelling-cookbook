@@ -104,6 +104,8 @@ int NonlinearGurson::update_trial_status(const vec& t_strain) {
 \end{cppcode}
 \section{The \texorpdfstring{$N$-$M$}{N-M} Frame Element}
 In this section, we present a frame element that supports customisation of the $N$-$M$ interaction with the generalised plasticity theory. The core model is taken mainly from the literature, further discussions can be seen elsewhere \cite{Chang2023}.
+
+This element fuses the concepts of element, section and material altogether, thus, it can be deemed as a material model as well.
 \subsection{Preliminaries}
 \subsubsection{Definitions and Kinematics}
 Consider a two--node beam\footnote{The word `beam' is used interchangeably with `frame' and/or `beam--column'.} element connecting nodes $i$ and $j$ with its rigid body motions removed, the resulting degrees of freedom are axial deformation $u$, rotational deformation $\theta_{z,i}$ of end $i$ and rotational deformation $\theta_{z,j}$ of end $j$, and additional two end rotations, $\theta_{y,i}$ and $\theta_{y,j}$ about weak axis in case of a 3D beam.
