@@ -1,0 +1,139 @@
+\chapter{Timber}
+\section{TimberPD}
+Here the 3D model proposed in \cite{SirumbalZapata2018} is presented.
+
+The model is based on the split of the effective stress $\bbsigma$ such that
+\begin{gather}
+\bbsigma=\bbsigma_t+\bbsigma_c,
+\end{gather}
+with
+\begin{gather}
+\bbsigma_t=\sum_{i=1}^{3}\left\langle\hat{\sigma}_i\right\rangle\bp_i\otimes\bp_i,\qquad
+\bbsigma_c=\sum_{i=1}^{3}\left(\hat{\sigma}_i-\left\langle\hat{\sigma}_i\right\rangle\right)\bp_i\otimes\bp_i,
+\end{gather}
+where $\bp_i$ and $\hat{\sigma}_i$ are eigenvectors and eigenvalues of the second order tensor $\bbsigma$. The above expression shall be interpreted with the tensor notation.
+
+The final stress can be obtained after applying damage factors.
+\begin{gather}
+\bsigma=\left(1-\omega_t\right)\bbsigma_t+\left(1-\omega_c\right)\bbsigma_c.
+\end{gather}
+\subsection{Plasticity}
+\subsubsection{Yield Function}
+It is assumed that the tensile part $\bbsigma_t$ is not affected by plasticity, thus, the yield function $F$ only contains the compressive part.
+\begin{gather}
+F=\dfrac{1}{2}\bbsigma_c^\mT\mb{P}\bbsigma_c+\bbsigma_c^\mT\mb{q}\bar{\sigma}_y-\bar{\sigma}_y^2,
+\end{gather}
+where $\mb{P}$ is a constant scaling matrix that possesses the form
+\begin{gather}
+\mb{P}=\begin{bmatrix}
+\dfrac{2}{f_{xx}^2}&-\dfrac{\lambda_{xy}}{f_{xx}f_{yy}}&-\dfrac{\lambda_{zx}}{f_{zz}f_{xx}}&&&\\[3mm]
+-\dfrac{\lambda_{xy}}{f_{xx}f_{yy}}&\dfrac{2}{f_{yy}^2}&-\dfrac{\lambda_{yz}}{f_{yy}f_{zz}}&&&\\[3mm]
+-\dfrac{\lambda_{zx}}{f_{zz}f_{xx}}&-\dfrac{\lambda_{yz}}{f_{yy}f_{zz}}&\dfrac{2}{f_{zz}^2}&&&\\[3mm]
+&&&\dfrac{2}{f_{xy}^2}&&\\[3mm]
+&&&&\dfrac{2}{f_{yz}^2}&\\[3mm]
+&&&&&\dfrac{2}{f_{zx}^2}
+\end{bmatrix},
+\end{gather}
+$\bq$ is a constant scaling vector of the form
+\begin{gather}
+\bq^\mT=\begin{bmatrix}
+\dfrac{2\beta_x}{f_{xx}}&\dfrac{2\beta_y}{f_{yy}}&\dfrac{2\beta_z}{f_{zz}}&\cdot&\cdot&\cdot
+\end{bmatrix},
+\end{gather}
+in which $f_{ij}$, $\lambda_{ij}$ and $\beta_i$ are constants.
+\subsubsection{Flow Rule}
+The associated plasticity is assumed such that the plastic potential $G$ is identical to $F$. The plastic flow direction is then
+\begin{gather}
+\bn=\pdfrac{G}{\bbsigma_c}=\pdfrac{F}{\bbsigma_c}=\mb{P}\bbsigma_c+\mb{q}\bar{\sigma}_y.
+\end{gather}
+Accordingly, the flow rule is
+\begin{gather}
+\dot{\bvarepsilon^p}=\gamma\bn=\gamma\left(\mb{P}\bbsigma_c+\mb{q}\bar{\sigma}_y\right).
+\end{gather}
+Since $F$ is a function of only $\bbsigma_c$, $\dot{\bvarepsilon^p}$ only contributes to the compressive part of plastic strain, this leads to
+\begin{gather}
+\dot{\bbsigma}_c=-\mb{E}\dot{\bvarepsilon^p}=-\mb{E}\gamma\bn
+\end{gather}
+where $\mb{E}$ is the elastic matrix.
+
+With the trial effective stress $\bbsigma^\text{trial}$ being computed as
+\begin{gather}
+\bbsigma^\text{trial}=\mb{E}\left(\bvarepsilon_{n+1}-\bvarepsilon^p_n\right),
+\end{gather}
+the corresponding compressive part $\bbsigma^\text{trial}_c$ can be computed similarly, then by the flow rule,
+\begin{gather}
+\bbsigma_c=\bbsigma^\text{trial}_c-\mb{E}\gamma\bn,\\
+\bbsigma^\text{trial}_c=\left(\mb{I}+\gamma\mb{E}\mb{P}\right)\bbsigma_c+\gamma\mb{E}\mb{q}\bar{\sigma}_y.
+\end{gather}
+This implies
+\begin{gather}
+\left(\mb{I}+\gamma\mb{E}\mb{P}\right)\bbsigma_c+\gamma\mb{E}\mb{q}\bar{\sigma}_y-\bbsigma^\text{trial}_c=\mb{0}.
+\end{gather}
+\subsubsection{Hardening Law}
+Linear hardening is assumed for the reference yield stress.
+\begin{gather}
+\bar{\sigma}_y=1+hk.
+\end{gather}
+It shall be noted that in this model, proportional linear hardening is assumed along all directions, thus, there is only one hardening ratio $h$.
+
+The evolution of $k$ is driven by the plastic multiplier.
+\begin{gather}
+\dot{k}=\gamma\sqrt{\bn^\mT\mb{T}\bn},
+\end{gather}
+with scaling matrix $\mb{T}=\diag{\begin{matrix}
+1&1&1&\frac{1}{2}&\frac{1}{2}&\frac{1}{2}
+\end{matrix}}$.
+\subsubsection{Local Residual}
+Unlike the original formulation, here we choose three equations as the residuals that need to implicitly integrated.
+\begin{gather}
+\mb{R}=\left\{
+\begin{array}{l}
+k-\gamma\sqrt{\bn^\mT\mb{T}\bn}-k_n,\\[4mm]
+\dfrac{1}{2}\bbsigma_c^\mT\mb{P}\bbsigma_c+\bbsigma_c^\mT\mb{q}\bar{\sigma}_y-\bar{\sigma}_y^2,\\[4mm]
+\left(\mb{I}+\gamma\mb{E}\mb{P}\right)\bbsigma_c+\gamma\mb{E}\mb{q}\bar{\sigma}_y-\bbsigma^\text{trial}_c.
+\end{array}
+\right.
+\end{gather}
+
+Denoting $n=\sqrt{\bn^\mT\mb{T}\bn}$, by the chain rule,
+\begin{gather}
+\pdfrac{n}{}=\pdfrac{n}{\bn}\pdfrac{\bn}{}=\dfrac{\bn^\mT\mb{T}}{\sqrt{\bn^\mT\mb{T}\bn}}\pdfrac{\bn}{}.
+\end{gather}
+Furthermore,
+\begin{gather}
+\pdfrac{\bn}{\bbsigma_c}=\mb{P},\qquad
+\pdfrac{\bn}{k}=\bq{}h.
+\end{gather}
+
+By choosing independent variables as $\mb{x}=\begin{bmatrix}
+\delta{}k&\delta\gamma&\delta\bbsigma_c
+\end{bmatrix}^\mT$, the Jacobian can be then computed as
+\begin{gather}
+\mb{J}=\pdfrac{\mb{R}}{\mb{x}}=\begin{bmatrix}
+1-\gamma\bmm\bq{}h&-n&-\gamma\bmm\mb{P}\\
+\left(\bbsigma_c^\mT\mb{q}-2-2hk\right)h&\cdot&\bn^\mT\\
+\gamma\mb{E}\mb{q}h&\mb{E}\mb{P}\bbsigma_c+\mb{E}\mb{q}\bar{\sigma}_y&\mb{I}+\gamma\mb{E}\mb{P}
+\end{bmatrix},
+\end{gather}
+in which $\bmm=\dfrac{\bn^\mT\mb{T}}{\sqrt{\bn^\mT\mb{T}\bn}}$.
+\subsection{Damage}
+The damage evolution is governed by the equivalent stress $\bar{\tau}_{\aleph}$.
+\begin{gather}
+\bar{\tau}_{\aleph}=\sqrt{\dfrac{1}{2}\bbsigma_\aleph^\mT\mb{H}_\aleph\bbsigma_\aleph},
+\end{gather}
+that covers both tensile and compressive cases.
+
+The damage variables are updated based on the maximum history of $\bar{\tau}_{\aleph}$, that is
+\begin{gather}
+r_\aleph=\max_t\bar{\tau}_{\aleph},
+\end{gather}
+and
+\begin{gather}
+\omega_t=1-\dfrac{r_{t,0}}{r_t}\left(1-n+n\exp\left(b\left(r_{t,0}-r_t\right)\right)\right),\\
+\omega_c=\beta\left(1-\dfrac{r_{c,0}}{r_c}\right)^m.
+\end{gather}
+
+The final stress is
+\begin{gather}
+\bsigma=\left(1-\omega_t\right)\bbsigma_t+\left(1-\omega_c\right)\bbsigma_c.
+\end{gather}
