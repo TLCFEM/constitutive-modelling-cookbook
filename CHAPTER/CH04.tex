@@ -281,9 +281,64 @@ int NonlinearJ2::update_trial_status(const vec& t_strain) {
     return SUANPAN_SUCCESS;
 }
 \end{cppcode}
-\section{Hoffman J2 Model}
+\section{Hoffman J2 Model}\label{sec:hoffman}
 \subsection{Theory}
+\subsubsection{Yield Function}
+The yield function adopts the Hoffman criterion.
+\begin{gather}
+F=\dfrac{1}{2}\bsigma^\mT\mb{P}\bsigma+\mb{q}^\mT\bsigma-\sigma_y^2,
+\end{gather}
+where $\mb{P}=\mb{P}^\mT$ and $\bq$ are constant scaling matrix/vector of various forms \cite{Oller2003} that depend on material constants.
+\subsubsection{Flow Rule}
+The associated plasticity is assumed such that the plastic potential $G$ is identical to $F$. The plastic flow direction is then
+\begin{gather}
+\bn=\pdfrac{G}{\bsigma}=\pdfrac{F}{\bsigma}=\mb{P}\bsigma+\mb{q}.
+\end{gather}
+The flow rule can be defined as
+\begin{gather}
+\dot{\bvarepsilon^p}=\gamma\bn.
+\end{gather}
+\subsubsection{Hardening Law}
+The reference yield stress $\sigma_y$ is defined as a function of the accumulated equivalent plastic strain $\varepsilon_{p}$.
+\begin{gather}
+\sigma_y=H\left(\varepsilon_{p}\right).
+\end{gather}
+The evolution of $\varepsilon_{p}$ is driven by the norm of $\dot{\bvarepsilon^p}$.
+\begin{gather}
+\dot{\varepsilon^p}=\norm{\dot{\bvarepsilon^p}}=\gamma\norm{\bn},
+\end{gather}
+where $\norm{\bn}$, in matrix form, can be expressed as
+\begin{gather}
+\norm{\bn}=\sqrt{\dfrac{2}{3}\bn^\mT\mb{T}\bn},
+\end{gather}
+with $\mb{T}=\diag{\begin{matrix}
+1&1&1&\dfrac{1}{2}&\dfrac{1}{2}&\dfrac{1}{2}
+\end{matrix}}$.
 \subsection{Formulation}
+\subsubsection{Local Residual}
+The residual is chosen as follows.
+\begin{gather}
+\mb{R}=\left\{
+\begin{array}{l}
+\dfrac{1}{2}\bsigma^\mT\mb{P}\bsigma+\mb{q}^\mT\bsigma-\sigma_y^2,\\[4mm]
+\bsigma+\gamma\mb{E}\bn-\bsigma^\text{trial}.
+\end{array}
+\right.
+\end{gather}
+
+By choosing $\mb{x}=\begin{bmatrix}
+\delta\gamma&\delta\bsigma
+\end{bmatrix}^\mT$ as the independent variables, the Jacobian can be then computed as
+\begin{gather}
+\mb{J}=\pdfrac{\mb{R}}{\mb{x}}=\begin{bmatrix}
+-2\sigma_y\ddfrac{\sigma_y}{\varepsilon_{p}}\norm{\bn}&\bn^\mT-2\sigma_y\ddfrac{\sigma_y}{\varepsilon_{p}}\gamma\ddfrac{\norm{\bn}}{\bn}\mb{P}\\[4mm]
+\mb{E}\mb{n}&\mb{I}+\gamma\mb{E}\mb{P}
+\end{bmatrix}.
+\end{gather}
+In the above expression,
+\begin{gather}
+\ddfrac{\norm{\bn}}{\bn}=\dfrac{2}{3}\dfrac{\bn^\mT\mb{T}}{\norm{\bn}}.
+\end{gather}
 \subsection{Implementation}
 \begin{cppcode}
 int NonlinearHoffman::update_trial_status(const vec& t_strain) {
@@ -291,57 +346,66 @@ int NonlinearHoffman::update_trial_status(const vec& t_strain) {
 
     if(norm(incre_strain) <= tolerance) return SUANPAN_SUCCESS;
 
-    trial_stress = current_stress + (trial_stiffness = initial_stiffness) * incre_strain;
-
     trial_history = current_history;
-    auto& plastic_strain = trial_history(0);
-    const auto& current_plastic_strain = current_history(0);
+    auto& eqv_strain = trial_history(0);
+    const auto& current_eqv_strain = current_history(0);
+    vec plastic_strain(&trial_history(1), 6, false, true);
 
-    auto k = compute_k(plastic_strain);
+    const vec predictor = (trial_stiffness = initial_stiffness) * (trial_strain - plastic_strain);
+    trial_stress = predictor;
 
-    auto residual = compute_yield_function(trial_stress) - k * k;
+    auto gamma = 0., ref_error = 1.;
 
-    if(residual <= 0.) return SUANPAN_SUCCESS;
+    vec incre, residual(7);
+    mat jacobian(7, 7);
 
-    const vec e_strain = solve(initial_stiffness, trial_stress);
+    auto counter = 0u;
+    while(true) {
+        if(max_iteration == ++counter) {
+            suanpan_error("Cannot converge within {} iterations.\n", max_iteration);
+            return SUANPAN_FAIL;
+        }
 
-    auto gamma = 0.;
+        const vec factor_a = proj_a * trial_stress;
+        const vec n = factor_a + proj_b;
+        const auto norm_n = root_two_third * tensor::strain::norm(n);
+        const auto k = compute_k(eqv_strain = current_eqv_strain + gamma * norm_n);
+        const auto f = dot(trial_stress, .5 * factor_a + proj_b) - k * k;
 
-    double factor;
+        if(1u == counter && f < 0.) return SUANPAN_SUCCESS;
 
-    auto hessian = initial_stiffness;
-    auto t_stress = trial_stress;
-    vec n = proj_a * trial_stress + proj_b;
-    auto eta = root_two_third * tensor::strain::norm(n);
-    auto dk = compute_dk(plastic_strain);
-    auto gradient = dot(n, initial_stiffness * n) + (factor = 2. * k * dk * eta);
+        const rowvec dn = 2. / 3. / norm_n * (n % tensor::strain::norm_weight).t();
+        const auto factor_b = 2. * k * compute_dk(eqv_strain);
 
-    unsigned counter = 0;
-    while(++counter < max_iteration) {
-        const auto incre_gamma = residual / gradient;
-        const auto error = fabs(incre_gamma);
-        suanpan_extra_debug("Hoffman local iterative loop error: %.5E.\n", error);
-        if(error <= tolerance || fabs(residual) <= tolerance) break;
-        hessian = inv(inv_stiffness + (gamma += incre_gamma) * proj_a);
-        n = proj_a * (t_stress = hessian * (e_strain - gamma * proj_b)) + proj_b;
-        plastic_strain = current_plastic_strain + gamma * (eta = root_two_third * tensor::strain::norm(n));
-        k = compute_k(plastic_strain);
-        dk = compute_dk(plastic_strain);
-        residual = compute_yield_function(t_stress) - k * k;
-        gradient = dot(n, hessian * n) + (factor = 2. * k * dk * eta);
+        residual(sa) = f;
+        residual(sb) = trial_stress + gamma * initial_stiffness * n - predictor;
+
+        jacobian(sa, sa) = -factor_b * norm_n;
+        jacobian(sa, sb) = n.t() - factor_b * gamma * dn * proj_a;
+        jacobian(sb, sa) = initial_stiffness * n;
+        jacobian(sb, sb) = eye(6, 6) + gamma * elastic_a;
+
+        if(!solve(incre, jacobian, residual)) return SUANPAN_FAIL;
+
+        const auto error = norm(incre);
+        if(1u == counter && error > ref_error) ref_error = error;
+        suanpan_debug("Local plasticity iteration error: {:.5E}.\n", error / ref_error);
+
+        if(error <= tolerance * std::max(1., ref_error)) {
+            plastic_strain += gamma * n;
+
+            mat left, right(7, 6, fill::zeros);
+            right.rows(sb) = initial_stiffness;
+
+            if(!solve(left, jacobian, right)) return SUANPAN_FAIL;
+
+            trial_stiffness = left.rows(sb);
+
+            return SUANPAN_SUCCESS;
+        }
+
+        gamma -= incre(sa);
+        trial_stress -= incre(sb);
     }
-
-    if(max_iteration == counter) {
-        suanpan_error("Hoffman cannot converge within %u iterations.\n", max_iteration);
-        return SUANPAN_FAIL;
-    }
-
-    trial_stress = t_stress;
-
-    const rowvec nts = (n.t() - four_third * k * dk * gamma / eta * (n % tensor::strain::norm_weight).t() * proj_a) * hessian;
-
-    trial_stiffness = hessian * (eye(6, 6) - n * nts / (dot(nts, n) + factor));
-
-    return SUANPAN_SUCCESS;
 }
 \end{cppcode}
