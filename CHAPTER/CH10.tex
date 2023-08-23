@@ -36,3 +36,71 @@ The final stress is
 \begin{gather}
 \bsigma=\left(1-\omega_t\right)\bbsigma_t+\left(1-\omega_c\right)\bbsigma_c.
 \end{gather}
+\subsection{Implementation}
+\begin{cppcode}
+int TimberPD::update_trial_status(const vec& t_strain) {
+    if(SUANPAN_SUCCESS != BilinearHoffman::update_trial_status(t_strain)) return SUANPAN_FAIL;
+
+    if(norm(incre_strain) <= tolerance) return SUANPAN_SUCCESS;
+
+    vec principal_stress;    // 3
+    mat principal_direction; // 3x3
+    if(!eig_sym(principal_stress, principal_direction, tensor::stress::to_tensor(trial_stress), "std")) return SUANPAN_FAIL;
+
+    mat stiffness_t = transform::eigen_to_tensile_derivative(principal_stress, principal_direction);
+    mat stiffness_c = eye(6, 6) - stiffness_t;
+
+    const vec sigma_t = transform::eigen_to_tensile_stress(principal_stress, principal_direction);
+    const vec sigma_c = trial_stress - sigma_t;
+
+    const auto omega_t = update_damage_t(sigma_t, stiffness_t);
+    const auto omega_c = update_damage_c(sigma_c, stiffness_c);
+
+    trial_stress = (1. - omega_t) * sigma_t + (1. - omega_c) * sigma_c;
+    trial_stiffness = (stiffness_t + stiffness_c) * trial_stiffness;
+
+    return SUANPAN_SUCCESS;
+}
+
+double TimberPD::update_damage_t(const vec& sigma_t, mat& stiffness_t) {
+    auto& r_t = trial_history(7);
+
+    bool new_damage_t = false;
+    if(const auto eqv_stress_t = sqrt(.5 * dot(hill_t * sigma_t, sigma_t)); eqv_stress_t > r_t) {
+        new_damage_t = true;
+        r_t = eqv_stress_t;
+    }
+
+    const auto omega_t = compute_damage_t(r_t);
+    if(new_damage_t) {
+        const auto domega_t = ini_r_t / r_t / r_t * ((b_t * n_t * r_t + n_t) * exp(b_t * (ini_r_t - r_t)) - n_t + 1.);
+        stiffness_t = ((1. - omega_t) * eye(6, 6) - sigma_t * domega_t * .5 / r_t * sigma_t.t() * hill_t) * stiffness_t;
+    }
+    else stiffness_t *= 1. - omega_t;
+
+    return omega_t;
+}
+
+double TimberPD::update_damage_c(const vec& sigma_c, mat& stiffness_c) {
+    auto& r_c = trial_history(8);
+
+    bool new_damage_c = false;
+    if(const auto eqv_stress_c = sqrt(.5 * dot(hill_c * sigma_c, sigma_c)); eqv_stress_c > r_c) {
+        new_damage_c = true;
+        r_c = eqv_stress_c;
+    }
+
+    const auto omega_c = compute_damage_c(r_c);
+    if(new_damage_c) {
+        const auto domega_c = m_c * ini_r_c / r_c * omega_c / (r_c - ini_r_c);
+        stiffness_c = ((1. - omega_c) * eye(6, 6) - sigma_c * domega_c * .5 / r_c * sigma_c.t() * hill_c) * stiffness_c;
+    }
+    else stiffness_c *= 1. - omega_c;
+
+    return omega_c;
+}
+
+double TimberPD::compute_damage_t(const double r_t) const { return 1. - ini_r_t / r_t * (1. - n_t + n_t * exp(b_t * (ini_r_t - r_t))); }
+
+double TimberPD::compute_damage_c(const double r_c) const { return b_c * pow(std::max(datum::eps, 1. - ini_r_c / r_c), m_c); }
+\end{cppcode}
