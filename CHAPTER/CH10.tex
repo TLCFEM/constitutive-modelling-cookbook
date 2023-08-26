@@ -17,10 +17,10 @@ The effective stress $\bbsigma$ obeys the conventional hardening model using the
 \end{gather}
 \subsection{Damage}
 The damage part follows the one proposed in \cite{SirumbalZapata2018}. The damage evolution is governed by the equivalent stress $\bar{\tau}_{\aleph}$.
-\begin{gather}
+\begin{gather}\label{eq:timber_damage}
 \bar{\tau}_{\aleph}=\sqrt{\dfrac{1}{2}\bbsigma_\aleph^\mT\mb{H}_\aleph\bbsigma_\aleph},
 \end{gather}
-that covers both tensile and compressive cases.
+that covers both tensile and compressive cases. The matrix $\mb{H}_\aleph$ is the projection matrix of the Hill criterion, which is a special case of \eqsref{eq:hoffman_criterion}. For $\aleph=t$, set $f_{ii}^c=f_{ii}^t$. For $\aleph=c$, set $f_{ii}^t=f_{ii}^c$. It could be noted that in either case, $\mb{q}=\mb{0}$, thus, \eqsref{eq:timber_damage} does not contain a second term.
 
 The damage variables are updated based on the maximum history of $\bar{\tau}_{\aleph}$, that is
 \begin{gather}
@@ -35,6 +35,12 @@ and
 The final stress is
 \begin{gather}
 \bsigma=\left(1-\omega_t\right)\bbsigma_t+\left(1-\omega_c\right)\bbsigma_c.
+\end{gather}
+\subsection{Consistent Tangent Stiffness}
+In the case of activation of damage evolution,
+\begin{gather}
+\pdfrac{\bsigma}{\bvarepsilon}=\left(\left(\left(1-\omega_t\right)\mb{I}-\bbsigma_t\ddfrac{\omega_t}{r_t}\ddfrac{r_t}{\bbsigma_t}\right)\ddfrac{\bbsigma_t}{\bbsigma}
++\left(\left(1-\omega_c\right)\mb{I}-\bbsigma_c\ddfrac{\omega_c}{r_c}\ddfrac{r_c}{\bbsigma_c}\right)\ddfrac{\bbsigma_c}{\bbsigma}\right)\pdfrac{\bbsigma}{\bvarepsilon}.
 \end{gather}
 \subsection{Implementation}
 \begin{cppcode}
