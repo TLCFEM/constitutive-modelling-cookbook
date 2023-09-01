@@ -287,7 +287,7 @@ Here we introduce an anisotropic model that adopts the Hoffman yielding criterio
 \subsubsection{Yield Function}
 The yield function adopts the Hoffman criterion.
 \begin{gather}
-F=\dfrac{1}{2}\bsigma^\mT\mb{P}\bsigma+\mb{q}^\mT\bsigma-\sigma_y^2,
+f=\dfrac{1}{2}\bsigma^\mT\mb{P}\bsigma+\mb{q}^\mT\bsigma-\sigma_y^2,
 \end{gather}
 where $\mb{P}=\mb{P}^\mT$ and $\bq$ are constant scaling matrix/vector of various forms \cite{Oller2003} that depend on material constants.
 
@@ -320,9 +320,9 @@ T_3=\dfrac{1}{f_{33}^tf_{33}^c},
 \end{gather}
 with $f_{ij}^\aleph$ representing the yielding stress along different directions.
 \subsubsection{Flow Rule}
-The associated plasticity is assumed such that the plastic potential $G$ is identical to $F$. The plastic flow direction is then
+The associated plasticity is assumed such that the plastic potential $g$ is identical to $f$. The plastic flow direction is then
 \begin{gather}
-\bn=\pdfrac{G}{\bsigma}=\pdfrac{F}{\bsigma}=\mb{P}\bsigma+\mb{q}.
+\bn=\pdfrac{g}{\bsigma}=\pdfrac{f}{\bsigma}=\mb{P}\bsigma+\mb{q}.
 \end{gather}
 The flow rule can be defined as
 \begin{gather}
@@ -331,9 +331,9 @@ The flow rule can be defined as
 \subsubsection{Hardening Law}
 The reference yield stress $\sigma_y$ is defined as a function of the accumulated equivalent plastic strain $\varepsilon_{p}$.
 \begin{gather}
-\sigma_y=H\left(\varepsilon_{p}\right).
+\sigma_y=H\left(\varepsilon^{p}\right).
 \end{gather}
-The evolution of $\varepsilon_{p}$ is driven by the norm of $\dot{\bvarepsilon^p}$.
+The evolution of $\varepsilon^{p}$ is driven by the norm of $\dot{\bvarepsilon^p}$.
 \begin{gather}
 \dot{\varepsilon^p}=\norm{\dot{\bvarepsilon^p}}=\gamma\norm{\bn},
 \end{gather}
@@ -345,33 +345,102 @@ with $\mb{T}=\diag{\begin{matrix}
 1&1&1&\dfrac{1}{2}&\dfrac{1}{2}&\dfrac{1}{2}
 \end{matrix}}$.
 \subsection{Formulation}
-To some extend, the model is even simpler than the von Mises model as there is no back stress to support kinematic hardening. Furthermore, the yield function involves only matrix--vector operations, the derivatives are relatively easy to compute.
+To some extend, the model is even simpler than the von Mises model as there is no back stress to support kinematic hardening. Furthermore, the yield function involves only matrix--vector operations, the corresponding derivatives are relatively easy to compute.
+\begin{table}[ht]
+\centering
+\begin{tabular}{rl}
+\toprule
+Constitutive Law&$\bsigma=\mb{D}:\left(\bvarepsilon-\bvarepsilon^p\right)$\\
+Yield Function&$f=\dfrac{1}{2}\bsigma^\mT\mb{P}\bsigma+\mb{q}^\mT\bsigma-\sigma_y^2$\\
+Flow Rule&$\dot{\bvarepsilon^p}=\gamma\bn$\\
+Hardening Law&$\dot{\varepsilon^p}=\gamma\norm{\bn}$\\\bottomrule
+\end{tabular}
+\end{table}
+\subsubsection{Elastic Loading/Unloading}
+Compared with the von Mises framework, there is no essential difference in terms of elastic loading/unloading, the plasticity is frozen at the beginning of each substep, allowing one to compute the trial stress such that
+\begin{gather}
+\bsigma^\text{trial}=\mb{D}:\left(\bvarepsilon_{n+1}-\bvarepsilon^p_n\right)\xcancel{=\bsigma_n+\mb{D}:\left(\bvarepsilon_{n+1}-\bvarepsilon_n\right)}.
+\end{gather}
+One shall note that the second form is not used here. In most cases, both forms are equivalent. However, some models may further apply damage mechanics to the result of plasticity, making the second form incorrect (as $\bsigma_n$ may contain damage reductions).
+
+The trial yield function can then be computed using the unchanged plastic strain.
+\begin{gather}
+f^\text{trial}=\dfrac{1}{2}\bsigma^\text{trial,T}\mb{P}\bsigma^\text{trial}+\mb{q}^\mT\bsigma^\text{trial}-\sigma_{y,n}^2.
+\end{gather}
+\subsubsection{Plastic Evolution}
+Since it is an anisotropic model, the local iteration may have difficulties in convergence, especially when a high anisotropy is defined. Some implementations \cite{Krasnovskiy2004,SouzaNeto2008} adopt line search, which does mitigate the local convergence issue but does not address it at the global level.
+
+In this work, we choose another approach to alleviate the problem. Instead of the first order accurate backward Euler method for numerical integration, the higher order accurate method is used. In specific, the discretised evolution of plastic strain is written as
+\begin{gather}
+\bvarepsilon^p_{n+1}=\bvarepsilon^p_{n}+\Delta\bvarepsilon^p=\bvarepsilon^p_{n}+\gamma\bn_{m},
+\end{gather}
+where $\bn_{m}$ is $\bn$ evaluated at the middle of the substep. Since it is a linear function of $\sigma$,
+\begin{gather}
+\bn_m=\dfrac{\bsigma_n+\bsigma_{n+1}}{2}.
+\end{gather}
+One shall note that replacing $\bn_m$ by $\bn_{n+1}=\mb{P}\bsigma_{n+1}+\mb{q}$ gives the evolution formula of the implicit Euler method.
 \subsubsection{Local Residual}
-The residual is chosen as follows.
+The residual is chosen as follows. For brevity, all subscripts $\left(\cdot\right)_{n+1}$ are dropped.
 \begin{gather}
 \mb{R}=\left\{
 \begin{array}{l}
 \dfrac{1}{2}\bsigma^\mT\mb{P}\bsigma+\mb{q}^\mT\bsigma-\sigma_y^2,\\[4mm]
-\bsigma+\gamma\mb{E}\bn-\bsigma^\text{trial}.
+\bsigma+\gamma\mb{E}\bn_m-\bsigma^\text{trial}.
 \end{array}
 \right.
 \end{gather}
 
 By choosing $\mb{x}=\begin{bmatrix}
-\delta\gamma&\delta\bsigma
+\gamma&\bsigma
 \end{bmatrix}^\mT$ as the independent variables, the Jacobian can be then computed as
 \begin{gather}
 \mb{J}=\pdfrac{\mb{R}}{\mb{x}}=\begin{bmatrix}
--2\sigma_y\ddfrac{\sigma_y}{\varepsilon_{p}}\norm{\bn}&\bn^\mT-2\sigma_y\ddfrac{\sigma_y}{\varepsilon_{p}}\gamma\ddfrac{\norm{\bn}}{\bn}\mb{P}\\[4mm]
-\mb{E}\mb{n}&\mb{I}+\gamma\mb{E}\mb{P}
+-2\sigma_y\ddfrac{\sigma_y}{\varepsilon_{p}}\norm{\bn_m}&\bn^\mT-\sigma_y\ddfrac{\sigma_y}{\varepsilon_{p}}\gamma\ddfrac{\norm{\bn_m}}{\bn_m}\mb{P}\\[4mm]
+\mb{E}\mb{n}_m&\mb{I}+\dfrac{\gamma}{2}\mb{E}\mb{P}
 \end{bmatrix}.
 \end{gather}
 In the above expression,
 \begin{gather}
-\ddfrac{\norm{\bn}}{\bn}=\dfrac{2}{3}\dfrac{\bn^\mT\mb{T}}{\norm{\bn}}.
+\ddfrac{\norm{\bn_m}}{\bn_m}=\dfrac{2}{3}\dfrac{\bn_m^\mT\mb{T}}{\norm{\bn_m}}.
 \end{gather}
 
-Some references would further derive a scalar local residual at the cost of complicate gradient. Here we choose to increase the size of local system in order to express the Jacobian in a simpler form.
+Some references would further derive a scalar local residual at the cost of complicating gradient. Here we choose to increase the size of local system in order to express the Jacobian in a simpler form. Performance wise, a scalar local residual does not necessarily leads to faster state determination.
+\subsubsection{Consistent Tangent Stiffness}
+The consistent tangent stiffness can be directly computed from the local residual, given that $\bsigma_{n+1}$ is chosen as the variable. Differentiating $\mb{R}$ at equilibrium $\mb{R}=\mb{0}$ gives
+\begin{gather}\label{eq:universal_consistent_tangent}
+\pdfrac{\mb{R}}{\mb{x}}\pdfrac{\mb{x}}{\bvarepsilon_{n+1}}+\pdfrac{\mb{R}}{\bvarepsilon_{n+1}}=\mb{0},
+\end{gather}
+rearranging which gives
+\begin{gather}
+\pdfrac{\mb{x}}{\bvarepsilon_{n+1}}=-\left(\pdfrac{\mb{R}}{\mb{x}}\right)^{-1}\pdfrac{\mb{R}}{\bvarepsilon_{n+1}}=-\mb{J}^{-1}\pdfrac{\mb{R}}{\bvarepsilon_{n+1}}.
+\end{gather}
+
+The right hand side $\pdfrac{\mb{R}}{\bvarepsilon_{n+1}}$ can be computed as
+\begin{gather}
+\pdfrac{\mb{R}}{\bvarepsilon_{n+1}}=\begin{bmatrix}
+0\\
+-\mb{E}
+\end{bmatrix},
+\end{gather}
+while the left hand side $\pdfrac{\mb{x}}{\bvarepsilon_{n+1}}$ contains
+\begin{gather}
+\pdfrac{\mb{x}}{\bvarepsilon_{n+1}}=\begin{bmatrix}
+\pdfrac{\gamma}{\bvarepsilon_{n+1}}\\[4mm]
+\pdfrac{\bsigma_{n+1}}{\bvarepsilon_{n+1}}
+\end{bmatrix}.
+\end{gather}
+Thus,
+\begin{gather}
+\pdfrac{\bsigma_{n+1}}{\bvarepsilon_{n+1}}=\left(\mb{J}^{-1}\begin{bmatrix}
+0\\
+\mb{E}
+\end{bmatrix}\right)^{\langle2-7\rangle},
+\end{gather}
+where $\left(\cdot\right)^{\langle2-7\rangle}$ denotes the second to the seventh row of target quantity $\left(\cdot\right)$.
+
+Unlike the von Mises framework, in which the analytical expression for the consistent tangent stiffness matrix is derived. Here we take advantage of the fact that when the local equilibrium is achieved, $\mb{R}=\mb{0}$ or at least $\mb{R}\approx\mb{0}$, allowing one to take full differentiation to obtain some useful quantities that otherwise may be difficult to compute. If $\bsigma_{n+1}$ is directly involved as one of the independent variables in local iteration, the consistent stiffness can be directly obtained. Otherwise, often additional simple steps (chain rule) shall be applied to the stress update formula to compute $\pdfrac{\bsigma_{n+1}}{\bvarepsilon_{n+1}}$.
+
+This method avoid the computation of lengthy, cumbersome analytical expressions of consistent tangent. In most cases, it is also very simple to implement as $\mb{J}$ is already available when the local iteration converges, and $\pdfrac{\mb{R}}{\bvarepsilon_{n+1}}$ often is very easy to compute. Readers shall try to grasp the beauty of \eqsref{eq:universal_consistent_tangent}, as this method will be frequently used in the models introduced later in this book.
 \subsection{Implementation}
 \begin{cppcode}
 int NonlinearHoffman::update_trial_status(const vec& t_strain) {
@@ -386,6 +455,7 @@ int NonlinearHoffman::update_trial_status(const vec& t_strain) {
 
     const vec predictor = (trial_stiffness = initial_stiffness) * (trial_strain - plastic_strain);
     trial_stress = predictor;
+    const vec c_stress = .5 * proj_a * initial_stiffness * (current_strain - plastic_strain);
 
     auto gamma = 0., ref_error = 1.;
 
@@ -400,23 +470,24 @@ int NonlinearHoffman::update_trial_status(const vec& t_strain) {
         }
 
         const vec factor_a = proj_a * trial_stress;
-        const vec n = factor_a + proj_b;
-        const auto norm_n = root_two_third * tensor::strain::norm(n);
-        const auto k = compute_k(eqv_strain = current_eqv_strain + gamma * norm_n);
-        const auto f = dot(trial_stress, .5 * factor_a + proj_b) - k * k;
+        const vec factor_b = .5 * factor_a + proj_b;
+        const vec n_mid = c_stress + factor_b;
+        const auto norm_n_mid = root_two_third * tensor::strain::norm(n_mid);
+        const auto k = compute_k(eqv_strain = current_eqv_strain + gamma * norm_n_mid);
+        const auto f = dot(trial_stress, factor_b) - k * k;
 
         if(1u == counter && f < 0.) return SUANPAN_SUCCESS;
 
-        const rowvec dn = 2. / 3. / norm_n * (n % tensor::strain::norm_weight).t();
-        const auto factor_b = 2. * k * compute_dk(eqv_strain);
+        const rowvec dn = two_third / norm_n_mid * (n_mid % tensor::strain::norm_weight).t();
+        const auto factor_c = k * compute_dk(eqv_strain);
 
         residual(sa) = f;
-        residual(sb) = trial_stress + gamma * initial_stiffness * n - predictor;
+        residual(sb) = trial_stress + gamma * initial_stiffness * n_mid - predictor;
 
-        jacobian(sa, sa) = -factor_b * norm_n;
-        jacobian(sa, sb) = n.t() - factor_b * gamma * dn * proj_a;
-        jacobian(sb, sa) = initial_stiffness * n;
-        jacobian(sb, sb) = eye(6, 6) + gamma * elastic_a;
+        jacobian(sa, sa) = -2. * factor_c * norm_n_mid;
+        jacobian(sa, sb) = factor_a.t() + proj_b.t() - factor_c * gamma * dn * proj_a;
+        jacobian(sb, sa) = initial_stiffness * n_mid;
+        jacobian(sb, sb) = eye(6, 6) + .5 * gamma * elastic_a;
 
         if(!solve(incre, jacobian, residual)) return SUANPAN_FAIL;
 
@@ -425,7 +496,7 @@ int NonlinearHoffman::update_trial_status(const vec& t_strain) {
         suanpan_debug("Local plasticity iteration error: {:.5E}.\n", error / ref_error);
 
         if(error <= tolerance * std::max(1., ref_error)) {
-            plastic_strain += gamma * n;
+            plastic_strain += gamma * n_mid;
 
             mat left, right(7, 6, fill::zeros);
             right.rows(sb) = initial_stiffness;
