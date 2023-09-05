@@ -1,0 +1,285 @@
+\chapter{Uniaxial Plasticity Models (Other Materials)}
+\section{K4 Concrete}
+In this section, we introduce a uniaxial model for concrete that is formulated within the classic plasticity framework. The model is named as K4 model in this book as the four authors' surnames all start with letter `K'. However, the model presented in the original paper adopts a linear degradation, leading to inevitable sudden zero stiffness after exceeding certain strain limit. Numerical models do not prefer exact zeros, thus, it is revised to adopt an exponentially decaying function instead. It shall be pointed out that the original formulation \cite{Kenawy2020} contains some mistakes, in the event of any discrepancy or inconsistency, we prefer the formulation discussed in this section.
+
+There are quite a number of phenomenological models for concrete. Since they are phenomenological, it is relatively flexible to define different loading/unloading response. Such kind of flexibility makes the corresponding model easier for engineers to understand and extrapolate, however, they may violate thermodynamic principles.
+\subsection{Theory}
+The classic plasticity framework does not support definition of stiffness degradation, the elastic loading/unloading paths always follow the gradient of initial stiffness. It is a common practice to combine plasticity and damage \cite{Lemaitre1985} together so that the apparent stiffness can gradually degrade.
+
+The apparent stress $\sigma$ is conventionally expressed as
+\begin{gather}
+\sigma=\left(1-d\right)\bar{\sigma},
+\end{gather}
+where $d$ is the damage factor ranging from zero to unity and $\bar{\sigma}$ is the effective stress. With such a formulation, damage and plasticity apply to $d$ and $\bar{\sigma}$ respectively.
+
+Just like other plasticity models, the additive decomposition applies such that
+\begin{gather}
+\bar{\sigma}=E\left(\varepsilon-\varepsilon^p\right).
+\end{gather}
+\subsubsection{Yield Function}
+Unlike metals, there is no need to model ratcheting in concrete, as a result, conventionally there is only isotropic hardening, but no kinematic hardening. Thus, there is also no need to introduce back stress into the model. The yield function $F$ can be simply expressed as
+\begin{gather}
+F=\abs{\bar{\sigma}}-\sigma_y.
+\end{gather}
+It states that plasticity evolution will be triggered whenever the magnitude of effective stress $\bar{\sigma}$ exceeds the backbone defined by $\sigma_y$, which is a function of some internal hardening variable.
+
+It becomes apparent that if only one $\sigma_y$ is used, there is no way to differentiate tensile behaviour from compressive one. This issue can be addressed by adopting two sets of rules, one for tension and the other for compression.
+\begin{gather}
+F=\left\{
+\begin{array}{ll}
+F_t,&\bar{\sigma}>0,\\
+F_c,&\text{otherwise},
+\end{array}
+\right.
+\end{gather}
+with
+\begin{gather}
+F_t=\bar{\sigma}-\sigma_{y,t},\qquad
+F_c=-\bar{\sigma}-\sigma_{y,c}.
+\end{gather}
+\subsubsection{Flow Rule}
+For uniaxial models, the flow direction is simply the loading direction,
+\begin{gather}
+\dot{\varepsilon^p}=\gamma~\sign{\bar{\sigma}}=\gamma\pdfrac{F}{\bar{\sigma}}.
+\end{gather}
+One would find this coincide with the associative plasticity (the second equality).
+\subsubsection{Hardening Law}
+Any functions can be chosen as the hardening law, meaning that
+\begin{gather}
+\sigma_{y,t}=H_t\left(k_t\right),\qquad
+\sigma_{y,c}=H_c\left(k_c\right),
+\end{gather}
+where $k_t$ and $k_c$ are internal hardening variables.
+
+Given that the damage theory is adopted to account for stiffness and strength degradation, often monotonically increasing functions are chosen for hardening functions.
+
+The original formulation adopts the following explicit forms.
+\begin{gather}\label{eq:k4_hardening}
+\sigma_{y,t}=f_t+h_tk_t,\qquad
+\sigma_{y,c}=\left\{
+\begin{array}{ll}
+f_y+h_ck_c,&k_c\leqslant{}k_0,\\
+f_y+h_ck_0+h_d\left(k_c-k_0\right),&\text{otherwise}.
+\end{array}
+\right.
+\end{gather}
+In the above expression, $f_t$ and $f_y$ are crack strength (for tension, in positive) and yield strength (for compression, in positive), $h_t$, $h_c$ and $h_d$ are three positive moduli, and $k_0$ denotes the value of $k_c$ at compressive crush strength. Essentially, $\sigma_{y,t}$ is a linear hardening function while $\sigma_{y,c}$ is a bilinear hardening function. The above expression can be further simplified if we let $f_c$ denote $f_y+h_ck_0$.
+
+The evolutions of $k_t$ and $k_c$ are tied to the plastic strain.
+\begin{gather}\label{eq:k4_evolution}
+\dot{k}_t=\abs{\dot{\varepsilon^p}}=\gamma\qquad\text{for tension loading},\\
+\dot{k}_c=\abs{\dot{\varepsilon^p}}=\gamma\qquad\text{for compression loading}.
+\end{gather}
+Although the same expression is used for both, it shall be noted that for one single loading step, only one of two yield functions will be activated, hence the plastic strain increment $\gamma$ (of that particular step) can only contribute to either $k_t$ or $k_c$, not both.
+\subsubsection{Degradation}
+With the above yield function, flow rule and hardening law, we effectively have defined a very simple plasticity model with only isotropic hardening which may have different behaviour in tension and compression. It bears some resemblance compared with the model introduced in \secref{sec:uniaxial_brb}, which adopts the same concept to differentiate tension and compression but is more complex in terms of the specific functions chosen.
+
+Similarly, it is desired to control degradation rate independently for tension and compression, to this end,
+\begin{gather}
+d=\left\{
+\begin{array}{ll}
+d_t,&\bar{\sigma}>0,\\
+d_c,&\text{otherwise},
+\end{array}
+\right.
+\end{gather}
+The specific forms of tensile damage $d_t$ and compressive damage $d_c$ could vary, for example, the original formulation \cite{Kenawy2020} uses the linear degradation \cite{Grassl2013}. Here, we use a simpler exponential function.
+\begin{gather}
+d_t=1-\exp\left(-\dfrac{k_t}{e_{r,t}}\right),\qquad
+d_c=1-\exp\left(-\dfrac{k_c}{e_{r,c}}\right).
+\end{gather}
+The parameters $e_{r,t}$ and $e_{r,c}$ are introduced to control the degradation rate.
+
+For compression, if the original bilinear hardening function \eqsref{eq:k4_hardening} is used, it is desired to achieve the crush strength, thus, the damage evolution shall be delayed. The following function
+\begin{gather*}
+d_c=1-\exp\left(-\dfrac{\max\left(k_c-k_0,0\right)}{e_{r,c}}\right)
+\end{gather*}
+can be used such that $d_c$ stays at zero until $k_c$ becomes larger than $k_0$.
+\subsubsection{Crack/Gap Closing}
+One more history variable $k_k$ is introduced to allow additional plasticity to develop to account for crack closing. According to \eqsref{eq:k4_evolution}, $k_t$ is the accumulated tensile plastic strain, physically, it represents the crack opening. When unloading from tension, or reloading towards compression, this opening can be gradually closed. For this inner plasticity model, we adopt a simple linear model such that a fixed fraction of strain increment contributes to plastic strain, that is
+\begin{gather}
+\Delta\varepsilon^p=\Delta\varepsilon\dfrac{E}{E+h_k}.
+\end{gather}
+
+Knowing that this is only activated during compressive loading ($\bar\sigma<0$ and $\Delta\varepsilon<0$), then $\Delta\varepsilon^p<0$ and $\abs{\Delta\varepsilon^p}=-\Delta\varepsilon^p$.
+\begin{gather}
+\Delta{}k_k=-\Delta\varepsilon^p,\\
+\Delta\bar{\sigma}=-E\Delta\varepsilon^p.
+\end{gather}
+
+The following two implementation details need to be considered to ensure a correct model.
+\paragraph{Entering}
+It shall be pointed out that the exact transition step from tensile stress to compressive stress needs special treatment. The tensile stress needs to fully unload to zero, this part involves no plasticity, the remaining is compressive loading which involves plasticity. Thus $\Delta\varepsilon^p$ should be limited such that
+\begin{gather}\label{eq:k4_closing_strain}
+\Delta\varepsilon^p=\left(\Delta\varepsilon+\dfrac{\max\left(\bar\sigma_n,0\right)}{E}\right)\dfrac{E}{E+h_k}=\Delta\varepsilon\dfrac{E}{E+h_k}+\dfrac{\max\left(\bar\sigma_n,0\right)}{E+h_k}.
+\end{gather}
+The above expression states that if the current effective stress $\bar{\sigma}_n$ is positive (tensile), then we remove the corresponding tensile strain ($\dfrac{\max\left(\bar\sigma_n,0\right)}{E}$) from the total strain increment $\Delta\varepsilon$. The resulting $\Delta\varepsilon^p$ would be fully induced by compressive part.
+\paragraph{Exiting}
+Similarly, the exact transition step from not yet closed to fully closed also needs additional attention. Noting that $k_k$ shall never exceed $k_t$, and during the evolution of $k_k$, $k_t$ does not change, then
+\begin{gather}
+k_k=k_{k,n}+\Delta{}k_k=k_{k,n}-\Delta\varepsilon^p\leqslant{}k_t,
+\end{gather}
+equivalently,
+\begin{gather}
+k_{k,n}-k_t\leqslant{}\Delta\varepsilon^p.
+\end{gather}
+If the above condition is not satisfied by the plastic strain increment computed from \eqsref{eq:k4_closing_strain}, then one shall manually set $\Delta\varepsilon^p=k_{k,n}-k_t$ and update $k_k$ and $\bar{\sigma}$ accordingly.
+\subsection{Implementation}
+\begin{cppcode}
+int NonlinearK4::compute_tension_branch() {
+    auto& plastic_strain = trial_history(0);
+    auto& kt = trial_history(1);
+
+    const auto sign_sigma = suanpan::sign(trial_stress(0));
+
+    auto counter = 0u;
+    while(true) {
+        if(max_iteration == ++counter) {
+            suanpan_error("Cannot converge within {} iterations.\n", max_iteration);
+            return SUANPAN_FAIL;
+        }
+
+        const auto backbone = compute_tension_backbone(kt);
+        const auto residual = fabs(trial_stress(0)) - backbone(0);
+
+        if(1u == counter && residual <= 0.) {
+            if(apply_damage) {
+                const auto damage = compute_tension_damage(kt);
+                const auto damage_factor = 1. - damage(0);
+
+                trial_stress *= damage_factor;
+                trial_stiffness *= damage_factor;
+            }
+
+            return SUANPAN_SUCCESS;
+        }
+
+        const double jacobian = elastic_modulus + backbone(1);
+        const auto incre = residual / jacobian;
+        const auto error = fabs(incre);
+        suanpan_debug("Local tension iteration error: {:.5E}.\n", error);
+        if(error < tolerance || fabs(residual) < tolerance) {
+            const auto dgamma = elastic_modulus / jacobian;
+            trial_stiffness -= dgamma * elastic_modulus;
+
+            if(apply_damage) {
+                const auto damage = compute_tension_damage(kt);
+                const auto damage_factor = 1. - damage(0);
+
+                trial_stiffness *= damage_factor;
+                trial_stiffness -= trial_stress * damage(1) * dgamma;
+
+                trial_stress *= damage_factor;
+            }
+
+            return SUANPAN_SUCCESS;
+        }
+
+        const auto incre_ep = incre * sign_sigma;
+
+        kt += incre;
+        plastic_strain += incre_ep;
+        trial_stress -= elastic_modulus * incre_ep;
+    }
+}
+
+int NonlinearK4::compute_compression_branch() {
+    auto& plastic_strain = trial_history(0);
+    auto& kc = trial_history(2);
+
+    const auto sign_sigma = suanpan::sign(trial_stress(0));
+
+    auto counter = 0u;
+    while(true) {
+        if(max_iteration == ++counter) {
+            suanpan_error("Cannot converge within {} iterations.\n", max_iteration);
+            return SUANPAN_FAIL;
+        }
+
+        const auto backbone = compute_compression_backbone(kc);
+        const auto residual = fabs(trial_stress(0)) - backbone(0);
+
+        if(1u == counter && residual <= 0.) {
+            if(apply_damage) {
+                const auto damage = compute_compression_damage(kc);
+                const auto damage_factor = 1. - damage(0);
+
+                trial_stress *= damage_factor;
+                trial_stiffness *= damage_factor;
+            }
+
+            return SUANPAN_SUCCESS;
+        }
+
+        const double jacobian = elastic_modulus + backbone(1);
+        const auto incre = residual / jacobian;
+        const auto error = fabs(incre);
+        suanpan_debug("Local compression iteration error: {:.5E}.\n", error);
+        if(error < tolerance || fabs(residual) < tolerance) {
+            const auto dgamma = elastic_modulus / jacobian;
+            trial_stiffness -= dgamma * elastic_modulus;
+
+            if(apply_damage) {
+                const auto damage = compute_compression_damage(kc);
+                const auto damage_factor = 1. - damage(0);
+
+                trial_stiffness *= damage_factor;
+                trial_stiffness -= trial_stress * damage(1) * dgamma;
+
+                trial_stress *= damage_factor;
+            }
+
+            return SUANPAN_SUCCESS;
+        }
+
+        const auto incre_ep = incre * sign_sigma;
+
+        kc += incre;
+        plastic_strain += incre_ep;
+        trial_stress -= elastic_modulus * incre_ep;
+    }
+}
+
+int NonlinearK4::compute_crack_close_branch() {
+    auto& plastic_strain = trial_history(0);
+    const auto& kt = trial_history(1);
+    auto& kk = trial_history(3);
+
+    const auto jacobian = elastic_modulus + hardening_k;
+
+    // account for entering
+    const auto net_strain = fabs(incre_strain(0)) - std::max(0., current_stress(0)) / elastic_modulus;
+    const auto dgamma = elastic_modulus / jacobian;
+    auto incre = net_strain * dgamma;
+
+    // physically, the tension plastic strain is the crack opening, closing the crack should not exceed the opening
+    // ensure the crack plastic strain is bounded by the tension plastic strain
+    if(incre > kt - kk) incre = kt - kk;
+    else trial_stiffness -= dgamma * elastic_modulus; // otherwise, the stiffness is degraded during the closing phase
+
+    const auto incre_ep = incre * suanpan::sign(trial_stress(0));
+
+    kk += incre;
+    plastic_strain += incre_ep;
+    trial_stress -= elastic_modulus * incre_ep;
+
+    return SUANPAN_SUCCESS;
+}
+
+int NonlinearK4::update_trial_status(const vec& n_strain) {
+    incre_strain = (trial_strain = n_strain) - current_strain;
+
+    if(fabs(incre_strain(0)) <= tolerance) return SUANPAN_SUCCESS;
+
+    trial_history = current_history;
+    const auto& plastic_strain = trial_history(0);
+    const auto& current_kt = current_history(1);
+    const auto& current_kk = current_history(3);
+
+    trial_stress = (trial_stiffness = elastic_modulus) * (trial_strain - plastic_strain);
+
+    if(trial_stress(0) < 0. && incre_strain(0) < 0. && current_kt > current_kk && SUANPAN_SUCCESS != compute_crack_close_branch()) return SUANPAN_FAIL;
+
+    return trial_stress(0) > 0. ? compute_tension_branch() : compute_compression_branch();
+}
+\end{cppcode}

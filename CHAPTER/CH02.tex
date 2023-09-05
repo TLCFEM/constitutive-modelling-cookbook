@@ -479,7 +479,7 @@ int ArmstrongFrederick1D::update_trial_status(const vec& t_strain) {
 	return SUANPAN_SUCCESS;
 }
 \end{cppcode}
-\section{Uniaxial Model for BRB Steel}
+\section{Uniaxial Model for BRB Steel}\label{sec:uniaxial_brb}
 The previous models show symmetric behaviour regardless under tension or compression. For some application such as buckling restrained braces, buckling under compression would result in lower strength. In this section, a model \cite{Zona2012} suitable for BRB steel is presented with a neat implementation.
 \subsection{Theory}
 To distinguish different responses in tension and compression, one set of flow rule and hardening law is not sufficient. Instead, tension and compression shall be treated separately. Here superscripts $\left(\cdot\right)^+$ and $\left(\cdot\right)^-$ are used to denote tension and compression governing equations.
