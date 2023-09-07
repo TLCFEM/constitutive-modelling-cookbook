@@ -126,7 +126,7 @@ For two branches, that is $\dfrac{2f_t^2}{h_t}$ (for tension) and $\dfrac{2f_c^2
 \subsubsection{Crack/Gap Closing}
 According to \eqsref{eq:k4_evolution}, $k_t$ is the accumulated tensile plastic strain, physically, it represents the crack opening. When reloading towards compression, this opening can be gradually closed.
 
-To account for this crack closing, one more history variable $k_k$ is introduced to allow additional plasticity to develop. $k_k$ tracks crack closing.
+To account for this crack closing mechanism, one more history variable $k_k$ is introduced to allow additional plasticity to develop. $k_k$ tracks crack closing.
 
 For this inner plasticity model, we adopt a simple linear model such that a fixed fraction of strain increment contributes to plastic strain, that is
 \begin{gather}
@@ -156,6 +156,22 @@ equivalently,
 k_{k,n}-k_t\leqslant{}\Delta\varepsilon^p.
 \end{gather}
 If the above condition is not satisfied by the plastic strain increment computed from \eqsref{eq:k4_closing_strain}, then one shall manually set $\Delta\varepsilon^p=k_{k,n}-k_t$ and update $k_k$ and $\bar{\sigma}$ accordingly.
+\paragraph{Remark}
+For crack closing, the original model \cite{Kenawy2020} formulates it as a plasticity model but does not use a returning mapping algorithm in the corresponding implementation.
+Characterising such a mechanism using a yield function, such as
+\begin{gather*}
+F_k=\abs{\bar{\sigma}}-\bar{\sigma}_k
+\end{gather*}
+with $\bar{\sigma}_k=h_kk_k$,
+does not properly define the behaviour. Especially under cyclic loading, the elastic region grows as $\bar{\sigma}_k$ would grow.
+
+To correct the response, it has to be, at least, be defined as
+\begin{gather}
+\bar{\sigma}_k=h_k\left(k_k-k_k^i\right),
+\end{gather}
+where $k_k^i$ is the initial $k_k$ at the beginning of current loading path, and needs to be updated whenever load reversal occurs.
+
+We avoid such a complex presentation as it may cause unnecessary confusions. At its core, the crack closing mechanism tries to close the unclosed crack ($k_t-k_k$) by accumulating a portion of strain increment to $k_k$ ($\Delta{}k_k=\abs{\Delta\varepsilon}\dfrac{E}{E+h_k}$), and this mechanism is conditionally activated.
 \subsection{Implementation}
 \begin{breakablealgorithm}
 \caption{state determination of K4 concrete model}\label{algo:k4_concrete}
