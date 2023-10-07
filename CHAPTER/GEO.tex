@@ -45,10 +45,286 @@ The deviatoric stress and hydrostatic stress can be computed accordingly,
 p^\text{trial}=\dfrac{1}{3}\tr{\bsigma^\text{trial}}.
 \end{gather}
 \subsection{Implementation}
+\begin{cppcode}
+int NonlinearDruckerPrager::update_trial_status(const vec& t_strain) {
+    incre_strain = (trial_strain = t_strain) - current_strain;
+
+    if(norm(incre_strain) <= datum::eps) return SUANPAN_SUCCESS;
+
+    trial_stress = current_stress + (trial_stiffness = initial_stiffness) * incre_strain;
+
+    trial_history = current_history;
+    auto& plastic_strain = trial_history(0);
+
+    const auto dev_stress = tensor::dev(trial_stress);
+    const auto hydro_stress = tensor::mean3(trial_stress);
+    const auto sqrt_j2 = sqrt(std::max(datum::eps, tensor::stress::invariant2(dev_stress)));
+
+    const auto yield_const = sqrt_j2 + eta_yield * hydro_stress;
+
+    if(yield_const <= xi * compute_c(plastic_strain)) return SUANPAN_SUCCESS;
+
+    auto gamma = 0.;
+    double denominator;
+
+    auto counter = 0u;
+    auto ref_error = 1.;
+    while(true) {
+        if(max_iteration == ++counter) {
+            suanpan_error("Cannot converge within {} iterations.\n", max_iteration);
+            return SUANPAN_FAIL;
+        }
+
+        const auto residual = yield_const - factor_a * gamma - xi * compute_c(plastic_strain);
+        const auto incre_gamma = residual / (denominator = factor_a + xi * xi * compute_dc(plastic_strain));
+        const auto error = fabs(incre_gamma);
+        if(1u == counter) ref_error = error;
+        suanpan_debug("Local iteration error: {:.5E}.\n", error);
+        if(error < tolerance * ref_error || (fabs(residual) < tolerance && counter > 5u)) break;
+        plastic_strain = current_history(0) + xi * (gamma += incre_gamma);
+    }
+
+    if(sqrt_j2 >= shear * gamma) {
+        const auto norm_s = tensor::stress::norm(dev_stress);
+
+        const auto t_factor = shear / sqrt_j2 * gamma;
+
+        trial_stress -= t_factor * dev_stress + bulk * eta_flow * gamma * tensor::unit_tensor2;
+
+        trial_stiffness += double_shear * (t_factor - shear / denominator) / norm_s / norm_s * dev_stress * dev_stress.t() - double_shear * t_factor * unit_dev_tensor - factor_d / denominator * unit_x_unit;
+
+        const mat t_mat = eta_yield * factor_c / denominator / norm_s * dev_stress * tensor::unit_tensor2.t();
+
+        associated ? trial_stiffness -= t_mat + t_mat.t() : trial_stiffness -= t_mat + eta_flow / eta_yield * t_mat.t();
+    }
+    else {
+        // apex return
+        gamma = 0.; // volumetric strain reuse variable
+        plastic_strain = current_history(0);
+
+        counter = 0u;
+        while(true) {
+            if(max_iteration == ++counter) {
+                suanpan_error("Cannot converge within {} iterations.\n", max_iteration);
+                return SUANPAN_FAIL;
+            }
+
+            const auto residual = compute_c(plastic_strain) * xi / eta_flow - hydro_stress + bulk * gamma;
+            const auto incre_gamma = residual / (denominator = factor_b * compute_dc(plastic_strain) + bulk);
+            const auto error = fabs(incre_gamma);
+            if(1u == counter) ref_error = error;
+            suanpan_debug("Local iteration error: {:.5E}.\n", error);
+            if(error < tolerance * ref_error || (fabs(residual) < tolerance && counter > 5u)) break;
+            plastic_strain = current_history(0) + xi / eta_yield * (gamma -= incre_gamma);
+        }
+
+        trial_stress = (hydro_stress - bulk * gamma) * tensor::unit_tensor2;
+
+        trial_stiffness = (bulk - bulk * bulk / denominator) * unit_x_unit;
+    }
+
+    return SUANPAN_SUCCESS;
+}
+\end{cppcode}
 \section{Modified Cam Clay Model}
+This model is identical to the one documented in \cite[see \S~10.1]{SouzaNeto2008} apart from the definition of hardening variable. In this section, we present an equivalent formulation.
 \subsection{Theory}
+\subsubsection{Basics}
+The model adopts a two-scalar formulation that depends on hydrostatic stress $p$ and von Mises equivalent stress $q$, which are defined as
+\begin{gather}
+p=\dfrac{\tr{\bsigma}}{3}=\dfrac{I_1}{3},\qquad{}q=\sqrt{3J_2}=\sqrt{\dfrac{3}{2}\bs:\bs}=\sqrt{\dfrac{3}{2}}\norm{\bs}.
+\end{gather}
+They are effectively two invariants $I_1$ and $J_2$.
+\subsubsection{Yield Function}
+The yield function is defined as
+\begin{gather}
+f=\dfrac{p_e^2}{b^2}+\dfrac{q^2}{M^2}-a^2,
+\end{gather}
+where $p_t\geqslant0$ is the tensile yield strength, $b=1$ if $p_e\geqslant0$ and $b=\beta$ if $p_e<0$ with $p_e=p-p_t+a$ denotes relative stress to the centre of ellipse, $\beta$ is a constant that controls the shape of negative-wards half of yielding ellipse, $M$ is the ratio between two radii of yielding ellipse.
+
+The above yield function essentially possesses the form of an ellipse, for example,
+\begin{gather*}
+\dfrac{x^2}{r_x^2}+\dfrac{y^2}{r_y^2}=1.
+\end{gather*}
+The centre of the ellipse is shifted to $p_t-a$ so that the majority of the ellipse is in the compression region.
+The radius $b$ alters its value depending on the sign of $p_e$.
+The yield surface is effectively two half ellipses glued together.
+\subsubsection{Flow Rule}
+The associative plasticity is assumed so that
+\begin{gather}
+\dot{\bvarepsilon^p}=\gamma\pdfrac{f}{\bsigma}=\gamma\left(\dfrac{2p_e}{3b^2}\mb{1}+\dfrac{3}{M^2}\bs\right).
+\end{gather}
+The following relationship is used,
+\begin{gather*}
+\ddfrac{q^2}{\bsigma}=\dfrac{3}{2}\ddfrac{\left(\bs:\bs\right)}{\bsigma}=\dfrac{3}{2}\left(\ddfrac{\bs}{\bsigma}:\bs+\bs:\ddfrac{\bs}{\bsigma}\right)=3\bs,
+\end{gather*}
+since $\ddfrac{\bs}{\bsigma}:\bs=\mathbb{I}^\text{dev}:\bs=\bs$.
+Accordingly,
+\begin{gather}
+\dot{\varepsilon^p_v}=\gamma\dfrac{2p_e}{b^2},\qquad\dot{\bvarepsilon^p_d}=\gamma\dfrac{3}{M^2}\bs,
+\end{gather}
+where $\dot{\varepsilon^p_v}=\tr{\dot{\bvarepsilon^p}}$ is the increment of the volumetric strain scalar and $\dot{\bvarepsilon^p_d}$ is the increment of the deviatoric strain tensor.
+\subsubsection{Hardening Rule}
+The hardening variable $\alpha$ is defined as the volumetric strain $\varepsilon^p_v$ so that
+\begin{gather}
+\alpha=\varepsilon^p_v.
+\end{gather}
+The corresponding incremental form is then
+\begin{gather}
+\alpha=\alpha_n+\gamma\dfrac{2p_e}{b^2}.
+\end{gather}
+The hardening rule is then defined as a function of $\alpha$,
+\begin{gather}
+a=a\left(\alpha\right)\geqslant0.
+\end{gather}
+
+Note here we simple take $\alpha=\varepsilon^p_v$ instead of $\alpha=-\varepsilon^p_v$ in the original literature \cite{SouzaNeto2008}.
 \subsection{Formulation}
+\subsubsection{Local Residual}
+By using the elastic relationship,
+\begin{gather}
+\bs=2G\bvarepsilon^e_d=2G\left(\bvarepsilon^\text{trial}_d-\Delta\bvarepsilon^p_d\right)=\bs^\text{trial}-\gamma\dfrac{6G}{M^2}\bs,
+\end{gather}
+one can rearrange and obtain the following,
+\begin{gather}
+\bs=\dfrac{M^2}{M^2+6G\Delta\gamma}\bs^\text{trial},\qquad
+q=\dfrac{M^2}{M^2+6G\Delta\gamma}q^\text{trial}.
+\end{gather}
+
+The governing residual equations for independent variables $\mb{x}=\begin{bmatrix}\gamma&\alpha\end{bmatrix}^\mathrm{T}$ can be expressed as
+\begin{gather}
+\mb{R}=\left\{\begin{array}{l}
+\dfrac{p_e^2}{b^2}+\dfrac{q^2}{M^2}-a^2=0,\\[4mm]
+\alpha-\alpha_n-\gamma\dfrac{2}{b^2}p_e=0.
+\end{array}\right.
+\end{gather}
+where $p_e=p^\text{trial}-K\alpha+K\alpha_n-p_t+a$ since
+\begin{gather}
+p=K\varepsilon^e_v=K\left(\varepsilon^\text{trial}_v-\Delta\varepsilon^p_v\right)=p^\text{trial}-K\left(\alpha-\alpha_n\right),
+\end{gather}
+and $q=\dfrac{M^2}{M^2+6G\Delta\gamma}q^\text{trial}$.
+\subsubsection{Local Iteration}
+The Jacobian can be formed accordingly.
+\begin{gather}
+\mb{J}=\pdfrac{\mb{R}}{\mb{x}}=\begin{bmatrix}
+\dfrac{-12GM^2q^{\text{trial},2}}{(M^2+6G\gamma)^3}&\dfrac{2}{b^2}p_e(a'-K)-2aa'\\[4mm]
+-\dfrac{2}{b^2}p_e&1-\gamma\dfrac{2}{b^2}(a'-K)
+\end{bmatrix}.
+\end{gather}
+\subsubsection{Tangent Stiffness}
+At local iteration, $\bvarepsilon^\text{trial}$ (or $\bvarepsilon^{n+1}$, or just $\bvarepsilon$ for brevity) is fixed and $\mb{R}$ is iterated out. Noting that in the global iteration, $\bvarepsilon^\text{trial}$ is also a variable that changes. If local iteration is converged, then $\mb{R}=\mb{0}$, so
+\begin{gather}
+\ddfrac{\mb{R}}{\bvarepsilon}=\pdfrac{\mb{R}}{\bvarepsilon}+\pdfrac{\mb{R}}{\mb{x}}\ddfrac{\mb{x}}{\bvarepsilon}=\mb{0},
+\end{gather}
+consequently,
+\begin{gather}\label{eq:mcc_tangent}
+\ddfrac{\mb{x}}{\bvarepsilon}=
+\begin{bmatrix}
+\ddfrac{\gamma}{\bvarepsilon}\\[4mm]\ddfrac{\alpha}{\bvarepsilon}
+\end{bmatrix}
+=-\left(\pdfrac{\mb{R}}{\mb{x}}\right)^{-1}\pdfrac{\mb{R}}{\bvarepsilon}=-\mb{J}^{-1}\pdfrac{\mb{R}}{\bvarepsilon}.
+\end{gather}
+
+Taking derivatives about $\bvarepsilon$ gives
+\begin{gather}
+\pdfrac{\mb{R}}{\bvarepsilon}=\begin{bmatrix}
+\dfrac{2p_eK}{b^2}\mb{1}+\dfrac{6G}{M^2+6G\gamma}\bs\\[4mm]
+\dfrac{-2\gamma{}K}{b^2}\mb{1}
+\end{bmatrix}.
+\end{gather}
+
+The stress can be expressed as
+\begin{gather}
+\bsigma=\bs+p\mb{1}=\dfrac{M^2}{M^2+6G\Delta\gamma}\bs^\text{trial}+\left(p^\text{trial}-K\left(\alpha-\alpha_n\right)\right)\mb{1}.
+\end{gather}
+Direct differentiation gives
+\begin{gather}
+\begin{split}
+\ddfrac{\bsigma}{\bvarepsilon}&=\dfrac{M^2}{M^2+6G\gamma}\ddfrac{\bs^\text{trial}}{\bvarepsilon}+\bs^\text{trial}\otimes\ddfrac{\dfrac{M^2}{M^2+6G\gamma}}{\bvarepsilon}+\mb{1}\otimes\ddfrac{\left(p^\text{trial}-K\left(\alpha-\alpha_n\right)\right)}{\bvarepsilon}\\
+&=\dfrac{2GM^2}{M^2+6G\gamma}\mathbb{I}^\text{dev}+K\mb{1}\otimes{}\mb{1}-K\mb{1}\otimes\ddfrac{\alpha}{\bvarepsilon}-\dfrac{6GM^2}{\left(M^2+6G\gamma\right)^2}\bs^\text{trial}\otimes\ddfrac{\gamma}{\bvarepsilon},\\
+&=\mb{D}-\dfrac{12G^2\gamma}{M^2+6G\gamma}\mathbb{I}^\text{dev}-K\mb{1}\otimes\ddfrac{\alpha}{\bvarepsilon}-\dfrac{6G}{M^2+6G\gamma}s\otimes\ddfrac{\gamma}{\bvarepsilon}.
+\end{split}
+\end{gather}
+In which $\ddfrac{\alpha}{\bvarepsilon}$ and $\ddfrac{\gamma}{\bvarepsilon}$ are obtained from \eqsref{eq:mcc_tangent}.
+The above derivation also takes advantage of the expression
+\begin{gather}
+\mb{D}=2G\mathbb{I}^\text{dev}+K\mb{1}\otimes{}\mb{1}.
+\end{gather}
 \subsection{Implementation}
+\begin{cppcode}
+int NonlinearCamClay::update_trial_status(const vec& t_strain) {
+    incre_strain = (trial_strain = t_strain) - current_strain;
+
+    if(norm(incre_strain) <= datum::eps) return SUANPAN_SUCCESS;
+
+    trial_stress = current_stress + (trial_stiffness = initial_stiffness) * incre_strain;
+
+    trial_history = current_history;
+    auto& alpha = trial_history(0);
+    const auto& current_alpha = current_history(0);
+
+    auto trial_s = tensor::dev(trial_stress);
+    const auto trial_q = sqrt_three_two * tensor::stress::norm(trial_s);
+    const auto p = tensor::mean3(trial_stress);
+
+    auto gamma = 0.;
+
+    vec residual(2), incre;
+    mat jacobian(2, 2);
+
+    auto counter = 0u;
+    auto rel_error = 1.;
+    while(true) {
+        if(max_iteration == ++counter) {
+            suanpan_error("Cannot converge within {} iterations.\n", max_iteration);
+            return SUANPAN_FAIL;
+        }
+
+        const auto a = compute_a(alpha);
+        const auto da = compute_da(alpha);
+        const auto incre_alpha = alpha - current_alpha;
+        const auto trial_p = p - bulk * incre_alpha;
+        const auto rel_p = trial_p - pt + a;
+        const auto square_b = rel_p >= 0. ? 1. : square_beta;
+        const auto denom = square_m + six_shear * gamma;
+        const auto square_qm = pow(m * trial_q / denom, 2.);
+
+        residual(0) = rel_p * rel_p / square_b + square_qm - a * a;
+
+        if(1u == counter && residual(0) < 0.) return SUANPAN_SUCCESS;
+
+        residual(1) = incre_alpha - 2. * gamma / square_b * rel_p;
+
+        jacobian(0, 0) = -2. * six_shear / denom * square_qm;
+        jacobian(1, 0) = -2. * rel_p / square_b;
+        jacobian(0, 1) = jacobian(1, 0) * (bulk - da) - 2. * a * da;
+        jacobian(1, 1) = 1. - 2. * gamma / square_b * (da - bulk);
+
+        if(!solve(incre, jacobian, residual, solve_opts::equilibrate)) return SUANPAN_FAIL;
+
+        const auto error = inf_norm(incre);
+        if(1u == counter) rel_error = error;
+        suanpan_debug("Local iteration error: {:.5E}.\n", error);
+        if(error < tolerance * rel_error || (inf_norm(residual) < tolerance && counter > 5u)) {
+            mat left(6, 2);
+
+            rel_error = 2. * bulk / square_b; // reuse variable
+            left.col(0) = rel_error * rel_p * tensor::unit_tensor2 + six_shear / denom * (trial_s *= square_m / denom);
+            left.col(1) = -rel_error * gamma * tensor::unit_tensor2;
+
+            trial_stress = trial_s + trial_p * tensor::unit_tensor2;
+
+            rel_error = six_shear / denom; // reuse variable
+            trial_stiffness -= 2. * shear * gamma * rel_error * unit_dev_tensor - join_rows(rel_error * trial_s, bulk * tensor::unit_tensor2) * solve(jacobian, left.t());
+
+            return SUANPAN_SUCCESS;
+        }
+
+        gamma -= incre(0);
+        alpha -= incre(1);
+    }
+}
+\end{cppcode}
 \section{Simple Sand Model}
 This sand model is a hybrid of several existing models with significant simplifications. Readers should not expect this model to give accurate results. Instead, this model only captures the characteristics of sand material. It is presented to craft a basic framework from which more complex sand models can be developed.
 
