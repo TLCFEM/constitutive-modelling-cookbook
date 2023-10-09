@@ -65,6 +65,11 @@ f_y+h_ck_0+h_d\left(k_c-k_0\right),&\text{otherwise}.
 \end{gather}
 In the above expression, $f_t$ and $f_y$ are crack strength (for tension, in positive) and yield strength (for compression, in positive), $h_t$, $h_c$ and $h_d$ are three positive moduli, and $k_0$ denotes the value of $k_c$ at compressive crush strength. Essentially, $\bar{\sigma}_{y,t}$ is a linear hardening function while $\bar{\sigma}_{y,c}$ is a bilinear hardening function. The above expression can be further simplified if we let $f_c$ denote $f_y+h_ck_0$.
 
+Since stiffness and strength degradation is taken care of by the damage part, here no softening is considered such that
+\begin{gather}
+h_t,h_c,h_d\geqslant0.
+\end{gather}
+
 The evolutions of $k_t$ and $k_c$ are tied to the plastic strain.
 \begin{gather}\label{eq:k4_evolution}
 \dot{k}_t=\abs{\dot{\varepsilon^p}}=\gamma\qquad\text{for tension loading},\\
@@ -115,14 +120,25 @@ The initial slope is
 \end{gather}
 For it to be smaller than zero (no initial hardening, softening only), it is required that
 \begin{gather}
-c\geqslant\dfrac{b}{a}.
+ac<b.
+\end{gather}
+If $a=0$, then no matter what value $c$ takes, there is no initial hardening since $b>0$. If $ac\geqslant{}b$, implying $a>0$, the backbone has a peak value at $k=c-\dfrac{b}{a}$.
+
+It is possible to associate $c$ with $b$ such that $c=\dfrac{b}{\zeta{}E}$ where $\zeta$ is a positive multiplier, then the total energy becomes
+\begin{gather}
+a\dfrac{b^2}{\zeta^2E^2}+b\dfrac{b}{\zeta{}E}=\left(\dfrac{a}{\zeta^2E^2}+\dfrac{1}{\zeta{}E}\right)b^2.
+\end{gather}
+The peak value for $\zeta{}E<a$ is
+\begin{gather}
+\dfrac{ab}{\zeta{}E}\exp\left(\dfrac{\zeta{}E-a}{a}\right).
 \end{gather}
 
-If one chooses $c=\dfrac{b}{a}$, then the total energy becomes
+If, for unit characteristic length $l=1$, the reference $\zeta_r$ is given, then for any characteristic length $l$, if the total energy needs to stay unchanged, then
 \begin{gather}
-a\dfrac{b^2}{a^2}+b\dfrac{b}{a}=\dfrac{2b^2}{a}.
+\left(\dfrac{a}{\zeta^2E^2}+\dfrac{1}{\zeta{}E}\right)b^2l=\left(\dfrac{a}{\zeta_r^2E^2}+\dfrac{1}{\zeta_r{}E}\right)b^2,\\
+\dfrac{a}{\zeta^2E^2}+\dfrac{1}{\zeta{}E}=\dfrac{1}{l}\left(\dfrac{a}{\zeta_r^2E^2}+\dfrac{1}{\zeta_r{}E}\right),\\
+\dfrac{1}{\zeta{}E}=\dfrac{\sqrt{1+\dfrac{4a}{l}\left(\dfrac{a}{\zeta_r^2E^2}+\dfrac{1}{\zeta_r{}E}\right)}-1}{2}=\sqrt{\dfrac{1}{4}+\dfrac{a}{l}\left(\dfrac{a}{\zeta_r^2E^2}+\dfrac{1}{\zeta_r{}E}\right)}-\dfrac{1}{2}.
 \end{gather}
-For two branches, that is $\dfrac{2f_t^2}{h_t}$ (for tension) and $\dfrac{2f_c^2}{h_d}$ (for compression).
 \subsubsection{Crack/Gap Closing}
 According to \eqsref{eq:k4_evolution}, $k_t$ is the accumulated tensile plastic strain, physically, it represents the crack opening. When reloading towards compression, this opening can be gradually closed.
 
