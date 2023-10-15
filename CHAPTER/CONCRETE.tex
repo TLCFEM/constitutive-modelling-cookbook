@@ -539,19 +539,19 @@ The evolution of $\kappa_p$ is defined as
 \begin{gather}
 \dot{\kappa_p}=\dfrac{\norm{\dot{\varepsilon_{p}}}}{x_h}4\cos^2\left(\theta\right).
 \end{gather}
-Here the Lode angle $\theta$ is set to zero such that
+Here the dependency on the Lode angle $\theta$ is removed such that
 \begin{gather}
 x_h\dot{\kappa_p}=\norm{\dot{\varepsilon_{p}}}=\gamma{}G_\kappa,
 \end{gather}
-with $G_\kappa=\sqrt{G_s^2+G_p^2/3}$.
+with $G_\kappa=\sqrt{G_s^2+G_p^2/3}$. This effectively means $\theta=2\pi/3$ is a constant.
 \subsubsection{Plasticity Residual}
 Collecting the yield function, evolutions of $s$, $p$ and $\kappa_p$, the local residual of the plasticity part can be expressed as
 \begin{gather}
 \mb{R}=\left\{
 \begin{array}{l}
 g_1^2+m_0q^2_{h1}q_{h2}g_3-q^2_{h1}q^2_{h2},\\[4mm]
-s+2G\gamma{}G_s-s^{tr},\\[4mm]
-p+K\gamma{}G_p-p^{tr},\\[4mm]
+s+2G\gamma{}G_s-s^\text{trial},\\[4mm]
+p+K\gamma{}G_p-p^\text{trial},\\[4mm]
 x_h\kappa_p^n+\gamma{}G_\kappa-x_h\kappa_p.
 \end{array}
 \right.
