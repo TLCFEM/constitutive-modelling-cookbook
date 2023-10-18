@@ -485,7 +485,11 @@ where the friction parameter $m_0$
 \begin{gather}
 m_0=\dfrac{3f_c^2-3f_t^2}{f_cf_t}\dfrac{e}{1+e}
 \end{gather}
-depends on material strengths $f_c$ and $f_t$, $e$ is the eccentricity constant which depends on the previous two strengths and equibiaxial compression strength $f_{bc}$. The hardening functions $q_{h1}$ and $q_{h2}$ will be introduced later. The helper functions $g_1$ and $g_3$ are also used to define the plastic potential $G$.
+depends on material strengths $f_c$ and $f_t$, $e$ is the eccentricity constant which depends on the previous two strengths and equibiaxial compression strength $f_{bc}$. The hardening functions $q_{h1}$ and $q_{h2}$ will be introduced later. The helper functions $g_1$ and $g_3$ are also used to define the plastic potential $G$. If the lode angle shall be considered, $g_3$ needs to be replaced by $g_4$ which is defined as
+\begin{gather}
+g_4=\dfrac{s}{\sqrt{6}f_c}r+\dfrac{p}{f_c},
+\end{gather}
+with $r=r\left(\theta\right)$ being a function of the lode angle $\theta$.
 
 The partial derivatives of $F$ are
 \begin{gather}
@@ -579,24 +583,59 @@ While the uniaxial stress response can be expressed as
 \end{gather}
 Assume an exponential degradation curve,
 \begin{gather}
-\sigma=f_t\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{fc}}\right)
+\sigma=f_t\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{ft}}\right)
 \end{gather}
 
 The local residual is
 \begin{gather}
-R=f_t\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{fc}}\right)-\left(1-\omega_t\right)E\kappa_{dt}.
+R=f_t\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{ft}}\right)-\left(1-\omega_t\right)E\kappa_{dt}.
 \end{gather}
 The corresponding derivatives are
 \begin{gather}
-\pdfrac{R}{\omega_t}=E\kappa_{dt}-\dfrac{\kappa_{dt2}}{\varepsilon_{fc}}f_t\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{fc}}\right),\\
+\pdfrac{R}{\omega_t}=E\kappa_{dt}-\dfrac{\kappa_{dt2}}{\varepsilon_{fc}}f_t\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{ft}}\right),\\
 \pdfrac{R}{\kappa_{dt}}=-\left(1-\omega_t\right)E,\\
-\pdfrac{R}{\kappa_{dt1}}=-\dfrac{1}{\varepsilon_{fc}}f_t\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{fc}}\right),\\
-\pdfrac{R}{\kappa_{dt2}}=-\dfrac{\omega_t}{\varepsilon_{fc}}f_t\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{fc}}\right).
+\pdfrac{R}{\kappa_{dt1}}=-\dfrac{1}{\varepsilon_{ft}}f_t\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{ft}}\right),\\
+\pdfrac{R}{\kappa_{dt2}}=-\dfrac{\omega_t}{\varepsilon_{ft}}f_t\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{ft}}\right).
 \end{gather}
 \subsubsection{Compression}
-For compression, the definition fully resembles its tensile counterpart.
+For compression, the definition fully resembles its tensile counterpart. The equivalent strain is driven by two internal parameters $\kappa_{dc1}$ and $\kappa_{dc2}$,
 \begin{gather}
 \varepsilon_i=\kappa_{dc1}+\omega_c\kappa_{dc2}.
+\end{gather}
+The uniaxial response is
+\begin{gather}
+\sigma=\left(1-\omega_c\right)E\kappa_{dc}.
+\end{gather}
+With the exponential backbone, the local residual is
+\begin{gather}
+R=f_c\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{fc}}\right)-\left(1-\omega_c\right)E\kappa_{dc}.
+\end{gather}
+\subsubsection{Stress}
+The final stress can be expressed as
+\begin{gather}
+\bsigma=\left(1-\omega_t\right)\left(1-\omega_c\right)\bbsigma.
+\end{gather}
+This form is identical to the one used in the CDP model. It represents the isotropic damage.
+Alternatively, it can also be expressed as
+\begin{gather}\label{eq:aniso_damage}
+\bsigma=\left(1-\omega_t\right)\bbsigma_t+\left(1-\omega_c\right)\bbsigma_c,
+\end{gather}
+which stands for the anisotropic damage. The tensile and compressive part of the stress tensor $\bbsigma_t$ and $\bbsigma_c$ are obtained by performing an eigenanalysis such that
+\begin{gather}
+\bbsigma_t=\sum_{i=1}^3\left\langle\hat{\sigma}_i\right\rangle\mb{p}_i\otimes\mb{p}_i,\qquad\bbsigma_c=\bbsigma-\bbsigma_t,
+\end{gather}
+where $\hat{\sigma}_i$ is the eigenvalue of $\bbsigma$ and $\mb{p}_i$ is the associated eigenvector.
+
+\eqsref{eq:aniso_damage} can be equivalently expressed as
+\begin{gather}
+\begin{split}
+\bsigma&=\left(1-\omega_t\right)\bbsigma_t+\left(1-\omega_c\right)\left(\bbsigma-\bbsigma_t\right)\\
+&=\left(1-\omega_c\right)\bbsigma+\left(\omega_c-\omega_t\right)\bbsigma_t.
+\end{split}
+\end{gather}
+With the above expression, the tangent stiffness can be expressed as
+\begin{gather}
+\ddfrac{\bsigma}{\bvarepsilon}=\left(1-\omega_c\right)\ddfrac{\bbsigma}{\bvarepsilon}+\left(\omega_c-\omega_t\right)\ddfrac{\bbsigma_t}{\bbsigma}\ddfrac{\bbsigma}{\bvarepsilon}-\bbsigma\otimes\ddfrac{\omega_c}{\bvarepsilon}+\bbsigma_t\otimes\left(\ddfrac{\omega_c}{\bvarepsilon}-\ddfrac{\omega_t}{\bvarepsilon}\right).
 \end{gather}
 \subsection{Formulation}
 \subsection{Implementation}

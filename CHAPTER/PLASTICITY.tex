@@ -269,7 +269,7 @@ After some manipulations, total stress can be expressed by total strain as follo
 \end{gather}
 Thus,
 \begin{gather}
-\mb{D}=2G\mathbb{I}-2G\dfrac{1}{3}\mb{1}\otimes\mb{1}+K\mb{1}\otimes\mb{1}.
+\mb{D}=2G\mathbb{I}^\text{dev}+K\mb{1}\otimes\mb{1}=2G\mathbb{I}-2G\dfrac{1}{3}\mb{1}\otimes\mb{1}+K\mb{1}\otimes\mb{1}.
 \end{gather}
 
 In matrix representation,
@@ -302,4 +302,41 @@ Using Lam\'{e}'s constant $\lambda=K-\dfrac{2}{3}G$, $\mb{D}$ can be alternative
 \cdot&\cdot&\cdot&\cdot&G&\cdot\\
 \cdot&\cdot&\cdot&\cdot&\cdot&G
 \end{bmatrix}.
+\end{gather}
+\subsection{Lode Angle}
+For some material models, the Haigh--Westergaard stress space may be used. The lode angle is often used to define some parameter that alters the yield surface which may have a special shape on the $\pi$-plane. The lode angle $\theta$ can be defined as
+\begin{gather}\label{eq:lode}
+\cos\left(3\theta\right)=\dfrac{J_3}{2}\left(\dfrac{3}{J_2}\right)^{1.5},
+\end{gather}
+where
+\begin{gather}
+J_2=\dfrac{1}{2}\tr{\bs^2}=\dfrac{1}{2}\norm{\bs}^2,\qquad
+J_3=\dfrac{1}{3}\tr{\bs^3}=\det{\bs}
+\end{gather}
+are the invariants of the deviatoric stress tensor $\bs$.
+
+\eqsref{eq:lode} can be equivalently expressed as
+\begin{gather}
+\cos\left(3\theta\right)=\dfrac{6^{1.5}}{2}\dfrac{J_3}{\norm{\bs}^3}=\sqrt{54}\dfrac{\det{\bs}}{\norm{\bs}^3}=\sqrt{54}\det{\dfrac{\bs}{\norm{\bs}}}.
+\end{gather}
+
+By the chain rule, the derivative of \eqsref{eq:lode} can be expressed as
+\begin{gather}\label{eq:dlode}
+\ddfrac{\cos\left(3\theta\right)}{\bs}=\dfrac{1}{2}\left(\dfrac{3}{J_2}\right)^{1.5}\ddfrac{J_3}{\bs}-\dfrac{3^{2.5}}{4}\dfrac{J_3}{J_2^{2.5}}\ddfrac{J_2}{\bs}.
+\end{gather}
+With the assist of
+\begin{gather}
+\ddfrac{J_2}{\bs}=\bs,\qquad
+\ddfrac{J_3}{\bs}=\bs\cdot\bs-\dfrac{2}{3}J_2\mb{1},
+\end{gather}
+\eqsref{eq:dlode} becomes
+\begin{gather}
+\begin{split}
+\ddfrac{\cos\left(3\theta\right)}{\bs}&=\dfrac{1}{2}\left(\dfrac{3}{J_2}\right)^{1.5}\left(\bs\cdot\bs-\dfrac{2}{3}J_2\mb{1}\right)-\dfrac{3^{2.5}}{4}\dfrac{J_3}{J_2^{2.5}}\bs\\
+&=\sqrt{2}\left(\dfrac{3}{2J_2}\right)^{1.5}\left(\bs\cdot\bs-\dfrac{2J_2}{3}\mb{1}-\dfrac{3}{2J_2}J_3\bs\right).
+\end{split}
+\end{gather}
+Denoting $s=\dfrac{2J_2}{3}$, then
+\begin{gather}
+\ddfrac{\cos\left(3\theta\right)}{\bs}=\sqrt{2}s^{-1.5}\left(\bs\cdot\bs-s\mb{1}-\dfrac{J_3}{s}\bs\right).
 \end{gather}
