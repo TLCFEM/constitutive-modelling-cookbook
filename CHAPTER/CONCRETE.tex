@@ -485,7 +485,7 @@ where the friction parameter $m_0$
 \begin{gather}
 m_0=\dfrac{3f_c^2-3f_t^2}{f_cf_t}\dfrac{e}{1+e}
 \end{gather}
-depends on material strengths $f_c$ and $f_t$, $e$ is the eccentricity constant which depends on the previous two strengths and equibiaxial compression strength $f_{bc}$. The hardening functions $q_{h1}$ and $q_{h2}$ will be introduced later. The helper functions $g_1$ and $g_3$ are also used to define the plastic potential $G$. If the lode angle shall be considered, $g_3$ needs to be replaced by $g_4$ which is defined as
+depends on material strengths $f_c$ and $f_t$, $e$ is the eccentricity constant which depends on the previous two strengths and equibiaxial compression strength $f_{bc}$. The hardening functions $q_{h1}$ and $q_{h2}$ will be introduced later. The helper functions $g_1$ and $g_3$ are also used to define the plastic potential $G$. If the Lode angle shall be considered, $g_3$ needs to be replaced by $g_4$ which is defined as
 \begin{gather}
 g_4=\dfrac{s}{\sqrt{6}f_c}r+\dfrac{p}{f_c},
 \end{gather}
@@ -572,8 +572,26 @@ G_\kappa&\gamma\pdfrac{G_\kappa}{s}&\left(\kappa_p^n-\kappa_p\right)\ddfrac{x_h}
 \end{bmatrix}.
 \end{gather}
 \subsection{Damage}
+\subsubsection{Equivalent Strain}
+The equivalent strain is defined as
+\begin{gather}
+\tilde{\varepsilon}=g_5+\sqrt{g_5^2+g_6^2},
+\end{gather}
+with
+\begin{gather}
+g_5=\dfrac{\varepsilon_0m_0}{2}g_3,\qquad
+g_6=\sqrt{\dfrac{3}{2}}\dfrac{s}{f_c}.
+\end{gather}
+Again, if the Lode angle needs to be considered, replace $g_3$ with $g_4$. The equivalent strain is further split into tensile and compressive parts.
+\begin{gather}
+\tilde{\varepsilon}_t=\alpha_t\tilde{\varepsilon},\qquad
+\tilde{\varepsilon}_c=\alpha_c\tilde{\varepsilon},
+\end{gather}
+where $\alpha_t+\alpha_c=1$ are two parameters that characterise the tensile/compressive portion of the current loading step.
+
+The damage history variables $\kappa_{dt}$ and $\kappa_{dc}$ track the maximum values of $\tilde{\varepsilon}_t$ and $\tilde{\varepsilon}_c$, respectively.
 \subsubsection{Tension}
-The equivalent strain is expressed as a function of damage factors.
+The inelastic strain is expressed as a function of damage factors.
 \begin{gather}
 \varepsilon_i=\kappa_{dt1}+\omega_t\kappa_{dt2}.
 \end{gather}
@@ -590,6 +608,7 @@ The local residual is
 \begin{gather}
 R=f_t\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{ft}}\right)-\left(1-\omega_t\right)E\kappa_{dt}.
 \end{gather}
+For a given set of $\kappa_{dt}$, $\kappa_{dt1}$ and $\kappa_{dt2}$, the above residual is a function of unknown $\omega_t$. It can be solved by, for example, Newton's method.
 The corresponding derivatives are
 \begin{gather}
 \pdfrac{R}{\omega_t}=E\kappa_{dt}-\dfrac{\kappa_{dt2}}{\varepsilon_{fc}}f_t\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{ft}}\right),\\
@@ -598,7 +617,7 @@ The corresponding derivatives are
 \pdfrac{R}{\kappa_{dt2}}=-\dfrac{\omega_t}{\varepsilon_{ft}}f_t\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{ft}}\right).
 \end{gather}
 \subsubsection{Compression}
-For compression, the definition fully resembles its tensile counterpart. The equivalent strain is driven by two internal parameters $\kappa_{dc1}$ and $\kappa_{dc2}$,
+For compression, the definition fully resembles its tensile counterpart. The inelastic strain is driven by two internal parameters $\kappa_{dc1}$ and $\kappa_{dc2}$,
 \begin{gather}
 \varepsilon_i=\kappa_{dc1}+\omega_c\kappa_{dc2}.
 \end{gather}
@@ -608,7 +627,7 @@ The uniaxial response is
 \end{gather}
 With the exponential backbone, the local residual is
 \begin{gather}
-R=f_c\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{fc}}\right)-\left(1-\omega_c\right)E\kappa_{dc}.
+R=f_t\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{fc}}\right)-\left(1-\omega_c\right)E\kappa_{dc}.
 \end{gather}
 \subsubsection{Stress}
 The final stress can be expressed as
