@@ -189,41 +189,49 @@ In order to take derivatives with regard to trial strain, one can replace $\norm
 \begin{gather}
 \pdfrac{\mb{R}}{\bvarepsilon_{n+1}}=\left\{
 \begin{array}{l}
-3K\alpha{}\mb{1}+\sqrt{6}G\bn+H\left(\hat{\sigma}_1\right)\beta\ddfrac{\hat\sigma_1^\text{trial}}{\bbsigma^\text{trial}}:\pdfrac{\bbsigma^\text{trial}}{\bvarepsilon_{n+1}},\\[4mm]
-\gamma\dfrac{f_t}{g_t}\left(r\ddfrac{\hat{n}_1}{\bvarepsilon_{n+1}}+\left(\hat{n}_1+\alpha_p\right)\ddfrac{r}{\bbsigma^\text{trial}}:\pdfrac{\bbsigma^\text{trial}}{\bvarepsilon_{n+1}}\right),\\[4mm]
-\gamma\dfrac{f_c}{g_c}\left(\left(1-r\right)\ddfrac{\hat{n}_3}{\bvarepsilon_{n+1}}-\left(\hat{n}_3+\alpha_p\right)\ddfrac{r}{\bbsigma^\text{trial}}:\pdfrac{\bbsigma^\text{trial}}{\bvarepsilon_{n+1}}\right).
+3K\alpha{}\mb{1}+\sqrt{6}G\bn+H\left(\hat{\sigma}_1\right)\beta\ddfrac{\hat\sigma_1}{\bbsigma}:\pdfrac{\bbsigma}{\bvarepsilon_{n+1}},\\[4mm]
+\gamma\dfrac{f_t}{g_t}\left(r\pdfrac{\hat{n}_1}{\bvarepsilon_{n+1}}+\left(\hat{n}_1+\alpha_p\right)\ddfrac{r}{\bbsigma}:\pdfrac{\bbsigma}{\bvarepsilon_{n+1}}\right),\\[4mm]
+\gamma\dfrac{f_c}{g_c}\left(\left(1-r\right)\pdfrac{\hat{n}_3}{\bvarepsilon_{n+1}}-\left(\hat{n}_3+\alpha_p\right)\ddfrac{r}{\bbsigma}:\pdfrac{\bbsigma}{\bvarepsilon_{n+1}}\right).
 \end{array}
 \right.
 \end{gather}
 so that
 \begin{gather}
-\pdfrac{\mb{x}}{\bvarepsilon_{n+1}}=\begin{bmatrix}
-\pdfrac{\gamma}{\bvarepsilon_{n+1}}\\[3mm]
-\pdfrac{\kappa_t}{\bvarepsilon_{n+1}}\\[3mm]
-\pdfrac{\kappa_c}{\bvarepsilon_{n+1}}
+\ddfrac{\mb{x}}{\bvarepsilon_{n+1}}=\begin{bmatrix}
+\ddfrac{\gamma}{\bvarepsilon_{n+1}}\\[3mm]
+\ddfrac{\kappa_t}{\bvarepsilon_{n+1}}\\[3mm]
+\ddfrac{\kappa_c}{\bvarepsilon_{n+1}}
 \end{bmatrix}=-\left(\pdfrac{\mb{R}}{\mb{x}}\right)^{-1}\pdfrac{\mb{R}}{\bvarepsilon_{n+1}}.
 \end{gather}
 
-The effective stress $\bbsigma_{n+1}$ only depends on $\bvarepsilon_{n+1}$ and $\gamma$.
+The effective stress $\bbsigma_{n+1}$ only depends on $\bvarepsilon_{n+1}$ and $\gamma$. The partial derivative is
 \begin{gather}
 \begin{split}
 \pdfrac{\bbsigma_{n+1}}{\bvarepsilon_{n+1}}&=\pdfrac{}{\bvarepsilon_{n+1}}\left(\bs^\text{trial}-2G\gamma\dfrac{\bs^\text{trial}}{\norm{\bs^\text{trial}}}+\left(p^\text{trial}-3K\alpha_p\gamma\right)\mb{1}\right)\\
-&=\mb{D}-\dfrac{4G^2\gamma}{\norm{\bs^\text{trial}}}\left(\mathbb{I}^\text{dev}-\bn\otimes{}\bn\right)-\left(2G\bn+3K\alpha_p\mb{1}\right)\otimes\pdfrac{\gamma}{\bvarepsilon_{n+1}}
-\end{split}.
+&=\mb{D}-\dfrac{4G^2\gamma}{\norm{\bs^\text{trial}}}\left(\mathbb{I}^\text{dev}-\bn\otimes{}\bn\right).
+\end{split}
+\end{gather}
+The full derivative is
+\begin{gather}
+\begin{split}
+\ddfrac{\bbsigma_{n+1}}{\bvarepsilon_{n+1}}&=\ddfrac{}{\bvarepsilon_{n+1}}\left(\bs^\text{trial}-2G\gamma\dfrac{\bs^\text{trial}}{\norm{\bs^\text{trial}}}+\left(p^\text{trial}-3K\alpha_p\gamma\right)\mb{1}\right)\\
+&=\mb{D}-\dfrac{4G^2\gamma}{\norm{\bs^\text{trial}}}\left(\mathbb{I}^\text{dev}-\bn\otimes{}\bn\right)-\left(2G\bn+3K\alpha_p\mb{1}\right)\otimes\pdfrac{\gamma}{\bvarepsilon_{n+1}}\\
+&=\pdfrac{\bbsigma_{n+1}}{\bvarepsilon_{n+1}}-\left(2G\bn+3K\alpha_p\mb{1}\right)\otimes\pdfrac{\gamma}{\bvarepsilon_{n+1}}.
+\end{split}
 \end{gather}
 
 The derivative of the damage factor can be expressed as
 \begin{gather}
 \begin{split}
-\pdfrac{h}{\bvarepsilon_{n+1}}&=\left(1-d_c\right)\pdfrac{\left(1-sd_t\right)}{\bvarepsilon_{n+1}}+\left(1-sd_t\right)\pdfrac{\left(1-d_c\right)}{\bvarepsilon_{n+1}}\\
-&=\left(d_c-1\right)\left(s\pdfrac{d_t}{\bvarepsilon_{n+1}}+d_t\pdfrac{s}{\bvarepsilon_{n+1}}\right)+\left(sd_t-1\right)\pdfrac{d_c}{\bvarepsilon_{n+1}}
-\end{split},
+\ddfrac{h}{\bvarepsilon_{n+1}}&=\left(1-d_c\right)\ddfrac{\left(1-sd_t\right)}{\bvarepsilon_{n+1}}+\left(1-sd_t\right)\ddfrac{\left(1-d_c\right)}{\bvarepsilon_{n+1}}\\
+&=\left(d_c-1\right)\left(s\ddfrac{d_t}{\bvarepsilon_{n+1}}+d_t\ddfrac{s}{\bvarepsilon_{n+1}}\right)+\left(sd_t-1\right)\ddfrac{d_c}{\bvarepsilon_{n+1}},
+\end{split}
 \end{gather}
 with
 \begin{gather}
-\pdfrac{d_t}{\bvarepsilon_{n+1}}=\ddfrac{d_t}{\kappa_t}\pdfrac{\kappa_t}{\bvarepsilon_{n+1}},\\
-\pdfrac{d_c}{\bvarepsilon_{n+1}}=\ddfrac{d_c}{\kappa_c}\pdfrac{\kappa_c}{\bvarepsilon_{n+1}},\\
-\pdfrac{s}{\bvarepsilon_{n+1}}=\left(1-s_0\right)\ddfrac{r}{\bbsigma_{n+1}}:\pdfrac{\bbsigma_{n+1}}{\bvarepsilon_{n+1}}.
+\ddfrac{d_t}{\bvarepsilon_{n+1}}=\ddfrac{d_t}{\kappa_t}\ddfrac{\kappa_t}{\bvarepsilon_{n+1}},\\
+\ddfrac{d_c}{\bvarepsilon_{n+1}}=\ddfrac{d_c}{\kappa_c}\ddfrac{\kappa_c}{\bvarepsilon_{n+1}},\\
+\ddfrac{s}{\bvarepsilon_{n+1}}=\left(1-s_0\right)\ddfrac{r}{\bbsigma_{n+1}}:\ddfrac{\bbsigma_{n+1}}{\bvarepsilon_{n+1}}.
 \end{gather}
 
 The following derivatives would be useful.
@@ -240,20 +248,20 @@ Given that the stress update is computed as follows,
 the consistent tangent stiffness is then
 \begin{gather}
 \begin{split}
-\pdfrac{\bsigma_{n+1}}{\bvarepsilon_{n+1}}&=\bbsigma_{n+1}\otimes\pdfrac{h}{\bvarepsilon_{n+1}}+h\pdfrac{\bbsigma_{n+1}}{\bvarepsilon_{n+1}}\\
-&=\bbsigma_{n+1}\otimes\left(\left(d_c-1\right)\left(s\pdfrac{d_t}{\bvarepsilon_{n+1}}+d_t\pdfrac{s}{\bvarepsilon_{n+1}}\right)+\left(sd_t-1\right)\pdfrac{d_c}{\bvarepsilon_{n+1}}\right)+h\pdfrac{\bbsigma_{n+1}}{\bvarepsilon_{n+1}},
+\ddfrac{\bsigma_{n+1}}{\bvarepsilon_{n+1}}&=\bbsigma_{n+1}\otimes\ddfrac{h}{\bvarepsilon_{n+1}}+h\ddfrac{\bbsigma_{n+1}}{\bvarepsilon_{n+1}}\\
+&=\bbsigma_{n+1}\otimes\left(\left(d_c-1\right)\left(s\ddfrac{d_t}{\bvarepsilon_{n+1}}+d_t\ddfrac{s}{\bvarepsilon_{n+1}}\right)+\left(sd_t-1\right)\ddfrac{d_c}{\bvarepsilon_{n+1}}\right)+h\ddfrac{\bbsigma_{n+1}}{\bvarepsilon_{n+1}},
 \end{split}
 \end{gather}
 which is equivalently,
 \begin{multline}\label{eq:cdp_pd}
-\pdfrac{\bsigma_{n+1}}{\bvarepsilon_{n+1}}=\bbsigma_{n+1}\otimes\underbrace{\left(\begin{bmatrix}
+\ddfrac{\bsigma_{n+1}}{\bvarepsilon_{n+1}}=\bbsigma_{n+1}\otimes\underbrace{\left(\begin{bmatrix}
 s\left(d_c-1\right)\ddfrac{d_t}{\kappa_t}&
 \left(sd_t-1\right)\ddfrac{d_c}{\kappa_c}
 \end{bmatrix}
 \begin{bmatrix}
-\pdfrac{\kappa_t}{\bvarepsilon_{n+1}}\\[4mm]
-\pdfrac{\kappa_c}{\bvarepsilon_{n+1}}
-\end{bmatrix}\right)}_\text{dot product in vector representation}\\+\left(d_t\left(d_c-1\right)\left(1-s_0\right)\bbsigma_{n+1}\otimes\ddfrac{r}{\bbsigma_{n+1}}+h\mathbb{I}\right)\pdfrac{\bbsigma_{n+1}}{\bvarepsilon_{n+1}}.
+\ddfrac{\kappa_t}{\bvarepsilon_{n+1}}\\[4mm]
+\ddfrac{\kappa_c}{\bvarepsilon_{n+1}}
+\end{bmatrix}\right)}_\text{dot product in vector representation}\\+\left(d_t\left(d_c-1\right)\left(1-s_0\right)\bbsigma_{n+1}\otimes\ddfrac{r}{\bbsigma_{n+1}}+h\mathbb{I}\right)\ddfrac{\bbsigma_{n+1}}{\bvarepsilon_{n+1}}.
 \end{multline}
 
 The CDP model has no kinematic hardening, the effective part resembles the bounding surface concept. Due to the coaxiality, the model can be constructed in the eigen space, which brings some convenience in terms of implementation.
