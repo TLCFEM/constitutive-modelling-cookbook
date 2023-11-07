@@ -133,11 +133,15 @@ The peak value for $\zeta{}E<a$ is
 \dfrac{ab}{\zeta{}E}\exp\left(\dfrac{\zeta{}E-a}{a}\right).
 \end{gather}
 
-If, for unit characteristic length $l=1$, the reference $\zeta_r$ is given, then for any characteristic length $l$, if the total energy needs to stay unchanged, then
+If, for the reference characteristic length $l_r$, the reference $\zeta_r$ is given, then for any characteristic length $l$, if the total energy needs to stay unchanged, then
 \begin{gather}
-\left(\dfrac{a}{\zeta^2E^2}+\dfrac{1}{\zeta{}E}\right)b^2l=\left(\dfrac{a}{\zeta_r^2E^2}+\dfrac{1}{\zeta_r{}E}\right)b^2,\\
-\dfrac{a}{\zeta^2E^2}+\dfrac{1}{\zeta{}E}=\dfrac{1}{l}\left(\dfrac{a}{\zeta_r^2E^2}+\dfrac{1}{\zeta_r{}E}\right),\\
-\dfrac{1}{\zeta{}E}=\dfrac{\sqrt{1+\dfrac{4a}{l}\left(\dfrac{a}{\zeta_r^2E^2}+\dfrac{1}{\zeta_r{}E}\right)}-1}{2}=\sqrt{\dfrac{1}{4}+\dfrac{a}{l}\left(\dfrac{a}{\zeta_r^2E^2}+\dfrac{1}{\zeta_r{}E}\right)}-\dfrac{1}{2}.
+\left(\dfrac{a}{\zeta^2E^2}+\dfrac{1}{\zeta{}E}\right)b^2l=\left(\dfrac{a}{\zeta_r^2E^2}+\dfrac{1}{\zeta_r{}E}\right)b^2l_r,\\
+\dfrac{a}{\zeta^2E^2}+\dfrac{1}{\zeta{}E}=\dfrac{l_r}{l}\left(\dfrac{a}{\zeta_r^2E^2}+\dfrac{1}{\zeta_r{}E}\right),\\
+\dfrac{1}{\zeta{}E}=\dfrac{\sqrt{1+4\dfrac{l_r}{l}\left(\dfrac{a^2}{\zeta_r^2E^2}+\dfrac{a}{\zeta_r{}E}\right)}-1}{2a}.
+\end{gather}
+Denoting $r_a=\dfrac{a}{E}$,
+\begin{gather}
+\zeta=\dfrac{2r_a}{\sqrt{1+4\dfrac{l_r}{l}\left(\dfrac{r_a^2}{\zeta_r^2}+\dfrac{r_a}{\zeta_r}\right)}-1}.
 \end{gather}
 \subsubsection{Crack/Gap Closing}
 According to \eqsref{eq:k4_evolution}, $k_t$ is the accumulated tensile plastic strain, physically, it represents the crack opening. When reloading towards compression, this opening can be gradually closed.
