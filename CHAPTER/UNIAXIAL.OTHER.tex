@@ -143,6 +143,8 @@ Denoting $r_a=\dfrac{a}{E}$,
 \begin{gather}
 \zeta=\dfrac{2r_a}{\sqrt{1+4\dfrac{l_r}{l}\left(\dfrac{r_a^2}{\zeta_r^2}+\dfrac{r_a}{\zeta_r}\right)}-1}.
 \end{gather}
+
+Note here we only enforce the total energy to be constant. It is not equivalent to objective results under arbitrary magnitudes of loading.
 \subsubsection{Crack/Gap Closing}
 According to \eqsref{eq:k4_evolution}, $k_t$ is the accumulated tensile plastic strain, physically, it represents the crack opening. When reloading towards compression, this opening can be gradually closed.
 
@@ -185,13 +187,73 @@ F_k=\abs{\bar{\sigma}}-\bar{\sigma}_k
 with $\bar{\sigma}_k=h_kk_k$,
 does not properly define the behaviour. Especially under cyclic loading, the elastic region grows as $\bar{\sigma}_k$ would grow.
 
-To correct the response, it has to be, at least, be defined as
+To correct the response, it, at least, has to be defined as
 \begin{gather}
 \bar{\sigma}_k=h_k\left(k_k-k_k^i\right),
 \end{gather}
 where $k_k^i$ is the initial $k_k$ at the beginning of current loading path, and needs to be updated whenever load reversal occurs.
 
 We avoid such a complex presentation as it may cause unnecessary confusions. At its core, the crack closing mechanism tries to close the unclosed crack ($k_t-k_k$) by accumulating a portion of strain increment to $k_k$ ($\Delta{}k_k=\abs{\Delta\varepsilon}\dfrac{E}{E+h_k}$), and this mechanism is conditionally activated.
+\subsection{Formulation}
+\subsubsection{Tangent Stiffness}
+By the chain rule, differentiating the expression of stress
+\begin{gather}
+\sigma=\left(1-d\right)\bar{\sigma}
+\end{gather}
+leads to
+\begin{gather}
+\ddfrac{\sigma}{\varepsilon}=\left(1-d\right)\ddfrac{\bar{\sigma}}{\varepsilon}-\bar{\sigma}\ddfrac{d}{k}\ddfrac{k}{\varepsilon}.
+\end{gather}
+Here we use an `anisotropic' damage concept, that is
+\begin{gather}
+d=\left\{
+\begin{array}{ll}
+d_t,&\bar{\sigma}>0,\\
+d_c,&\text{else},
+\end{array}\right.\qquad
+k=\left\{
+\begin{array}{ll}
+k_t,&\bar{\sigma}>0,\\
+k_c,&\text{else}.
+\end{array}\right.
+\end{gather}
+
+Knowing that $\ddfrac{k}{\varepsilon}$ is effectively $\ddfrac{\gamma}{\varepsilon}$ as $\dot{k}=\gamma$, from the local residual (yield function) at equilibrium,
+\begin{gather}
+\pdfrac{F}{\varepsilon}=\pdfrac{F}{\gamma}\ddfrac{\gamma}{\varepsilon}+\pdfrac{F}{\varepsilon}=0,
+\end{gather}
+one could derive
+\begin{gather}
+\ddfrac{\gamma}{\varepsilon}=-\left(\pdfrac{F}{\gamma}\right)^{-1}\pdfrac{F}{\varepsilon}.
+\end{gather}
+
+The yield function can be expressed as
+\begin{gather}
+\begin{split}
+F&=\abs{\bar{\sigma}}-\bar{\sigma}_y\\
+&=\abs{\bar{\sigma}^\text{trial}-\gamma{}E\sign{\bar{\sigma}}}-\bar{\sigma}_y,
+\end{split}
+\end{gather}
+then
+\begin{gather}
+\pdfrac{F}{\gamma}=-\sign{\bar{\sigma}}E\sign{\bar{\sigma}}-\ddfrac{\bar{\sigma}_y}{k}=-E-\ddfrac{\bar{\sigma}_y}{k},\\
+\pdfrac{F}{\varepsilon}=\sign{\bar{\sigma}}E.
+\end{gather}
+In the above, $J=\pdfrac{F}{\gamma}$ is in fact the Jacobian of the local system. Thus,
+\begin{gather}
+\ddfrac{\gamma}{\varepsilon}=-\sign{\bar{\sigma}}\dfrac{E}{J}.
+\end{gather}
+
+For the effective stress,
+\begin{gather}
+\ddfrac{\bar{\sigma}}{\varepsilon}=E-\sign{\bar{\sigma}}E\ddfrac{\gamma}{\varepsilon}=E+\dfrac{E^2}{J}.
+\end{gather}
+
+The stiffness can be expressed as
+\begin{gather}
+\ddfrac{\sigma}{\varepsilon}=\left(1-d\right)\left(E+\dfrac{E^2}{J}\right)+\abs{\bar{\sigma}}\ddfrac{d}{k}\dfrac{E}{J}.
+\end{gather}
+The explicit form of $\ddfrac{d}{k}$ shall be determined by the damage evolution.
 \subsection{Implementation}
 \begin{breakablealgorithm}
 \caption{state determination of K4 concrete model}\label{algo:k4_concrete}
@@ -202,8 +264,10 @@ We avoid such a complex presentation as it may cause unnecessary confusions. At 
 \EndIf
 \If{tension}
 \State apply tensile plasticity
+\State apply tensile damage
 \Else
 \State apply compressive plasticity
+\State apply compressive damage
 \EndIf
 \end{algorithmic}
 \end{breakablealgorithm}
@@ -213,18 +277,20 @@ It is straightforward to translate the above pseudo code to implementation.
 int NonlinearK4::update_trial_status(const vec& t_strain) {
     incre_strain = (trial_strain = t_strain) - current_strain;
 
-    if(fabs(incre_strain(0)) <= tolerance) return SUANPAN_SUCCESS;
+    if(fabs(incre_strain(0)) <= datum::eps) return SUANPAN_SUCCESS;
 
     trial_history = current_history;
     const auto& plastic_strain = trial_history(0);
+    // auto& kt = trial_history(1);
+    // auto& kc = trial_history(2);
     const auto& current_kt = current_history(1);
     const auto& current_kk = current_history(3);
 
     trial_stress = (trial_stiffness = elastic_modulus) * (trial_strain - plastic_strain);
 
-    if(trial_stress(0) < 0. && incre_strain(0) < 0. && current_kt > current_kk) compute_crack_close_branch();
+    if(apply_crack_closing && trial_stress(0) < 0. && incre_strain(0) < 0. && current_kt > current_kk) compute_crack_close_branch();
 
-    return trial_stress(0) > 0. ? compute_tension_branch() : compute_compression_branch();
+    return compute_plasticity();
 }
 \end{cppcode}
 
@@ -255,27 +321,32 @@ void NonlinearK4::compute_crack_close_branch() {
 }
 \end{cppcode}
 
-The tension and compression return mapping algorithms are almost identical except that they update different history variables and call different functions to compute backbone and damage. One can further unify the following two methods.
+The tension and compression return mapping algorithms are almost identical except that they update different history variables and call different functions to compute backbone and damage. One can unify them and use one implementation for both.
 \begin{cppcode}
-int NonlinearK4::compute_tension_branch() {
+int NonlinearK4::compute_plasticity() {
     auto& plastic_strain = trial_history(0);
-    auto& kt = trial_history(1);
 
     const auto sign_sigma = suanpan::sign(trial_stress(0));
 
+    auto& k = sign_sigma > 0. ? trial_history(1) : trial_history(2);
+
+    const auto backbone_handle = sign_sigma > 0. ? std::mem_fn(&NonlinearK4::compute_tension_backbone) : std::mem_fn(&NonlinearK4::compute_compression_backbone);
+    const auto damage_handle = sign_sigma > 0. ? std::mem_fn(&NonlinearK4::compute_tension_damage) : std::mem_fn(&NonlinearK4::compute_compression_damage);
+
     auto counter = 0u;
+    auto ref_error = 1.;
     while(true) {
         if(max_iteration == ++counter) {
             suanpan_error("Cannot converge within {} iterations.\n", max_iteration);
             return SUANPAN_FAIL;
         }
 
-        const auto backbone = compute_tension_backbone(kt);
+        const auto backbone = backbone_handle(this, k);
         const auto residual = fabs(trial_stress(0)) - backbone(0);
 
         if(1u == counter && residual <= 0.) {
             if(apply_damage) {
-                const auto damage = compute_tension_damage(kt);
+                const auto damage = damage_handle(this, k);
                 const auto damage_factor = 1. - damage(0);
 
                 trial_stress *= damage_factor;
@@ -285,20 +356,21 @@ int NonlinearK4::compute_tension_branch() {
             return SUANPAN_SUCCESS;
         }
 
-        const double jacobian = elastic_modulus + backbone(1);
+        const auto jacobian = elastic_modulus + backbone(1);
         const auto incre = residual / jacobian;
         const auto error = fabs(incre);
-        suanpan_debug("Local tension iteration error: {:.5E}.\n", error);
-        if(error < tolerance || fabs(residual) < tolerance) {
+        if(1u == counter) ref_error = error;
+        suanpan_debug("Local plasticity iteration error: {:.5E}.\n", error);
+        if(error < tolerance * ref_error || (fabs(residual) < tolerance && counter > 5u)) {
             const auto dgamma = elastic_modulus / jacobian;
             trial_stiffness -= dgamma * elastic_modulus;
 
             if(apply_damage) {
-                const auto damage = compute_tension_damage(kt);
+                const auto damage = damage_handle(this, k);
                 const auto damage_factor = 1. - damage(0);
 
                 trial_stiffness *= damage_factor;
-                trial_stiffness -= trial_stress * damage(1) * dgamma;
+                trial_stiffness -= trial_stress * damage(1) * sign_sigma * dgamma;
 
                 trial_stress *= damage_factor;
             }
@@ -308,66 +380,25 @@ int NonlinearK4::compute_tension_branch() {
 
         const auto incre_ep = incre * sign_sigma;
 
-        kt += incre;
+        k += incre;
         plastic_strain += incre_ep;
         trial_stress -= elastic_modulus * incre_ep;
     }
 }
+\end{cppcode}
 
-int NonlinearK4::compute_compression_branch() {
-    auto& plastic_strain = trial_history(0);
-    auto& kc = trial_history(2);
+In the computation of damage variables, it is possible to adjust $\zeta$ according to the previous discussion.
+\begin{cppcode}
+double NonlinearK4::objective_scale(const double a, const double zeta) const {
+    if(!objective_damage) return zeta;
 
-    const auto sign_sigma = suanpan::sign(trial_stress(0));
+    const auto ratio = a / zeta;
+    return 2. * a / (std::sqrt(1. + 4. / get_characteristic_length() * (ratio * ratio + ratio)) - 1.);
+}
 
-    auto counter = 0u;
-    while(true) {
-        if(max_iteration == ++counter) {
-            suanpan_error("Cannot converge within {} iterations.\n", max_iteration);
-            return SUANPAN_FAIL;
-        }
-
-        const auto backbone = compute_compression_backbone(kc);
-        const auto residual = fabs(trial_stress(0)) - backbone(0);
-
-        if(1u == counter && residual <= 0.) {
-            if(apply_damage) {
-                const auto damage = compute_compression_damage(kc);
-                const auto damage_factor = 1. - damage(0);
-
-                trial_stress *= damage_factor;
-                trial_stiffness *= damage_factor;
-            }
-
-            return SUANPAN_SUCCESS;
-        }
-
-        const double jacobian = elastic_modulus + backbone(1);
-        const auto incre = residual / jacobian;
-        const auto error = fabs(incre);
-        suanpan_debug("Local compression iteration error: {:.5E}.\n", error);
-        if(error < tolerance || fabs(residual) < tolerance) {
-            const auto dgamma = elastic_modulus / jacobian;
-            trial_stiffness -= dgamma * elastic_modulus;
-
-            if(apply_damage) {
-                const auto damage = compute_compression_damage(kc);
-                const auto damage_factor = 1. - damage(0);
-
-                trial_stiffness *= damage_factor;
-                trial_stiffness -= trial_stress * damage(1) * dgamma;
-
-                trial_stress *= damage_factor;
-            }
-
-            return SUANPAN_SUCCESS;
-        }
-
-        const auto incre_ep = incre * sign_sigma;
-
-        kc += incre;
-        plastic_strain += incre_ep;
-        trial_stress -= elastic_modulus * incre_ep;
-    }
+vec2 ConcreteK4::compute_tension_damage(const double k) const {
+    const auto e_t = f_t / objective_scale(hardening_t, zeta_t);
+    const auto factor = exp(-k / e_t);
+    return vec2{1. - factor, factor / e_t};
 }
 \end{cppcode}
