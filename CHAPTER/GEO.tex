@@ -1203,3 +1203,84 @@ int DafaliasManzari::update_trial_status(const vec& t_strain) {
     return SUANPAN_SUCCESS;
 }
 \end{cppcode}
+\section{Duncan Soil Model}
+In this section, we present a plane strain soil model. Unlike other models that are typically strain--driven, it is a non-linear elastic phenomenological stress--driven model.
+\subsection{Theory}
+The incremental form of the constitutive relationship is defined as
+\begin{gather}\label{eq:duncan_incremental}
+\dot{\bsigma}=\mb{D}\dot{\bvarepsilon}=\dfrac{3B}{9B-E}\begin{bmatrix}
+3B+E&3B-E&0\\
+3B-E&3B+E&0\\
+0&0&E\\
+\end{bmatrix}\dot{\bvarepsilon}
+\end{gather}
+where $\bvarepsilon=\begin{bmatrix}\varepsilon_{x}&\varepsilon_{y}&\gamma_{xy}\end{bmatrix}^\mT$ and $\bsigma=\begin{bmatrix}\sigma_{x}&\sigma_{y}&\tau_{xy}\end{bmatrix}^\mT$ are the strain and stress vector for conditions of plane strain. As the original model is non-linear elastic, it can be fully defined by the stress state. Thus, the elastic modulus $E$ and the bulk modulus $K$ can be determined solely by the stress vector.
+
+Before proceeding, one shall note that the stress vector $\bsigma$ can be converted into principal stresses via either Mohr's circle or eigenanalysis.
+\begin{gather}
+\begin{array}{rr}
+\sigma_1\\
+\sigma_3
+\end{array}=\dfrac{\sigma_x+\sigma_y}{2}\pm\sqrt{\left(\dfrac{\sigma_x-\sigma_y}{2}\right)^2+\tau_{xy}^2}.
+\end{gather}
+In the context of geotechnical engineering, typically $\abs{\sigma_1}>\abs{\sigma_3}$ and both take compression as positive. Depending on how $\bsigma$ is defined, the signs presented in the above expression may be flipped.
+
+The corresponding derivatives $\ddfrac{\sigma_1}{\bsigma}$ and $\ddfrac{\sigma_3}{\bsigma}$ can be determined accordingly.
+
+The difference between $\sigma_1$ and $\sigma_3$ is taken as the deviatoric stress.
+\begin{gather}
+\sigma_d=\abs{\sigma_1-\sigma_3}.
+\end{gather}
+\subsubsection{Elastic Modulus}
+The elastic modulus $E$ can be expressed as the product of two components, namely, the initial part and the reduction part.
+\begin{gather}
+E=E_i\left(1-\dfrac{\sigma_d}{\sigma_d^{\text{max}}}\right)^2.
+\end{gather}
+
+The initial part $E_i$ increases when $\sigma_3$ grows larger.
+\begin{gather}
+E_i=E_r\abs{\dfrac{\sigma_3}{p_a}}^n,
+\end{gather}
+where $E_r$ is the reference elastic modulus, $p_a$ is the atmospheric pressure, and $n$ is a model parameter that is typically between zero and unity.
+
+The reduction part physically implies that the elastic modulus decreases when the current deviatoric stress approaches the maximum deviatoric stress. This is effectively the Mohr--Coulomb failure criterion. As a result, the deviatoric stress would asymptotically converge to the maximum deviatoric stress.
+\begin{gather}
+\sigma_d^\text{max}=\dfrac{\sigma_d^\text{ult}}{r_f},
+\end{gather}
+with the ultimate deviatoric stress $\sigma_d^\text{ult}$ being defined as
+\begin{gather}
+\sigma_d^\text{ult}=2\dfrac{c\cos\phi+\sigma_3\sin\phi}{1-\sin\phi}.
+\end{gather}
+It can be solved graphically. The ratio $r_f<1$ is introduced to fine--tune the behaviour.
+\subsubsection{Bulk Modulus}
+The bulk modulus $B$ takes a similar approach. However, it only monotonically increase with an increasing $\sigma_3$.
+\begin{gather}
+B=B_r\abs{\dfrac{\sigma_3}{p_a}}^m,
+\end{gather}
+where $B_r$ is the reference bulk modulus and $m$ is another modal parameter similar to $n$.
+\subsection{Implementation}
+The incremental form \eqsref{eq:duncan_incremental} resembles the elastic Hooke's law. However, since $E$ and $B$ rely on $\bsigma$, the consistent tangent stiffness requires the computation of the full derivative.
+
+\begin{gather}
+\ddfrac{E}{\bsigma}=\pdfrac{E}{\sigma_1}\ddfrac{\sigma_1}{\bsigma}+\pdfrac{E}{\sigma_3}\ddfrac{\sigma_3}{\bsigma},\qquad
+\ddfrac{B}{\bsigma}=\ddfrac{E}{\sigma_3}\ddfrac{\sigma_3}{\bsigma}.
+\end{gather}
+
+Adopting the implicit Euler method, the local residual can be expressed as
+\begin{gather}
+\mb{R}=\bsigma-\bsigma_n-\mb{D}\Delta\bvarepsilon.
+\end{gather}
+The Jacobian can be derived as
+\begin{gather}
+\pdfrac{\mb{R}}{\bsigma}=\mb{I}-\ddfrac{\mb{D}}{\bsigma}\Delta\bvarepsilon.
+\end{gather}
+
+The consistent tangent stiffness is thus
+\begin{gather}
+\ddfrac{\bsigma}{\bvarepsilon}=\left(\mb{I}-\ddfrac{\mb{D}}{\bsigma}\Delta\bvarepsilon\right)^{-1}\mb{D}.
+\end{gather}
+One shall note the following two points.
+\begin{enumerate}
+\item The derivative $\ddfrac{\mb{D}}{\bsigma}$ is a cube, since $\mb{D}$ is a matrix.
+\item Although \eqsref{eq:duncan_incremental} is symmetric and resembles the elastic Hooke's law, the consistent tangent is not symmetric.
+\end{enumerate}
