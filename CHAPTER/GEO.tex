@@ -1257,7 +1257,27 @@ with the ultimate deviatoric stress $\sigma_d^\text{ult}$ being defined as
 \begin{gather}
 \sigma_d^\text{ult}=2\dfrac{c\cos\phi+\sigma_3\sin\phi}{1-\sin\phi}.
 \end{gather}
-It can be solved graphically. The ratio $r_f<1$ is introduced to fine--tune the behaviour.
+It can be solved graphically using the following trigonometry.
+\begin{gather}
+\left(\sigma_d^\text{ult}/2+\sigma_3-c\tan\phi\right)\sin\phi=\sigma_d^\text{ult}/2-\dfrac{c}{\cos\phi}.
+\end{gather}
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\draw[->](-1,0)--++(10,0);
+\draw[->](0,-.5)--++(0,4);
+\draw(0,0.86602540378)--++(6,3.46410161514);
+\draw[dashed](0,0.86602540378)--++(4,0)--++(0,-0.86602540378);
+\draw(7.5,0)arc(0:180:3);
+\draw(4.5,0)--(3,2.59807621135);
+\draw[|<->|](0,-.4)--++(1.5,0)node[midway,fill=white]{$\sigma_3$};
+\draw[|<->|](1.5,-.4)--++(3,0)node[midway,fill=white]{$\sigma_d^\text{ult}/2$};
+\draw[|<->|](-.3,0)--++(0,0.86602540378)node[midway,fill=white]{$c$};
+\node at($(0,0.86602540378)+(15:.8)$){\scriptsize$\phi$};
+\node at($(4,0.86602540378)+(-75:.5)$){\scriptsize$\phi$};
+\end{tikzpicture}
+\end{figure}
+The ratio $r_f<1$ is introduced to fine--tune the behaviour.
 \subsubsection{Bulk Modulus}
 The bulk modulus $B$ takes a similar approach. However, it only monotonically increase with an increasing $\sigma_3$.
 \begin{gather}
@@ -1298,10 +1318,10 @@ To enable plasticity--like behaviour, one could introduce the concept of yield s
 \begin{gather}
 f\left(\bsigma\right)=\sigma_d.
 \end{gather}
+Similar to conventional plasticity theory based models, a return mapping style algorithm can be applied.
 
 To define the irreversible evolution of plasticity, the deviatoric stress history is recorded, the corresponding stress state was used to compute the initial elastic and bulk moduli, which are further used to compute the `elastic' loading/unloading stiffness matrix.
 \subsection{Implementation}
-\subsubsection{State Determination}
 The state determination algorithm is shown in \algoref{algo:duncan_model}.
 \begin{breakablealgorithm}
 \caption{state determination of Duncan soil model}\label{algo:duncan_model}
@@ -1406,6 +1426,7 @@ int DuncanSelig::update_trial_status(const vec& t_strain) {
 \end{cppcode}
 
 The computation of two moduli follows the formulation with extra cumbersome computation of derivatives.
+To improve numerical robustness, additional limits are applied. Stress components are bounded to the atmospheric pressure.
 \begin{cppcode}
 std::tuple<double, double, double, rowvec3, rowvec3> DuncanSelig::compute_moduli() {
     // principal stresses
