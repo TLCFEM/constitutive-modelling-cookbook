@@ -1217,7 +1217,7 @@ The incremental form of the constitutive relationship is defined as
 \end{gather}
 where $\bvarepsilon=\begin{bmatrix}\varepsilon_{x}&\varepsilon_{y}&\gamma_{xy}\end{bmatrix}^\mT$ and $\bsigma=\begin{bmatrix}\sigma_{x}&\sigma_{y}&\tau_{xy}\end{bmatrix}^\mT$ are the strain and stress vector for conditions of plane strain.
 As the original model is non-linear elastic, it can be fully defined by the stress state.
-Thus, the elastic modulus $E$ and the bulk modulus $K$ can be determined solely by the stress vector.
+Thus, the elastic modulus $E$ and the bulk modulus $K$ can be determined solely by the stress vector $\bsigma$.
 
 Before proceeding, one shall note that the stress vector $\bsigma$ can be converted into principal stresses via either Mohr's circle or eigenanalysis.
 \begin{gather}
@@ -1288,7 +1288,6 @@ where $B_r$ is the reference bulk modulus and $m$ is another modal parameter sim
 \subsubsection{Local Iteration}
 The incremental form \eqsref{eq:duncan_incremental} resembles the elastic Hooke's law.
 However, since $E$ and $B$ rely on $\bsigma$, the consistent tangent stiffness requires the computation of the full derivative.
-
 \begin{gather}
 \ddfrac{E}{\bsigma}=\pdfrac{E}{\sigma_1}\ddfrac{\sigma_1}{\bsigma}+\pdfrac{E}{\sigma_3}\ddfrac{\sigma_3}{\bsigma},\qquad
 \ddfrac{B}{\bsigma}=\ddfrac{E}{\sigma_3}\ddfrac{\sigma_3}{\bsigma}.
@@ -1327,197 +1326,34 @@ The state determination algorithm is shown in \algoref{algo:duncan_model}.
 \caption{state determination of Duncan soil model}\label{algo:duncan_model}
 \begin{algorithmic}
 \State \textbf{Parameter}: $p_a$, $E_r$, $n$, $B_r$, $m$, $\phi_i$, $\Delta\phi$, $r_f$, $c$
-\State \textbf{Input}: $\bvarepsilon_{n+1}$, $\bvarepsilon_n$, $\bsigma_n$
+\State \textbf{Input}: $\bvarepsilon_{n+1}$, $\bvarepsilon_n$, $\bsigma_n$, $\sigma_d^{\text{max}}$
 \State \textbf{Output}: $\mb{D}_{n+1}$, $\bsigma_{n+1}$
-\State compute $\mb{D}_{n+1}$ based on last updated $E_i$ and $B_i$\Comment{assuming elastic}
-\State $\bsigma_{n+1}=\bsigma_n+\mb{D}_{n+1}\left(\bvarepsilon_{n+1}-\bvarepsilon_{n}\right)$
-\State compute $\sigma_d$ from $\bsigma_{n+1}$
-\If {$\sigma_d\leqslant\sigma_d^h$}\Comment{$\sigma_d^h$ is the maximum deviatoric stress history}
-\State \Return\Comment{no history variables need to be updated}
+\State $\bsigma_{n+1}=\bsigma_n$
+\While{true}
+\State compute $\sigma^d$ based on $\bsigma_{n+1}$
+\If {$\sigma^d\geqslant\sigma_d^{\text{max}}$}
+\State compute $E$ and $B$\Comment{with reduction}
+\Else
+\State compute $E$ and $B$\Comment{without reduction}
 \EndIf
-\While{$\norm{\mb{R}}\geqslant\text{tolerance}$}
+\State compute $\mb{D}_{n+1}$ based on $E$ and $B$
 \State compute $\mb{R}$ and $\pdfrac{\mb{R}}{\bsigma}$
 \State $\Delta\bsigma=\left(\pdfrac{\mb{R}}{\bsigma}\right)^{-1}\mb{R}$
+\If {convergence}
+\State update $\sigma_d^{\text{max}}$ if $\sigma_d$ exceeds $\sigma_d^{\text{max}}$
+\State $\mb{D}_{n+1}=\left(\pdfrac{\mb{R}}{\bsigma}\right)^{-1}\mb{D}$
+\State \Return
+\EndIf
 \State $\bsigma_{n+1}\leftarrow\bsigma_{n+1}-\Delta\bsigma$
 \EndWhile
-\State store $\sigma_d$, $E_i$ and $B_i$ as history variables
-\State $\mb{D}_{n+1}=\left(\pdfrac{\mb{R}}{\bsigma}\right)^{-1}\mb{D}$
 \end{algorithmic}
 \end{breakablealgorithm}
 
 The main body of the implementation can be shown as follows.
 \begin{cppcode}
-int DuncanSelig::update_trial_status(const vec& t_strain) {
-    incre_strain = (trial_strain = t_strain) - current_strain;
-
-    if(norm(incre_strain) <= datum::eps) return SUANPAN_SUCCESS;
-
-    trial_history = current_history;
-    auto& max_dev_stress = trial_history(0);
-    auto& last_elastic = trial_history(1);
-    auto& last_bulk = trial_history(2);
-
-    // assuming elastic loading/unloading
-    trial_stress = current_stress + (trial_stiffness = compute_stiffness(last_elastic, last_bulk)) * incre_strain;
-
-    // if elastic response exceeds the maximum deviatoric stress, then the material is considered to be in a plastic state
-    if(dev(trial_stress) <= max_dev_stress) return SUANPAN_SUCCESS;
-
-    vec3 net_stress = current_stress, net_strain = incre_strain;
-
-    if(dev(current_stress) < max_dev_stress) {
-        // project onto the yield surface first
-        auto elastic_portion = .5;
-        if(SUANPAN_SUCCESS != project_to_surface(elastic_portion)) return SUANPAN_FAIL;
-
-        net_stress = current_stress + trial_stiffness * incre_strain * elastic_portion;
-        net_strain = (1. - elastic_portion) * incre_strain;
-    }
-
-    auto ref_error = 0.;
-    vec3 incre;
-    mat33 jacobian;
-
-    auto counter = 0u;
-    while(true) {
-        if(max_iteration == ++counter) {
-            suanpan_error("Cannot converge within {} iterations.\n", max_iteration);
-            return SUANPAN_FAIL;
-        }
-
-        const auto [ini_elastic, elastic, bulk, deds, dkds] = compute_moduli();
-
-        const auto factor_a = 3. * bulk * (3. * bulk + elastic);
-        const auto factor_b = 3. * bulk * (3. * bulk - elastic);
-
-        mat33 right(fill::zeros);
-        right(0, 0) = right(1, 1) = factor_a;
-        right(0, 1) = right(1, 0) = factor_b;
-        right(2, 2) = 3. * bulk * elastic;
-
-        const vec3 residual = (9. * bulk - elastic) * (trial_stress - net_stress) - right * net_strain;
-
-        const rowvec3 dfads = (18. * bulk + 3. * elastic) * dkds + 3. * bulk * deds;
-        const rowvec3 dfbds = (18. * bulk - 3. * elastic) * dkds - 3. * bulk * deds;
-
-        jacobian = (9. * bulk - elastic) * eye(3, 3) + (trial_stress - net_stress) * (9. * dkds - deds);
-        jacobian.row(0) -= net_strain(0) * dfads + net_strain(1) * dfbds;
-        jacobian.row(1) -= net_strain(0) * dfbds + net_strain(1) * dfads;
-        jacobian.row(2) -= net_strain(2) * 3. * (bulk * deds + elastic * dkds);
-
-        if(!solve(incre, jacobian, residual)) return SUANPAN_FAIL;
-
-        const auto error = inf_norm(incre);
-        if(1u == counter) ref_error = error;
-        suanpan_debug("Local iteration error: {:.5E}.\n", error / ref_error);
-        if(error < tolerance * ref_error || ((error < tolerance || inf_norm(residual) < tolerance) && counter > 5u)) {
-            if(!solve(trial_stiffness, jacobian, right)) return SUANPAN_FAIL;
-
-            max_dev_stress = dev(trial_stress);
-            last_elastic = ini_elastic;
-            last_bulk = bulk;
-
-            return SUANPAN_SUCCESS;
-        }
-
-        trial_stress -= incre;
-    }
-}
 \end{cppcode}
 
 The computation of two moduli follows the formulation with extra cumbersome computation of derivatives.
 To improve numerical robustness, additional limits are applied. Stress components are bounded to the atmospheric pressure.
 \begin{cppcode}
-std::tuple<double, double, double, rowvec3, rowvec3> DuncanSelig::compute_moduli() {
-    // principal stresses
-
-    const auto center = -.5 * (trial_stress(0) + trial_stress(1));
-    const rowvec3 dcds{-.5, -.5, 0.};
-
-    auto radius = .5 * dev(trial_stress);
-    rowvec3 drds(fill::zeros);
-    if(radius > datum::eps) drds = der_dev(trial_stress) / radius * .25;
-
-    const auto s1 = center + radius, s3 = center - radius;
-
-    const rowvec3 ds1ds = dcds + drds, ds3ds = dcds - drds;
-
-    // for elastic modulus
-
-    double phi, dphids3;
-    if(s3 < p_atm) {
-        phi = ini_phi;
-        dphids3 = 0.;
-    }
-    else {
-        phi = ini_phi - ten_fold_phi_diff * log10(s3 / p_atm);
-        dphids3 = -ten_fold_phi_diff / (s3 * log(10));
-        if(phi < 0.) phi = dphids3 = 0.;
-    }
-
-    static constexpr auto min_ratio = 1.;
-
-    const auto denom = 1. - std::sin(phi);
-    auto max_dev_stress = 2. / r_f * (cohesion * std::cos(phi) + s3 * std::sin(phi)) / denom;
-    auto dmdsds3 = 0.;
-    if(max_dev_stress > min_ratio * p_atm) {
-        const auto pmdspphi = 2. / r_f * (s3 * std::cos(phi) / denom / denom + cohesion / denom);
-        const auto pmdsps3 = 2. / r_f * std::sin(phi) / denom;
-        dmdsds3 = pmdspphi * dphids3 + pmdsps3;
-    }
-    else max_dev_stress = min_ratio * p_atm;
-
-    const auto dev_stress = s1 - s3;
-    const auto pdsps1 = 1.;
-    const auto pdsps3 = -1.;
-
-    double ini_elastic, deids3;
-    if(s3 < -min_ratio * p_atm) {
-        ini_elastic = ref_elastic * std::pow(.01, n);
-        deids3 = 0.;
-    }
-    else if(s3 < min_ratio * p_atm) {
-        ini_elastic = ref_elastic * std::pow(min_ratio, n);
-        deids3 = 0.;
-    }
-    else {
-        ini_elastic = ref_elastic * std::pow(s3 / p_atm, n);
-        deids3 = n * ini_elastic / s3;
-    }
-
-    const auto pepei = std::pow(1. - dev_stress / max_dev_stress, 2.);
-    const auto elastic = ini_elastic * pepei;
-    const auto pepds = -2. * ini_elastic * (1. - dev_stress / max_dev_stress) / max_dev_stress;
-    const auto pepmds = 2. * ini_elastic * (1. - dev_stress / max_dev_stress) * dev_stress / max_dev_stress / max_dev_stress;
-
-    const auto peps1 = pepds * pdsps1;
-    const auto peps3 = pepei * deids3 + pepds * pdsps3 + pepmds * dmdsds3;
-
-    const rowvec3 deds = peps1 * ds1ds + peps3 * ds3ds;
-
-    // for bulk modulus
-
-    double bulk, pkps3;
-    if(s3 < -min_ratio * p_atm) {
-        bulk = ref_bulk * std::pow(.01, m);
-        pkps3 = 0.;
-    }
-    else if(s3 < min_ratio * p_atm) {
-        bulk = ref_bulk * std::pow(min_ratio, m);
-        pkps3 = 0.;
-    }
-    else {
-        bulk = ref_bulk * std::pow(s3 / p_atm, m);
-        pkps3 = m * bulk / s3;
-    }
-
-    rowvec3 dkds = pkps3 * ds3ds;
-
-    if(3. * bulk < elastic) {
-        bulk = elastic / 3.;
-        dkds = deds / 3.;
-    }
-
-    return {ini_elastic, elastic, bulk, deds, dkds};
-}
 \end{cppcode}
