@@ -1264,8 +1264,8 @@ It can be solved graphically using the following trigonometry.
 \begin{figure}[ht]
 \centering
 \begin{tikzpicture}
-\draw[->](-1,0)--++(10,0);
-\draw[->](0,-.5)--++(0,4);
+\draw[->](-1,0)--++(10,0)node[below]{$\sigma$};
+\draw[->](0,-.5)--++(0,4)node[right]{$\tau$};
 \draw(0,0.86602540378)--++(6,3.46410161514);
 \draw[dashed](0,0.86602540378)--++(4,0)--++(0,-0.86602540378);
 \draw(7.5,0)arc(0:180:3);
@@ -1276,6 +1276,7 @@ It can be solved graphically using the following trigonometry.
 \node at($(0,0.86602540378)+(15:.8)$){\scriptsize$\phi$};
 \node at($(4,0.86602540378)+(-75:.5)$){\scriptsize$\phi$};
 \end{tikzpicture}
+\caption{$\sigma_d^\text{ult}$ determined by Mohr's circle}
 \end{figure}
 The ratio $r_f<1$ is introduced to fine--tune the behaviour.
 \subsubsection{Bulk Modulus}
@@ -1299,12 +1300,12 @@ Adopting the implicit Euler method, the local residual can be expressed as
 \end{gather}
 The Jacobian can be derived as
 \begin{gather}
-\pdfrac{\mb{R}}{\bsigma}=\mb{I}-\ddfrac{\mb{D}}{\bsigma}\Delta\bvarepsilon.
+\mb{J}=\pdfrac{\mb{R}}{\bsigma}=\mb{I}-\ddfrac{\mb{D}}{\bsigma}\Delta\bvarepsilon.
 \end{gather}
 
 The consistent tangent stiffness is thus
 \begin{gather}
-\ddfrac{\bsigma}{\bvarepsilon}=\left(\mb{I}-\ddfrac{\mb{D}}{\bsigma}\Delta\bvarepsilon\right)^{-1}\mb{D}.
+\ddfrac{\bsigma}{\bvarepsilon}=\mb{C}=\mb{J}^{-1}\mb{D}.
 \end{gather}
 One shall note the following two points.
 \begin{enumerate}
@@ -1315,16 +1316,18 @@ One shall note the following two points.
 The original model is a non-linear elastic model, implying no plasticity whatsoever.
 Similar to the concept discussed in \cite{Katona2015}, to enable plasticity--like behaviour, one could introduce the concept of yield surface. Since the Mohr--Coulomb failure criterion is used in \eqsref{eq:duncan_reduction}, the yield function $f\left(\bsigma\right)$ can be simply chosen as
 \begin{gather}
-f\left(\bsigma\right)=\sigma_d.
+f\left(\bsigma\right)=\sigma_d-\sigma_d^\text{max}.
 \end{gather}
 Similar to conventional plasticity theory based models, a return mapping style algorithm can be applied.
 
-To define the irreversible evolution of plasticity, the deviatoric stress history is recorded, the corresponding stress state was used to compute the initial elastic and bulk moduli, which are further used to compute the `elastic' loading/unloading stiffness matrix.
+The maximum $\sigma_d^\text{max}$ shall be recorded, and it is only updated when local iteration converges and the converged stress yields a larger $\sigma_d$.
+Then, whenever $\sigma_d>\sigma_d^\text{max}$, $f>0$ indicating the development of plasticity, the elastic modulus shall be computed according to \eqsref{eq:duncan_reduction}.
+For $\sigma_d\leqslant\sigma_d^\text{max}$, $f<0$ indicating elastic loading/unloading, then the reduction in $E$ is not considered, viz., $E=E_i$.
 \subsection{Implementation}
 The state determination algorithm is shown in \algoref{algo:duncan_model}.
 One must note the fact that, since the model is stress driven, it is not as straightforward to obtain plastic strain alike quantities as in conventional strain driven models.
 If one wants, the plastic strain can be defined as the residual strain when fully unloaded (strain is zero).
-However, due to its non-linearity nature, it is not guaranteed that the development of plasticity is irreversible.
+However, due to its non-linearity nature, it is not guaranteed that the development of plasticity is irreversible, which mainly depends on model parameters.
 \begin{breakablealgorithm}
 \caption{state determination of Duncan soil model}\label{algo:duncan_model}
 \begin{algorithmic}
@@ -1340,11 +1343,11 @@ However, due to its non-linearity nature, it is not guaranteed that the developm
 \State compute $E$ and $B$\Comment{without reduction}
 \EndIf
 \State compute $\mb{D}_{n+1}$ based on $E$ and $B$
-\State compute $\mb{R}$ and $\pdfrac{\mb{R}}{\bsigma}$
-\State $\Delta\bsigma=\left(\pdfrac{\mb{R}}{\bsigma}\right)^{-1}\mb{R}$
+\State compute $\mb{R}$ and $\mb{J}$
+\State $\Delta\bsigma=\mb{J}^{-1}\mb{R}$
 \If {convergence}
 \State update $\sigma_d^{\text{max}}$ if $\sigma_d$ exceeds $\sigma_d^{\text{max}}$
-\State $\mb{D}_{n+1}=\left(\pdfrac{\mb{R}}{\bsigma}\right)^{-1}\mb{D}$
+\State $\mb{C}=\mb{J}^{-1}\mb{D}_{n+1}$
 \State \Return
 \EndIf
 \State $\bsigma_{n+1}\leftarrow\bsigma_{n+1}-\Delta\bsigma$
