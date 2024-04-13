@@ -1322,6 +1322,9 @@ Similar to conventional plasticity theory based models, a return mapping style a
 To define the irreversible evolution of plasticity, the deviatoric stress history is recorded, the corresponding stress state was used to compute the initial elastic and bulk moduli, which are further used to compute the `elastic' loading/unloading stiffness matrix.
 \subsection{Implementation}
 The state determination algorithm is shown in \algoref{algo:duncan_model}.
+One must note the fact that, since the model is stress driven, it is not as straightforward to obtain plastic strain alike quantities as in conventional strain driven models.
+If one wants, the plastic strain can be defined as the residual strain when fully unloaded (strain is zero).
+However, due to its non-linearity nature, it is not guaranteed that the development of plasticity is irreversible.
 \begin{breakablealgorithm}
 \caption{state determination of Duncan soil model}\label{algo:duncan_model}
 \begin{algorithmic}
