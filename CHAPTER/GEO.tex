@@ -1312,6 +1312,23 @@ One shall note the following two points.
 \item The derivative $\ddfrac{\mb{D}}{\bsigma}$ is a cube, since $\mb{D}$ is a matrix.
 \item Although \eqsref{eq:duncan_incremental} is symmetric and resembles the elastic Hooke's law, the consistent tangent is not symmetric.
 \end{enumerate}
+
+Here, we present an example computation of the Jacobian. The first row of the residual vector $\mb{R}$ can be explicitly written as
+\begin{gather}
+\mb{R}^{\left\langle1\right\rangle}=\sigma_x-\sigma_{x,n}-\dfrac{3B}{9B-E}\left(\left(3B+E\right)\Delta\varepsilon_x+\left(3B-E\right)\Delta\varepsilon_y\right).
+\end{gather}
+To avoid computing the derivative of fractions, the following equivalent form is adopted.
+\begin{gather}
+\mb{R}^{\left\langle1\right\rangle}=\left(9B-E\right)\left(\sigma_x-\sigma_{x,n}\right)-\left(\left(9B^2+3BE\right)\Delta\varepsilon_x+\left(9B^2-3BE\right)\Delta\varepsilon_y\right).
+\end{gather}
+
+The derivative can then be derived as
+\begin{multline}
+\pdfrac{\mb{R}^{\left\langle1\right\rangle}}{\bsigma}=\left(9B-E\right)\begin{bmatrix}
+1&0&0
+\end{bmatrix}+\left(\sigma_x-\sigma_{x,n}\right)\ddfrac{\left(9B-E\right)}{\bsigma}\\-\left(\Delta\varepsilon_x\ddfrac{\left(9B^2+3BE\right)}{\bsigma}+\Delta\varepsilon_y\ddfrac{\left(9B^2-3BE\right)}{\bsigma}\right).
+\end{multline}
+Similar procedures can be applied to the other two components of $\mb{R}$.
 \subsubsection{Plasticity}
 The original model is a non-linear elastic model, implying no plasticity whatsoever.
 Similar to the concept discussed in \cite{Katona2015}, to enable plasticity--like behaviour, one could introduce the concept of yield surface. Since the Mohr--Coulomb failure criterion is used in \eqsref{eq:duncan_reduction}, the yield function $f\left(\bsigma\right)$ can be simply chosen as
