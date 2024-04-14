@@ -1340,6 +1340,19 @@ Similar to conventional plasticity theory based models, a return mapping style a
 The maximum $\sigma_d^\text{max}$ shall be recorded, and it is only updated when local iteration converges and the converged stress yields a larger $\sigma_d$.
 Then, whenever $\sigma_d>\sigma_d^\text{max}$, $f>0$ indicating the development of plasticity, the elastic modulus shall be computed according to \eqsref{eq:duncan_reduction}.
 For $\sigma_d\leqslant\sigma_d^\text{max}$, $f<0$ indicating elastic loading/unloading, then the reduction in $E$ is not considered, viz., $E=E_i$.
+
+Based on the above discussion, one can rewrite \eqsref{eq:duncan_reduction} as
+\begin{gather}
+E=E_i\left(1-\beta\dfrac{\sigma_d}{\sigma_d^{\text{max}}}\right)^2,
+\end{gather}
+with
+\begin{gather}
+\beta=\left\{\begin{array}{ll}
+0&\sigma_d\leqslant\sigma_d^\text{max},\\
+1&\sigma_d>\sigma_d^\text{max}.
+\end{array}\right.
+\end{gather}
+The factor $\beta$ is defined as a function of $\Delta\bsigma$ in \cite{Katona2015}. In that case, the computation of derivatives is more cumbersome.
 \subsection{Implementation}
 The state determination algorithm is shown in \algoref{algo:duncan_model}.
 One must note the fact that, since the model is stress driven, it is not as straightforward to obtain plastic strain alike quantities as in conventional strain driven models.
