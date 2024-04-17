@@ -1233,7 +1233,7 @@ The corresponding derivatives $\ddfrac{\sigma_1}{\bsigma}$ and $\ddfrac{\sigma_3
 
 The difference between $\sigma_1$ and $\sigma_3$ is taken as the deviatoric stress.
 \begin{gather}
-\sigma_d=\abs{\sigma_1-\sigma_3}.
+\sigma_d=\dev{\bsigma}=\abs{\sigma_1-\sigma_3}.
 \end{gather}
 \subsubsection{Elastic Modulus}
 The elastic modulus $E$ can be expressed as the product of two components, namely, the initial part and the reduction part.
@@ -1249,7 +1249,7 @@ where $E_r$ is the reference elastic modulus, $p_a$ is the atmospheric pressure,
 
 The reduction part physically implies that the elastic modulus decreases when the current deviatoric stress approaches the maximum deviatoric stress.
 This is effectively the Mohr--Coulomb failure criterion.
-As a result, the deviatoric stress would asymptotically converge to the maximum deviatoric stress.
+As a result, the deviatoric stress would asymptotically converge to the maximum deviatoric stress that is defined as follows.
 \begin{gather}
 \sigma_d^\text{max}=\dfrac{\sigma_d^\text{ult}}{r_f},
 \end{gather}
@@ -1384,7 +1384,34 @@ However, due to its non-linearity nature, it is not guaranteed that the developm
 \EndWhile
 \end{algorithmic}
 \end{breakablealgorithm}
+\subsubsection{Numerical Robustness}
+The above algorithm combines both elastic and plastic branches. For a given time step, if the stress state stays within the elastic/plastic domain, the above algorithm would not typically fail. However, if it crosses the boundary, for example, from elastic to plastic, since the tangent stiffness matrix is discontinuous, the local Newton iteration may fail.
 
+To address this issue, the state determination can be divided into two stages. In the first stage, assume proportional loading and find the elastic portion that projects the stress state onto the yield surface, in specific, find the scalar parameter $\gamma$ such that
+\begin{gather}\label{eq:ds_1st_stage_a}
+\dev{\bsigma_r}-\sigma_d^\text{max}=0,
+\end{gather}
+with
+\begin{gather}\label{eq:ds_1st_stage_b}
+\bsigma_r=\bsigma_n+\mb{D}\dot{\bvarepsilon}\gamma.
+\end{gather}
+After obtaining $\gamma$, for the second stage, assume plastic response, consume the remaining $\left(1-\gamma\right)\dot{\bvarepsilon}$. The residual becomes
+\begin{gather}\label{eq:ds_two_stage}
+\mb{R}=\bsigma-\bsigma_r-\mb{D}\dot{\bvarepsilon}\left(1-\gamma\right).
+\end{gather}
+
+\begin{breakablealgorithm}
+\caption{dual--stage state determination of Duncan soil model}\label{algo:duncan_two_stage}
+\begin{algorithmic}
+\State \textbf{Parameter}: $p_a$, $E_r$, $n$, $B_r$, $m$, $\phi_i$, $\Delta\phi$, $r_f$, $c$
+\State \textbf{Input}: $\bvarepsilon_{n+1}$, $\bvarepsilon_n$, $\bsigma_n$, $\sigma_d^{\text{max}}$
+\State \textbf{Output}: $\mb{D}_{n+1}$, $\bsigma_{n+1}$
+\State return if \algoref{algo:duncan_model} succeeds
+\State assume elastic response, find $\gamma$ using \eqsref{eq:ds_1st_stage_a} and \eqsref{eq:ds_1st_stage_b} as residuals
+\State assume plastic response, iterate out \eqsref{eq:ds_two_stage}
+\end{algorithmic}
+\end{breakablealgorithm}
+\subsubsection{Reference Implementation}
 The main body of the implementation can be shown as follows.
 \begin{cppcode}
 int DuncanSelig::update_trial_status(const vec& t_strain) {
@@ -1393,9 +1420,38 @@ int DuncanSelig::update_trial_status(const vec& t_strain) {
     if(norm(incre_strain) <= datum::eps) return SUANPAN_SUCCESS;
 
     trial_history = current_history;
-    auto& max_dev_stress = trial_history(0);
 
-    trial_stress = current_stress + (trial_stiffness = current_stiffness) * incre_strain;
+    trial_stress = current_stress + current_stiffness * incre_strain;
+
+    const auto update_dev_stress = [&] {
+        auto& max_dev_stress = trial_history(0);
+        if(const auto trail_dev_stress = dev(trial_stress); trail_dev_stress > max_dev_stress) max_dev_stress = trail_dev_stress;
+        return SUANPAN_SUCCESS;
+    };
+
+    // first try a whole step size local iteration
+    if(SUANPAN_SUCCESS == local_update(current_stress, incre_strain, false)) return update_dev_stress();
+
+    // if that fails, mostly likely due to discontinuity of the gradient
+    // assume proportional loading, project the stress onto the yield surface using elastic moduli
+    auto multiplier = 1.;
+    if(SUANPAN_SUCCESS != project_onto_surface(multiplier)) return SUANPAN_FAIL;
+
+    // then using plastic moduli to compute the new plastic state
+    // !!! the tangent operator is not algorithmically consistent in this case
+    if(SUANPAN_SUCCESS != local_update(vec(trial_stress), (1. - multiplier) * incre_strain, true)) return SUANPAN_FAIL;
+
+    return update_dev_stress();
+}
+\end{cppcode}
+
+The local iteration is a standard Newton iteration implementation.
+\begin{cppcode}
+int DuncanSelig::local_update(const vec& ref_stress, const vec& ref_strain, const bool two_stage) {
+    const auto update_moduli = [&] {
+        const auto max_dev_stress = trial_history(0);
+        return two_stage || dev(trial_stress) > max_dev_stress ? compute_plastic_moduli() : compute_elastic_moduli();
+    };
 
     auto ref_error = 0.;
     vec3 incre;
@@ -1403,15 +1459,11 @@ int DuncanSelig::update_trial_status(const vec& t_strain) {
     auto counter = 0u;
     while(true) {
         if(max_iteration == ++counter) {
-            suanpan_error("Cannot converge within {} iterations.\n", max_iteration);
+            suanpan_error("Local iteration cannot converge within {} iterations.\n", max_iteration);
             return SUANPAN_FAIL;
         }
 
-        const auto trial_dev_stress = dev(trial_stress);
-
-        const auto branch = trial_dev_stress > max_dev_stress ? &DuncanSelig::compute_plastic_moduli : &DuncanSelig::compute_elastic_moduli;
-
-        const auto [elastic, bulk, deds, dkds] = (this->*branch)();
+        const auto [elastic, bulk, deds, dkds] = update_moduli();
 
         const auto factor_a = 3. * bulk * (3. * bulk + elastic);
         const auto factor_b = 3. * bulk * (3. * bulk - elastic);
@@ -1421,15 +1473,17 @@ int DuncanSelig::update_trial_status(const vec& t_strain) {
         right(0, 1) = right(1, 0) = factor_b;
         right(2, 2) = 3. * bulk * elastic;
 
-        const vec3 residual = (9. * bulk - elastic) * (trial_stress - current_stress) - right * incre_strain;
+        const vec3 t_stress = trial_stress - ref_stress;
+        const vec3 residual = (9. * bulk - elastic) * t_stress - right * ref_strain;
 
-        const rowvec3 dfads = (18. * bulk + 3. * elastic) * dkds + 3. * bulk * deds;
-        const rowvec3 dfbds = (18. * bulk - 3. * elastic) * dkds - 3. * bulk * deds;
+        const rowvec3 factor_c = 3. * (elastic * dkds + bulk * deds);
+        const rowvec3 dfads = 18. * bulk * dkds + factor_c;
+        const rowvec3 dfbds = 18. * bulk * dkds - factor_c;
 
-        mat33 jacobian = (9. * bulk - elastic) * eye(3, 3) + (trial_stress - current_stress) * (9. * dkds - deds);
-        jacobian.row(0) -= incre_strain(0) * dfads + incre_strain(1) * dfbds;
-        jacobian.row(1) -= incre_strain(0) * dfbds + incre_strain(1) * dfads;
-        jacobian.row(2) -= incre_strain(2) * 3. * (bulk * deds + elastic * dkds);
+        mat33 jacobian = (9. * bulk - elastic) * eye(3, 3) + t_stress * (9. * dkds - deds);
+        jacobian.row(0) -= ref_strain(0) * dfads + ref_strain(1) * dfbds;
+        jacobian.row(1) -= ref_strain(0) * dfbds + ref_strain(1) * dfads;
+        jacobian.row(2) -= ref_strain(2) * factor_c;
 
         if(!solve(incre, jacobian, residual)) return SUANPAN_FAIL;
 
@@ -1438,8 +1492,6 @@ int DuncanSelig::update_trial_status(const vec& t_strain) {
         suanpan_debug("Local iteration error: {:.5E}.\n", error / ref_error);
         if(error < tolerance * ref_error || ((error < tolerance || inf_norm(residual) < tolerance) && counter > 5u)) {
             if(!solve(trial_stiffness, jacobian, right)) return SUANPAN_FAIL;
-
-            if(trial_dev_stress > max_dev_stress) max_dev_stress = trial_dev_stress;
 
             return SUANPAN_SUCCESS;
         }
