@@ -1,5 +1,5 @@
 \chapter{Tensor Basics}
-In engineering, often tensors are defined in Euclidean spaces and belong to Cartesian tensor (type). Transformation between covariant and contravariant bases, thus raising/lowering indices, is somehow not emphasised (but implied). The most likely reason is that, often orthonormal bases are used so that covariant and contravariant bases lead to the same coordinates. Thus, only subscripts ($i$, $j$, $k$, $l$, etc.) are used to represent tensor indices, implying that contravariant bases are used. Furthermore, scalars are denoted by normal symbols such as $A$ while vectors and tensors are not distinguished, all denoted by boldface symbols such as $\mb{A}$. 
+In engineering, often tensors are defined in Euclidean spaces and belong to Cartesian tensor (type). Transformation between covariant and contravariant bases, thus raising/lowering indices, is somehow not emphasised (but implied). The most likely reason is that, often orthonormal bases are used so that covariant and contravariant bases lead to the same coordinates. Thus, only subscripts ($i$, $j$, $k$, $l$, etc.) are used to represent tensor indices, implying that contravariant bases are used. Furthermore, scalars are denoted by normal symbols such as $A$ while vectors and tensors are not distinguished, all denoted by boldface symbols such as $\mb{A}$.
 \section{Notations}
 Let $\mb{A}\in\mathbb{R}^2\times\mathbb{R}^2$ denote a second order tensor with contravariant bases $\mb{e}^1$ and $\mb{e}^2$. With that, $\mb{A}$ has four components that can be arranged in the following matrix.
 \begin{gather}\label{eq:matrix_tensor}
@@ -13,8 +13,11 @@ The tensor notation of $\mb{A}$ is the notation with indices, which refers to co
 \mb{A}=A_{ij}\mb{e}^i\mb{e}^j.
 \end{gather}
 This notation will be used in this book. In this case, $\mb{e}^i\mb{e}^j$ does not represent the dot product of two vectors. Rather, the operator $\cdot$ shall be explicitly shown as $\mb{e}^i\cdot\mb{e}^j$ to avoid potential confusion.
+One shall also note that, the matrix representation only explicitly show the four components of $A_{ij}$, the corresponding contravariant bases $\mb{e}^1$ and $\mb{e}^2$ are not shown at all!
+Typically, the tensor notation is often used in tensor operations, making the computation easier to follow and understand.
+The matrix representation is widely used in implementation, where the majority of computation only involves vector/matrix operations.
 
-The Einstein summation convention is adopted, that is, in each single term, if the same index appears exactly twice, the summation of that term over all values of that index. In this example, $i,j=\{1,2\}$. Thus,
+The Einstein summation convention is adopted, that is, for each single term, if the same index appears exactly twice, the summation of that term over all values of that index has to be carried out. In this example, $i,j=\{1,2\}$. Thus,
 \begin{gather}
 \mb{A}=A_{ij}\mb{e}^i\mb{e}^j=\sum_{i,j=1}^{2}A_{ij}\mb{e}^i\mb{e}^j=A_{11}\mb{e}^1\mb{e}^1+A_{12}\mb{e}^1\mb{e}^2+A_{21}\mb{e}^2\mb{e}^1+A_{22}\mb{e}^2\mb{e}^2.
 \end{gather}
@@ -28,7 +31,7 @@ But it is not equivalent to
 \end{gather}
 
 If $\mb{A}$ represents a symmetric stress tensor $\mb{\sigma}$, it can be expressed in both matrix and vector representations such as
-\begin{gather}
+\begin{gather}\label{eq:tensor_stress}
 \mb{\sigma}=\sigma_{ij}\mb{e}^i\mb{e}^j=\begin{bmatrix}
 \sigma_{11}&\sigma_{12}\\
 \sigma_{21}&\sigma_{22}
@@ -75,7 +78,7 @@ In above, $\gamma_{xy}=2\varepsilon_{12}=2\varepsilon_{21}$ is commonly known as
 \section{Tensor Operations}
 \subsection{Tensor Product}
 \subsubsection{Definition}
-The tensor product is also called dyadic product, which is an operation to construct high order tensor from low order tensors. Let $\mb{A}=A_i\mb{e}^i$ and $\mb{B}=B_i\mb{e}^i$ be two first order tensors (vectors), then tensor product of $\mb{A}$ and $\mb{B}$ gives a second order tensor $\mb{C}$
+The tensor product is also called the dyadic product, which is an operation to construct an high order tensor from two low order tensors. Let $\mb{A}=A_i\mb{e}^i$ and $\mb{B}=B_i\mb{e}^i$ be two first order tensors (vectors), then tensor product of $\mb{A}$ and $\mb{B}$ gives a second order tensor $\mb{C}$
 \begin{gather}
 \mb{C}=\mb{A}\otimes\mb{B}=A_i\mb{e}^i\otimes{}B_j\mb{e}^j=A_iB_j\mb{e}^i\otimes{}\mb{e}^j=C_{ij}\mb{e}^i\otimes{}\mb{e}^j.
 \end{gather}
@@ -163,12 +166,13 @@ Fundamentally, different base tensors are used for stress tensors (contravariant
 With the compressed matrix representations, one must be clear about such difference and apply proper scaling vectors/matrices when necessary.
 \subsection{Double Contraction}
 \subsubsection{Definition}
-The double contraction, also known as the double dot product, is a tensor operation to construct low order tensors from high order tensors. Let $\mb{A}=A_i\mb{e}^i$ and $\mb{B}=B_i\mb{e}^i$ be two first order tensors (vectors), then dot product of $\mb{A}$ and $\mb{B}$ gives a zeroth order tensor (scalar) $C$ as
+We are familiar with the concept of the dot product. Let $\mb{A}=A_i\mb{e}^i$ and $\mb{B}=B_i\mb{e}^i$ be two first order tensors (vectors), then dot product of $\mb{A}$ and $\mb{B}$ gives a zeroth order tensor (scalar) $C$ as
 \begin{gather}
 C=\mb{A}\cdot\mb{B}=A_i\mb{e}^i\cdot{}B_j\mb{e}^j=A_iB_j\mb{e}^i\cdot\mb{e}^j=\delta_{ij}A_iB_j=A_iB_i,
 \end{gather}
 where $\delta_{ij}$ is the Kronecker delta which equals \num{1} if $i=j$ or \num{0} otherwise.
 
+The double contraction, also known as the double dot product, is a tensor operation to construct low order tensors from high order tensors.
 If $\mb{A}=A_{ij}\mb{e}^i\mb{e}^j$ and $\mb{B}=B_{ij}\mb{e}^i\mb{e}^j$ are two second order tensors, then the double contraction performs dot product twice on different indices, resulting in a zeroth order tensor (scalar) as
 \begin{gather}\label{eq:double_contraction}
 \begin{split}
@@ -176,7 +180,7 @@ C&=\mb{A}:\mb{B}=A_{ij}\mb{e}^i\mb{e}^j:B_{kl}\mb{e}^k\mb{e}^l=A_{ij}B_{kl}(\mb{
 \end{split}
 \end{gather}
 \subsubsection{Vector/Matrix Representation}
-Let $\mb{A}=A_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ and $\mb{B}=B_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ be two symmetric second order \textbf{stress} tensors. According to \eqsref{eq:double_contraction}, the double contraction of two gives
+Let $\mb{A}=A_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ and $\mb{B}=B_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ be two symmetric second order \textbf{stress} tensors. According to \eqsref{eq:tensor_stress} and \eqsref{eq:double_contraction}, the double contraction of the two gives
 \begin{multline}
 C=\mb{A}:\mb{B}=A_{ij}B_{ij}=A_{11}B_{11}+A_{22}B_{22}+A_{33}B_{33}\\+A_{12}B_{12}+A_{13}B_{13}+A_{21}B_{21}+A_{23}B_{23}+A_{31}B_{31}+A_{32}B_{32}.
 \end{multline}
