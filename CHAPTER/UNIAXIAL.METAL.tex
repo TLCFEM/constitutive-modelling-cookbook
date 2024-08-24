@@ -8,25 +8,26 @@ For uniaxial models, the constitutive equation \eqsref{eq:strain_decomposition} 
 \end{gather}
 where $E$ is Young's modulus.
 \subsubsection{Yield Function}
-The (probably) most simplest yield function is
+The (probably) simplest yield function is
 \begin{gather}\label{eq:isotropic_yield_function}
 f=\abs{\sigma}-\sigma^y
 \end{gather}
-where $\sigma^y=\sigma^y\left(\sigma,~q\right)$ is the yield stress which is a function of internal variable $q$ thus would evolve.
+where $\sigma^y=\sigma^y\left(\sigma,~q\right)$ is the yield stress which is a function of some internal variable $q$ thus would evolve.
 
 For example, a linear function can be chosen so that
 \begin{gather}
 \sigma^y=\sigma^i+Kq,
 \end{gather}
 where $\sigma^i$ is the initial yield stress (non-negative) and $K$ is the isotropic hardening modulus (either positive for hardening or negative for softening).
+Typically, it is further constrained that $\sigma^y\geqslant0~\forall{}q$.
 \subsubsection{Flow Rule}
 It is reasonable to define that the direction of plastic flow coincides with the direction of stress, that is
 \begin{gather}\label{eq:isotropic_flow_rule}
 \dot{\varepsilon^p}=\gamma~\sign{\sigma}.
 \end{gather}
-Physically, it simply states plastic strain evolves towards the direction of stress. If stress is positive, plastic strain increases and vice versa.
+Physically, it simply states that plastic strain evolves towards the direction of stress. If stress is positive, plastic strain increases and vice versa.
 
-Noting that $\pdfrac{f}{\sigma}=\sign{\sigma}$, the flow rule can also be expressed as
+Noting that according to \eqsref{eq:isotropic_yield_function}, $\pdfrac{f}{\sigma}=\sign{\sigma}$, the flow rule can also be expressed as
 \begin{gather}
 \dot{\varepsilon^p}=\gamma\pdfrac{f}{\sigma}.
 \end{gather}
@@ -56,13 +57,13 @@ Hardening Law&$\dot{q}=\gamma$\\\bottomrule
 
 For this example, the initial conditions are stress $\sigma_n$, total strain $\varepsilon_n$, plastic strain $\varepsilon_n^p$ and hardening variable $q_n$. For a given $\varepsilon_{n+1}$, the model shall compute new $\sigma_{n+1}$, $\varepsilon^p_{n+1}$ and $q_{n+1}$.
 \subsubsection{Elastic Loading/Unloading}
-By freezing plasticity, one can first check if the new state is elastic. Since it may not be the final new state, we denote the computed stress and trial stress. According to
+By freezing plasticity, one can first check if the new state is elastic. Since it may not be the final new state, we denote the computed stress as the trial stress. According to
 \begin{gather}
 \sigma_{n+1}^\text{trial}=E\left(\varepsilon_{n+1}-\varepsilon^p_n\right),
 \end{gather}
 or equivalently,
 \begin{gather}\label{eq:uniaxial_trial_stress}
-\sigma_{n+1}^\text{trial}=\sigma_n+E\left(\varepsilon_{n+1}-\varepsilon_n\right),
+\sigma_{n+1}^\text{trial}=\sigma_n+E\left(\varepsilon_{n+1}-\varepsilon_n\right)=\sigma_n+E\Delta\varepsilon,
 \end{gather}
 the yield function becomes
 \begin{gather}
@@ -70,7 +71,8 @@ f^\text{trial}=\abs{\sigma^\text{trial}}-\sigma^y=E\abs{\varepsilon_{n+1}-\varep
 f^\text{trial}=\abs{\sigma^\text{trial}}-\sigma^y=\abs{\sigma_n+E\left(\varepsilon_{n+1}-\varepsilon_n\right)}-\left(\sigma^i+Kq_n\right).
 \end{gather}
 
-If $f^\text{trial}<0$, indicating elastic loading/unloading, the new state is simply $\varepsilon^p_{n+1}=\varepsilon^p_n$, $q_{n+1}=q_n$ and $\sigma_{n+1}=\sigma_{n+1}^\text{trial}$.
+Here all we are doing is assuming the current state is elastic (regardless of the actual state), and applying the increment $\Delta\varepsilon$ to obtain the trial state.
+If $f^\text{trial}<0$, meaning the trial state is still in the elastic region, indicating elastic loading/unloading, the new state is simply $\varepsilon^p_{n+1}=\varepsilon^p_n$, $q_{n+1}=q_n$ and $\sigma_{n+1}=\sigma_{n+1}^\text{trial}$.
 \subsubsection{Plastic Evolution}
 Otherwise the new state consists of new evolution of plasticity. In this case,
 \begin{gather}
@@ -78,8 +80,10 @@ Otherwise the new state consists of new evolution of plasticity. In this case,
 \end{gather}
 The yield function is
 \begin{gather}
-f=\abs{\sigma}-\sigma^y=E\abs{\varepsilon_{n+1}-\varepsilon^p_{n+1}}-\left(\sigma^i+Kq_{n+1}\right)=0.
+f_{n+1}=\abs{\sigma_{n+1}}-\sigma^y_{n+1}=E\abs{\varepsilon_{n+1}-\varepsilon^p_{n+1}}-\left(\sigma^i+Kq_{n+1}\right)=0.
 \end{gather}
+According to \eqsref{eq:consistency_condition}, since now we know plasticity evolves, $f_{n+1}=0$.
+
 The flow rule and hardening law shall be expressed as
 \begin{gather}
 \varepsilon^p_{n+1}=\varepsilon^p_n+\dot{\varepsilon^p}=\varepsilon^p_n+\gamma~\sign{\sigma_{n+1}},\\
@@ -93,26 +97,25 @@ Noting that
 \left(\abs{\sigma_{n+1}}+E\gamma\right)~\sign{\sigma_{n+1}}=\abs{\sigma_{n+1}^\text{trial}}~\sign{\sigma_{n+1}^\text{trial}},
 \end{split}
 \end{gather}
-since both $E$ and $\gamma$ are non-negative, $\sign{\sigma_{n+1}}=\sign{\sigma_{n+1}^\text{trial}}$ and $\abs{\sigma_{n+1}}+E\gamma=\abs{\sigma_{n+1}^\text{trial}}$. Thus
-inserting the above expressions into the yield function, one can obtain
+since both $E$ and $\gamma$ are non-negative, $\sign{\sigma_{n+1}}=\sign{\sigma_{n+1}^\text{trial}}$ and $\abs{\sigma_{n+1}}+E\gamma=\abs{\sigma_{n+1}^\text{trial}}$.
+Thus,
 \begin{gather}
-\abs{\sigma_{n+1}^\text{trial}-E\gamma~\sign{\sigma_{n+1}^\text{trial}}}-\left(\sigma^i+K\left(q_n+\gamma\right)\right)=0.
+\abs{\sigma_{n+1}}=\abs{\sigma_{n+1}^\text{trial}}-E\gamma,
 \end{gather}
-
-After some manipulations, it is
+inserting the above expression into the yield function, one can obtain
 \begin{gather}
 \abs{\sigma_{n+1}^\text{trial}}-E\gamma-\left(\sigma^i+K\left(q_n+\gamma\right)\right)=0.
 \end{gather}
-The above expression holds since $\abs{\sigma_{n+1}^\text{trial}}-E\gamma=\abs{\sigma_{n+1}}$ is non-negative.
 
 The consistency parameter can be solved as
 \begin{gather}
 \gamma=\dfrac{\abs{\sigma_{n+1}^\text{trial}}-\left(\sigma^i+Kq_n\right)}{E+K}=\dfrac{f^\text{trial}}{E+K}.
 \end{gather}
+Once $\gamma$ is obtained, $\varepsilon^p_{n+1}$ and $q_{n+1}$ can be updated accordingly.
 
 It is easy to further compute
 \begin{gather}
-\pdfrac{\gamma}{\varepsilon_{n+1}}=\dfrac{E}{E+K}.
+\pdfrac{\gamma}{\varepsilon_{n+1}}=\dfrac{1}{E+K}\pdfrac{f^\text{trial}}{\varepsilon_{n+1}}=\dfrac{E}{E+K}.
 \end{gather}
 \subsection{Implementation}
 The implementation is quite straightforward for such a simple model. \algoref{algo:isotropic} summarised the state determination algorithm for the above isotropic hardening model.
@@ -137,6 +140,9 @@ The implementation is quite straightforward for such a simple model. \algoref{al
 \EndIf
 \end{algorithmic}
 \end{breakablealgorithm}
+
+It is clear that no local iteration is required, since simple linear functions are used as an introductory example.
+Typical plasticity models often adopt nonlinear functions, local iterations are often required to compute the new state.
 \section{Combined Isotropic/Kinematic Hardening Model}\label{sec:isotropic/kinematic}
 Isotropic hardening controls the size of yield surface without changing its location. Kinematic hardening, on contrary, changes yield surface location but does not touch its size. Combining isotropic hardening and kinematic hardening allows flexible response to be modelled.
 \subsection{Theory}
@@ -228,7 +234,7 @@ The state determination algorithm resembles the previous one for isotropic harde
 \end{algorithmic}
 \end{breakablealgorithm}
 \section{Armstrong--Fredrick Hardening Model}
-So far, two simple models has been introduced. The linear isotropic/kinematic hardening law is adopted so that the local residual is a linear function which can be solved within one step. However, linear hardening has limited applications.
+So far, two simple models have been introduced. The linear isotropic/kinematic hardening law is adopted so that the local residual is a linear function which can be solved within one step. However, linear hardening has limited applications.
 
 To allow more versatile applications, in this section, a metal model incorporating Armstrong--Fredrick type kinematic hardening \cite{Frederick2007} and Voce type isotropic hardening \cite{Voce1955} is introduced. Both hardening types are nonlinear.
 \subsection{Theory}
@@ -305,6 +311,8 @@ It is now clear that nonlinearity is introduced since $\dot{\alpha_i}=g\left(\al
 \end{gather}
 \end{itemize}
 
+Theoretically, other higher order numerical methods for ODEs can also be applied.
+However, higher order methods often involves complex expressions, making the computation of the corresponding derivative difficult.
 We mainly use the implicit Euler method in our plastic models, although it is significantly more complex than the explicit one.
 
 Then $\alpha_{i,n+1}$ can be expressed as

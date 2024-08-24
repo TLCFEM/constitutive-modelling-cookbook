@@ -126,14 +126,18 @@ The spherical stress of a stress tensor $\bsigma$ refers to the portion correspo
 \begin{gather}
 p=\dfrac{1}{3}\tr{\bsigma}=\dfrac{1}{3}\sigma_{ii}=\dfrac{1}{3}\left(\sigma_{11}+\sigma_{22}+\sigma_{33}\right).
 \end{gather}
-The corresponding spherical stress in the Voigt notation is then
+The corresponding spherical stress $\mb{p}$ in the Voigt notation is then
 \begin{gather}
-p\mb{1}=\begin{bmatrix}p&p&p&0&0&0\end{bmatrix}^\mT.
+\mb{p}=p\mb{1}=\begin{bmatrix}p&p&p&0&0&0\end{bmatrix}^\mT.
+\end{gather}
+In which, $\mb{1}$ is the unit second order tensor.
+\begin{gather}
+\mb{1}=\begin{bmatrix}1&1&1&0&0&0\end{bmatrix}^\mT.
 \end{gather}
 \subsection{Deviatoric Stress}
 The remaining portion is often known the deviatoric stress, denoted by $\mb{s}$.
 \begin{gather}
-\mb{s}=\dev{\bsigma}=\bsigma-p\mb{1}=\begin{bmatrix}
+\mb{s}=\dev{\bsigma}=\bsigma-\mb{p}=\begin{bmatrix}
 \sigma_{11}-p\\\sigma_{22}-p\\\sigma_{33}-p\\\sigma_{12}\\\sigma_{23}\\\sigma_{31}
 \end{bmatrix}=\begin{bmatrix}
 \frac{2}{3}&-\frac{1}{3}&-\frac{1}{3}&&&\\
@@ -146,7 +150,7 @@ The remaining portion is often known the deviatoric stress, denoted by $\mb{s}$.
 \sigma_{11}\\\sigma_{22}\\\sigma_{33}\\\sigma_{12}\\\sigma_{23}\\\sigma_{31}
 \end{bmatrix}.
 \end{gather}
-In which, $\mb{1}$ is the unit second order tensor. In tensor notation,
+In tensor notation,
 \begin{gather}
 \mb{s}=\mathbb{I}^\text{dev}:\bsigma.
 \end{gather}
@@ -163,6 +167,11 @@ By simple comparison, one can immediately find
 \end{gather}
 is the matrix representation of the fourth order deviatoric operator $\mathbb{I}^\text{dev}$. It must be noted that due to the adoption of the Voigt notation, the matrix representation of $\mathbb{I}^\text{dev}$ is \textbf{not} unique.
 The above expression is \textbf{only} valid for stress tensors.
+
+It can be expressed as
+\begin{gather}
+\mathbb{I}^\text{dev}=\mathbb{I}-\dfrac{1}{3}\mb{1}\otimes\mb{1}.
+\end{gather}
 \subsection{Volumetric Strain}
 It is possible to define the volumetric strain $\varepsilon^v$ to be
 \begin{gather}
@@ -257,7 +266,7 @@ s_{31}
 2\varepsilon_{31}
 \end{bmatrix}}_{\bvarepsilon}.
 \end{gather}
-In this case, the matrix representation of $\mathbb{I}$ changes its form since it links strain with stress.
+In this case, the matrix representation of $\mathbb{I}$ (as well as $\mathbb{I^\text{dev}}$) changes its form since it links strain with stress.
 
 After some manipulations, total stress can be expressed by total strain as follows.
 \begin{gather}
@@ -291,7 +300,11 @@ In matrix representation,
 \cdot&\cdot&\cdot&\cdot&\cdot&\cdot
 \end{bmatrix}.
 \end{gather}
-Here one may observe $\mathbb{I}^\text{dev}$ appears in a different form. This inconsistency is caused by the Voigt notation, as here the operand is strain tensor while the result is stress tensor. One can again refer to \cite{Helnwein2001} for detailed explanation.
+Here one may observe $\mathbb{I}^\text{dev}$ appears in a different form.
+This inconsistency is caused by the Voigt notation, as here the operand is strain tensor while the result is stress tensor.
+If the Voigt notation of the strain tensor uses $\varepsilon_{ij}$, instead of engineering strain components (mainly shear components $\gamma$), then this inconsistency disappears.
+However, this is not adopted in practice.
+One can again refer to \cite{Helnwein2001} for detailed explanation.
 
 Using Lam\'{e}'s constant $\lambda=K-\dfrac{2}{3}G$, $\mb{D}$ can be alternatively expressed as
 \begin{gather}
@@ -304,6 +317,7 @@ Using Lam\'{e}'s constant $\lambda=K-\dfrac{2}{3}G$, $\mb{D}$ can be alternative
 \cdot&\cdot&\cdot&\cdot&\cdot&G
 \end{bmatrix}.
 \end{gather}
+This form is widely seen in elementary elasticity.
 \subsection{Lode Angle}
 For some material models, the Haigh--Westergaard stress space may be used. The lode angle is often used to define some parameter that alters the yield surface which may have a special shape on the $\pi$-plane. The lode angle $\theta$ can be defined as
 \begin{gather}\label{eq:lode}
