@@ -9,12 +9,14 @@ The von Mises yield criterion is adopted,
 f=\norm{\beeta}-\sqrt{\dfrac{2}{3}}\sigma^y,
 \end{gather}
 with $\beeta=\bs-\balpha$ is the shifted stress with $\balpha$ denoting the back stress and $\bs=\dev{\bsigma}$ denoting the deviatoric stress. The only purpose of the constant $\sqrt{\dfrac{2}{3}}$ is to produce consistent response under uniaxial loading compared to the uniaxial version with the same set of model parameters. By definition, the back stress $\balpha$ is also a deviatoric stress, thus $\tr{\balpha}=0$.
+It shifts the centre of yield surface in the deviatoric stress space.
 \subsubsection{Flow Rule}
 Assuming associative rule, the flow rule is
 \begin{gather}
-\dot{\bvarepsilon^p}=\gamma\pdfrac{f}{\bsigma}=\gamma\dfrac{1}{2}\dfrac{2\mathbb{I}^\text{dev}:\beeta}{\norm{\beeta}}=\gamma\dfrac{\beeta}{\norm{\beeta}}=\gamma\bn.
+\dot{\bvarepsilon^p}=\gamma\pdfrac{f}{\bsigma}=\gamma\pdfrac{\norm{\beeta}}{\bsigma}=\gamma\dfrac{1}{2}\dfrac{2\mathbb{I}^\text{dev}:\beeta}{\norm{\beeta}}=\gamma\dfrac{\beeta}{\norm{\beeta}}=\gamma\bn.
 \end{gather}
-All analytical formulations are based on tensor notation. However, compressed matrix representation is used in implementation. One shall note the difference due to the Voigt notation.
+All analytical formulations are based on tensor notation.
+If the above expression is expressed explicitly in tensor components, one could obtain
 \begin{gather}
 \underbrace{\begin{bmatrix}
 \dot{\varepsilon^p}_{11}&\dot{\varepsilon^p}_{12}&\dot{\varepsilon^p}_{31}\\
@@ -27,7 +29,7 @@ All analytical formulations are based on tensor notation. However, compressed ma
 n_{11}&n_{12}&n_{31}\\
 n_{12}&n_{22}&n_{23}\\
 n_{31}&n_{23}&n_{33}
-\end{bmatrix}}_{\bn},\qquad\text{expressed in components.}
+\end{bmatrix}}_{\bn},\qquad\text{expressed in tensor components.}
 \end{gather}
 We define the scaling vector $\mb{c}=\begin{bmatrix}
 1&1&1&2&2&2
@@ -61,8 +63,16 @@ n_{31}
 \end{bmatrix}}_{\bn}=\gamma~\mb{c}\circ\bn,\qquad\text{expressed in the Voigt notation.}
 \end{gather}
 This agrees with \eqsref{eq:norm_derivative2}.
+Such a difference has practical implications.
+Due to symmetry of both strain and stress tensors, it is often more performant to just use vectors and matrices to represent second--order and fourth--order tensors in implementation.
+This means tensor quantities are expressed in compressed vector/matrix form.
+For a given expression, one shall always question what operation it implies and how it would be eventually computed for operands expressed in different forms.
 
 It can be observed that $\dot{\bvarepsilon^p}$ has a magnitude of $\gamma$ while $\bn$ is a unit tensor in $\mathbb{R}^3\times\mathbb{R}^3$ hyper space. Thus $\bn$ serves as a direction indicator, $\bvarepsilon^p$ evolves towards $\bn$ by the amount of $\gamma$. Since $\bn$ is deviatoric, $\bvarepsilon^p$ is also deviatoric.
+Furthermore, since $\bn$ is a unit tensor,
+\begin{gather}
+\norm{\dot{\bvarepsilon^p}}=\gamma.
+\end{gather}
 \subsubsection{Hardening Law}
 For internal variable $q$, the hardening law takes the accumulated magnitude of $\bvarepsilon^p$.
 \begin{gather}
@@ -89,7 +99,7 @@ Constitutive Law&$\bsigma=\mb{D}:\left(\bvarepsilon-\bvarepsilon^p\right)$\\
 Yield Function&$f=\norm{\beeta}-\sqrt{\dfrac{2}{3}}\sigma^y$\\
 Flow Rule&$\dot{\bvarepsilon^p}=\gamma\bn$\\
 Hardening Law&$\dot{q}=\sqrt{\dfrac{2}{3}}\gamma$\\
-&$\dot{\balpha}=\sqrt{\dfrac{2}{3}}\gamma\dot{H}\bn$\\\bottomrule
+&$\dot{\balpha}=\sqrt{\dfrac{2}{3}}\dot{H}\bn$\\\bottomrule
 \end{tabular}
 \end{table}
 \subsubsection{Elastic Loading/Unloading}
@@ -134,6 +144,7 @@ In matrix representation, it is
 \end{bmatrix}.
 \right)}_{\dot{\bvarepsilon_{n+1}}-\dot{\bvarepsilon^p_n}}
 \end{gather}
+
 Then $\beeta^\text{trial}=\dev{\bsigma^\text{trial}}-\balpha_n$, which gives trial yield function
 \begin{gather}\label{eq:j2_tf}
 f^\text{trial}=\norm{\beeta^\text{trial}}-\sqrt{\dfrac{2}{3}}\sigma^y_n
@@ -142,16 +153,40 @@ with $\sigma^y_n=\sigma^y\left(q_n\right)$ evaluated with current $q_n$.
 \subsubsection{Plastic Evolution}
 By default, we present the formulation with the implicit Euler method.
 
-The yield function evaluated at the new state reads
-\begin{gather}\label{eq:j2_f}
+If plasticity evolution occurs,
+\begin{gather}
+\beeta_{n+1}=\dev{\bsigma_{n+1}}-\balpha_{n+1}.
+\end{gather}
+Accounting for
+\begin{gather}
+\bsigma_{n+1}=\bsigma^\text{trial}-\mb{D}:\dot{\bvarepsilon^p}=\bsigma^\text{trial}-\gamma2G\bn,\\
+\balpha_{n+1}=\balpha_n+\sqrt{\dfrac{2}{3}}\dot{H}\bn,
+\end{gather}
+one can further derive
+\begin{gather}
+\beeta_{n+1}=\dev{\bsigma^\text{trial}-\gamma2G\bn}-\balpha_n-\sqrt{\dfrac{2}{3}}\dot{H}\bn.
+\end{gather}
+Since $\bn$ is already deviatoric, meaning $\dev{\bn}=\bn$, thus,
+\begin{gather}
 \begin{split}
-f&=\norm{\dev{\bsigma_{n+1}}-\balpha_{n+1}}-\sqrt{\dfrac{2}{3}}\sigma^y_{n+1}\\
-&=\norm{\dev{\bsigma^\text{trial}}-\gamma2G\bn-\balpha_n-\sqrt{\dfrac{2}{3}}\left(H_{n+1}-H_n\right)\bn}-\sqrt{\dfrac{2}{3}}\sigma^y_{n+1}\\
-&=\norm{\beeta^\text{trial}-\left(2G\gamma+\sqrt{\dfrac{2}{3}}\left(H_{n+1}-H_n\right)\right)\bn}-\sqrt{\dfrac{2}{3}}\sigma^y_{n+1}\\
-&=\norm{\beeta^\text{trial}}-\left(2G\gamma+\sqrt{\dfrac{2}{3}}\left(H_{n+1}-H_n\right)\right)-\sqrt{\dfrac{2}{3}}\sigma^y_{n+1},
+\beeta_{n+1}&=\dev{\bsigma^\text{trial}}-\gamma2G\bn-\balpha_n-\sqrt{\dfrac{2}{3}}\dot{H}\bn\\
+&=\beeta^\text{trial}-\left(2G\gamma+\sqrt{\dfrac{2}{3}}\dot{H}\right)\bn.
 \end{split}
 \end{gather}
-given that it can be proved that $\beeta^\text{trial}$ and $\beeta$ are coaxial, following a similar derivation as shown previously.
+Noting that, by definition, $\bn=\dfrac{\beeta_{n+1}}{\norm{\beeta_{n+1}}}$, thus,
+\begin{gather}
+\underbrace{\left(1+\dfrac{2G\gamma+\sqrt{\dfrac{2}{3}}\dot{H}}{\norm{\beeta_{n+1}}}\right)}_{\text{scalar}}\beeta_{n+1}=\beeta^\text{trial}.
+\end{gather}
+The above expression implies that $\beeta_{n+1}$ and $\beeta^\text{trial}$ are \textbf{coaxial}. Thus, $\beeta_{n+1}$ always points to the direction of $\beeta^\text{trial}$, which is a constant in each time step within that time step. Only its magnitude would be adjusted in local iterations.
+One can further derive
+\begin{gather}
+\norm{\beeta_{n+1}}+2G\gamma+\sqrt{\dfrac{2}{3}}\dot{H}=\norm{\beeta^\text{trial}}.
+\end{gather}
+
+The yield function evaluated at the new state reads
+\begin{gather}\label{eq:j2_f}
+f=\norm{\beeta^\text{trial}}-\left(2G\gamma+\sqrt{\dfrac{2}{3}}\left(H_{n+1}-H_n\right)\right)-\sqrt{\dfrac{2}{3}}\sigma^y_{n+1}.
+\end{gather}
 
 The Jacobian reads
 \begin{gather}
@@ -174,6 +209,8 @@ In which, according to \eqsref{eq:unit_derivative},
 &=\dfrac{2G}{\norm{\beeta^\text{trial}}}\left(\mathbb{I}^\text{dev}-\bn\otimes\bn\right).
 \end{split}
 \end{gather}
+Here, $\bn$ is expressed as $\bn=\dfrac{\beeta^\text{trial}}{\norm{\beeta^\text{trial}}}$ due to coaxiality of $\beeta_{n+1}$ and $\beeta^\text{trial}$.
+This simplifies the computation.
 
 From converged local residual (yield function),
 \begin{gather}
@@ -219,18 +256,21 @@ The state determination algorithm of this general model incorporating von Mises 
 \EndWhile
 \State $\bsigma_{n+1}=\bsigma^\text{trial}-\gamma2G\bn$
 \State $\bvarepsilon^p_{n+1}=\bvarepsilon^p_n+\gamma\bn$
-\State $\balpha^p_{n+1}=\balpha^p_n+\sqrt{\dfrac{2}{3}}\Delta{}H\bn$
+\State $\balpha_{n+1}=\balpha_n+\sqrt{\dfrac{2}{3}}\Delta{}H\bn$
+\State $q_{n+1}=q_n+\sqrt{\dfrac{2}{3}}\gamma$
 \State compute $\mb{D}_{n+1}$\Comment{\eqsref{eq:j2_stiffness}}
 \Else
 \State $\bsigma_{n+1}=\bsigma^\text{trial}$
 \State $\bvarepsilon^p_{n+1}=\bvarepsilon^p_n$
-\State $\balpha^p_{n+1}=\balpha^p_n$
+\State $\balpha_{n+1}=\balpha_n$
 \State $q_{n+1}=q_n$
 \State $\mb{D}_{n+1}=\mb{D}$
 \EndIf
 \end{algorithmic}
 \end{breakablealgorithm}
 It shall be noted that the algorithm does not implement $H\left(q\right)$ and $\sigma^y\left(q\right)$. It is assumed those two functions are defined somewhere else and are able to provide derivatives.
+
+Depending on the choice of updating stress as in \eqsref{eq:j2_tsigma}, the history of $\bvarepsilon^p$ is \textbf{not} compulsory in this model if the latter expression is used instead of the former.
 \subsection{Closing Remarks}
 As the first 3D material model introduced, the von Mises framework allows beginners to get familiar with multiaxial constitutive modelling with a relatively smooth learning curve. The formulation is expressed in tensor notation. Readers are strongly encouraged to derive the formulation from three governing equations independently in both tensor and compressed matrix notions separately. It is a good practice to get each tiny detail correct.
 \begin{cppcode}
@@ -283,9 +323,10 @@ int NonlinearJ2::update_trial_status(const vec& t_strain) {
 \end{cppcode}
 \section{Hoffman J2 Model}\label{sec:hoffman}
 Here we introduce an anisotropic model that adopts the Hoffman yielding criterion. This framework resembles the isotropic von Mises model. It can be used to model orthtropic materials such sheet steel and timber.
+One can further refer to the corresponding section (\S~10.3) in \cite{SouzaNeto2008}.
 \subsection{Theory}
 \subsubsection{Yield Function}
-The yield function adopts the Hoffman criterion.
+The yield function adopts the Hoffman criterion, which is expressed in matrix form,
 \begin{gather}
 f=\dfrac{1}{2}\bsigma^\mT\mb{P}\bsigma+\mb{q}^\mT\bsigma-\sigma_y^2,
 \end{gather}
@@ -344,6 +385,7 @@ where $\norm{\bn}$, in matrix form, can be expressed as
 with $\mb{T}=\diag{\begin{matrix}
 1&1&1&\dfrac{1}{2}&\dfrac{1}{2}&\dfrac{1}{2}
 \end{matrix}}$.
+Here, one shall treat $\norm{\cdot}$ as a `special' operator that is defined as above.
 \subsection{Formulation}
 To some extend, the model is even simpler than the von Mises model as there is no back stress to support kinematic hardening. Furthermore, the yield function involves only matrix--vector operations, the corresponding derivatives are relatively easy to compute.
 \begin{table}[ht]
@@ -382,7 +424,7 @@ where $\bn_{m}$ is $\bn$ evaluated at the middle of the substep. Since it is a l
 \begin{gather}
 \bn_m=\dfrac{\bsigma_n+\bsigma_{n+1}}{2}.
 \end{gather}
-One shall note that replacing $\bn_m$ by $\bn_{n+1}=\mb{P}\bsigma_{n+1}+\mb{q}$ gives the evolution formula of the implicit Euler method.
+One shall note that replacing $\bn_m$ with $\bn_{n+1}=\mb{P}\bsigma_{n+1}+\mb{q}$ gives the evolution formula of the implicit Euler method.
 \subsubsection{Local Residual}
 The residual is chosen as follows. For brevity, all subscripts $\left(\cdot\right)_{n+1}$ are dropped.
 \begin{gather}
@@ -393,6 +435,8 @@ The residual is chosen as follows. For brevity, all subscripts $\left(\cdot\righ
 \end{array}
 \right.
 \end{gather}
+We use $\mb{E}$ to denote $\mb{D}$ expressed in the matrix form.
+They represent the same quantity.
 
 By choosing $\mb{x}=\begin{bmatrix}
 \gamma&\bsigma
