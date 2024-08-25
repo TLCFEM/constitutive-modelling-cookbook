@@ -12,7 +12,7 @@ with $\beeta=\bs-\balpha$ is the shifted stress with $\balpha$ denoting the back
 It shifts the centre of yield surface in the deviatoric stress space.
 \subsubsection{Flow Rule}
 Assuming associative rule, the flow rule is
-\begin{gather}
+\begin{gather}\label{eq:j2_flow}
 \dot{\bvarepsilon^p}=\gamma\pdfrac{f}{\bsigma}=\gamma\pdfrac{\norm{\beeta}}{\bsigma}=\gamma\dfrac{1}{2}\dfrac{2\mathbb{I}^\text{dev}:\beeta}{\norm{\beeta}}=\gamma\dfrac{\beeta}{\norm{\beeta}}=\gamma\bn.
 \end{gather}
 All analytical formulations are based on tensor notation.
@@ -321,6 +321,60 @@ int NonlinearJ2::update_trial_status(const vec& t_strain) {
     return SUANPAN_SUCCESS;
 }
 \end{cppcode}
+
+Finally, in \eqsref{eq:j2_flow}, we have discussed that the same expression
+\begin{gather}
+\dot{\bvarepsilon^p}=\gamma\bn
+\end{gather}
+may have different explicit forms, depending on how those quantities are represented.
+
+The $\dot{\bvarepsilon^p}$ is further used in
+\begin{gather}\label{eq:j2_two_form}
+\bs^\text{trial}-\bs_{n+1}=2G\dot{\bvarepsilon^p}.
+\end{gather}
+The above expression assumes the tensor notation.
+If the matrix notation is used, it can be explicitly written as
+\begin{gather}
+\begin{bmatrix}
+s^\text{trial}_{11}-s_{11,n+1}\\
+s^\text{trial}_{22}-s_{22,n+1}\\
+s^\text{trial}_{33}-s_{33,n+1}\\
+s^\text{trial}_{12}-s_{12,n+1}\\
+s^\text{trial}_{23}-s_{23,n+1}\\
+s^\text{trial}_{31}-s_{31,n+1}
+\end{bmatrix}=\gamma\begin{bmatrix}
+2G&&&&&\\
+&2G&&&&\\
+&&2G&&&\\
+&&&G&&\\
+&&&&G&\\
+&&&&&G
+\end{bmatrix}\diag{\mb{c}}\bn.
+\end{gather}
+One immediately realises that
+\begin{gather}
+\begin{bmatrix}
+2G&&&&&\\
+&2G&&&&\\
+&&2G&&&\\
+&&&G&&\\
+&&&&G&\\
+&&&&&G
+\end{bmatrix}\diag{\mb{c}}\bn=\begin{bmatrix}
+2G&&&&&\\
+&2G&&&&\\
+&&2G&&&\\
+&&&2G&&\\
+&&&&2G&\\
+&&&&&2G
+\end{bmatrix}\bn=2G\bn,
+\end{gather}
+thus, \eqsref{eq:j2_two_form} becomes
+\begin{gather}
+\bs^\text{trial}-\bs_{n+1}=\gamma2G\bn.
+\end{gather}
+No matter which notation is used, the same expression holds.
+This is a beautiful attribute, though could be confusing for beginners.
 \section{Hoffman J2 Model}\label{sec:hoffman}
 Here we introduce an anisotropic model that adopts the Hoffman yielding criterion. This framework resembles the isotropic von Mises model. It can be used to model orthtropic materials such sheet steel and timber.
 One can further refer to the corresponding section (\S~10.3) in \cite{SouzaNeto2008}.
