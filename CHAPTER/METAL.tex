@@ -12,7 +12,7 @@ with $\beeta=\bs-\balpha$ is the shifted stress with $\balpha$ denoting the back
 \subsubsection{Flow Rule}
 Assuming associative rule, the flow rule is
 \begin{gather}
-\dot{\bvarepsilon^p}=\gamma\pdfrac{f}{\bsigma}=\gamma\dfrac{1}{2}\dfrac{\mathbb{I}^\text{dev}:\beeta}{\norm{\beeta}}=\gamma\dfrac{\beeta}{\norm{\beeta}}=\gamma\bn.
+\dot{\bvarepsilon^p}=\gamma\pdfrac{f}{\bsigma}=\gamma\dfrac{1}{2}\dfrac{2\mathbb{I}^\text{dev}:\beeta}{\norm{\beeta}}=\gamma\dfrac{\beeta}{\norm{\beeta}}=\gamma\bn.
 \end{gather}
 All analytical formulations are based on tensor notation. However, compressed matrix representation is used in implementation. One shall note the difference due to the Voigt notation.
 \begin{gather}
@@ -27,7 +27,7 @@ All analytical formulations are based on tensor notation. However, compressed ma
 n_{11}&n_{12}&n_{31}\\
 n_{12}&n_{22}&n_{23}\\
 n_{31}&n_{23}&n_{33}
-\end{bmatrix}}_{\bn},\qquad\text{expressed in components}
+\end{bmatrix}}_{\bn},\qquad\text{expressed in components.}
 \end{gather}
 We define the scaling vector $\mb{c}=\begin{bmatrix}
 1&1&1&2&2&2
@@ -58,7 +58,7 @@ n_{33}\\
 n_{12}\\
 n_{23}\\
 n_{31}
-\end{bmatrix}}_{\bn}=\gamma~\mb{c}\circ\bn.\qquad\text{expressed in the Voigt notation}
+\end{bmatrix}}_{\bn}=\gamma~\mb{c}\circ\bn,\qquad\text{expressed in the Voigt notation.}
 \end{gather}
 This agrees with \eqsref{eq:norm_derivative2}.
 
@@ -78,7 +78,7 @@ For kinematic hardening, the evolution law of back stress $\balpha$ is defined t
 \begin{gather}
 \dot{\balpha}=\sqrt{\dfrac{2}{3}}\dot{H}\bn.
 \end{gather}
-in which $H=H\left(q\right)$ is now a scalar--valued function of $q$ that controls the development of $\norm{\balpha}$, $\balpha$ always evolves towards $\bn$ by the amount $\dot{H}=H\left(q_{n+1}\right)-H\left(q_n\right)$ characterising the increment of $H$. The fraction $\sqrt{\dfrac{2}{3}}$ is introduced for consistent response as stated early. Since $\dot{\balpha}$ and $\bn$ are coaxial, $\balpha$ stays deviatoric but may not be coaxial with all $\bn$ through the loading process.
+in which $H=H\left(q\right)$ is now a scalar--valued function of $q$ that controls the development of $\norm{\balpha}$, $\balpha$ always evolves towards $\bn$ by the amount $\dot{H}=H\left(q_{n+1}\right)-H\left(q_n\right)$ characterising the increment of $H$. The fraction $\sqrt{\dfrac{2}{3}}$ is introduced for consistent response as stated earlier. Since $\dot{\balpha}$ and $\bn$ are coaxial, $\balpha$ stays deviatoric but may not be coaxial with all $\bn$ through the loading process.
 \subsection{Formulation}
 The summation of the von Mises model is listed as follows.
 \begin{table}[ht]
@@ -164,7 +164,7 @@ Since $q_{n+1}=q_n+\sqrt{\dfrac{2}{3}}\gamma$, $\pdfrac{q_{n+1}}{\gamma}=\sqrt{\
 \subsubsection{Consistent Tangent Stiffness}
 From $\bsigma_{n+1}=\bsigma^\text{trial}-\gamma2G\bn$, as $\bn=\dfrac{\beeta}{\norm{\beeta}}=\dfrac{\beeta^\text{trial}}{\norm{\beeta^\text{trial}}}$, the consistent tangent stiffness can be computed via the chain rule as
 \begin{gather}
-\pdfrac{\bsigma_{n+1}}{\bvarepsilon_{n+1}}=\pdfrac{\bsigma_{n+1}^\text{trial}}{\bvarepsilon_{n+1}}-2G\bn\otimes\pdfrac{\gamma}{\bvarepsilon_{n+1}}=\mb{D}-2G\left(\bn\otimes\pdfrac{\gamma}{\bvarepsilon_{n+1}}+\gamma\pdfrac{\bn}{\bvarepsilon_{n+1}}\right).
+\pdfrac{\bsigma_{n+1}}{\bvarepsilon_{n+1}}=\pdfrac{\bsigma_{n+1}^\text{trial}}{\bvarepsilon_{n+1}}-2G\pdfrac{\left(\gamma\bn\right)}{\bvarepsilon_{n+1}}=\mb{D}-2G\left(\bn\otimes\pdfrac{\gamma}{\bvarepsilon_{n+1}}+\gamma\pdfrac{\bn}{\bvarepsilon_{n+1}}\right).
 \end{gather}
 In which, according to \eqsref{eq:unit_derivative},
 \begin{gather}
@@ -356,6 +356,10 @@ Flow Rule&$\dot{\bvarepsilon^p}=\gamma\bn$\\
 Hardening Law&$\dot{\varepsilon^p}=\gamma\norm{\bn}$\\\bottomrule
 \end{tabular}
 \end{table}
+
+We have used both tensor and matrix notations in the above table.
+Can you identify which expressions are using which notation?
+This is important as different notations imply differences in implementation.
 \subsubsection{Elastic Loading/Unloading}
 Compared with the von Mises framework, there is no essential difference in terms of elastic loading/unloading, the plasticity is frozen at the beginning of each substep, allowing one to compute the trial stress such that
 \begin{gather}
