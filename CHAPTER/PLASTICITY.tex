@@ -266,7 +266,12 @@ s_{31}
 2\varepsilon_{31}
 \end{bmatrix}}_{\bvarepsilon}.
 \end{gather}
-In this case, the matrix representation of $\mathbb{I}$ (as well as $\mathbb{I^\text{dev}}$) changes its form since it links strain with stress.
+In this case, the matrix representation of $\mathbb{I}$ (as well as $\mathbb{I^\text{dev}}$) changes its form since it links strain with stress while in previous examples those unit tensors associate strain with strain, or stress with stress.
+
+This inconsistency is caused by the Voigt notation.
+If the Mandel notation is used, the unit tensors are the same for all cases.
+Readers are encouraged to derive the above expression using the Mandel notation to gain a better understanding.
+One can again refer to \cite{Helnwein2001} for detailed explanation.
 
 After some manipulations, total stress can be expressed by total strain as follows.
 \begin{gather}
@@ -285,26 +290,21 @@ Thus,
 In matrix representation,
 \begin{gather}
 \mb{D}=2G\begin{bmatrix}
-\frac{2}{3}&-\frac{1}{3}&-\frac{1}{3}&\cdot&\cdot&\cdot\\
--\frac{1}{3}&\frac{2}{3}&-\frac{1}{3}&\cdot&\cdot&\cdot\\
--\frac{1}{3}&-\frac{1}{3}&\frac{2}{3}&\cdot&\cdot&\cdot\\
-\cdot&\cdot&\cdot&\dfrac{1}{2}&\cdot&\cdot\\
-\cdot&\cdot&\cdot&\cdot&\dfrac{1}{2}&\cdot\\
+\dfrac{2}{3}&-\dfrac{1}{3}&-\dfrac{1}{3}&\cdot&\cdot&\cdot\\[3mm]
+-\dfrac{1}{3}&\dfrac{2}{3}&-\dfrac{1}{3}&\cdot&\cdot&\cdot\\[3mm]
+-\dfrac{1}{3}&-\dfrac{1}{3}&\dfrac{2}{3}&\cdot&\cdot&\cdot\\[3mm]
+\cdot&\cdot&\cdot&\dfrac{1}{2}&\cdot&\cdot\\[3mm]
+\cdot&\cdot&\cdot&\cdot&\dfrac{1}{2}&\cdot\\[3mm]
 \cdot&\cdot&\cdot&\cdot&\cdot&\dfrac{1}{2}
 \end{bmatrix}+K\begin{bmatrix}
-1&1&1&\cdot&\cdot&\cdot\\
-1&1&1&\cdot&\cdot&\cdot\\
-1&1&1&\cdot&\cdot&\cdot\\
-\cdot&\cdot&\cdot&\cdot&\cdot&\cdot\\
-\cdot&\cdot&\cdot&\cdot&\cdot&\cdot\\
+1&1&1&\cdot&\cdot&\cdot\\[3mm]
+1&1&1&\cdot&\cdot&\cdot\\[3mm]
+1&1&1&\cdot&\cdot&\cdot\\[3mm]
+\cdot&\cdot&\cdot&\cdot&\cdot&\cdot\\[3mm]
+\cdot&\cdot&\cdot&\cdot&\cdot&\cdot\\[3mm]
 \cdot&\cdot&\cdot&\cdot&\cdot&\cdot
 \end{bmatrix}.
 \end{gather}
-Here one may observe $\mathbb{I}^\text{dev}$ appears in a different form.
-This inconsistency is caused by the Voigt notation, as here the operand is strain tensor while the result is stress tensor.
-If the Voigt notation of the strain tensor uses $\varepsilon_{ij}$, instead of engineering strain components (mainly shear components $\gamma$), then this inconsistency disappears.
-However, this is not adopted in practice.
-One can again refer to \cite{Helnwein2001} for detailed explanation.
 
 Using Lam\'{e}'s constant $\lambda=K-\dfrac{2}{3}G$, $\mb{D}$ can be alternatively expressed as
 \begin{gather}
