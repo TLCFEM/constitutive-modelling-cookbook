@@ -106,7 +106,74 @@ int RambergOsgood::update_trial_status(const vec& t_strain) {
 }
 \end{cppcode}
 \section{MPF Steel Model}
+The MPF model is a widely used phenomenological model for steel.
+It was initially proposed with no hardening.
+Later, isotropic hardening was introduced as an enhancement.
 \subsection{Theory}
+The core of the MPF model is the following parametric equation.
+\begin{gather}\label{eq:mpf}
+	y=bx+\dfrac{\left(1-b\right)x}{\left(1+|x|^r\right)^{\frac{1}{r}}}.
+\end{gather}
+The equation is controlled by two parameters, $b$ and $r$.
+By varying them, one can plot a series of curves.
+\begin{figure}[ht]
+	\centering
+	\begin{subfigure}[t]{0.48\textwidth}
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+					height=5cm,width=7cm,
+					ymin=-1.4,ymax=1.4,
+					xmin=-3,xmax=3,
+					xlabel=$x$,
+					ylabel=$y$,
+				]
+				\addplot+[domain=-3:3,thick,samples=100,mark=none]{.01*x+(1-.01)*x*(1+x^10)^(-1/10)};
+				\addplot+[domain=-3:3,thick,samples=100,mark=none]{.05*x+(1-.05)*x*(1+x^10)^(-1/10)};
+				\addplot+[domain=-3:3,thick,samples=100,mark=none]{.1*x+(1-.1)*x*(1+x^10)^(-1/10)};
+				\addplot+[domain=-3:3,thick,samples=100,mark=none]{.2*x+(1-.2)*x*(1+x^10)^(-1/10)};
+				\addplot+[domain=-3:3,thick,samples=100,mark=none]{.5*x+(1-.5)*x*(1+x^10)^(-1/10)};
+			\end{axis}
+		\end{tikzpicture}
+		\caption{varying $b$}
+	\end{subfigure}\quad
+	\begin{subfigure}[t]{0.48\textwidth}
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+					height=5cm,width=7cm,
+					ymin=-1.4,ymax=1.4,
+					xmin=-3,xmax=3,
+					xlabel=$x$,
+					ylabel=$y$,
+				]
+				\addplot+[domain=-3:3,thick,samples=100,mark=none]{.05*x+(1-.05)*x*(1+abs(x)^5)^(-1/5)};
+				\addplot+[domain=-3:3,thick,samples=100,mark=none]{.05*x+(1-.05)*x*(1+abs(x)^10)^(-1/10)};
+				\addplot+[domain=-3:3,thick,samples=100,mark=none]{.05*x+(1-.05)*x*(1+abs(x)^50)^(-1/50)};
+			\end{axis}
+		\end{tikzpicture}
+		\caption{varying $r$}
+	\end{subfigure}
+\end{figure}
+One may observe that \eqsref{eq:mpf} passes through the origin and bends around point $(1,1)$ (or $(-1,-1)$).
+Furthermore, parameter $b$ controls the hardening ratio, while $r$ controls the transition from pre-yielding to post-yielding. A sufficiently large $r$ approximates a bilinear model.
+
+One can thus use this equation to construct a constitutive model.
+To match the actual Young's modulus, it is possible to define
+\begin{gather}\label{eq:mpf_scaled}
+	x=\dfrac{\varepsilon}{\varepsilon^y},\qquad
+	y=\dfrac{\sigma}{\sigma^y},
+\end{gather}
+where $\varepsilon^y$ and $\sigma^y$ are the yield strain and stress, respectively.
+Such a model asymmertotically approaches the bilinear model.
+\eqsref{eq:mpf_scaled} alone is not sufficient to describe the cyclic response.
+To account for cyclic response, one needs to further introduce the following.
+\begin{gather}
+	x=\dfrac{\varepsilon-\varepsilon^r}{\varepsilon^y},\qquad
+	y=\dfrac{\sigma-\sigma^r}{\sigma^y},
+\end{gather}
+where $\varepsilon^r$ and $\sigma^r$ are the strain and stress at the load reversing point.
+They are updated whenever the load direction changes during the loading process.
 \subsection{Formulation}
 \subsection{Implementation}
 The CPP implementation can be found as follows.
