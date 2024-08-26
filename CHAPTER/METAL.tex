@@ -385,6 +385,8 @@ The yield function adopts the Hoffman criterion, which is expressed in matrix fo
 f=\dfrac{1}{2}\bsigma^\mT\mb{P}\bsigma+\mb{q}^\mT\bsigma-\sigma_y^2,
 \end{gather}
 where $\mb{P}=\mb{P}^\mT$ and $\bq$ are constant scaling matrix/vector of various forms \cite{Oller2003} that depend on material constants.
+Apparently, $\mb{P}$ and $\bq$ represent two tensors of order four and two, respectively.
+But since \cite{Oller2003} uses matrix notation, we shall follow this convention.
 
 For example, the Hoffman criterion can be expressed as
 \begin{scriptsize}
@@ -454,7 +456,7 @@ Hardening Law&$\dot{\varepsilon^p}=\gamma\norm{\bn}$\\\bottomrule
 \end{table}
 
 We have used both tensor and matrix notations in the above table.
-Can you identify which expressions are using which notation?
+Can you identify which expressions use which notation?
 This is important as different notations imply differences in implementation.
 \subsubsection{Elastic Loading/Unloading}
 Compared with the von Mises framework, there is no essential difference in terms of elastic loading/unloading, the plasticity is frozen at the beginning of each substep, allowing one to compute the trial stress such that
@@ -476,8 +478,10 @@ In this work, we choose another approach to alleviate the problem. Instead of th
 \end{gather}
 where $\bn_{m}$ is $\bn$ evaluated at the middle of the substep. Since it is a linear function of $\sigma$,
 \begin{gather}
-\bn_m=\dfrac{\bsigma_n+\bsigma_{n+1}}{2}.
+\bn_m=\dfrac{\bn_n+\bn_{n+1}}{2}=\mb{P}\dfrac{\bsigma_n+\bsigma_{n+1}}{2}+\mb{q}.
 \end{gather}
+We effectively use the trapezoidal rule here.
+It it second order accurate.
 One shall note that replacing $\bn_m$ with $\bn_{n+1}=\mb{P}\bsigma_{n+1}+\mb{q}$ gives the evolution formula of the implicit Euler method.
 \subsubsection{Local Residual}
 The residual is chosen as follows. For brevity, all subscripts $\left(\cdot\right)_{n+1}$ are dropped.
