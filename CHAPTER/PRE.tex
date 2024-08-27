@@ -1,5 +1,6 @@
 \chapter{Preface}
 Most books/papers present constitutive models analytically, leaving the implementation to readers to address.
+It thus could be a challenge for readers to implement the models correctly, especially for those who are not familiar with the numerical methods and programming.
 
 This book aims to provide practical guidance to numerical implementation of plasticity models.
 
@@ -11,6 +12,7 @@ The ultimate target is to provide an easy--to--follow, error and confusion free 
 
 However, a wide range of different constitutive models are covered in this book, not only formulations but also implementations, some of which are very lengthy. There are a huge amount of symbols and formulae.
 \section{Implementation}
+\subsection{Selection of Programming Language}
 For scientific computation that involves a significant amount of linear algebra operations, in my opinion, operator overloading is essential. Lengthy implementation is almost inevitable if the language does not support operator overloading. In this sense, account for performance, C++ is perhaps the first choice. However, Rust may be another candidate in the future.
 
 Python and MATLAB, in the author's opinion, are ideal for experimenting. Due to performance related issues, they are not ready for production development.
@@ -47,5 +49,13 @@ int main()
 \end{cppcode}
 
 In all the state determination algorithms presented in this book, by default it is assumed all local iteraions eventually converge. Thus the handling of failure of convergence is not presented for brevity. One shall always bear in mind that not all algorithms converge, and for robust, practical algorithms, more numerical processes are required.
+\subsection{Internal Storage}
+Accounting for the Cauchy stress theory, under which strain and stress tensors are symmetric.
+There seems to be no need to actually store second order tensors in matrices and fourth order tensors in 4D cubes.
+Tensor operations on those high dimensional arrays are cumbersome and may have a performance penalty.
+While the Voigt notation is used, row/column vectors and 2D matrices are sufficient to implement most models.
+
+In this book, all models are implemented in this way.
+However, some other applications choose to use the full tensor representation.
 \section{Digest}
 As the title indicates, this book is drafted as a reference book on constitutive modelling, it shall be self--complete in terms of theoretical part. For practical implementation, algorithms in pseudo code are given for most models. Core CPP implementations are also provided as references/comparisons for readers who are familiar with CPP and scientific computation with relevant tools. The code snippets are taken from the implementations from \texttt{suanPan} \cite{Chang2022}. In this regard, this book can also be used as the program manual.
