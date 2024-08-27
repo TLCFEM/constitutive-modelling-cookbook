@@ -1206,6 +1206,9 @@ int DafaliasManzari::update_trial_status(const vec& t_strain) {
 \section{Duncan Soil Model}
 In this section, we present a plane strain soil model.
 Unlike other models that are typically strain--driven, it is a non-linear elastic phenomenological stress--driven model.
+
+In the original literature, the model is defined in the incremental form.
+Here we derive the consistent tangent stiffness for the model.
 \subsection{Theory}
 The incremental form of the constitutive relationship is defined as
 \begin{gather}\label{eq:duncan_incremental}
