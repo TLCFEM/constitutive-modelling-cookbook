@@ -223,6 +223,34 @@ I_3=\det{\mb{A}}=A_{11}A_{22}A_{33}+2A_{12}A_{23}A_{31}-A_{11}A_{23}^2-A_{22}A_{
 The three invariants $I_1$, $I_2$ and $I_3$ are in fact functions of eigenvalues of $\mb{A}$.
 The are invariant in different eigenspaces since eigenvalues do not change with frame transformation.
 
+The corresponding derivatives with regard to $\mb{A}$ (in Voigt notation) can be computed as
+\begin{gather}
+	\ddfrac{I_1}{\mb{A}}=\begin{bmatrix}
+		1 \\
+		1 \\
+		1 \\
+		0 \\
+		0 \\
+		0
+	\end{bmatrix},\qquad
+	\ddfrac{I_2}{\mb{A}}=\begin{bmatrix}
+		A_{22}+A_{33} \\
+		A_{11}+A_{33} \\
+		A_{11}+A_{22} \\
+		-2A_{12}      \\
+		-2A_{23}      \\
+		-2A_{31}
+	\end{bmatrix},\qquad
+	\ddfrac{I_3}{\mb{A}}=\begin{bmatrix}
+		A_{22}A_{33}-A_{23}^2       \\
+		A_{11}A_{33}-A_{31}^2       \\
+		A_{11}A_{22}-A_{12}^2       \\
+		2A_{23}A_{31}-2A_{12}A_{33} \\
+		2A_{12}A_{31}-2A_{23}A_{11} \\
+		2A_{12}A_{23}-2A_{31}A_{22}
+	\end{bmatrix}.
+\end{gather}
+
 The above holds for any symmetric tensors.
 It thus applies to deviatoric tensors as well.
 It is possible to define the deviatoric stress invariants as follows, by denoting $\mb{S}=\mb{A}-\dfrac{I_1}{3}\mb{1}$.
