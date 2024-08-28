@@ -53,15 +53,15 @@ then $\mb{C}$ can be expressed as
 
 Hyperelastic material models are often defined in terms of the reduced invariants of the right Cauchy--Green deformation tensor $\mb{C}$.
 \begin{gather}
-    J_1=I_1I_3^{-1/3},\quad
-    J_2=I_2I_3^{-2/3},\quad
-    J_3=I_3^{1/2}.
+\bar{J_1}=I_1I_3^{-1/3},\quad
+\bar{J_2}=I_2I_3^{-2/3},\quad
+\bar{J_3}=I_3^{1/2}.
 \end{gather}
 In which, $I_1$, $I_2$, and $I_3$ are the invariants of $\mb{C}$.
 \subsection{Formulation}
 The Mooney--Rinvlin model uses the following strain energy density function
 \begin{gather}
-    W=A_{10}\left(J_1-3\right)+A_{01}\left(J_2-3\right)+\dfrac{K}{2}\left(J_3-1\right)^2,
+W=A_{10}\left(\bar{J_1}-3\right)+A_{01}\left(\bar{J_2}-3\right)+\dfrac{K}{2}\left(\bar{J_3}-1\right)^2,
 \end{gather}
 where $A_{10}$, $A_{01}$ and $K$ are material parameters.
 
@@ -93,7 +93,25 @@ From \eqsref{eq:tensor_invariant_derivative}, using the Voigt notation, one can 
 \end{gather}
 One shall realize the above result agrees with the expression derived using tensor algebra.
 As a practice, readers are encourage to derive the other derivatives.
+We simply list the results here.
+\begin{gather}
+    \ddfrac{I_1}{\mb{E}}=2\mb{1},\qquad
+    \ddfrac{I_3}{\mb{E}}=2I_3\mb{C}^{-1}.
+\end{gather}
+
+The second Piola--Kirchhoff stress tensor $\mb{S}$ can be computed via the chain rule,
+\begin{gather}
+    \mb{S}=A_{10}\ddfrac{\bar{J_1}}{\mb{E}}+A_{01}\ddfrac{\bar{J_2}}{\mb{E}}+K\left(\bar{J_3}-1\right)\ddfrac{\bar{J_3}}{\mb{E}}.
+\end{gather}
+Please derive the explicit expression for $\mb{S}$.
+
+The tangent stiffness tensor $\mb{D}$ can be computed by further differentiating $\mb{S}$ with respect to $\mb{E}$.
+\begin{gather}
+    \mb{D}=A_{10}\ddfrac{^2\bar{J_1}}{\mb{E}^2}+A_{01}\ddfrac{^2\bar{J_2}}{\mb{E}^2}+K\left(\bar{J_3}-1\right)\ddfrac{^2\bar{J_3}}{\mb{E}^2}+K\ddfrac{\bar{J_3}}{\mb{E}}\otimes\ddfrac{\bar{J_3}}{\mb{E}}.
+\end{gather}
 \subsection{Implementation}
+The implementation is straightforward.
+One shall faithfully calculate the derivatives and then assemble the stress and stiffness tensors.
 \begin{cppcode}
 // takes green strain as input
 int MooneyRivlin::update_trial_status(const vec& t_strain) {
