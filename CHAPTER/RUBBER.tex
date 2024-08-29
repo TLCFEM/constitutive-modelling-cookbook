@@ -81,7 +81,7 @@ From \eqsref{eq:tensor_invariant_derivative}, using the Voigt notation, one can 
           &   & 2 &   &   &   \\
           &   &   & 1 &   &   \\
           &   &   &   & 1 &   \\
-          &   &   &   &   & 1 \\
+          &   &   &   &   & 1
     \end{bmatrix}=2\begin{bmatrix}
         C_{22}+C_{33} \\
         C_{11}+C_{33} \\
@@ -92,11 +92,34 @@ From \eqsref{eq:tensor_invariant_derivative}, using the Voigt notation, one can 
     \end{bmatrix}^\mT=2\left(I_1\mb{1}-\mb{C}\right).
 \end{gather}
 One shall realize the above result agrees with the expression derived using tensor algebra.
-As a practice, readers are encourage to derive the other derivatives.
-We simply list the results here.
+Here is one more example.
 \begin{gather}
-    \ddfrac{I_1}{\mb{E}}=2\mb{1},\qquad
-    \ddfrac{I_3}{\mb{E}}=2I_3\mb{C}^{-1}.
+\begin{split}
+\ddfrac{I_3}{\mb{E}}=\ddfrac{I_3}{\mb{C}}\ddfrac{\mb{C}}{\mb{E}}&=\begin{bmatrix}
+    C_{22}C_{33}-C_{23}^2       \\
+    C_{11}C_{33}-C_{31}^2       \\
+    C_{11}C_{22}-C_{12}^2       \\
+    2C_{23}C_{31}-2C_{12}C_{33} \\
+    2C_{12}C_{31}-2C_{23}C_{11} \\
+    2C_{12}C_{23}-2C_{31}C_{22}
+\end{bmatrix}^\mT
+\begin{bmatrix}
+    2 &   &   &   &   &   \\
+      & 2 &   &   &   &   \\
+      &   & 2 &   &   &   \\
+      &   &   & 1 &   &   \\
+      &   &   &   & 1 &   \\
+      &   &   &   &   & 1
+\end{bmatrix}\\
+&=2\begin{bmatrix}
+    C_{22}C_{33}-C_{23}^2     \\
+    C_{11}C_{33}-C_{31}^2     \\
+    C_{11}C_{22}-C_{12}^2     \\
+    C_{23}C_{31}-C_{12}C_{33} \\
+    C_{12}C_{31}-C_{23}C_{11} \\
+    C_{12}C_{23}-C_{31}C_{22}
+\end{bmatrix}^\mT=2I_3\mb{C}^{-1}.
+\end{split}
 \end{gather}
 
 The second Piola--Kirchhoff stress tensor $\mb{S}$ can be computed via the chain rule,
@@ -108,6 +131,22 @@ Please derive the explicit expression for $\mb{S}$.
 The tangent stiffness tensor $\mb{D}$ can be computed by further differentiating $\mb{S}$ with respect to $\mb{E}$.
 \begin{gather}
     \mb{D}=A_{10}\ddfrac{^2\bar{J_1}}{\mb{E}^2}+A_{01}\ddfrac{^2\bar{J_2}}{\mb{E}^2}+K\left(\bar{J_3}-1\right)\ddfrac{^2\bar{J_3}}{\mb{E}^2}+K\ddfrac{\bar{J_3}}{\mb{E}}\otimes\ddfrac{\bar{J_3}}{\mb{E}}.
+\end{gather}
+
+This involves the second order derivatives of invariants $I_1$, $I_2$ and $I_3$.
+\begin{gather}
+\ddfrac{^2I_1}{\mb{E}^2}=\mb{0},\qquad
+\ddfrac{^2I_2}{\mb{E}^2}=4\left(\mb{1}\otimes\mb{1}-\mathbb{I}\right),\\
+\begin{split}
+\ddfrac{^2I_3}{\mb{E}^2}=2\begin{bmatrix}
+             & 2C_{33}  & 2C_{22}  &          & -2C_{23} &          \\
+    2C_{33}  &          & 2C_{11}  &          &          & -2C_{31} \\
+    2C_{22}  & 2C_{11}  &          & -2C_{12} &          &          \\
+             &          & -2C_{12} & -C_{33}  & C_{31}   & C_{23}   \\
+    -2C_{23} &          &          & C_{31}   & -C_{11}  & C_{12}   \\
+             & -2C_{31} &          & C_{23}   & C_{12}   & -C_{22}
+\end{bmatrix}.
+\end{split}
 \end{gather}
 \subsection{Implementation}
 The implementation is straightforward.
