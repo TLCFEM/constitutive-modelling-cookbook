@@ -29,7 +29,7 @@ If the above expression is expressed explicitly in tensor components, one could 
 n_{11}&n_{12}&n_{31}\\
 n_{12}&n_{22}&n_{23}\\
 n_{31}&n_{23}&n_{33}
-\end{bmatrix}}_{\bn},\qquad\text{expressed in tensor components.}
+\end{bmatrix}}_{\bn},\qquad\text{in tensor components.}
 \end{gather}
 We define the scaling vector $\mb{c}=\begin{bmatrix}
 1&1&1&2&2&2
@@ -60,7 +60,7 @@ n_{33}\\
 n_{12}\\
 n_{23}\\
 n_{31}
-\end{bmatrix}}_{\bn}=\gamma~\mb{c}\circ\bn,\qquad\text{expressed in the Voigt notation.}
+\end{bmatrix}}_{\bn}=\gamma~\mb{c}\circ\bn,\qquad\text{in the Voigt notation.}
 \end{gather}
 This agrees with \eqsref{eq:norm_derivative2}.
 Such a difference has practical implications.
@@ -353,21 +353,11 @@ s^\text{trial}_{31}-s_{31,n+1}
 \end{gather}
 One immediately realises that
 \begin{gather}
-\begin{bmatrix}
-2G&&&&&\\
-&2G&&&&\\
-&&2G&&&\\
-&&&G&&\\
-&&&&G&\\
-&&&&&G
-\end{bmatrix}\diag{\mb{c}}\bn=\begin{bmatrix}
-2G&&&&&\\
-&2G&&&&\\
-&&2G&&&\\
-&&&2G&&\\
-&&&&2G&\\
-&&&&&2G
-\end{bmatrix}\bn=2G\bn,
+\diag{\begin{matrix}
+2G\\2G\\2G\\G\\G\\G
+\end{matrix}}\circ\diag{\mb{c}}\bn=\diag{\begin{matrix}
+2G\\2G\\2G\\2G\\2G\\2G
+\end{matrix}}\bn=2G\bn,
 \end{gather}
 thus, \eqsref{eq:j2_two_form} becomes
 \begin{gather}
@@ -389,6 +379,7 @@ Apparently, $\mb{P}$ and $\bq$ represent two tensors of order four and two, resp
 But since \cite{Oller2003} uses matrix notation, we shall follow this convention.
 
 For example, the Hoffman criterion can be expressed as
+\begin{tiny}
 \begin{gather}\label{eq:hoffman_criterion}
 \mb{P}=\begin{bmatrix}
 T_1&-\dfrac{T_1+T_2-T_3}{2}&-\dfrac{T_3+T_1-T_2}{2}&&&\\[4mm]
@@ -397,7 +388,7 @@ T_1&-\dfrac{T_1+T_2-T_3}{2}&-\dfrac{T_3+T_1-T_2}{2}&&&\\[4mm]
 &&&\dfrac{1}{f_{12}^2}&&\\[4mm]
 &&&&\dfrac{1}{f_{23}^2}&\\[4mm]
 &&&&&\dfrac{1}{f_{13}^2}
-\end{bmatrix},\\
+\end{bmatrix},\quad
 \mb{q}=\begin{bmatrix}
 \left(f_{11}^c-f_{11}^t\right)T_1\\[4mm]
 \left(f_{22}^c-f_{22}^t\right)T_2\\[4mm]
@@ -407,6 +398,7 @@ T_1&-\dfrac{T_1+T_2-T_3}{2}&-\dfrac{T_3+T_1-T_2}{2}&&&\\[4mm]
 0
 \end{bmatrix},
 \end{gather}
+\end{tiny}
 in which,
 \begin{gather}
 T_1=\dfrac{1}{f_{11}^tf_{11}^c},\qquad

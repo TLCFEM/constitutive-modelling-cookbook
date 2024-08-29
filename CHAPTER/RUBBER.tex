@@ -68,7 +68,8 @@ where $A_{10}$, $A_{01}$ and $K$ are material parameters.
 To compute the second Piola--Kirchhoff stress tensor $\mb{S}$, the derivatives are required.
 From \eqsref{eq:tensor_invariant_derivative}, using the Voigt notation, one can derive, for example,
 \begin{gather}
-    \ddfrac{I_2}{\mb{E}}=\ddfrac{I_2}{\mb{C}}\ddfrac{\mb{C}}{\mb{E}}=\begin{bmatrix}
+\begin{split}
+    \ddfrac{I_2}{\mb{E}}=\ddfrac{I_2}{\mb{C}}\ddfrac{\mb{C}}{\mb{E}}&=\begin{bmatrix}
         C_{22}+C_{33} \\
         C_{11}+C_{33} \\
         C_{11}+C_{22} \\
@@ -89,7 +90,8 @@ From \eqsref{eq:tensor_invariant_derivative}, using the Voigt notation, one can 
         -C_{12}       \\
         -C_{23}       \\
         -C_{31}
-    \end{bmatrix}^\mT=2\left(I_1\mb{1}-\mb{C}\right).
+    \end{bmatrix}^\mT\\&=2\left(I_1\mb{1}-\mb{C}\right).
+\end{split}
 \end{gather}
 One shall realize the above result agrees with the expression derived using tensor algebra.
 Here is one more example.
