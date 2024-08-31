@@ -174,6 +174,26 @@ To account for cyclic response, one needs to further introduce the following.
 \end{gather}
 where $\varepsilon^r$ and $\sigma^r$ are the strain and stress at the load reversing point.
 They are updated whenever the load direction changes during the loading process.
+
+One may observe that the MPF model is very similar to the Ramberg--Osgood model.
+They adopts the same approach to describe the cyclic response, but with different backbone curves.
+
+Furthermore, $\varepsilon^y$, $\sigma^y$, $r$ and $b$ do not need to be constants.
+They can evolve with the loading process, characterized by some measure of plasticity.
+In specific, the following can be used.
+\begin{itemize}
+	\item $\sigma^y$ --- isotropic hardening
+	\item $\sigma^y/\varepsilon^y$ --- stiffness degradation
+	\item $r$ --- Bauschinger effect
+	\item $b$ --- progressive hardening/softening
+\end{itemize}
+
+In Filippou's modification,
+\begin{gather}
+	r=r_0-\dfrac{a_1\zeta}{a_2+\zeta},\qquad
+	\dfrac{\sigma^y-\sigma^y_0}{\sigma^y_0}=a_3\left(\dfrac{\varepsilon_{max}}{\varepsilon^y}-a_4\right)\geqslant1,
+\end{gather}
+where $\zeta$ is difference between previous two reversed points, $\varepsilon_{max}$ is the maximum absolute strain of the whole loading process.
 \subsection{Formulation}
 \subsection{Implementation}
 The CPP implementation can be found as follows.
