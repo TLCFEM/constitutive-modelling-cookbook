@@ -1,6 +1,5 @@
 \chapter{Rubber}
-\section{Mooney--Rivlin Model}
-\subsection{Theory}
+\section{Basic Quantities}
 The Green--Lagrangian strain tensor $\mb{E}$ can be defined using the deformation gradient tensor $\mb{F}$ as
 \begin{gather}
     \mb{E}=\dfrac{1}{2}\left(\mb{F}^\mT\mb{F}-\mb{1}\right),
@@ -58,12 +57,14 @@ Hyperelastic material models are often defined in terms of the reduced invariant
 \bar{J_3}=I_3^{1/2}.
 \end{gather}
 In which, $I_1$, $I_2$, and $I_3$ are the invariants of $\mb{C}$.
-\subsection{Formulation}
-The Mooney--Rinvlin model uses the following strain energy density function
+\section{Mooney--Rivlin Model}
+\subsection{Theory}
+The Mooney--Rinvlin model for compressible material uses the following strain energy density function
 \begin{gather}
 W=A_{10}\left(\bar{J_1}-3\right)+A_{01}\left(\bar{J_2}-3\right)+\dfrac{K}{2}\left(\bar{J_3}-1\right)^2,
 \end{gather}
 where $A_{10}$, $A_{01}$ and $K$ are material parameters.
+As one may observe, $\bar{J_3}$ is involved, the bulk modulus $K$ can be set to a large value such that it approaches so called near incompressible behaviour.
 
 To compute the second Piola--Kirchhoff stress tensor $\mb{S}$, the derivatives are required.
 From \eqsref{eq:tensor_invariant_derivative}, using the Voigt notation, one can derive, for example,

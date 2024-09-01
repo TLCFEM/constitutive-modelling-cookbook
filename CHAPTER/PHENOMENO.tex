@@ -260,6 +260,43 @@ int MPF::update_trial_status(const vec& t_strain) {
 \end{cppcode}
 \section{Bouc--Wen Model}
 \subsection{Theory}
+The relative resistance can be expressed as a summation of two terms.
+\begin{gather}
+\dfrac{f}{f_y}=a\dfrac{u}{u_y}+\left(1-a\right)z.
+\end{gather}
+In which $a$ denotes the hardening ratio.
+The field $z$ is an internal variable that does not necessarily possess any physical meaning.
+It's evolution is governed by the following ODE.
+\begin{gather}\label{eq:bouc-wen}
+\dot{z}=\dfrac{\dot{u}}{u_y}\left(A-\left(\gamma+\sign{z\dot{u}}\beta\right)\abs{z}^n\right).
+\end{gather}
+In this incremental form, for a given $\Delta{}u$, using the implicit Euler method, one can obtain
+\begin{gather}
+R=z-z_n-\dfrac{\Delta{}u}{u_y}\left(A-\left(\gamma+\sign{z\Delta{}u}\beta\right)\abs{z}^n\right).
+\end{gather}
+Its derivatives are then
+\begin{gather}
+\pdfrac{R}{u}=\dfrac{A-\left(\gamma+\sign{z\Delta{}u}\beta\right)\abs{z}^n}{u_y},\\
+\pdfrac{R}{z}=\dfrac{1}{z}\left(z+\dfrac{\Delta{}u}{u_y}n\left(\gamma+\sign{z\Delta{}u}\beta\right)\abs{z}^n\right).
+\end{gather}
+Denoting $P=\left(\gamma+\sign{z\Delta{}u}\beta\right)\abs{z}^n$, the tangent stiffness can then be written as
+\begin{gather}\label{eq:bouc-wen-stiffness}
+\begin{split}
+\ddfrac{f}{u}=\pdfrac{f}{u}+\pdfrac{f}{z}\ddfrac{z}{u}&=\pdfrac{f}{u}-\pdfrac{f}{z}\left(\pdfrac{R}{z}\right)^{-1}\pdfrac{R}{u}\\
+&=f_y\left(\dfrac{a}{u_y}-\left(1-a\right)\dfrac{zA-zP}{zu_y+\Delta{}unP}\right).
+\end{split}
+\end{gather}
+
+The Bouc--Wen model \cite{Wen1976} is mainly driven by the ODE \eqsref{eq:bouc-wen}, this makes the formulation extremely simple, to implement such a model, one only needs to solve the ODE using a proper method.
+Here we have presented the formulation using the implicit Euler method. Other methods, such as the trapezoidal method, or even multi-step methods, can also be used.
+The adoption of various solving method does not actually affect the computation of tangent stiffness.
+Once the convergence is achieved, \eqsref{eq:bouc-wen-stiffness} can be used to compute the stiffness.
+
+The Bouc--Wen model has received many criticisms. Since it is a phenomenological model, in which the internal field $z$ has no physical implication, this model may violate thermodynamics.
+To alleviate the potential problems, the following constraints are imposed \cite{Ma2004}.
+\begin{gather}
+A=1,\qquad\gamma+\beta=1.
+\end{gather}
 \subsection{Formulation}
 \subsection{Implementation}
 \begin{cppcode}
