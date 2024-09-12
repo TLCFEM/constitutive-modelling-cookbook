@@ -253,15 +253,26 @@ The same hardening law for $q$ is adopted as well.
 \paragraph{Isotropic Hardening}
 Instead of using a simple linear function, a Voce type function is adopted for $\sigma^y$.
 \begin{gather}
-\sigma^y=\sigma^i+Kq+\sigma^s\left(1-e^{-mp}\right),
+\sigma^y=\sigma^i+Kq+\sigma^s\left(1-e^{-mq}\right),
 \end{gather}
 in which $K$ denotes the linear hardening modulus, $\sigma^s$ is the satuated stress that denotes the size of additional yield stress caused by exponential hardening and $m$ is a model parameter that controls the rate of exponential part of hardening.
 
 If $K=0$, it can be seen that
 \begin{gather}
-\lim\limits_{p\rightarrow\infty}\sigma^y=\sigma^i+\sigma^s,\qquad
-\lim\limits_{p\rightarrow0}\sigma^y=\sigma^i.
+\lim\limits_{q\rightarrow\infty}\sigma^y=\sigma^i+\sigma^s,\qquad
+\lim\limits_{q\rightarrow0}\sigma^y=\sigma^i.
 \end{gather}
+Also,
+\begin{gather}
+\dot{\sigma^y}=m\sigma^se^{-mq}=m\left(\sigma^i+\sigma^s-\sigma^y\right).
+\end{gather}
+This rate form is often presented in other literature. One must be aware of the fact that it can be explicitly integrated.
+Furthermore, one could propose the following
+\begin{gather}
+\sigma^y=\sigma^i+Kq+\sigma^s\dfrac{\sum_{j=1}^{n}s_j\left(1-e^{-m_jq}\right)}{\sum_{j=1}^{n}s_j}.
+\end{gather}
+The fraction $\dfrac{\sum_{j=1}^{n}s_j\left(1-e^{-m_jq}\right)}{\sum_{j=1}^{n}s_j}$ defines a nonlinear curve that originates at point $\left(0,1\right)$ and asymptotically approaches zero when $q$ approaches infinity.
+The parameter pairs $m_j$ and $s_j$ can be tweaked to approximate curves of \textbf{any} shape, theoretically.
 \paragraph{Kinematic Hardening}
 A multiplicative formulation \cite{Chaboche1989} for back stress is adopted with the Armstrong--Fredrick type hardening rule. The back stress is defined to be the summation of several back stresses that evolve independently with different rates. That is,
 \begin{gather}
