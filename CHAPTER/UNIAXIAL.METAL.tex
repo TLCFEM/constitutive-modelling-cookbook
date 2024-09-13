@@ -293,7 +293,7 @@ The summation of this AF model is listed as follows.
 \begin{tabular}{rl}
 \toprule
 Constitutive Law&$\sigma=E\left(\varepsilon-\varepsilon^p\right)$\\
-Yield Function&$f=\abs{\sigma-\alpha}-\left(\sigma^i+Kp+\sigma^s\left(1-e^{-mp}\right)\right)$\\
+Yield Function&$f=\abs{\sigma-\alpha}-\left(\sigma^i+Kq+\sigma^s\left(1-e^{-mq}\right)\right)$\\
 Flow Rule&$\dot{\varepsilon^p}=\gamma~\sign{\sigma-\alpha}$\\
 Hardening Law&$\dot{q}=\gamma$\\
 &$\alpha=\sum_{i=1}^n\alpha_i$\\
@@ -303,7 +303,7 @@ Hardening Law&$\dot{q}=\gamma$\\
 \subsubsection{Elastic Loading/Unloading}
 The trial stress can be computed following \eqsref{eq:uniaxial_trial_stress}. Then by denoting $\eta^\text{trial}=\sigma^\text{trial}-\alpha_n$, the yield function becomes
 \begin{gather}
-f^\text{trial}=\abs{\eta^\text{trial}}-\left(\sigma^i+Kp_n+\sigma^s\left(1-e^{-mp_n}\right)\right).
+f^\text{trial}=\abs{\eta^\text{trial}}-\left(\sigma^i+Kq_n+\sigma^s\left(1-e^{-mq_n}\right)\right).
 \end{gather}
 \subsubsection{Plastic Evolution}
 It is now clear that nonlinearity is introduced since $\dot{\alpha_i}=g\left(\alpha_i,\cdots\right)$ is a function of $\alpha_i$ and other variables. Various first order numerical methods can be applied. For example,
