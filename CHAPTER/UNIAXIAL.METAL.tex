@@ -251,11 +251,11 @@ The same hardening law for $q$ is adopted as well.
 \dot{q}=\abs{\dot{\varepsilon^p}}=\gamma.
 \end{gather}
 \paragraph{Isotropic Hardening}
-Instead of using a simple linear function, a Voce type function is adopted for $\sigma^y$.
+Instead of using a simple linear function, a Voce type \cite{Voce1955} function is adopted for $\sigma^y$.
 \begin{gather}
 \sigma^y=\sigma^i+Kq+\sigma^s\left(1-e^{-mq}\right),
 \end{gather}
-in which $K$ denotes the linear hardening modulus, $\sigma^s$ is the satuated stress that denotes the size of additional yield stress caused by exponential hardening and $m$ is a model parameter that controls the rate of exponential part of hardening.
+in which $K$ denotes the linear hardening modulus, $\sigma^s$ is the saturated stress that denotes the size of additional yield stress caused by exponential hardening and $m$ is a model parameter that controls the rate of exponential part of hardening.
 
 If $K=0$, it can be seen that
 \begin{gather}
@@ -355,12 +355,13 @@ Thus,
 n=\sign{\eta_{n+1}}=\sign{\sigma^\text{trial}-\sum\dfrac{\alpha_{i,n}}{1+b_i\gamma}},\\
 \abs{\eta_{n+1}}+E\gamma+\sum\dfrac{a_i\gamma{}}{1+b_i\gamma}=\abs{\sigma^\text{trial}-\sum\dfrac{\alpha_{i,n}}{1+b_i\gamma}}.
 \end{gather}
+This is such a nice expression that gives the magnitude of the shifted stress as a function of sole $\gamma$.
 
-With the above expressions, the yield function can be evaluated as
+With the above expressions, the yield function can be explicitly evaluated in terms of $\gamma$ as
 \begin{gather}\label{eq:af_f}
 \begin{split}
-f&=\abs{\eta_{n+1}}-\left(\sigma^i+Kq_{n+1}+\sigma^s\left(1-e^{-mq_{n+1}}\right)\right)\\
-&=\abs{\sigma^\text{trial}-\sum\dfrac{\alpha_{i,n}}{1+b_i\gamma}}-E\gamma-\sum\dfrac{a_i\gamma{}}{1+b_i\gamma}-\sigma^i-Kq_n-K\gamma-\sigma^s\left(1-e^{-m\left(q_n+\gamma\right)}\right)\\
+f\left(\gamma\right)&=\abs{\eta_{n+1}}-\left(\sigma^i+Kq_{n+1}+\sigma^s\left(1-e^{-mq_{n+1}}\right)\right)\\
+&=\abs{\sigma^\text{trial}-\sum\dfrac{\alpha_{i,n}}{1+b_i\gamma}}-E\gamma-\sum\dfrac{a_i\gamma{}}{1+b_i\gamma}\\&-\sigma^i-Kq_n-K\gamma-\sigma^s\left(1-e^{-m\left(q_n+\gamma\right)}\right)\\
 &=0.
 \end{split}
 \end{gather}
@@ -498,6 +499,11 @@ int ArmstrongFrederick1D::update_trial_status(const vec& t_strain) {
 	return SUANPAN_SUCCESS;
 }
 \end{cppcode}
+\section{AF with Strain Memory}
+The discussed Armstrong--Fredrick model allows a versatile modelling of kinematic hardening.
+However, it is noticed in many experiments that the magnitude of isotropic hardening gradually decreases with increasing number of cycles --- even if cycles with fixed strain range.
+To better model such a behaviour, \cite{Ohno1982} introduced the concept of non-hardening strain region.
+It is a region that characterises a neighbourhood of a finite size around the current plastic strain. Just like the isotropic hardening of stress, the size of this region grows with the development of plastic strain.
 \section{Uniaxial Model for BRB Steel}\label{sec:uniaxial_brb}
 The previous models show symmetric behaviour regardless under tension or compression. For some application such as buckling restrained braces, buckling under compression would result in lower strength. In this section, a model \cite{Zona2012} suitable for BRB steel is presented with a neat implementation.
 \subsection{Theory}
