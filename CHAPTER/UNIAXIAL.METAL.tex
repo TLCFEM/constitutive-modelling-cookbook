@@ -499,11 +499,14 @@ int ArmstrongFrederick1D::update_trial_status(const vec& t_strain) {
 	return SUANPAN_SUCCESS;
 }
 \end{cppcode}
-\section{AF with Strain Memory}
+\section{Armstrong--Fredrick with Strain Memory}
 The discussed Armstrong--Fredrick model allows a versatile modelling of kinematic hardening.
 However, it is noticed in many experiments that the magnitude of isotropic hardening gradually decreases with increasing number of cycles --- even if cycles with fixed strain range.
 To better model such a behaviour, \cite{Ohno1982} introduced the concept of non-hardening strain region.
 It is a region that characterises a neighbourhood of a finite size around the current plastic strain. Just like the isotropic hardening of stress, the size of this region grows with the development of plastic strain.
+\subsection{Theory}
+\subsection{Formulation}
+\subsection{Implementation}
 \section{Uniaxial Model for BRB Steel}\label{sec:uniaxial_brb}
 The previous models show symmetric behaviour regardless under tension or compression. For some application such as buckling restrained braces, buckling under compression would result in lower strength. In this section, a model \cite{Zona2012} suitable for BRB steel is presented with a neat implementation.
 \subsection{Theory}
