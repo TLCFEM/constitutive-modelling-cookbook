@@ -430,75 +430,7 @@ $n=\sign{\sigma^\text{trial}-\sum\dfrac{\alpha_{i,n}}{1+b_i\gamma}}$
 
 So far it is clear that for both simple and complex models, the structure of state determination algorithm remains more or less the same. The core formulation only differs due to different yield function, flow rule and hardening law. Nevertheless, some simplifications are often possible.
 
-\begin{cppcode}
-int ArmstrongFrederick1D::update_trial_status(const vec& t_strain) {
-	incre_strain = (trial_strain = t_strain) - current_strain;
-
-	if(norm(incre_strain) <= tolerance) return SUANPAN_SUCCESS;
-
-	trial_stress = current_stress + (trial_stiffness = initial_stiffness) * incre_strain;
-
-	trial_history = current_history;
-	auto& p = trial_history(size);
-
-	auto yield_func = fabs(trial_stress(0) - accu(trial_history.head(size))) - std::max(0., yield + hardening * p + saturated * (1. - exp(-m * p)));
-
-	if(yield_func < 0.) return SUANPAN_SUCCESS;
-
-	auto gamma = 0.;
-	double xi, jacobian;
-
-	unsigned counter = 0;
-	while(true) {
-		if(max_iteration == ++counter) {
-			suanpan_error("ArmstrongFrederick1D cannot converge in %u iterations.\n", max_iteration);
-			return SUANPAN_FAIL;
-		}
-
-		const auto exp_term = saturated * exp(-m * p);
-
-		auto k = yield + saturated + hardening * p - exp_term;
-		auto dk = hardening + m * exp_term;
-		if(k < 0.) k = dk = 0.;
-
-		auto sum_a = 0., sum_b = 0.;
-		for(unsigned I = 0; I < size; ++I) {
-			const auto denom = 1. + b(I) * gamma;
-			sum_a += trial_history(I) / denom;
-			sum_b += a(I) / denom;
-		}
-
-		yield_func = fabs(xi = trial_stress(0) - sum_a) - (elastic_modulus + sum_b) * gamma - k;
-
-		jacobian = -elastic_modulus - dk;
-
-		if(xi > 0.) for(unsigned I = 0; I < size; ++I) jacobian += (b(I) * trial_history(I) - a(I)) * pow(1. + b(I) * gamma, -2.);
-		else for(unsigned I = 0; I < size; ++I) jacobian -= (b(I) * trial_history(I) + a(I)) * pow(1. + b(I) * gamma, -2.);
-
-		const auto incre = yield_func / jacobian;
-		suanpan_extra_debug("ArmstrongFrederick1D local iterative loop error: %.5E.\n", fabs(incre));
-		if(fabs(incre) <= tolerance) break;
-
-		gamma -= incre;
-		p -= incre;
-	}
-
-	if(xi > 0.) {
-		for(unsigned I = 0; I < size; ++I) trial_history(I) = (trial_history(I) + a(I) * gamma) / (1. + b(I) * gamma);
-
-		trial_stress -= elastic_modulus * gamma;
-	}
-	else {
-		for(unsigned I = 0; I < size; ++I) trial_history(I) = (trial_history(I) - a(I) * gamma) / (1. + b(I) * gamma);
-
-		trial_stress += elastic_modulus * gamma;
-	}
-
-	trial_stiffness += elastic_modulus / jacobian * elastic_modulus;
-
-	return SUANPAN_SUCCESS;
-}
-\end{cppcode}
+We will present the C++ implementation after the enhancement introduced in the coming section.
 \section{Armstrong--Fredrick with Strain Memory}
 The discussed Armstrong--Fredrick model allows a versatile modelling of kinematic hardening.
 However, it is noticed in many experiments that the magnitude of isotropic hardening gradually decreases with increasing number of cycles --- even if cycles with fixed strain range.
@@ -520,13 +452,13 @@ In other words, the reduction of isotropic hardening is controlled by the intern
 Other literature may adopt different forms of reduction of isotropic hardening.
 Most of them appear to be too complex for the task.
 
-A further surface shall be adopted.
+A further surface shall be adopted to define the non-hardening strain region.
 \begin{gather}
 	h=\abs{\varepsilon^p-\theta}-r,
 \end{gather}
 where $\theta$ is similar to $\alpha$, which, in this case, points to the centre of the non-hardening strain region. It may be called the back plastic strain.
 
-If one chooses a linear evolution law, denoting $n_h=\sign{\varepsilon^p-\theta}$, then
+If one chooses a linear evolution law, denoting $n_h=\pdfrac{h}{\varepsilon^p}=\sign{\varepsilon^p-\theta}$, then
 \begin{gather}
 \dot{r}=c\nu,\qquad
 \dot{\theta}=\left(1-c\right)\nu\pdfrac{h}{\varepsilon^p}=n_h\left(1-c\right)\nu,
@@ -543,7 +475,7 @@ n_h\left(\abs{\varepsilon^p_{n+1}-\theta_{n+1}}+\nu{}\left(1-c\right)\right)=\va
 \end{gather}
 Noting that $\nu\geqslant0$ and $1-c\geqslant0$, one can conclude that
 \begin{gather}
-\abs{\varepsilon^p_{n+1}-\theta_{n+1}}=\abs{\varepsilon^p_{n+1}-\theta_n}-\nu{}\left(1-c\right),
+\abs{\varepsilon^p_{n+1}-\theta_{n+1}}+\nu{}\left(1-c\right)=\abs{\varepsilon^p_{n+1}-\theta_n},
 \end{gather}
 and
 \begin{gather}
@@ -566,6 +498,98 @@ Accounting for the Kuhn--Tucker condition, one may further unify the cases to ob
 \dot{\theta}=n_h\left(1-c\right)\left\langle\abs{\varepsilon^p_{n+1}-\theta_n}-r_n\right\rangle=n_h\left(1-c\right)\left\langle\nu\right\rangle.
 \end{gather}
 \subsection{Implementation}
+\begin{cppcode}
+int ArmstrongFrederick1D::update_trial_status(const vec& t_strain) {
+    incre_strain = (trial_strain = t_strain) - current_strain;
+
+    if(norm(incre_strain) <= datum::eps) return SUANPAN_SUCCESS;
+
+    trial_stress = current_stress + (trial_stiffness = initial_stiffness) * incre_strain;
+
+    trial_history = current_history;
+    auto& q = trial_history(size);
+    const auto& current_r = current_history(size + 2);
+    const auto& current_theta = current_history(size + 3);
+    auto& ep = trial_history(size + 1);
+    auto& r = trial_history(size + 2);
+    auto& theta = trial_history(size + 3);
+
+    auto yield_func = fabs(trial_stress(0) - accu(trial_history.head(size))) - std::max(0., yield + hardening * q + saturation * (1. - exp(-m * q)) - reduction * (1. - exp(-w * r)));
+
+    if(yield_func < 0.) return SUANPAN_SUCCESS;
+
+    auto gamma = 0.;
+    double xi, jacobian, dr = 0.;
+
+    auto counter = 0u;
+    auto ref_error = 1.;
+    while(true) {
+        if(max_iteration == ++counter) {
+            suanpan_error("Cannot converge within {} iterations.\n", max_iteration);
+            return SUANPAN_FAIL;
+        }
+
+        const auto s_term = saturation * exp(-m * q);
+        const auto r_term = reduction * exp(-w * r);
+
+        auto k = yield + saturation - reduction + hardening * q - s_term + r_term;
+        auto dk = hardening + m * s_term - w * r_term * dr;
+        if(k < 0.) k = dk = 0.;
+
+        auto sum_a = 0., sum_b = 0.;
+        for(auto I = 0u; I < size; ++I) {
+            const auto denom = 1. + b(I) * gamma;
+            sum_a += trial_history(I) / denom;
+            sum_b += a(I) / denom;
+        }
+
+        yield_func = fabs(xi = trial_stress(0) - sum_a) - (elastic_modulus + sum_b) * gamma - k;
+
+        jacobian = -elastic_modulus - dk;
+
+        if(xi > 0.)
+            for(auto I = 0u; I < size; ++I) jacobian += (b(I) * trial_history(I) - a(I)) * pow(1. + b(I) * gamma, -2.);
+        else
+            for(auto I = 0u; I < size; ++I) jacobian -= (b(I) * trial_history(I) + a(I)) * pow(1. + b(I) * gamma, -2.);
+
+        const auto incre = yield_func / jacobian;
+        const auto error = fabs(incre);
+        if(1u == counter) ref_error = error;
+        suanpan_debug("Local iteration error: {:.5E}.\n", error);
+        if(error < tolerance * ref_error || ((fabs(yield_func) < tolerance || error < datum::eps) && counter > 5u)) break;
+
+        gamma -= incre;
+        q -= incre;
+        ep -= xi > 0. ? incre : -incre;
+
+        r = current_r;
+        theta = current_theta;
+
+        if(const auto h = fabs(ep - current_theta) - current_r; h > 0.) {
+            const auto nh = ep > current_theta ? 1. : -1.;
+            r += c * h;
+            theta += nh * (1. - c) * h;
+            dr = xi > 0. ? c * nh : -c * nh;
+        }
+        else dr = 0.;
+    }
+
+    if(xi > 0.) {
+        for(auto I = 0u; I < size; ++I) trial_history(I) = (trial_history(I) + a(I) * gamma) / (1. + b(I) * gamma);
+
+        trial_stress -= elastic_modulus * gamma;
+    }
+    else {
+        for(auto I = 0u; I < size; ++I) trial_history(I) = (trial_history(I) - a(I) * gamma) / (1. + b(I) * gamma);
+
+        trial_stress += elastic_modulus * gamma;
+    }
+
+    trial_stiffness += elastic_modulus / jacobian * elastic_modulus;
+
+    return SUANPAN_SUCCESS;
+}
+\end{cppcode}
 \section{Uniaxial Model for BRB Steel}\label{sec:uniaxial_brb}
 The previous models show symmetric behaviour regardless under tension or compression. For some application such as buckling restrained braces, buckling under compression would result in lower strength. In this section, a model \cite{Zona2012} suitable for BRB steel is presented with a neat implementation.
 \subsection{Theory}
