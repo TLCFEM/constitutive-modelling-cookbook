@@ -528,16 +528,47 @@ where $\theta$ is similar to $\alpha$, which, in this case, points to the centre
 
 If one chooses linear evolution, denoting $n_h=\sign{\varepsilon^p-\theta}$, then
 \begin{gather}
-	\dot{r}=K_r\nu\pdfrac{h}{\varepsilon^p}=\nu{}n_hK_r,\qquad
-	\dot{\theta}=K_\theta\nu\pdfrac{h}{\varepsilon^p}=\nu{}n_hK_\theta,
+\dot{r}=K_r\nu,\qquad
+\dot{\theta}=K_\theta\nu\pdfrac{h}{\varepsilon^p}=\nu{}n_hK_\theta,
 \end{gather}
 in which $K_r$ and $K_\theta$ are hardening moduli of $r$ and $\theta$ respectively, $\nu$ is the plastic multiplier, similar to $\gamma$.
-
-Enforcing $h=0$, one may derive
 \subsection{Formulation}
+The following incremental form
 \begin{gather}
-	n_h\left(\varepsilon^p_{n+1}-\theta_n-\nu{}n_hK_\theta\right)-r_n-\nu{}n_hK_r=0,\\
-	\nu=\dfrac{n_h\varepsilon^p_{n+1}-n_h\theta_n-r_n}{K_\theta+n_hK_r}.
+	\varepsilon^p_{n+1}-\theta_{n+1}=\varepsilon^p_{n+1}-\theta_n-\nu{}n_hK_\theta
+\end{gather}
+can be used to derive the following,
+\begin{gather}
+	n_h\left(\abs{\varepsilon^p_{n+1}-\theta_{n+1}}+\nu{}K_\theta\right)=\varepsilon^p_{n+1}-\theta_n.
+\end{gather}
+Noting that $\nu\geqslant0$ and $K_\theta\geqslant0$, one can conclude that
+\begin{gather}
+	\abs{\varepsilon^p_{n+1}-\theta_{n+1}}=\abs{\varepsilon^p_{n+1}-\theta_n}-\nu{}K_\theta,
+\end{gather}
+and
+\begin{gather}
+	n_h=\sign{\varepsilon^p_{n+1}-\theta_n}.
+\end{gather}
+
+When the non-hardening strain region is developing, that is, $h=0$, one may derive
+\begin{gather}
+\abs{\varepsilon^p_{n+1}-\theta_n}-\nu{}K_\theta-r_n-\nu{}K_r=0,
+\end{gather}
+so that
+\begin{gather}
+	\nu=\dfrac{\abs{\varepsilon^p_{n+1}-\theta_n}-r_n}{K_\theta+K_r}.
+\end{gather}
+
+It is easy to see that, for the excessive plastic strain that exceeds the current non-hardening strain region, this amount of plastic strain will be distributed to $\theta$ and $r$ as
+\begin{gather}
+	\dot{r}=\dfrac{K_r}{K_\theta+K_r}\left(\abs{\varepsilon^p_{n+1}-\theta_n}-r_n\right),\\
+	\dot{\theta}=n_h\dfrac{K_\theta}{K_\theta+K_r}\left(\abs{\varepsilon^p_{n+1}-\theta_n}-r_n\right).
+\end{gather}
+
+Accounting for the Kuhn--Tucker condition, one may further unify the cases to obtain
+\begin{gather}
+\dot{r}=\dfrac{K_r}{K_\theta+K_r}\left\langle\abs{\varepsilon^p_{n+1}-\theta_n}-r_n\right\rangle,\\
+\dot{\theta}=n_h\dfrac{K_\theta}{K_\theta+K_r}\left\langle\abs{\varepsilon^p_{n+1}-\theta_n}-r_n\right\rangle.
 \end{gather}
 \subsection{Implementation}
 \section{Uniaxial Model for BRB Steel}\label{sec:uniaxial_brb}
