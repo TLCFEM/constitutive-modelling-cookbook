@@ -524,26 +524,26 @@ A further surface shall be adopted.
 \begin{gather}
 	h=\abs{\varepsilon^p-\theta}-r,
 \end{gather}
-where $\theta$ is similar to $\alpha$, which, in this case, points to the centre of the non-hardening strain region. It may be called back plastic strain.
+where $\theta$ is similar to $\alpha$, which, in this case, points to the centre of the non-hardening strain region. It may be called the back plastic strain.
 
-If one chooses linear evolution, denoting $n_h=\sign{\varepsilon^p-\theta}$, then
+If one chooses a linear evolution law, denoting $n_h=\sign{\varepsilon^p-\theta}$, then
 \begin{gather}
-\dot{r}=K_r\nu,\qquad
-\dot{\theta}=K_\theta\nu\pdfrac{h}{\varepsilon^p}=\nu{}n_hK_\theta,
+\dot{r}=c\nu,\qquad
+\dot{\theta}=\left(1-c\right)\nu\pdfrac{h}{\varepsilon^p}=n_h\left(1-c\right)\nu,
 \end{gather}
-in which $K_r$ and $K_\theta$ are hardening moduli of $r$ and $\theta$ respectively, $\nu$ is the plastic multiplier, similar to $\gamma$.
+in which $c$ ranges from zero to unity, $\nu$ is the plastic multiplier, similar to $\gamma$.
 \subsection{Formulation}
 The following incremental form
 \begin{gather}
-	\varepsilon^p_{n+1}-\theta_{n+1}=\varepsilon^p_{n+1}-\theta_n-\nu{}n_hK_\theta
+\varepsilon^p_{n+1}-\theta_{n+1}=\varepsilon^p_{n+1}-\theta_n-\nu{}n_h\left(1-c\right)
 \end{gather}
 can be used to derive the following,
 \begin{gather}
-	n_h\left(\abs{\varepsilon^p_{n+1}-\theta_{n+1}}+\nu{}K_\theta\right)=\varepsilon^p_{n+1}-\theta_n.
+n_h\left(\abs{\varepsilon^p_{n+1}-\theta_{n+1}}+\nu{}\left(1-c\right)\right)=\varepsilon^p_{n+1}-\theta_n.
 \end{gather}
-Noting that $\nu\geqslant0$ and $K_\theta\geqslant0$, one can conclude that
+Noting that $\nu\geqslant0$ and $1-c\geqslant0$, one can conclude that
 \begin{gather}
-	\abs{\varepsilon^p_{n+1}-\theta_{n+1}}=\abs{\varepsilon^p_{n+1}-\theta_n}-\nu{}K_\theta,
+\abs{\varepsilon^p_{n+1}-\theta_{n+1}}=\abs{\varepsilon^p_{n+1}-\theta_n}-\nu{}\left(1-c\right),
 \end{gather}
 and
 \begin{gather}
@@ -552,23 +552,18 @@ and
 
 When the non-hardening strain region is developing, that is, $h=0$, one may derive
 \begin{gather}
-\abs{\varepsilon^p_{n+1}-\theta_n}-\nu{}K_\theta-r_n-\nu{}K_r=0,
+\abs{\varepsilon^p_{n+1}-\theta_n}-\nu{}\left(1-c\right)-r_n-\nu{}c=0,
 \end{gather}
 so that
 \begin{gather}
-	\nu=\dfrac{\abs{\varepsilon^p_{n+1}-\theta_n}-r_n}{K_\theta+K_r}.
+\nu=\abs{\varepsilon^p_{n+1}-\theta_n}-r_n.
 \end{gather}
 
-It is easy to see that, for the excessive plastic strain that exceeds the current non-hardening strain region, this amount of plastic strain will be distributed to $\theta$ and $r$ as
-\begin{gather}
-	\dot{r}=\dfrac{K_r}{K_\theta+K_r}\left(\abs{\varepsilon^p_{n+1}-\theta_n}-r_n\right),\\
-	\dot{\theta}=n_h\dfrac{K_\theta}{K_\theta+K_r}\left(\abs{\varepsilon^p_{n+1}-\theta_n}-r_n\right).
-\end{gather}
-
+It is easy to see that, for the excessive plastic strain that exceeds the current non-hardening strain region, this amount of plastic strain will be distributed to $\theta$ and $r$ according to the ratio defined by $c$.
 Accounting for the Kuhn--Tucker condition, one may further unify the cases to obtain
 \begin{gather}
-\dot{r}=\dfrac{K_r}{K_\theta+K_r}\left\langle\abs{\varepsilon^p_{n+1}-\theta_n}-r_n\right\rangle,\\
-\dot{\theta}=n_h\dfrac{K_\theta}{K_\theta+K_r}\left\langle\abs{\varepsilon^p_{n+1}-\theta_n}-r_n\right\rangle.
+\dot{r}=c\left\langle\abs{\varepsilon^p_{n+1}-\theta_n}-r_n\right\rangle=c\left\langle\nu\right\rangle,\\
+\dot{\theta}=n_h\left(1-c\right)\left\langle\abs{\varepsilon^p_{n+1}-\theta_n}-r_n\right\rangle=n_h\left(1-c\right)\left\langle\nu\right\rangle.
 \end{gather}
 \subsection{Implementation}
 \section{Uniaxial Model for BRB Steel}\label{sec:uniaxial_brb}
