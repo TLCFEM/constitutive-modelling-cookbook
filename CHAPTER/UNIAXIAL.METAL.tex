@@ -253,9 +253,9 @@ The same hardening law for $q$ is adopted as well.
 \paragraph{Isotropic Hardening}
 Instead of using a simple linear function, a Voce type \cite{Voce1955} function is adopted for $\sigma^y$.
 \begin{gather}
-\sigma^y=\sigma^i+Kq+\sigma^s\left(1-e^{-mq}\right),
+\sigma^y=\sigma^i+Kq+\sigma^s\left(1-e^{-m^sq}\right),
 \end{gather}
-in which $K$ denotes the linear hardening modulus, $\sigma^s$ is the saturated stress that denotes the size of additional yield stress caused by exponential hardening and $m$ is a model parameter that controls the rate of exponential part of hardening.
+in which $K$ denotes the linear hardening modulus, $\sigma^s$ is the saturated stress that denotes the size of additional yield stress caused by exponential hardening and $m^s$ is a model parameter that controls the rate of exponential part of hardening.
 
 If $K=0$, it can be seen that
 \begin{gather}
@@ -264,18 +264,22 @@ If $K=0$, it can be seen that
 \end{gather}
 Also,
 \begin{gather}
-\dot{\sigma^y}=m\sigma^se^{-mq}=m\left(\sigma^i+\sigma^s-\sigma^y\right).
+\dot{\sigma^y}=m^s\sigma^se^{-m^sq}=m^s\left(\sigma^i+\sigma^s-\sigma^y\right).
 \end{gather}
 This rate form is often presented in other literature. One must be aware of the fact that it can be explicitly integrated.
 Furthermore, one could propose the following
 \begin{gather}
-\sigma^y=\sigma^i+Kq+\sigma^s\dfrac{\sum_{j=1}^{n}s_j\left(1-e^{-m_jq}\right)}{\sum_{j=1}^{n}s_j}.
+\sigma^y=\sigma^i+Kq+\sigma^s\dfrac{\sum_{j=1}^{n}s_j\left(1-e^{-m^s_jq}\right)}{\sum_{j=1}^{n}s_j}.
 \end{gather}
-The fraction $\dfrac{\sum_{j=1}^{n}s_j\left(1-e^{-m_jq}\right)}{\sum_{j=1}^{n}s_j}$ defines a nonlinear curve that originates at point $\left(0,1\right)$ and asymptotically approaches zero when $q$ approaches infinity.
-The parameter pairs $m_j$ and $s_j$ can be tweaked to approximate curves of \textbf{any} shape, theoretically.
+The fraction $\dfrac{\sum_{j=1}^{n}s_j\left(1-e^{-m^s_jq}\right)}{\sum_{j=1}^{n}s_j}$ defines a nonlinear curve that originates at point $\left(0,1\right)$ and asymptotically approaches zero when $q$ approaches infinity.
+The parameter pairs $m^s_j$ and $s_j$ can be tweaked to approximate curves of \textbf{any} shape, theoretically.
+An equivalent form would be
+\begin{gather}
+\sigma^y=\sigma^i+Kq+\sum_{j=1}^{n}\sigma^s_j\left(1-e^{-m^s_jq}\right).
+\end{gather}
 \paragraph{Kinematic Hardening}
 A multiplicative formulation \cite{Chaboche1989} for back stress is adopted with the Armstrong--Fredrick type hardening rule. The back stress is defined to be the summation of several back stresses that evolve independently with different rates. That is,
-\begin{gather}
+\begin{gather}\label{eq:af_kinematic}
 \alpha=\sum_{i=1}^n\alpha_i
 \end{gather}
 with
@@ -293,7 +297,7 @@ The summation of this AF model is listed as follows.
 \begin{tabular}{rl}
 \toprule
 Constitutive Law&$\sigma=E\left(\varepsilon-\varepsilon^p\right)$\\
-Yield Function&$f=\abs{\sigma-\alpha}-\left(\sigma^i+Kq+\sigma^s\left(1-e^{-mq}\right)\right)$\\
+Yield Function&$f=\abs{\sigma-\alpha}-\left(\sigma^i+Kq+\sigma^s\left(1-e^{-m^sq}\right)\right)$\\
 Flow Rule&$\dot{\varepsilon^p}=\gamma~\sign{\sigma-\alpha}$\\
 Hardening Law&$\dot{q}=\gamma$\\
 &$\alpha=\sum_{i=1}^n\alpha_i$\\
@@ -303,7 +307,7 @@ Hardening Law&$\dot{q}=\gamma$\\
 \subsubsection{Elastic Loading/Unloading}
 The trial stress can be computed following \eqsref{eq:uniaxial_trial_stress}. Then by denoting $\eta^\text{trial}=\sigma^\text{trial}-\alpha_n$, the yield function becomes
 \begin{gather}
-f^\text{trial}=\abs{\eta^\text{trial}}-\left(\sigma^i+Kq_n+\sigma^s\left(1-e^{-mq_n}\right)\right).
+f^\text{trial}=\abs{\eta^\text{trial}}-\left(\sigma^i+Kq_n+\sigma^s\left(1-e^{-m^sq_n}\right)\right).
 \end{gather}
 \subsubsection{Plastic Evolution}
 It is now clear that nonlinearity is introduced since $\dot{\alpha_i}=g\left(\alpha_i,\cdots\right)$ is a function of $\alpha_i$ and other variables. Various first order numerical methods can be applied. For example,
@@ -360,15 +364,15 @@ This is such a nice expression that gives the magnitude of the shifted stress as
 With the above expressions, the yield function can be explicitly evaluated in terms of $\gamma$ as
 \begin{gather}\label{eq:af_f}
 \begin{split}
-f\left(\gamma\right)&=\abs{\eta_{n+1}}-\left(\sigma^i+Kq_{n+1}+\sigma^s\left(1-e^{-mq_{n+1}}\right)\right)\\
-&=\abs{\sigma^\text{trial}-\sum\dfrac{\alpha_{i,n}}{1+b_i\gamma}}-E\gamma-\sum\dfrac{a_i\gamma{}}{1+b_i\gamma}\\&-\sigma^i-Kq_n-K\gamma-\sigma^s\left(1-e^{-m\left(q_n+\gamma\right)}\right)\\
+f\left(\gamma\right)&=\abs{\eta_{n+1}}-\left(\sigma^i+Kq_{n+1}+\sigma^s\left(1-e^{-m^sq_{n+1}}\right)\right)\\
+&=\abs{\sigma^\text{trial}-\sum\dfrac{\alpha_{i,n}}{1+b_i\gamma}}-E\gamma-\sum\dfrac{a_i\gamma{}}{1+b_i\gamma}\\&-\sigma^i-Kq_n-K\gamma-\sigma^s\left(1-e^{-m^s\left(q_n+\gamma\right)}\right)\\
 &=0.
 \end{split}
 \end{gather}
 
 The Newton--Raphson method shall be used to solve this nonlinear equation. The Jacobian reads
 \begin{gather}\label{eq:af_pfpg}
-\pdfrac{f}{\gamma}=\sum\dfrac{b_i\alpha_{i,n}n-a_i}{\left(1+b_i\gamma\right)^2}-E-K-m\sigma^se^{-m\left(q_n+\gamma\right)}.
+\pdfrac{f}{\gamma}=\sum\dfrac{b_i\alpha_{i,n}n-a_i}{\left(1+b_i\gamma\right)^2}-E-K-m^s\sigma^se^{-m^s\left(q_n+\gamma\right)}.
 \end{gather}
 
 The tangent modulus shall be computed via the chain rule.
@@ -398,11 +402,10 @@ The state determination algorithm of this AF model is given in \algoref{algo:af_
 \begin{breakablealgorithm}
 \caption{state determination of uniaxial AF steel model}\label{algo:af_steel}
 \begin{algorithmic}[1]
-\State Parameter: $E$, $K$, $\sigma^s$, $m$, $a_i$, $b_i$
+\State Parameter: $E$, $K$, $\sigma^s$, $m^s$, $a_i$, $b_i$
 \State Input: $\varepsilon_{n+1}$, $\varepsilon_n$, $\varepsilon^p_n$, $\sigma_n$, $\alpha_{i,n}$, $q_n$
 \State Output: $E_{n+1}$, $\varepsilon^p_{n+1}$, $\sigma_{n+1}$, $\alpha_{i,n+1}$, $q_{n+1}$
-\State compute $\sigma^\text{trial}$, $\eta^\text{trial}$ and $f^\text{trial}$
-$n=\sign{\sigma^\text{trial}-\sum\dfrac{\alpha_{i,n}}{1+b_i\gamma}}$
+\State compute $\sigma^\text{trial}$, $\eta^\text{trial}$, $f^\text{trial}$ and $n=\sign{\sigma^\text{trial}-\sum\dfrac{\alpha_{i,n}}{1+b_i\gamma}}$
 \If {$f^\text{trial}\geqslant0$}
 \State $\gamma=0$
 \While{true}
@@ -438,10 +441,10 @@ To better model such a behaviour, \cite{Ohno1982} introduced the concept of non-
 It is a region that characterises a neighbourhood of a finite size around the current plastic strain. Just like the isotropic hardening of stress, the size of this region grows with the development of plastic strain.
 \subsection{Theory}
 Instead of solely using $q$ to drive the evolution of isotropic hardening, a new internal variable $r$ is introduced to characterise the size of non-hardening strain region.
-\begin{gather}
-	\sigma^y=\sigma^i+Kq+\sigma^s\left(1-e^{-mq}\right)-\sigma^r\left(1-e^{-wr}\right),
+\begin{gather}\label{eq:afco}
+	\sigma^y=\sigma^i+Kq+\sigma^s\left(1-e^{-m^sq}\right)-\sigma^r\left(1-e^{-m^rr}\right),
 \end{gather}
-where $w$ is a model constant that controls the rate of reduction.
+where $m^r$ is a model constant that controls the rate of reduction.
 In absence of the linear part, viz., $K=0$, it can be seen that
 \begin{gather}
 	\lim\limits_{q\rightarrow\infty,r\rightarrow0}\sigma^y=\sigma^i+\sigma^s,\\
@@ -451,6 +454,12 @@ In other words, the reduction of isotropic hardening is controlled by the intern
 
 Other literature may adopt different forms of reduction of isotropic hardening.
 Most of them appear to be too complex for the task.
+If one rewrites \eqsref{eq:afco} in the rate form,
+\begin{gather}
+\dot{\sigma^y}=m^s\sigma^se^{-m^sq}=m^s\left(\sigma^i+\sigma^s-\sigma^r\left(1-e^{-m^rr}\right)-\sigma^y\right),
+\end{gather}
+it is then clear that the bounding value $\sigma^i+\sigma^s-\sigma^r\left(1-e^{-m^rr}\right)$ is now affected by $r$.
+The above expression is in fact identical to the ones proposed originally \cite{Ohno1982}.
 
 A further surface shall be adopted to define the non-hardening strain region.
 \begin{gather}
@@ -595,6 +604,19 @@ int ArmstrongFrederick1D::update_trial_status(const vec& t_strain) {
     return SUANPAN_SUCCESS;
 }
 \end{cppcode}
+\subsection{Further Modifications}
+Based on the presented framework, it is possible to further modify the specific evolution rules to refine the behaviour.
+For example, \cite{Xu2016} proposed a transition mechanism that basically states that, with the development of plasticity characterised by either $q$ or $r$, a portion of isotropic hardening will transit into kinematic hardening.
+Such a mechanism can be equivalently expressed by modifying the kinematic hardening rule.
+
+Instead of \eqsref{eq:af_kinematic}, the back stress shall be defined as
+\begin{gather}
+\alpha=\sum_{i=1}^n\alpha_i+\sigma^t\left(1-e^{-m^tr}\right)n.
+\end{gather}
+This expression includes an additional `transition' term $\sigma^t\left(1-e^{-m^tr}\right)$, similar to the reduction term introduced previously in isotropic hardening.
+If one forces $\sigma^t=\sigma^r$, it effectively means the reduction part from isotropic hardening is converted to kinematic hardening.
+The total stress would then not be decreased.
+If one sets $\sigma^t<\sigma^r$, then this transition is partial, the overall stress would still face a reduction as intended.
 \section{Uniaxial Model for BRB Steel}\label{sec:uniaxial_brb}
 The previous models show symmetric behaviour regardless under tension or compression. For some application such as buckling restrained braces, buckling under compression would result in lower strength. In this section, a model \cite{Zona2012} suitable for BRB steel is presented with a neat implementation.
 \subsection{Theory}
