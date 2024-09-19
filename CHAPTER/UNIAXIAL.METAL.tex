@@ -279,11 +279,11 @@ An equivalent form would be
 \end{gather}
 \paragraph{Kinematic Hardening}
 A multiplicative formulation \cite{Chaboche1989} for back stress is adopted with the Armstrong--Fredrick type hardening rule. The back stress is defined to be the summation of several back stresses that evolve independently with different rates. That is,
-\begin{gather}\label{eq:af_kinematic}
+\begin{gather}
 \alpha=\sum_{i=1}^n\alpha_i
 \end{gather}
 with
-\begin{gather}
+\begin{gather}\label{eq:af_kinematic}
 \dot{\alpha_i}=a_i\dot{\varepsilon^p}-b_i\alpha_i\dot{q}
 \end{gather}
 where $a_i$ and $b_i$ are two sets of model parameters. In terms of $\gamma$, it is
@@ -609,14 +609,16 @@ Based on the presented framework, it is possible to further modify the specific 
 For example, \cite{Xu2016} proposed a transition mechanism that basically states that, with the development of plasticity characterised by either $q$ or $r$, a portion of isotropic hardening will transit into kinematic hardening.
 Such a mechanism can be equivalently expressed by modifying the kinematic hardening rule.
 
-Instead of \eqsref{eq:af_kinematic}, the back stress shall be defined as
+Instead of \eqsref{eq:af_kinematic}, the evolution of back stress can be modified as
 \begin{gather}
-\alpha=\sum_{i=1}^n\alpha_i+\sigma^t\left(1-e^{-m^tr}\right)n.
+\dot{\alpha_i}=\left(a_i+\hat{a_i}\right)\dot{\varepsilon^p}-b_i\alpha_i\dot{q}
 \end{gather}
-This expression includes an additional `transition' term $\sigma^t\left(1-e^{-m^tr}\right)$, similar to the reduction term introduced previously in isotropic hardening.
-If one forces $\sigma^t=\sigma^r$, it effectively means the reduction part from isotropic hardening is converted to kinematic hardening.
-The total stress would then not be decreased.
-If one sets $\sigma^t<\sigma^r$, then this transition is partial, the overall stress would still face a reduction as intended.
+This expression includes an additional term $\hat{a_i}=\hat{a_i}\left(r\right)$ that shall evolve with the development of plasticity.
+
+Adopting the same procedure, one can derive
+\begin{gather}
+\alpha_{n+1}=\sum\dfrac{\alpha_{i,n}+\left(a_i+\hat{a_i}\right)\gamma{}n}{1+b_i\gamma}.
+\end{gather}
 \section{Uniaxial Model for BRB Steel}\label{sec:uniaxial_brb}
 The previous models show symmetric behaviour regardless under tension or compression. For some application such as buckling restrained braces, buckling under compression would result in lower strength. In this section, a model \cite{Zona2012} suitable for BRB steel is presented with a neat implementation.
 \subsection{Theory}
