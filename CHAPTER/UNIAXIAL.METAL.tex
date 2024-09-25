@@ -651,7 +651,7 @@ For unloading, if one enforces $f_s=0$, one would eventually end up with $\gamma
 z=\dfrac{\abs{\eta}}{\sigma^y}.
 \end{gather}
 Knowing that $f_s<0$ for unloading, $z$ updated according to the above expression is guaranteed to be smaller than unity.
-\subsection{Theory}
+
 The evolution of $z$ obeys
 \begin{gather}
 \dot{z}=U\left(z\right)\dot{q}=U\left(z\right)\gamma,
@@ -662,29 +662,67 @@ U\left(z\right)=-u\ln\left(z\right).
 \end{gather}
 Noting here we choose a logarithmic function instead of the cotangent function as used in the referenced literature purely for an easier computation of its derivative.
 
-Here, for illustration, we adopt the linear evolutions of both isotropic and kinematic hardening as shown in \eqsref{eq:linear_combined}.
-Then the subloading surface can be expressed as
+The extended version further introduces the concept of elastic core, which is characterised by an additional variable $c$ such that the shifted stress $\eta$ shall be computed as follows instead.
 \begin{gather}
-f_s=\abs{\eta_{n+1}^\text{trial}}-\left(E+H\right)\gamma-z\left(\sigma^i+Kq_n+K\gamma\right).
+\eta=\sigma-z\alpha+\left(z-1\right)c.
 \end{gather}
-Enforcing it to be zero, along with the evolution of $z$, the local system consists of two scalar equations.
+The above modification essentially pulls the centre of the subloading surface, from the original origin defined by $\alpha$, towards elastic core $c$ by a certain amount governed by $z$.
+
+However, instead of $c$, one can define an equivalent variable, say $d$, such that $d=c-\alpha$, then
+\begin{gather}
+\eta=\sigma-z\alpha+\left(z-1\right)\left(d+\alpha\right)=\sigma-\alpha+\left(z-1\right)d.
+\end{gather}
+
+The evolution of $d$ takes a complex form that shall be expressed as
+\begin{gather}
+\begin{split}
+\dot{d}=\dot{c}-\dot{\alpha}&=c_e\dot{q}\left(\dfrac{z_e}{z}\eta-\left(c-\alpha\right)\right)+\dfrac{\dot{\sigma^y}}{\sigma^y}\left(c-\alpha\right)\\
+&=c_e\gamma\left(\dfrac{z_e}{z}\eta-d\right)+\dfrac{\dot{\sigma^y}}{\sigma^y}d.
+\end{split}
+\end{gather}
+Since numerical world does not like division, the above is equivalently expressed as
+\begin{gather}
+z\dot{d}=c_e\gamma\left(z_e\eta-zd\right)+\dfrac{\dot{\sigma^y}}{\sigma^y}zd.
+\end{gather}
+In the above, we have introduced two constants $c_e$ and $z_e$ to control the behaviour.
+\subsection{Theory}
+The residual for $d$ shall be expressed as
+\begin{gather}
+\begin{split}
+&z\left(d_n+\dot{d}-d\right)\\
+=&zd_n-zd+c_e\gamma\left(z_e\eta-zd\right)+\dfrac{\dot{\sigma^y}}{\sigma^y}zd.
+\end{split}
+\end{gather}
+
+Along with the subloading surface $f_s$ and $z$, treating $\eta$ as an independent variable (purely for numerical convenience), one could formulate the local system with three residual expressions.
 \begin{gather}
 \mb{R}=\left\{
 \begin{array}{l}
-\abs{\eta_{n+1}^\text{trial}}-\left(E+H\right)\gamma-z\left(\sigma^i+Kq_n+K\gamma\right),\\
-z-z_n+u\ln\left(z\right)\gamma.
+\sigma-\alpha+\left(z-1\right)d-\eta\\
+\abs{\eta}-z\sigma^y,\\
+z-z_n+u\ln\left(z\right)\gamma,\\
+zd_n-zd+c_e\gamma\left(z_e\eta-zd\right)+\dfrac{\dot{\sigma^y}}{\sigma^y}zd.
 \end{array}
 \right.
 \end{gather}
+
 Taking local variables $\mb{x}=\begin{bmatrix}
-\gamma&z
-\end{bmatrix}^\mT$, the Jacobian shall be written as
+\gamma&\eta&z&d
+\end{bmatrix}^\mT$, denoting $n=\sign{\eta}$, the Jacobian shall be written as
 \begin{gather}
 \mb{J}=\begin{bmatrix}
--E-H-zK&-\sigma^y\\
--U&1-\gamma{}U'
+-En-\ddfrac{\alpha}{\gamma}&-1&d&z-1\\[3mm]
+-\ddfrac{\sigma^y}{\gamma}&n&-\sigma^y&\cdot\\[3mm]
+u\ln\left(z\right)&\cdot&1+\dfrac{u\gamma}{z}&\cdot\\[3mm]
+c_ez_e\eta+zd\left(\Xi-c_e\right)&c_ez_e\gamma&d_n+\Omega{}d&\Omega{}z
 \end{bmatrix}.
 \end{gather}
+In the above,
+\begin{gather}
+\Xi=\ddfrac{}{\gamma}\left(\dfrac{\dot{\sigma^y}}{\sigma^y}\right),\qquad
+\Omega=\dfrac{\dot{\sigma^y}}{\sigma^y}-c_e\gamma-1.
+\end{gather}
+We also use general forms of evolutions of both kinematic and isotropic hardening, such that $\sigma^y=\sigma^y\left(\gamma\right)$ and $\alpha=\alpha\left(\gamma\right)$.
 \section{Uniaxial Model for BRB Steel}\label{sec:uniaxial_brb}
 The previous models show symmetric behaviour regardless under tension or compression. For some application such as buckling restrained braces, buckling under compression would result in lower strength. In this section, a model \cite{Zona2012} suitable for BRB steel is presented with a neat implementation.
 \subsection{Theory}
