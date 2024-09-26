@@ -690,18 +690,19 @@ The residual for $d$ shall be expressed as
 \begin{gather}
 \begin{split}
 &z\left(d_n+\dot{d}-d\right)\\
-=&zd_n-zd+c_e\gamma\left(z_e\eta-zd\right)+\dfrac{\dot{\sigma^y}}{\sigma^y}zd.
+=&zd_n-zd+c_e\gamma\left(z_e\eta-zd\right)+\dfrac{\dot{\sigma^y}}{\sigma^y}zd,\\
+=&zd_n+c_ez_e\gamma{}\eta+\left(\dfrac{\dot{\sigma^y}}{\sigma^y}-c_e\gamma-1\right)zd.
 \end{split}
 \end{gather}
 
-Along with the subloading surface $f_s$ and $z$, treating $\eta$ as an independent variable (purely for numerical convenience), one could formulate the local system with three residual expressions.
+Along with the subloading surface $f_s$ and $z$, treating $\eta$ as an independent variable (purely for numerical convenience), one could formulate the local system with four residuals.
 \begin{gather}
 \mb{R}=\left\{
 \begin{array}{l}
-\sigma-\alpha+\left(z-1\right)d-\eta\\
-\abs{\eta}-z\sigma^y,\\
-z-z_n+u\ln\left(z\right)\gamma,\\
-zd_n-zd+c_e\gamma\left(z_e\eta-zd\right)+\dfrac{\dot{\sigma^y}}{\sigma^y}zd.
+\sigma-\alpha+\left(z-1\right)d-\eta\\[4mm]
+\abs{\eta}-z\sigma^y,\\[4mm]
+z-z_n+u\ln\left(z\right)\gamma,\\[4mm]
+zd_n+c_ez_e\gamma{}\eta+\left(\dfrac{\dot{\sigma^y}}{\sigma^y}-c_e\gamma-1\right)zd.
 \end{array}
 \right.
 \end{gather}
@@ -711,18 +712,49 @@ Taking local variables $\mb{x}=\begin{bmatrix}
 \end{bmatrix}^\mT$, denoting $n=\sign{\eta}$, the Jacobian shall be written as
 \begin{gather}
 \mb{J}=\begin{bmatrix}
--En-\ddfrac{\alpha}{\gamma}&-1&d&z-1\\[3mm]
--\ddfrac{\sigma^y}{\gamma}&n&-\sigma^y&\cdot\\[3mm]
-u\ln\left(z\right)&\cdot&1+\dfrac{u\gamma}{z}&\cdot\\[3mm]
-c_ez_e\eta+zd\left(\Xi-c_e\right)&c_ez_e\gamma&d_n+\Omega{}d&\Omega{}z
+-En-\ddfrac{\alpha}{\gamma}&-1&d&z-1\\[4mm]
+-z\ddfrac{\sigma^y}{\gamma}&n&-\sigma^y&\cdot\\[4mm]
+u\ln\left(z\right)&\cdot&1+\dfrac{u\gamma}{z}&\cdot\\[4mm]
+c_ez_e\eta+zd\ddfrac{\Omega}{\gamma}&c_ez_e\gamma&d_n+d\Omega{}&z\Omega{}
 \end{bmatrix}.
 \end{gather}
 In the above,
 \begin{gather}
-\Xi=\ddfrac{}{\gamma}\left(\dfrac{\dot{\sigma^y}}{\sigma^y}\right),\qquad
 \Omega=\dfrac{\dot{\sigma^y}}{\sigma^y}-c_e\gamma-1.
 \end{gather}
 We also use general forms of evolutions of both kinematic and isotropic hardening, such that $\sigma^y=\sigma^y\left(\gamma\right)$ and $\alpha=\alpha\left(\gamma\right)$.
+
+For isotropic hardening, the same rule combining linear hardening and saturation is adopted.
+\begin{gather}
+    \sigma^y=\sigma^i+k_\text{iso}q+\sigma^s_\text{iso}\left(1-e^{-m^s_\text{iso}q}\right).
+\end{gather}
+The model constants are: $\sigma^i$ is the initial yield stress, $k_\text{iso}$ is the linear hardening modulus, $\sigma^s_\text{iso}$ is the saturation stress, and $m^s_\text{iso}$ is the saturation rate.
+
+Thus,
+\begin{gather}
+    \dot{\sigma^y}=\left(k_\text{iso}+\sigma^s_\text{iso}m^s_\text{iso}e^{-m^s_\text{iso}q}\right)\gamma.
+\end{gather}
+
+Foe kinematic hardening, we use the Armstrong--Frederick rule.
+\begin{gather}
+    \dot{\alpha}=m^s_\text{kin}\gamma\left(a^yn-\alpha\right).
+\end{gather}
+However, instead of using a constant bound, we allow the bound to evolve with the development of plasticity.
+\begin{gather}
+    a^y=a^i+k_\text{kin}q+a^s_\text{kin}\left(1-e^{-m^s_\text{kin}q}\right).
+\end{gather}
+The parameters $a^i$, $k_\text{kin}$, $a^s_\text{kin}$, and $m^s_\text{kin}$ resemble the ones used in the isotropic hardening rule.
+
+The back stress can be explicitly expressed as
+\begin{gather}
+    \alpha=\dfrac{m^s_\text{kin}\gamma{}a^yn+\alpha_n}{1+m^s_\text{kin}\gamma}.
+\end{gather}
+
+The derivative can be derived as
+\begin{gather}
+    \ddfrac{\alpha}{\gamma}=m^s_\text{kin}\dfrac{na^y-\alpha_n+n\gamma{}\ddfrac{a^y}{\gamma}\left(1+m^s_\text{kin}\gamma\right)}{\left(1+m^s_\text{kin}\gamma\right)^2}.
+\end{gather}
+
 \section{Uniaxial Model for BRB Steel}\label{sec:uniaxial_brb}
 The previous models show symmetric behaviour regardless under tension or compression. For some application such as buckling restrained braces, buckling under compression would result in lower strength. In this section, a model \cite{Zona2012} suitable for BRB steel is presented with a neat implementation.
 \subsection{Theory}
