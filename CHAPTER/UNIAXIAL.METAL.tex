@@ -673,71 +673,28 @@ However, instead of $c$, one can define an equivalent variable, say $d$, such th
 \eta=\sigma-z\alpha+\left(z-1\right)\left(d+\alpha\right)=\sigma-\alpha+\left(z-1\right)d.
 \end{gather}
 
-The evolution of $d$ takes a complex form that shall be expressed as
+The magnitude of $d$, according to definition, shall not exceed some limit surface, which possesses a size of $z_e\sigma^y$ where $0\leqslant{}z_e\leqslant1$.
 \begin{gather}
-\begin{split}
-\dot{d}=\dot{c}-\dot{\alpha}&=c_e\dot{q}\left(\dfrac{z_e}{z}\eta-\left(c-\alpha\right)\right)+\dfrac{\dot{\sigma^y}}{\sigma^y}\left(c-\alpha\right)\\
-&=c_e\gamma\left(\dfrac{z_e}{z}\eta-d\right)+\dfrac{\dot{\sigma^y}}{\sigma^y}d.
-\end{split}
-\end{gather}
-Since numerical world does not like division, the above is equivalently expressed as
-\begin{gather}
-z\dot{d}=c_e\gamma\left(z_e\eta-zd\right)+\dfrac{\dot{\sigma^y}}{\sigma^y}zd.
+\dot{d}=\dot{c}-\dot{\alpha}=c_e\gamma\left(z_e\sigma^yn-\left(c-\alpha\right)\right)=c_e\gamma\left(z_e\sigma^yn-d\right).
 \end{gather}
 In the above, we have introduced two constants $c_e$ and $z_e$ to control the behaviour.
 \subsection{Theory}
-The residual for $d$ shall be expressed as
-\begin{gather}
-\begin{split}
-&z\left(d_n+\dot{d}-d\right)\\
-=&zd_n-zd+c_e\gamma\left(z_e\eta-zd\right)+\dfrac{\dot{\sigma^y}}{\sigma^y}zd,\\
-=&zd_n+c_ez_e\gamma{}\eta+\left(\dfrac{\dot{\sigma^y}}{\sigma^y}-c_e\gamma-1\right)zd.
-\end{split}
-\end{gather}
-
-Along with the subloading surface $f_s$ and $z$, treating $\eta$ as an independent variable (purely for numerical convenience), one could formulate the local system with four residuals.
-\begin{gather}
-\mb{R}=\left\{
-\begin{array}{l}
-\sigma-\alpha+\left(z-1\right)d-\eta\\[4mm]
-\abs{\eta}-z\sigma^y,\\[4mm]
-z-z_n+u\ln\left(z\right)\gamma,\\[4mm]
-zd_n+c_ez_e\gamma{}\eta+\left(\dfrac{\dot{\sigma^y}}{\sigma^y}-c_e\gamma-1\right)zd.
-\end{array}
-\right.
-\end{gather}
-
-Taking local variables $\mb{x}=\begin{bmatrix}
-\gamma&\eta&z&d
-\end{bmatrix}^\mT$, denoting $n=\sign{\eta}$, the Jacobian shall be written as
-\begin{gather}
-\mb{J}=\begin{bmatrix}
--En-\ddfrac{\alpha}{\gamma}&-1&d&z-1\\[4mm]
--z\ddfrac{\sigma^y}{\gamma}&n&-\sigma^y&\cdot\\[4mm]
-u\ln\left(z\right)&\cdot&1+\dfrac{u\gamma}{z}&\cdot\\[4mm]
-c_ez_e\eta+zd\ddfrac{\Omega}{\gamma}&c_ez_e\gamma&d_n+d\Omega{}&z\Omega{}
-\end{bmatrix}.
-\end{gather}
-In the above,
-\begin{gather}
-\Omega=\dfrac{\dot{\sigma^y}}{\sigma^y}-c_e\gamma-1.
-\end{gather}
-We also use general forms of evolutions of both kinematic and isotropic hardening, such that $\sigma^y=\sigma^y\left(\gamma\right)$ and $\alpha=\alpha\left(\gamma\right)$.
-
+\subsubsection{Isotropic Hardening}
 For isotropic hardening, the same rule combining linear hardening and saturation is adopted.
 \begin{gather}
     \sigma^y=\sigma^i+k_\text{iso}q+\sigma^s_\text{iso}\left(1-e^{-m^s_\text{iso}q}\right).
 \end{gather}
 The model constants are: $\sigma^i$ is the initial yield stress, $k_\text{iso}$ is the linear hardening modulus, $\sigma^s_\text{iso}$ is the saturation stress, and $m^s_\text{iso}$ is the saturation rate.
+The subscript $\left(\cdot\right)_\text{iso}$ indicates they are for isotropic hardening, a similar set of parameters will be introduced for kinematic hardening.
 
 Thus,
 \begin{gather}
-    \dot{\sigma^y}=\left(k_\text{iso}+\sigma^s_\text{iso}m^s_\text{iso}e^{-m^s_\text{iso}q}\right)\gamma.
+\ddfrac{\sigma^y}{q}=k_\text{iso}+\sigma^s_\text{iso}m^s_\text{iso}e^{-m^s_\text{iso}q}.
 \end{gather}
-
-Foe kinematic hardening, we use the Armstrong--Frederick rule.
+\subsubsection{Kinematic Hardening}
+Foe kinematic hardening, we use a modified Armstrong--Frederick rule.
 \begin{gather}
-    \dot{\alpha}=m^s_\text{kin}\gamma\left(a^yn-\alpha\right).
+    \dot{\alpha}=b\gamma\left(a^yn-\alpha\right).
 \end{gather}
 However, instead of using a constant bound, we allow the bound to evolve with the development of plasticity.
 \begin{gather}
@@ -747,14 +704,78 @@ The parameters $a^i$, $k_\text{kin}$, $a^s_\text{kin}$, and $m^s_\text{kin}$ res
 
 The back stress can be explicitly expressed as
 \begin{gather}
-    \alpha=\dfrac{m^s_\text{kin}\gamma{}a^yn+\alpha_n}{1+m^s_\text{kin}\gamma}.
+    \alpha=\dfrac{b\gamma{}a^yn+\alpha_n}{1+b\gamma}.
 \end{gather}
-
 The derivative can be derived as
 \begin{gather}
-    \ddfrac{\alpha}{\gamma}=m^s_\text{kin}\dfrac{na^y-\alpha_n+n\gamma{}\ddfrac{a^y}{\gamma}\left(1+m^s_\text{kin}\gamma\right)}{\left(1+m^s_\text{kin}\gamma\right)^2}.
+    \ddfrac{\alpha}{\gamma}=b\dfrac{na^y-\alpha_n+n\gamma{}\ddfrac{a^y}{\gamma}\left(1+b\gamma\right)}{\left(1+b\gamma\right)^2}.
+\end{gather}
+\subsection{Formulation}
+It is now possible to summarise all expressions used in this extended subloading surface model.
+\begin{table}[ht]
+\centering
+\begin{tabular}{rl}
+\toprule
+Constitutive Law&$\sigma=E\left(\varepsilon-\varepsilon^p\right)$\\
+Subloading Surface&$f_s=\abs{\eta}-z\sigma^y=\abs{\sigma-\alpha+\left(z-1\right)d}-z\sigma^y$\\
+Flow Rule&$\dot{\varepsilon^p}=\gamma{}n=\gamma~\sign{\eta}$\\
+Hardening Law&$\dot{q}=\gamma$\\
+&$\sigma^y=\sigma^i+k_\text{iso}q+\sigma^s_\text{iso}\left(1-e^{-m^s_\text{iso}q}\right)$\\
+&$a^y=a^i+k_\text{kin}q+a^s_\text{kin}\left(1-e^{-m^s_\text{kin}q}\right)$\\
+&$\dot{\alpha}=b\gamma\left(a^yn-\alpha\right)$\\
+&$\dot{d}=c_e\gamma\left(z_e\sigma^yn-d\right)$\\
+&$\dot{z}=-u\ln\left(z\right)\gamma$\\\bottomrule
+\end{tabular}
+\end{table}
+
+The model constants involve the following.
+\begin{itemize}
+\item $E$ --- Young's modulus
+\item $\sigma^i$, $k_\text{iso}$, $\sigma^s_\text{iso}$, $m^s_\text{iso}$ --- isotropic hardening backbone
+\item $a^i$, $k_\text{kin}$, $a^s_\text{kin}$, $m^s_\text{kin}$ --- kinematic hardening backbone
+\item $b$ --- kinematic hardening rate
+\item $u$ --- evolution rate of $z$
+\item $c_e$ --- evolution rate of $d$
+\end{itemize}
+\subsection{Implementation}
+Along with the subloading surface $f_s$ and $z$, one could formulate the local system $\mb{R}$ with two residuals.
+\begin{gather}
+\mb{R}=\left\{
+\begin{array}{l}
+\abs{\sigma-\alpha+\left(z-1\right)d}-z\sigma^y,\\[2mm]
+z-z_n+u\ln\left(z\right)\gamma.
+\end{array}
+\right.
 \end{gather}
 
+Taking local variables $\mb{x}=\begin{bmatrix}
+\gamma&z
+\end{bmatrix}^\mT$, denoting $n=\sign{\eta}$, the Jacobian $\mb{J}$ shall be written as
+\begin{gather}
+\mb{J}=\begin{bmatrix}
+n\left(-En-\ddfrac{\alpha}{\gamma}+\left(z-1\right)\ddfrac{d}{\gamma}\right)-z\ddfrac{\sigma^y}{\gamma}&nd-\sigma^y\\[2mm]
+u\ln\left(z\right)&1+\dfrac{u\gamma}{z}
+\end{bmatrix}.
+\end{gather}
+We also use general forms of evolutions of both kinematic and isotropic hardening, such that $\sigma^y=\sigma^y\left(\gamma\right)$ and $\alpha=\alpha\left(\gamma\right)$.
+
+One shall notice that
+\begin{gather}
+\eta=\sigma^\text{trial}-E\gamma{}n-\dfrac{b\gamma{}a^yn+\alpha_n}{1+b\gamma}+\left(z-1\right)\dfrac{c_ez_e\gamma{}\sigma^yn+d_n}{1+c_e\gamma},
+\end{gather}
+by rearranging all $\eta$ related terms (including $n$) to the left, one can obtain
+\begin{gather}
+\eta+E\gamma{}n+\dfrac{b\gamma{}a^yn}{1+b\gamma}+\left(1-z\right)\dfrac{c_ez_e\gamma{}\sigma^yn}{1+c_e\gamma}=\sigma^\text{trial}-\dfrac{\alpha_n}{1+b\gamma}+\left(z-1\right)\dfrac{d_n}{1+c_e\gamma},
+\end{gather}
+this is effectively
+\begin{gather}
+\left(\abs{\eta}+E\gamma{}+\dfrac{b\gamma{}a^y}{1+b\gamma}+\left(1-z\right)\dfrac{c_ez_e\gamma{}\sigma^y}{1+c_e\gamma}\right)n=\sigma^\text{trial}-\dfrac{\alpha_n}{1+b\gamma}+\left(z-1\right)\dfrac{d_n}{1+c_e\gamma}.
+\end{gather}
+Noting that $\gamma>0$, $a^y>0$, $\sigma^y>0$ and by definition, $1-z>0$, the big bracket is in fact non-negative. This means,
+\begin{gather}
+n=\sign{\sigma^\text{trial}-\dfrac{\alpha_n}{1+b\gamma}+\left(z-1\right)\dfrac{d_n}{1+c_e\gamma}},
+\end{gather}
+which is not a function of $\eta$.
 \section{Uniaxial Model for BRB Steel}\label{sec:uniaxial_brb}
 The previous models show symmetric behaviour regardless under tension or compression. For some application such as buckling restrained braces, buckling under compression would result in lower strength. In this section, a model \cite{Zona2012} suitable for BRB steel is presented with a neat implementation.
 \subsection{Theory}
