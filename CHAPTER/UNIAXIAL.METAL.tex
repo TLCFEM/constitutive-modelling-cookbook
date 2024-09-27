@@ -631,6 +631,10 @@ Adopting the same procedure, one can derive
 \alpha_{n+1}=\sum\dfrac{\alpha_{i,n}+\left(a_i+\hat{a_i}\right)\gamma{}n}{1+b_i\gamma}.
 \end{gather}
 \section{Subloading Surface Model}
+The subloading surface framework is extensively introduced in monographs \cite{Hashiguchi2023}.
+Here we do not repeatedly cite the same references for brevity.
+Readers can refer to the book and the references therein.
+
 The main modification made by the subloading surface model to the conventional plasticity model is the parameter $z$ such that on the basis of the existing yield surface
 \begin{gather}
 f=\abs{\eta}-\sigma^y,
@@ -642,6 +646,7 @@ f_s=\abs{\eta}-z\sigma^y.
 This subloading surface, according to definition, always passes through the current stress point, meaning $f_s\equiv0$ under all loading cases.
 In the above, $z\sigma^y$ is expressed as $RF$ in the referenced literature.
 Here, we do not adopt the same set of notations as it may cause conflicts.
+We keep using what we have been using for better consistency.
 
 The history variable $0\leqslant{}z\leqslant{}1$ is a ratio that adjusts the size of this subloading surface.
 It provides a smooth transition from interior to the yield surface $f$.
@@ -651,6 +656,7 @@ For unloading, if one enforces $f_s=0$, one would eventually end up with $\gamma
 z=\dfrac{\abs{\eta}}{\sigma^y}.
 \end{gather}
 Knowing that $f_s<0$ for unloading, $z$ updated according to the above expression is guaranteed to be smaller than unity.
+As a result, $f_s$ shrinks such that $\sigma$ always falls on $f_s$.
 
 The evolution of $z$ obeys
 \begin{gather}
@@ -661,23 +667,31 @@ where $U\left(z\right)$ is chosen as follows.
 U\left(z\right)=-u\ln\left(z\right).
 \end{gather}
 Noting here we choose a logarithmic function instead of the cotangent function as used in the referenced literature purely for an easier computation of its derivative.
+Also, the logarithmic function has a smaller derivative (in terms of magnitude).
+A larger value of $u$ is often needed to achieve a similar behaviour.
+The original model also sets a minimum value for $z$, which is not incorporated here.
+The introduction of $z$ is the sole modification by the original subloading surface model.
 
-The extended version further introduces the concept of elastic core, which is characterised by an additional variable $c$ such that the shifted stress $\eta$ shall be computed as follows instead.
+Later, an extended subloading surface model is proposed.
+The extended version further introduces the concept of elastic core, which is characterised by an additional variable $c$ such that the shifted stress $\eta$ shall be computed using the following expression instead.
 \begin{gather}
 \eta=\sigma-z\alpha+\left(z-1\right)c.
 \end{gather}
 The above modification essentially pulls the centre of the subloading surface, from the original origin defined by $\alpha$, towards elastic core $c$ by a certain amount governed by $z$.
 
-However, instead of $c$, one can define an equivalent variable, say $d$, such that $d=c-\alpha$, then
+According to the original formulation, the evolution of $c$ involves not only $\gamma$ but also $\alpha$, which leads to a deeply coupled system that is not easy to be solved numerically.
+Here, instead of $c$, one can define an equivalent independent variable, say $d$, such that $d=c-\alpha$, then
 \begin{gather}
 \eta=\sigma-z\alpha+\left(z-1\right)\left(d+\alpha\right)=\sigma-\alpha+\left(z-1\right)d.
 \end{gather}
-
 The magnitude of $d$, according to definition, shall not exceed some limit surface, which possesses a size of $z_e\sigma^y$ where $0\leqslant{}z_e\leqslant1$.
+This leads to the following evolution law for $d$.
 \begin{gather}
 \dot{d}=\dot{c}-\dot{\alpha}=c_e\gamma\left(z_e\sigma^yn-\left(c-\alpha\right)\right)=c_e\gamma\left(z_e\sigma^yn-d\right).
 \end{gather}
 In the above, we have introduced two constants $c_e$ and $z_e$ to control the behaviour.
+In recent formulations \cite{Hashiguchi2023}, additional terms are introduced.
+We ignore them in our model.
 \subsection{Theory}
 \subsubsection{Isotropic Hardening}
 For isotropic hardening, the same rule combining linear hardening and saturation is adopted.
@@ -701,13 +715,14 @@ However, instead of using a constant bound, we allow the bound to evolve with th
     a^y=a^i+k_\text{kin}q+a^s_\text{kin}\left(1-e^{-m^s_\text{kin}q}\right).
 \end{gather}
 The parameters $a^i$, $k_\text{kin}$, $a^s_\text{kin}$, and $m^s_\text{kin}$ resemble the ones used in the isotropic hardening rule.
+It is possible to associate $a^y$ with $\sigma^y$, say, one sets $a^i=\sigma^i/2$, $k_\text{kin}=k_\text{iso}/2$, $a^s_\text{kin}=\sigma^s_\text{iso}/2$ and $m^s_\text{kin}=m^s_\text{iso}$ to ensure $a^y=\sigma^y/2$.
 
 The back stress can be explicitly expressed as
 \begin{gather}
     \alpha=\dfrac{b\gamma{}a^yn+\alpha_n}{1+b\gamma}.
 \end{gather}
 \subsubsection{Evolution of Elastic Core}
-Similar to kinematic hardening, one can obtain
+Similar to kinematic hardening, one can obtain the explicit expression for $d$ as
 \begin{gather}
 d=\dfrac{c_ez_e\gamma\sigma^yn+d_n}{1+c_e\gamma}.
 \end{gather}
@@ -782,6 +797,133 @@ The tangent stiffness can be computed via the chain rule.
 \begin{gather}
 \ddfrac{\sigma}{\varepsilon}=E+\dfrac{E^2}{\det\left(\mb{J}\right)}\left(1+\dfrac{u\gamma}{z}\right).
 \end{gather}
+
+We summarise the state determination as follows.
+\begin{breakablealgorithm}
+\caption{state determination of uniaxial subloading surface model}\label{algo:subloading_steel}
+\begin{algorithmic}[1]
+\State Parameter: $E$
+\State Parameter: $\sigma^i$, $k_\text{iso}$, $\sigma^s_\text{iso}$, $m^s_\text{iso}$, $a^i$, $k_\text{kin}$, $a^s_\text{kin}$, $m^s_\text{kin}$
+\State Parameter: $b$, $u$, $c_e$, $z_e$
+\State Input: $\varepsilon_{n+1}$, $\varepsilon_n$, $\sigma_n$, $\alpha_{n}$, $q_n$, $d_n$, $z_n$
+\State Output: $E_{n+1}$, $\sigma_{n+1}$, $\alpha_{n+1}$, $q_{n+1}$, $d_{n+1}$, $z_{n+1}$
+\State $\sigma^\text{trial}=\sigma_n+E\left(\varepsilon_{n+1}-\varepsilon_n\right)$
+\State set history variables $\left(\cdot\right)_{n+1}=\left(\cdot\right)_{n}$
+\State $\gamma=0$
+\While{true}
+\State update $q$, $\alpha$, $d$ according to $\gamma$
+\State formulate $\mb{R}$ and $\mb{J}$
+\State $\Delta=\mb{J}^{-1}\mb{R}$
+\State \If{$\norm{\Delta}<\text{tolerance}$}
+\State break
+\EndIf
+\State $\gamma\leftarrow\gamma-\Delta\left(0\right)$
+\State $z\leftarrow{}z-\Delta\left(1\right)$
+\EndWhile
+\State \If{$\gamma>0$}\Comment{plastic}
+\State $\sigma_{n+1}=\sigma^\text{trial}-nE\gamma$
+\State $E_{n+1}=E+\dfrac{E^2}{\det\left(\mb{J}\right)}\left(1+\dfrac{u\gamma}{z}\right)$
+\Else\Comment{elastic unloading}
+\State reset history variables $\left(\cdot\right)_{n+1}=\left(\cdot\right)_{n}$
+\State compute $z$ using $f_s=0$
+\EndIf
+\end{algorithmic}
+\end{breakablealgorithm}
+
+A reference implementation can be shown as follows.
+\begin{cppcode}
+int Subloading1D::update_trial_status(const vec& t_strain) {
+    incre_strain = (trial_strain = t_strain) - current_strain;
+
+    if(fabs(incre_strain(0)) <= datum::eps) return SUANPAN_SUCCESS;
+
+    trial_stress = current_stress + (trial_stiffness = initial_stiffness) * incre_strain;
+
+    trial_history = current_history;
+    const auto& current_alpha = current_history(0);
+    const auto& current_d = current_history(1);
+    const auto& current_q = current_history(2);
+    const auto& current_z = current_history(3);
+    auto& alpha = trial_history(0);
+    auto& d = trial_history(1);
+    auto& q = trial_history(2);
+    auto& z = trial_history(3);
+
+    auto gamma = 0., ref_error = 0.;
+
+    vec2 residual, incre;
+    mat22 jacobian;
+
+    // to be used in second-order integration (trapezoidal rule)
+    const auto current_rate = .5 * (current_z < z_bound ? rate_bound : log(current_z));
+
+    auto counter = 0u;
+    while(true) {
+        if(max_iteration == ++counter) {
+            suanpan_error("Cannot converge within {} iterations.\n", max_iteration);
+            return SUANPAN_FAIL;
+        }
+
+        const auto exp_iso = saturation_iso * exp(-m_iso * q);
+        auto y = initial_iso + saturation_iso + k_iso * q - exp_iso;
+        auto dy = k_iso + m_iso * exp_iso;
+        if(y < 0.) y = dy = 0.;
+
+        const auto exp_kin = saturation_kin * exp(-m_kin * q);
+        auto a = initial_kin + saturation_kin + k_kin * q - exp_kin;
+        auto da = k_kin + m_kin * exp_kin;
+        if(a < 0.) a = da = 0.;
+
+        const auto n = trial_stress(0) - current_alpha / (1. + be * gamma) + (z - 1.) * current_d / (1. + ce * gamma) > 0. ? 1. : -1.;
+
+        auto top = be * gamma * a * n + current_alpha;
+        auto bottom = 1. + be * gamma;
+
+        alpha = top / bottom;
+        const auto dalpha = (be * n * (a + gamma * da) * bottom - top * be) / bottom / bottom;
+
+        top = ce * ze * gamma * y * n + current_d;
+        bottom = 1. + ce * gamma;
+
+        d = top / bottom;
+        const auto dd = (ce * ze * n * (y + gamma * dy) * bottom - top * ce) / bottom / bottom;
+
+        const auto avg_rate = .5 * (z < z_bound ? rate_bound : log(z)) + current_rate;
+
+        residual(0) = fabs(trial_stress(0) - elastic * gamma * n - alpha + (z - 1.) * d) - z * y;
+        residual(1) = z - current_z + gamma * avg_rate * u;
+
+        jacobian(0, 0) = n * ((z - 1.) * dd - dalpha) - elastic - z * dy;
+        jacobian(0, 1) = n * d - y;
+
+        jacobian(1, 0) = avg_rate * u;
+        jacobian(1, 1) = 1. + (z < z_bound ? 0. : .5 * u * gamma / z);
+
+        if(!solve(incre, jacobian, residual)) return SUANPAN_FAIL;
+
+        const auto error = inf_norm(incre);
+        if(1u == counter) ref_error = error;
+        suanpan_debug("Local iteration error: {:.5E}.\n", error);
+        if(error < tolerance * ref_error || ((error < tolerance || inf_norm(residual) < tolerance) && counter > 5u)) {
+            if(gamma > 0.) {
+                trial_stress -= elastic * gamma * n;
+                trial_stiffness += elastic / det(jacobian) * elastic * jacobian(1, 1);
+            }
+            else {
+                trial_history = current_history;
+                gamma = initial_iso + saturation_iso + k_iso * q - saturation_iso * exp(-m_iso * q); // reuse
+                z = (trial_stress(0) - alpha - d) / (n * gamma - d);
+            }
+
+            return SUANPAN_SUCCESS;
+        }
+
+        gamma -= incre(0);
+        z -= incre(1);
+        q = current_q + gamma;
+    }
+}
+\end{cppcode}
 \section{Uniaxial Model for BRB Steel}\label{sec:uniaxial_brb}
 The previous models show symmetric behaviour regardless under tension or compression. For some application such as buckling restrained braces, buckling under compression would result in lower strength. In this section, a model \cite{Zona2012} suitable for BRB steel is presented with a neat implementation.
 \subsection{Theory}
