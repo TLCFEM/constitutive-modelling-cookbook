@@ -706,9 +706,10 @@ The back stress can be explicitly expressed as
 \begin{gather}
     \alpha=\dfrac{b\gamma{}a^yn+\alpha_n}{1+b\gamma}.
 \end{gather}
-The derivative can be derived as
+\subsubsection{Evolution of Elastic Core}
+Similar to kinematic hardening, one can obtain
 \begin{gather}
-    \ddfrac{\alpha}{\gamma}=b\dfrac{na^y-\alpha_n+n\gamma{}\ddfrac{a^y}{\gamma}\left(1+b\gamma\right)}{\left(1+b\gamma\right)^2}.
+d=\dfrac{c_ez_e\gamma\sigma^yn+d_n}{1+c_e\gamma}.
 \end{gather}
 \subsection{Formulation}
 It is now possible to summarise all expressions used in this extended subloading surface model.
@@ -735,7 +736,7 @@ The model constants involve the following.
 \item $a^i$, $k_\text{kin}$, $a^s_\text{kin}$, $m^s_\text{kin}$ --- kinematic hardening backbone
 \item $b$ --- kinematic hardening rate
 \item $u$ --- evolution rate of $z$
-\item $c_e$ --- evolution rate of $d$
+\item $c_e$, $z_e$ --- evolution rate of $d$
 \end{itemize}
 \subsection{Implementation}
 Along with the subloading surface $f_s$ and $z$, one could formulate the local system $\mb{R}$ with two residuals.
@@ -776,6 +777,11 @@ Noting that $\gamma>0$, $a^y>0$, $\sigma^y>0$ and by definition, $1-z>0$, the bi
 n=\sign{\sigma^\text{trial}-\dfrac{\alpha_n}{1+b\gamma}+\left(z-1\right)\dfrac{d_n}{1+c_e\gamma}},
 \end{gather}
 which is not a function of $\eta$.
+
+The tangent stiffness can be computed via the chain rule.
+\begin{gather}
+\ddfrac{\sigma}{\varepsilon}=E+\dfrac{E^2}{\det\left(\mb{J}\right)}\left(1+\dfrac{u\gamma}{z}\right).
+\end{gather}
 \section{Uniaxial Model for BRB Steel}\label{sec:uniaxial_brb}
 The previous models show symmetric behaviour regardless under tension or compression. For some application such as buckling restrained braces, buckling under compression would result in lower strength. In this section, a model \cite{Zona2012} suitable for BRB steel is presented with a neat implementation.
 \subsection{Theory}
