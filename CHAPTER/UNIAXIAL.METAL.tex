@@ -664,11 +664,8 @@ The evolution of $z$ obeys
 \end{gather}
 where $U\left(z\right)$ is chosen as follows.
 \begin{gather}
-U\left(z\right)=-u\ln\left(z\right).
+U\left(z\right)=u\cot\left(\dfrac{\pi}{2}z\right).
 \end{gather}
-Noting here we choose a logarithmic function instead of the cotangent function as used in the referenced literature purely for an easier computation of its derivative.
-Also, the logarithmic function has a smaller derivative (in terms of magnitude).
-A larger value of $u$ is often needed to achieve a similar behaviour.
 The original model also sets a minimum value for $z$, which is not incorporated here.
 The introduction of $z$ is the sole modification by the original subloading surface model.
 
@@ -740,7 +737,7 @@ Hardening Law&$\dot{q}=\gamma$\\
 &$a^y=a^i+k_\text{kin}q+a^s_\text{kin}\left(1-e^{-m^s_\text{kin}q}\right)$\\
 &$\dot{\alpha}=b\gamma\left(a^yn-\alpha\right)$\\
 &$\dot{d}=c_e\gamma\left(z_e\sigma^yn-d\right)$\\
-&$\dot{z}=-u\ln\left(z\right)\gamma$\\\bottomrule
+&$\dot{z}=U\gamma$\\\bottomrule
 \end{tabular}
 \end{table}
 
@@ -759,7 +756,7 @@ Along with the subloading surface $f_s$ and $z$, one could formulate the local s
 \mb{R}=\left\{
 \begin{array}{l}
 \abs{\sigma-\alpha+\left(z-1\right)d}-z\sigma^y,\\[2mm]
-z-z_n+u\ln\left(z\right)\gamma.
+z-z_n-U\gamma.
 \end{array}
 \right.
 \end{gather}
@@ -770,7 +767,7 @@ Taking local variables $\mb{x}=\begin{bmatrix}
 \begin{gather}
 \mb{J}=\begin{bmatrix}
 n\left(-En-\ddfrac{\alpha}{\gamma}+\left(z-1\right)\ddfrac{d}{\gamma}\right)-z\ddfrac{\sigma^y}{\gamma}&nd-\sigma^y\\[2mm]
-u\ln\left(z\right)&1+\dfrac{u\gamma}{z}
+-U&1-\gamma{}\ddfrac{U}{z}
 \end{bmatrix}.
 \end{gather}
 We also use general forms of evolutions of both kinematic and isotropic hardening, such that $\sigma^y=\sigma^y\left(\gamma\right)$ and $\alpha=\alpha\left(\gamma\right)$.
@@ -795,7 +792,7 @@ which is not a function of $\eta$.
 
 The tangent stiffness can be computed via the chain rule.
 \begin{gather}
-\ddfrac{\sigma}{\varepsilon}=E+\dfrac{E^2}{\det\left(\mb{J}\right)}\left(1+\dfrac{u\gamma}{z}\right).
+\ddfrac{\sigma}{\varepsilon}=E+\dfrac{E^2}{\det\left(\mb{J}\right)}\left(1-\gamma{}\ddfrac{U}{z}\right).
 \end{gather}
 
 We summarise the state determination as follows.
@@ -822,7 +819,7 @@ We summarise the state determination as follows.
 \EndWhile
 \State \If{$\gamma>0$}\Comment{plastic}
 \State $\sigma_{n+1}=\sigma^\text{trial}-nE\gamma$
-\State $E_{n+1}=E+\dfrac{E^2}{\det\left(\mb{J}\right)}\left(1+\dfrac{u\gamma}{z}\right)$
+\State $E_{n+1}=E+\dfrac{E^2}{\det\left(\mb{J}\right)}\left(1-\gamma{}\ddfrac{U}{z}\right)$
 \Else\Comment{elastic unloading}
 \State reset history variables $\left(\cdot\right)_{n+1}=\left(\cdot\right)_{n}$
 \State compute $z$ using $f_s=0$
@@ -924,6 +921,53 @@ int Subloading1D::update_trial_status(const vec& t_strain) {
     }
 }
 \end{cppcode}
+\subsection{Some Further Remarks}
+Assuming no hardening and no elastic core, and $U\left(z\right)$ takes a general form, then the Jacobian could be simplified to
+\begin{gather}
+\mb{J}=\begin{bmatrix}
+-E&-\sigma^y\\[2mm]
+-U&1-\gamma{}U'
+\end{bmatrix}.
+\end{gather}
+The tangent stiffness shall be then expressed as
+\begin{gather}
+\ddfrac{\sigma}{\varepsilon}=E-\dfrac{E^2}{E\left(1-\gamma{}U'\right)+U\sigma^y}\left(1-\gamma{}U'\right)=E-\dfrac{E}{1+\dfrac{U\sigma^y}{E\left(1-\gamma{}U'\right)}}.
+\end{gather}
+We are interested in the continuity condition, that is, when transiting from $z_n=0$ to some non-zero value, would the tangent stiffness be continuous?
+The answer is positive according to the definition, and this is exactly one of the important contributions by the subloading surface model.
+Here we demonstrate this by exploring the explicit expression for tangent stiffness.
+Given that we are interested in the very first step from $z_n=0$ to some non-zero value, then
+\begin{gather}
+\gamma=\dfrac{z-z_n}{U}=\dfrac{z}{U},
+\end{gather}
+also since $\sigma^y/E$ is a constant, we shall focus on the following limit,
+\begin{gather}
+\lim\limits_{z\rightarrow0^+}\dfrac{U}{1-z\dfrac{U'}{U}}=\lim\limits_{z\rightarrow0^+}\dfrac{U^2}{U-zU'}.
+\end{gather}
+Now if one chooses $U=-u\ln\left(z\right)$ so that $U'=-u/z$, then
+\begin{gather}
+\lim\limits_{z\rightarrow0^+}\dfrac{u^2\ln^2\left(z\right)}{-u\ln\left(z\right)+u}=\lim\limits_{z\rightarrow0^+}\dfrac{2u\ln\left(z\right)/z}{-1/z}=\lim\limits_{z\rightarrow0^+}-u\ln\left(z\right)=\infty.
+\end{gather}
+Thus,
+\begin{gather}
+\lim\limits_{z\rightarrow0^+}\ddfrac{\sigma}{\varepsilon}=E.
+\end{gather}
+
+However, numerically, since infinity is not achievable, and $\dfrac{U^2}{U-zU'}$ quickly departs away from infinity, this continuity is not ideal.
+In the above example, for $z=\num{e-16}$, $\dfrac{U^2}{U-zU'}\approx35.87$.
+
+One can also choose $U=u\cot\left(\dfrac{\pi}{2}z\right)$ so that $U'=-\dfrac{u\pi}{2}\csc^2\left(\dfrac{\pi}{2}z\right)$, then
+\begin{gather}
+\lim\limits_{z\rightarrow0^+}\dfrac{U^2}{U-zU'}=\lim\limits_{z\rightarrow0^+}u\dfrac{\cos\left(\pi{}z\right)+1}{\sin\left(\pi{}z\right)+\pi{}z}=\infty.
+\end{gather}
+For $z=\num{e-16}$, it becomes $\num{e16}$.
+This expression presents much better numerical performance.
+
+Now, we shall impose an additional requirement to ensure such a continuity can be achieved numerically.
+\begin{gather}
+\lim\limits_{z\rightarrow0^+}\dfrac{zU^2}{U-zU'}=\text{constant}.
+\end{gather}
+We could see that the cotangent function satisfies the above condition.
 \section{Uniaxial Model for BRB Steel}\label{sec:uniaxial_brb}
 The previous models show symmetric behaviour regardless under tension or compression. For some application such as buckling restrained braces, buckling under compression would result in lower strength. In this section, a model \cite{Zona2012} suitable for BRB steel is presented with a neat implementation.
 \subsection{Theory}
