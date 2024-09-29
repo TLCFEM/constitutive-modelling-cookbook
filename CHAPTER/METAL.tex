@@ -365,6 +365,32 @@ thus, \eqsref{eq:j2_two_form} becomes
 \end{gather}
 No matter which notation is used, the same expression holds.
 This is a beautiful attribute, though could be confusing for beginners.
+\section{Subloading Surface Model}
+In this section, we formulate the 3D version of the subloading surface model.
+\subsection{Theory}
+\subsubsection{Subloading Surface}
+The subloading surface can be expressed as
+\begin{gather}
+f_s=\norm{\beeta}-\sqrt{\dfrac{2}{3}}z\sigma^y,
+\end{gather}
+noting now $\beeta=\bsigma-\balpha+\left(z-1\right)\bd$.
+\subsubsection{Flow Rule}
+Again, assuming associative rule, the flow rule is
+\begin{gather}\label{eq:subloading_flow}
+\dot{\bvarepsilon^p}=\gamma\pdfrac{f}{\bsigma}=\gamma\dfrac{\beeta}{\norm{\beeta}}=\gamma\bn.
+\end{gather}
+\subsubsection{Evolution Laws}
+The evolution laws depend on the internal variable $q$ as before, which takes the accumulated magnitude of $\bvarepsilon^p$.
+\begin{gather}
+\dot{q}=\sqrt{\dfrac{2}{3}}\norm{\dot{\bvarepsilon^p}}=\sqrt{\dfrac{2}{3}}\gamma.
+\end{gather}
+Similar to what have been introduced in \secref{sec:uniaxial_subloading}, the evolution laws are
+\begin{gather}
+\sigma^y=\sigma^i+k_\text{iso}q+\sigma^s_\text{iso}\left(1-e^{-m^s_\text{iso}q}\right),\\
+a^y=a^i+k_\text{kin}q+a^s_\text{kin}\left(1-e^{-m^s_\text{kin}q}\right),\\
+\dot{\balpha}=b\left(a^y\dot{\bvarepsilon^p}-\balpha\dot{q}\right),\\
+\dot{\bd}=c_e\left(z_e\sigma^y\dot{\bvarepsilon^p}-\bd\dot{q}\right).
+\end{gather}
 \section{Hoffman J2 Model}\label{sec:hoffman}
 Here we introduce an anisotropic model that adopts the Hoffman yielding criterion. This framework resembles the isotropic von Mises model. It can be used to model orthtropic materials such sheet steel and timber.
 One can further refer to the corresponding section (\S~10.3) in \cite{SouzaNeto2008}.
