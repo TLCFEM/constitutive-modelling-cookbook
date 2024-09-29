@@ -439,7 +439,7 @@ Taking local variables $\mb{x}=\begin{bmatrix}
     \end{bmatrix}^\mT$, the Jacobian $\mb{J}$ shall be written as
 \begin{gather}
     \mb{J}=\begin{bmatrix}
-        \pdfrac{\norm{\beeta}}{\gamma}-\sqrt{\dfrac{2}{3}}z\ddfrac{\sigma^y}{\gamma} & \pdfrac{\norm{\beeta}}{z}-\sqrt{\dfrac{2}{3}}\sigma^y \\[2mm]
+        \pdfrac{\norm{\beeta}}{\gamma}-\sqrt{\dfrac{2}{3}}z\ddfrac{\sigma^y}{\gamma} & \pdfrac{\norm{\beeta}}{z}-\sqrt{\dfrac{2}{3}}\sigma^y \\[4mm]
         -\sqrt{\dfrac{2}{3}}U                                                        & 1-\sqrt{\dfrac{2}{3}}\gamma{}\ddfrac{U}{z}
     \end{bmatrix}.
 \end{gather}
@@ -457,6 +457,119 @@ so that
 \pdfrac{\norm{\beeta}}{\gamma}=\bn:\pdfrac{\bzeta}{\gamma}-2G-\pdfrac{}{\gamma}\left(\dfrac{\gamma{}ba^y}{1+\sqrt{\dfrac{2}{3}}\gamma{}b}+\left(1-z\right)\dfrac{\gamma{}c_ez_e\sigma^y}{1+\sqrt{\dfrac{2}{3}}\gamma{}c_e}\right),\\
 \pdfrac{\norm{\beeta}}{z}=\bn:\pdfrac{\bzeta}{z}+\dfrac{\gamma{}c_ez_e\sigma^y}{1+\sqrt{\dfrac{2}{3}}\gamma{}c_e}.
 \end{gather}
+\subsection{Implementation}
+\begin{cppcode}
+int SubloadingMetal::update_trial_status(const vec& t_strain) {
+    incre_strain = (trial_strain = t_strain) - current_strain;
+
+    if(norm(incre_strain) <= datum::eps) return SUANPAN_SUCCESS;
+
+    trial_stress = current_stress + (trial_stiffness = initial_stiffness) * incre_strain;
+
+    trial_history = current_history;
+    const auto& current_q = current_history(0);
+    const auto& current_z = current_history(1);
+    const vec current_alpha(&current_history(2), 6, false, true);
+    const vec current_d(&current_history(8), 6, false, true);
+    auto& q = trial_history(0);
+    auto& z = trial_history(1);
+    vec alpha(&trial_history(2), 6, false, true);
+    vec d(&trial_history(8), 6, false, true);
+
+    const vec trial_s = tensor::dev(trial_stress);
+
+    auto gamma = 0., ref_error = 0.;
+
+    vec2 residual, incre;
+    mat22 jacobian;
+
+    const auto current_ratio = yield_ratio(current_z);
+
+    auto counter = 0u;
+    while(true) {
+        if(max_iteration == ++counter) {
+            suanpan_error("Cannot converge within {} iterations.\n", max_iteration);
+            return SUANPAN_FAIL;
+        }
+
+        q = current_q + root_two_third * gamma;
+
+        const auto exp_iso = saturation_iso * exp(-m_iso * q);
+        auto y = initial_iso + saturation_iso + k_iso * q - exp_iso;
+        auto dy = root_two_third * (k_iso + m_iso * exp_iso);
+        if(y < 0.) y = dy = 0.;
+
+        const auto exp_kin = saturation_kin * exp(-m_kin * q);
+        auto a = initial_kin + saturation_kin + k_kin * q - exp_kin;
+        auto da = root_two_third * (k_kin + m_kin * exp_kin);
+        if(a < 0.) a = da = 0.;
+
+        const auto bot_alpha = 1. + root_two_third * be * gamma;
+        const auto bot_d = 1. + root_two_third * ce * gamma;
+
+        const vec pzetapz = current_d / bot_d;
+        const vec pzetapgamma = root_two_third * (be / bot_alpha / bot_alpha * current_alpha + ce * (1. - z) / bot_d * pzetapz);
+
+        const vec zeta = trial_s - current_alpha / bot_alpha + (z - 1.) * pzetapz;
+        const auto norm_zeta = tensor::stress::norm(zeta);
+        const vec n = zeta / norm_zeta;
+
+        vec top_alpha = gamma * be * a * n + current_alpha;
+        alpha = top_alpha / bot_alpha;
+
+        vec top_d = gamma * ce * ze * y * n + current_d;
+        d = top_d / bot_d;
+
+        const vec eta = trial_s - gamma * double_shear * n - alpha + (z - 1.) * d;
+
+        residual(0) = tensor::stress::norm(eta) - root_two_third * z * y;
+
+        if(1u == counter && residual(0) < 0.) {
+            const auto aa = tensor::stress::double_contraction(d) - two_third * y * y;
+            const auto bb = -tensor::stress::double_contraction(d, eta);
+            const auto cc = tensor::stress::double_contraction(eta);
+            const auto sqrt_term = sqrt(bb * bb - aa * cc);
+
+            z = (bb + sqrt_term) / aa;
+            if(z < 0. || z > 1.) z = (bb - sqrt_term) / aa;
+
+            return SUANPAN_SUCCESS;
+        }
+
+        const auto trial_ratio = yield_ratio(z);
+        const auto avg_rate = u * .5 * (current_ratio(0) + trial_ratio(0));
+
+        residual(1) = z - current_z - root_two_third * gamma * avg_rate;
+
+        jacobian(0, 0) = tensor::stress::double_contraction(n, pzetapgamma) - double_shear - be / bot_alpha * (a + gamma * da - gamma * a * root_two_third * be / bot_alpha) + (z - 1.) * ce * ze / bot_d * (y + gamma * dy - gamma * y * root_two_third * ce / bot_d) - root_two_third * z * dy;
+        jacobian(0, 1) = tensor::stress::double_contraction(n, pzetapz) + gamma * ce * ze * y / bot_d - root_two_third * y;
+
+        jacobian(1, 0) = -root_two_third * avg_rate;
+        jacobian(1, 1) = 1. - root_two_third * gamma * u * .5 * trial_ratio(1);
+
+        if(!solve(incre, jacobian, residual)) return SUANPAN_FAIL;
+
+        const auto error = inf_norm(incre);
+        if(1u == counter) ref_error = error;
+        suanpan_debug("Local iteration error: {:.5E}.\n", error);
+        if(error < tolerance * ref_error || ((error < tolerance || inf_norm(residual) < tolerance) && counter > 5u)) {
+            trial_stress -= gamma * double_shear * n;
+
+            mat right(2, 6, fill::zeros);
+            right.row(0) = -n.t();
+
+            const mat left = solve(jacobian, right);
+
+            trial_stiffness -= double_shear * double_shear * n * left.row(0) + double_shear * double_shear * gamma / norm_zeta * (unit_dev_tensor - n * n.t());
+
+            return SUANPAN_SUCCESS;
+        }
+
+        gamma -= incre(0);
+        z -= incre(1);
+    }
+}
+\end{cppcode}
 \section{Hoffman J2 Model}\label{sec:hoffman}
 Here we introduce an anisotropic model that adopts the Hoffman yielding criterion. This framework resembles the isotropic von Mises model. It can be used to model orthtropic materials such sheet steel and timber.
 One can further refer to the corresponding section (\S~10.3) in \cite{SouzaNeto2008}.
