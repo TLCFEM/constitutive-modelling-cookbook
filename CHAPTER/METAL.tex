@@ -377,7 +377,7 @@ noting now $\beeta=\bsigma-\balpha+\left(z-1\right)\bd$.
 \subsubsection{Flow Rule}
 Again, assuming associative rule, the flow rule is
 \begin{gather}\label{eq:subloading_flow}
-\dot{\bvarepsilon^p}=\gamma\pdfrac{f}{\bsigma}=\gamma\dfrac{\beeta}{\norm{\beeta}}=\gamma\bn.
+\dot{\bvarepsilon^p}=\gamma\pdfrac{f_s}{\bsigma}=\gamma\dfrac{\beeta}{\norm{\beeta}}=\gamma\bn.
 \end{gather}
 \subsubsection{Evolution Laws}
 The evolution laws depend on the internal variable $q$ as before, which takes the accumulated magnitude of $\bvarepsilon^p$.
@@ -388,8 +388,65 @@ Similar to what have been introduced in \secref{sec:uniaxial_subloading}, the ev
 \begin{gather}
 \sigma^y=\sigma^i+k_\text{iso}q+\sigma^s_\text{iso}\left(1-e^{-m^s_\text{iso}q}\right),\\
 a^y=a^i+k_\text{kin}q+a^s_\text{kin}\left(1-e^{-m^s_\text{kin}q}\right),\\
-\dot{\balpha}=b\left(a^y\dot{\bvarepsilon^p}-\balpha\dot{q}\right),\\
-\dot{\bd}=c_e\left(z_e\sigma^y\dot{\bvarepsilon^p}-\bd\dot{q}\right).
+\dot{\balpha}=b\left(a^y\dot{\bvarepsilon^p}-\balpha\dot{q}\right)=b\left(a^y\bn-\sqrt{\dfrac{2}{3}}\balpha\right)\gamma,\\
+\dot{\bd}=c_e\left(z_e\sigma^y\dot{\bvarepsilon^p}-\bd\dot{q}\right)=c_e\left(z_e\sigma^y\bn-\sqrt{\dfrac{2}{3}}\bd\right)\gamma.
+\end{gather}
+\subsection{Formulation}
+We shall again express $\balpha$ and $\bd$ in their explicit forms, taking advantage of implicit Euler method.
+\begin{gather}
+    \balpha=\dfrac{\gamma{}ba^y\bn+\balpha_n}{1+\sqrt{\dfrac{2}{3}}\gamma{}b},\qquad
+    \bd=\dfrac{\gamma{}c_ez_e\sigma^y\bn+\bd_n}{1+\sqrt{\dfrac{2}{3}}\gamma{}c_e}.
+\end{gather}
+
+The shifted stress is then
+\begin{gather}
+    \beeta=\beeta^\text{trial}-\gamma2G\bn-\dfrac{\gamma{}ba^y\bn+\balpha_n}{1+\sqrt{\dfrac{2}{3}}\gamma{}b}+\left(z-1\right)\dfrac{\gamma{}c_ez_e\sigma^y\bn+\bd_n}{1+\sqrt{\dfrac{2}{3}}\gamma{}c_e}.
+\end{gather}
+Rearranging gives
+\begin{multline}
+    \beeta+\gamma2G\bn+\dfrac{\gamma{}ba^y\bn}{1+\sqrt{\dfrac{2}{3}}\gamma{}b}+\left(1-z\right)\dfrac{\gamma{}c_ez_e\sigma^y\bn}{1+\sqrt{\dfrac{2}{3}}\gamma{}c_e}\\=\beeta^\text{trial}-\dfrac{\balpha_n}{1+\sqrt{\dfrac{2}{3}}\gamma{}b}+\left(z-1\right)\dfrac{\bd_n}{1+\sqrt{\dfrac{2}{3}}\gamma{}c_e}.
+\end{multline}
+Let's denote
+\begin{gather}
+    \bzeta=\beeta^\text{trial}-\dfrac{\balpha_n}{1+\sqrt{\dfrac{2}{3}}\gamma{}b}+\left(z-1\right)\dfrac{\bd_n}{1+\sqrt{\dfrac{2}{3}}\gamma{}c_e}
+\end{gather}
+Since $\bn=\dfrac{\beeta}{\norm{\beeta}}$, one could conclude that
+\begin{gather}
+    \norm{\beeta}+\gamma2G+\dfrac{\gamma{}ba^y}{1+\sqrt{\dfrac{2}{3}}\gamma{}b}+\left(1-z\right)\dfrac{\gamma{}c_ez_e\sigma^y}{1+\sqrt{\dfrac{2}{3}}\gamma{}c_e}=\norm{\bzeta},
+\end{gather}
+and
+\begin{gather}
+    \bn=\dfrac{\beeta}{\norm{\beeta}}=\dfrac{\bzeta}{\norm{\bzeta}}.
+\end{gather}
+Although it is not possible to simplify more, one shall realise that $\bzeta$ is a function of $\gamma$ and $z$ only.
+Then we proceed to compute its derivatives.
+\begin{gather}
+    \pdfrac{\bzeta}{\gamma}=\dfrac{\sqrt{\dfrac{2}{3}}b\balpha_n}{\left(1+\sqrt{\dfrac{2}{3}}b\gamma\right)^2}-\left(z-1\right)\dfrac{\sqrt{\dfrac{2}{3}}c_e\bd_n}{\left(1+\sqrt{\dfrac{2}{3}}c_e\gamma\right)^2},\qquad
+    \pdfrac{\bzeta}{z}=\dfrac{\bd_n}{1+\sqrt{\dfrac{2}{3}}c_e\gamma}.
+\end{gather}
+
+\begin{gather}
+    \mb{R}=\left\{
+    \begin{array}{l}
+        \norm{\beeta}-z\sigma^y, \\[2mm]
+        z-z_n-U\gamma.
+    \end{array}
+    \right.
+\end{gather}
+
+Taking local variables $\mb{x}=\begin{bmatrix}
+        \gamma & z
+    \end{bmatrix}^\mT$, the Jacobian $\mb{J}$ shall be written as
+\begin{gather}
+    \mb{J}=\begin{bmatrix}
+        \pdfrac{\norm{\beeta}}{\gamma}-z\ddfrac{\sigma^y}{\gamma} & \pdfrac{\norm{\beeta}}{z}-\sigma^y \\[2mm]
+        -U                                                        & 1-\gamma{}\ddfrac{U}{z}
+    \end{bmatrix}.
+\end{gather}
+In which,
+\begin{gather}
+\pdfrac{\norm{\beeta}}{\gamma}=\pdfrac{\norm{\bzeta}}{\gamma}-2G-\pdfrac{}{\gamma}\left(\dfrac{\gamma{}ba^y}{1+\sqrt{\dfrac{2}{3}}\gamma{}b}+\left(1-z\right)\dfrac{\gamma{}c_ez_e\sigma^y}{1+\sqrt{\dfrac{2}{3}}\gamma{}c_e}\right),\\
+\pdfrac{\norm{\beeta}}{z}=\pdfrac{\norm{\bzeta}}{z}+\dfrac{\gamma{}c_ez_e\sigma^y}{1+\sqrt{\dfrac{2}{3}}\gamma{}c_e}.
 \end{gather}
 \section{Hoffman J2 Model}\label{sec:hoffman}
 Here we introduce an anisotropic model that adopts the Hoffman yielding criterion. This framework resembles the isotropic von Mises model. It can be used to model orthtropic materials such sheet steel and timber.
