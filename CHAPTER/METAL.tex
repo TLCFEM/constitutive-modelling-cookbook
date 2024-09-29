@@ -408,7 +408,7 @@ Rearranging gives
 \end{multline}
 Let's denote
 \begin{gather}
-    \bzeta=\beeta^\text{trial}-\dfrac{\balpha_n}{1+\sqrt{\dfrac{2}{3}}\gamma{}b}+\left(z-1\right)\dfrac{\bd_n}{1+\sqrt{\dfrac{2}{3}}\gamma{}c_e}
+    \bzeta=\beeta^\text{trial}-\dfrac{\balpha_n}{1+\sqrt{\dfrac{2}{3}}\gamma{}b}+\left(z-1\right)\dfrac{\bd_n}{1+\sqrt{\dfrac{2}{3}}\gamma{}c_e}.
 \end{gather}
 Since $\bn=\dfrac{\beeta}{\norm{\beeta}}$, one could conclude that
 \begin{gather}
@@ -418,13 +418,14 @@ and
 \begin{gather}
     \bn=\dfrac{\beeta}{\norm{\beeta}}=\dfrac{\bzeta}{\norm{\bzeta}}.
 \end{gather}
-Although it is not possible to simplify more, one shall realise that $\bzeta$ is a function of $\gamma$ and $z$ only.
+Although it is not possible to simplify more, one shall realise that $\bzeta$ is a function of $\bvarepsilon$, $\gamma$ and $z$ only.
 Then we proceed to compute its derivatives.
 \begin{gather}
     \pdfrac{\bzeta}{\gamma}=\dfrac{\sqrt{\dfrac{2}{3}}b\balpha_n}{\left(1+\sqrt{\dfrac{2}{3}}b\gamma\right)^2}-\left(z-1\right)\dfrac{\sqrt{\dfrac{2}{3}}c_e\bd_n}{\left(1+\sqrt{\dfrac{2}{3}}c_e\gamma\right)^2},\qquad
     \pdfrac{\bzeta}{z}=\dfrac{\bd_n}{1+\sqrt{\dfrac{2}{3}}c_e\gamma}.
 \end{gather}
 
+Similar to the uniaxial version, the local system consists of two residuals, $f_s$ and $z$.
 \begin{gather}
     \mb{R}=\left\{
     \begin{array}{l}
@@ -433,7 +434,6 @@ Then we proceed to compute its derivatives.
     \end{array}
     \right.
 \end{gather}
-
 Taking local variables $\mb{x}=\begin{bmatrix}
         \gamma & z
     \end{bmatrix}^\mT$, the Jacobian $\mb{J}$ shall be written as
@@ -447,6 +447,10 @@ In which,
 \begin{gather}
 \pdfrac{\norm{\beeta}}{\gamma}=\pdfrac{\norm{\bzeta}}{\gamma}-2G-\pdfrac{}{\gamma}\left(\dfrac{\gamma{}ba^y}{1+\sqrt{\dfrac{2}{3}}\gamma{}b}+\left(1-z\right)\dfrac{\gamma{}c_ez_e\sigma^y}{1+\sqrt{\dfrac{2}{3}}\gamma{}c_e}\right),\\
 \pdfrac{\norm{\beeta}}{z}=\pdfrac{\norm{\bzeta}}{z}+\dfrac{\gamma{}c_ez_e\sigma^y}{1+\sqrt{\dfrac{2}{3}}\gamma{}c_e}.
+\end{gather}
+The derivatives of $\norm{\bzeta}$ can be further expanded as
+\begin{gather}
+\pdfrac{\norm{\bzeta}}{}=\bn:\pdfrac{\bzeta}{}.
 \end{gather}
 \section{Hoffman J2 Model}\label{sec:hoffman}
 Here we introduce an anisotropic model that adopts the Hoffman yielding criterion. This framework resembles the isotropic von Mises model. It can be used to model orthtropic materials such sheet steel and timber.
