@@ -634,7 +634,7 @@ Adopting the same procedure, one can derive
 The subloading surface framework is extensively introduced in monographs \cite{Hashiguchi2023}.
 Here we do not repeatedly cite the same references for brevity.
 Readers can refer to the book and the references therein.
-
+\subsection{Subloading Surface}
 The main modification made by the subloading surface model to the conventional plasticity model is the parameter $z$ such that on the basis of the existing yield surface
 \begin{gather}
 f=\abs{\eta}-\sigma^y,
@@ -672,11 +672,20 @@ The introduction of $z$ is the sole modification by the original subloading surf
 Later, an extended subloading surface model is proposed.
 The extended version further introduces the concept of elastic core, which is characterised by an additional variable $c$ such that the shifted stress $\eta$ shall be computed using the following expression instead.
 \begin{gather}
+\eta=\sigma-\bar{\alpha},
+\end{gather}
+where $\bar{\alpha}$ is the new centre of the subloading surface, which shall be defined as
+\begin{gather}
+\bar{\alpha}-c=z\left(\alpha-c\right).
+\end{gather}
+The new variable $c$ defines an elastic core.
+The shifted stress $\eta$ can equivalently be written as
+\begin{gather}
 \eta=\sigma-z\alpha+\left(z-1\right)c.
 \end{gather}
 The above modification essentially pulls the centre of the subloading surface, from the original origin defined by $\alpha$, towards elastic core $c$ by a certain amount governed by $z$.
 
-According to the original formulation, the evolution of $c$ involves not only $\gamma$ but also $\alpha$, which leads to a deeply coupled system that is not easy to be solved numerically.
+According to the original formulation, the evolution of $c$ involves not only $\gamma$ but also $\alpha$, which leads to a deeply coupled system that is not easy to solve numerically.
 Here, instead of $c$, one can define an equivalent independent variable, say $d$, such that $d=c-\alpha$, then
 \begin{gather}
 \eta=\sigma-z\alpha+\left(z-1\right)\left(d+\alpha\right)=\sigma-\alpha+\left(z-1\right)d.
@@ -684,11 +693,11 @@ Here, instead of $c$, one can define an equivalent independent variable, say $d$
 The magnitude of $d$, according to definition, shall not exceed some limit surface, which possesses a size of $z_e\sigma^y$ where $0\leqslant{}z_e\leqslant1$.
 This leads to the following evolution law for $d$.
 \begin{gather}
-\dot{d}=\dot{c}-\dot{\alpha}=c_e\gamma\left(z_e\sigma^yn-\left(c-\alpha\right)\right)=c_e\gamma\left(z_e\sigma^yn-d\right).
+\dot{d}=\dot{c}-\dot{\alpha}=c_e\gamma\left(z_e\sigma^yn-\left(c-\alpha\right)\right)+\varPhi{}\left(c-\alpha\right)=c_e\gamma\left(z_e\sigma^yn-d\right)+\varPhi{}d.
 \end{gather}
 In the above, we have introduced two constants $c_e$ and $z_e$ to control the behaviour.
-In recent formulations \cite{Hashiguchi2023}, additional terms are introduced.
-We ignore them in our model.
+In recent formulations \cite{Hashiguchi2023}, the additional term $\varPhi{}d$ introduced with $\varPhi=\varPhi\left(\gamma\right)$ being a function of $\gamma$ solely.
+We ignore it by setting $\varPhi=0$ in our model.
 \subsection{Theory}
 \subsubsection{Isotropic Hardening}
 For isotropic hardening, the same rule combining linear hardening and saturation is adopted.
