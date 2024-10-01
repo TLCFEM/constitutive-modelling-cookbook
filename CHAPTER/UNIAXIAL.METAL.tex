@@ -786,7 +786,7 @@ n\left(-En-\ddfrac{}{\gamma}\left(a^y\alpha\right)+\left(z-1\right)\ddfrac{}{\ga
 \end{bmatrix}.
 \end{gather}
 We also use general forms of evolutions of both kinematic and isotropic hardening, such that $\sigma^y=\sigma^y\left(\gamma\right)$ and $\alpha=\alpha\left(\gamma\right)$.
-
+\subsubsection{Implicit Euler Method}
 One shall notice that
 \begin{gather}
 \eta=\sigma^\text{trial}-E\gamma{}n-a^y\dfrac{b\gamma{}n+\alpha_n}{1+b\gamma}+\left(z-1\right)\sigma^y\dfrac{c_ez_e\gamma{}n+d_n}{1+c_e\gamma},
@@ -804,7 +804,30 @@ Noting that $\gamma>0$, $a^y>0$, $\sigma^y>0$ and by definition, $1-z>0$, the bi
 n=\sign{\sigma^\text{trial}-\dfrac{a^y\alpha_n}{1+b\gamma}+\left(z-1\right)\dfrac{\sigma^yd_n}{1+c_e\gamma}},
 \end{gather}
 which is not a function of $\eta$.
+\subsubsection{Trapezoidal Method}
+One can also use the trapezoidal rule to improve numerical stability.
+\begin{gather}
+\alpha=\alpha_n+\dfrac{b\gamma}{2}\left(n_n-\alpha_n+n-\alpha\right),
+\end{gather}
+it can be further rearranged to obtain
+\begin{gather}
+\alpha=\dfrac{\left(2-b\gamma\right)\alpha_n+b\gamma{}\left(n_n+n\right)}{2+b\gamma}.
+\end{gather}
+Similarly,
+\begin{gather}
+d=\dfrac{\left(2-c_e\gamma\right)d_n+c_ez_e\gamma{}\left(n_n+n\right)}{2+c_e\gamma}.
+\end{gather}
 
+Repeating the same procedure, one could derive
+\begin{multline}
+\eta+E\gamma{}n+a^y\dfrac{b\gamma{}n}{2+b\gamma}+\left(1-z\right)\sigma^y\dfrac{c_ez_e\gamma{}n}{2+c_e\gamma}=\\
+\sigma^\text{trial}-a^y\dfrac{\left(2-b\gamma\right)\alpha_n+b\gamma{}n_n}{2+b\gamma}+\left(z-1\right)\sigma^y\dfrac{\left(2-c_e\gamma\right)d_n+c_ez_e\gamma{}n_n}{2+c_e\gamma}.
+\end{multline}
+Then
+\begin{gather}
+n=\sign{\sigma^\text{trial}-a^y\dfrac{\left(2-b\gamma\right)\alpha_n+b\gamma{}n_n}{2+b\gamma}+\left(z-1\right)\sigma^y\dfrac{\left(2-c_e\gamma\right)d_n+c_ez_e\gamma{}n_n}{2+c_e\gamma}}.
+\end{gather}
+\subsubsection{Tangent Stiffness}
 The tangent stiffness can be computed via the chain rule.
 \begin{gather}
 \ddfrac{\sigma}{\varepsilon}=E+\dfrac{E^2}{\det\left(\mb{J}\right)}\left(1-\gamma{}\ddfrac{U}{z}\right).
