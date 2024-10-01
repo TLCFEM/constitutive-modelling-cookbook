@@ -9,9 +9,8 @@ jobs:
       - name: Compile
         uses: xu-cheng/texlive-action@v2
         with:
-          scheme: full
+          docker_image: ghcr.io/xu-cheng/texlive-full:20240901
           run: |
-            tlmgr install --reinstall minted
             latexmk -shell-escape -pdf COOKBOOK.tex
       - name: Release
         uses: svenstaro/upload-release-action@v2
