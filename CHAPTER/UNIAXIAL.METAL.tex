@@ -686,18 +686,17 @@ The shifted stress $\eta$ can equivalently be written as
 The above modification essentially pulls the centre of the subloading surface, from the original origin defined by $\alpha$, towards elastic core $c$ by a certain amount governed by $z$.
 
 According to the original formulation, the evolution of $c$ involves not only $\gamma$ but also $\alpha$, which leads to a deeply coupled system that is not easy to solve numerically.
-Here, instead of $c$, one can define an equivalent independent variable, say $d$, such that $d=c-\alpha$, then
+Here, instead of $c$, one can define an equivalent independent variable, say $d$, such that $\sigma^yd=c-\alpha$, then
 \begin{gather}
-\eta=\sigma-z\alpha+\left(z-1\right)\left(d+\alpha\right)=\sigma-\alpha+\left(z-1\right)d.
+\eta=\sigma-z\alpha+\left(z-1\right)\left(d+\alpha\right)=\sigma-\alpha+\left(z-1\right)\sigma^yd.
 \end{gather}
-The magnitude of $d$, according to definition, shall not exceed some limit surface, which possesses a size of $z_e\sigma^y$ where $0\leqslant{}z_e\leqslant1$.
+The magnitude of $d$ represents the normalised size of the elastic core.
+According to definition, it shall not exceed some limit $0\leqslant{}z_e\leqslant1$.
 This leads to the following evolution law for $d$.
 \begin{gather}
-\dot{d}=\dot{c}-\dot{\alpha}=c_e\gamma\left(z_e\sigma^yn-\left(c-\alpha\right)\right)+\varPhi{}\left(c-\alpha\right)=c_e\gamma\left(z_e\sigma^yn-d\right)+\varPhi{}d.
+\dot{d}=c_e\gamma\left(z_en-d\right).
 \end{gather}
 In the above, we have introduced two constants $c_e$ and $z_e$ to control the behaviour.
-In recent formulations \cite{Hashiguchi2023}, the additional term $\varPhi{}d$ introduced with $\varPhi=\varPhi\left(\gamma\right)$ being a function of $\gamma$ solely.
-We ignore it by setting $\varPhi=0$ in our model.
 \subsection{Theory}
 \subsubsection{Isotropic Hardening}
 For isotropic hardening, the same rule combining linear hardening and saturation is adopted.
@@ -730,7 +729,7 @@ The back stress can be explicitly expressed as
 \subsubsection{Evolution of Elastic Core}
 Similar to kinematic hardening, one can obtain the explicit expression for $d$ as
 \begin{gather}
-d=\dfrac{c_ez_e\gamma\sigma^yn+d_n}{1+c_e\gamma}.
+d=\dfrac{c_ez_e\gamma{}n+d_n}{1+c_e\gamma}.
 \end{gather}
 \subsection{Formulation}
 It is now possible to summarise all expressions used in this extended subloading surface model.
@@ -739,13 +738,13 @@ It is now possible to summarise all expressions used in this extended subloading
 \begin{tabular}{rl}
 \toprule
 Constitutive Law&$\sigma=E\left(\varepsilon-\varepsilon^p\right)$\\
-Subloading Surface&$f_s=\abs{\eta}-z\sigma^y=\abs{\sigma-\alpha+\left(z-1\right)d}-z\sigma^y$\\
+Subloading Surface&$f_s=\abs{\eta}-z\sigma^y=\abs{\sigma-\alpha+\left(z-1\right)\sigma^yd}-z\sigma^y$\\
 Flow Rule&$\dot{\varepsilon^p}=\gamma{}n=\gamma~\sign{\eta}$\\
 Hardening Law&$\dot{q}=\gamma$\\
 &$\sigma^y=\sigma^i+k_\text{iso}q+\sigma^s_\text{iso}\left(1-e^{-m^s_\text{iso}q}\right)$\\
 &$a^y=a^i+k_\text{kin}q+a^s_\text{kin}\left(1-e^{-m^s_\text{kin}q}\right)$\\
 &$\dot{\alpha}=b\gamma\left(a^yn-\alpha\right)$\\
-&$\dot{d}=c_e\gamma\left(z_e\sigma^yn-d\right)$\\
+&$\dot{d}=c_e\gamma\left(z_en-d\right)$\\
 &$\dot{z}=U\gamma$\\\bottomrule
 \end{tabular}
 \end{table}
@@ -764,7 +763,7 @@ Along with the subloading surface $f_s$ and $z$, one could formulate the local s
 \begin{gather}
 \mb{R}=\left\{
 \begin{array}{l}
-\abs{\sigma-\alpha+\left(z-1\right)d}-z\sigma^y,\\[2mm]
+\abs{\sigma-\alpha+\left(z-1\right)\sigma^yd}-z\sigma^y,\\[2mm]
 z-z_n-U\gamma.
 \end{array}
 \right.
@@ -775,7 +774,7 @@ Taking local variables $\mb{x}=\begin{bmatrix}
 \end{bmatrix}^\mT$, denoting $n=\sign{\eta}$, the Jacobian $\mb{J}$ shall be written as
 \begin{gather}
 \mb{J}=\begin{bmatrix}
-n\left(-En-\ddfrac{\alpha}{\gamma}+\left(z-1\right)\ddfrac{d}{\gamma}\right)-z\ddfrac{\sigma^y}{\gamma}&nd-\sigma^y\\[2mm]
+n\left(-En-\ddfrac{\alpha}{\gamma}+\left(z-1\right)\left(\ddfrac{d}{\gamma}\sigma^y+\ddfrac{\sigma^y}{\gamma}d\right)\right)-z\ddfrac{\sigma^y}{\gamma}&n\sigma^yd-\sigma^y\\[2mm]
 -U&1-\gamma{}\ddfrac{U}{z}
 \end{bmatrix}.
 \end{gather}
@@ -783,19 +782,19 @@ We also use general forms of evolutions of both kinematic and isotropic hardenin
 
 One shall notice that
 \begin{gather}
-\eta=\sigma^\text{trial}-E\gamma{}n-\dfrac{b\gamma{}a^yn+\alpha_n}{1+b\gamma}+\left(z-1\right)\dfrac{c_ez_e\gamma{}\sigma^yn+d_n}{1+c_e\gamma},
+\eta=\sigma^\text{trial}-E\gamma{}n-\dfrac{b\gamma{}a^yn+\alpha_n}{1+b\gamma}+\left(z-1\right)\sigma^y\dfrac{c_ez_e\gamma{}n+d_n}{1+c_e\gamma},
 \end{gather}
 by rearranging all $\eta$ related terms (including $n$) to the left, one can obtain
 \begin{gather}
-\eta+E\gamma{}n+\dfrac{b\gamma{}a^yn}{1+b\gamma}+\left(1-z\right)\dfrac{c_ez_e\gamma{}\sigma^yn}{1+c_e\gamma}=\sigma^\text{trial}-\dfrac{\alpha_n}{1+b\gamma}+\left(z-1\right)\dfrac{d_n}{1+c_e\gamma},
+\eta+E\gamma{}n+\dfrac{b\gamma{}a^yn}{1+b\gamma}+\left(1-z\right)\dfrac{c_ez_e\gamma{}\sigma^yn}{1+c_e\gamma}=\sigma^\text{trial}-\dfrac{\alpha_n}{1+b\gamma}+\left(z-1\right)\dfrac{\sigma^yd_n}{1+c_e\gamma},
 \end{gather}
 this is effectively
 \begin{gather}
-\left(\abs{\eta}+E\gamma{}+\dfrac{b\gamma{}a^y}{1+b\gamma}+\left(1-z\right)\dfrac{c_ez_e\gamma{}\sigma^y}{1+c_e\gamma}\right)n=\sigma^\text{trial}-\dfrac{\alpha_n}{1+b\gamma}+\left(z-1\right)\dfrac{d_n}{1+c_e\gamma}.
+\left(\abs{\eta}+E\gamma{}+\dfrac{b\gamma{}a^y}{1+b\gamma}+\left(1-z\right)\dfrac{c_ez_e\gamma{}\sigma^y}{1+c_e\gamma}\right)n=\sigma^\text{trial}-\dfrac{\alpha_n}{1+b\gamma}+\left(z-1\right)\dfrac{\sigma^yd_n}{1+c_e\gamma}.
 \end{gather}
 Noting that $\gamma>0$, $a^y>0$, $\sigma^y>0$ and by definition, $1-z>0$, the big bracket is in fact non-negative. This means,
 \begin{gather}
-n=\sign{\sigma^\text{trial}-\dfrac{\alpha_n}{1+b\gamma}+\left(z-1\right)\dfrac{d_n}{1+c_e\gamma}},
+n=\sign{\sigma^\text{trial}-\dfrac{\alpha_n}{1+b\gamma}+\left(z-1\right)\dfrac{\sigma^yd_n}{1+c_e\gamma}},
 \end{gather}
 which is not a function of $\eta$.
 
@@ -860,8 +859,7 @@ int Subloading1D::update_trial_status(const vec& t_strain) {
     vec2 residual, incre;
     mat22 jacobian;
 
-    // to be used in second-order integration (trapezoidal rule)
-    const auto current_rate = .5 * (current_z < z_bound ? rate_bound : log(current_z));
+    const auto current_ratio = yield_ratio(current_z);
 
     auto counter = 0u;
     while(true) {
@@ -870,6 +868,8 @@ int Subloading1D::update_trial_status(const vec& t_strain) {
             return SUANPAN_FAIL;
         }
 
+        q = current_q + gamma;
+        
         const auto exp_iso = saturation_iso * exp(-m_iso * q);
         auto y = initial_iso + saturation_iso + k_iso * q - exp_iso;
         auto dy = k_iso + m_iso * exp_iso;
@@ -880,30 +880,37 @@ int Subloading1D::update_trial_status(const vec& t_strain) {
         auto da = k_kin + m_kin * exp_kin;
         if(a < 0.) a = da = 0.;
 
-        const auto n = trial_stress(0) - current_alpha / (1. + be * gamma) + (z - 1.) * current_d / (1. + ce * gamma) > 0. ? 1. : -1.;
+        const auto n = trial_stress(0) - current_alpha / (1. + be * gamma) + (z - 1.) * y * current_d / (1. + ce * gamma) > 0. ? 1. : -1.;
 
         auto top = be * gamma * a * n + current_alpha;
         auto bottom = 1. + be * gamma;
 
         alpha = top / bottom;
-        const auto dalpha = (be * n * (a + gamma * da) * bottom - top * be) / bottom / bottom;
+        const auto dalpha = (be * n * (a + gamma * da) - top * be / bottom) / bottom;
 
-        top = ce * ze * gamma * y * n + current_d;
+        top = ce * ze * gamma * n + current_d;
         bottom = 1. + ce * gamma;
 
         d = top / bottom;
-        const auto dd = (ce * ze * n * (y + gamma * dy) * bottom - top * ce) / bottom / bottom;
+        const auto dd = (ce * ze * n - top * ce / bottom) / bottom;
+        
+        const auto trial_ratio = yield_ratio(z);
+        const auto avg_rate = u * .5 * (current_ratio(0) + trial_ratio(0));
+        
+        residual(0) = fabs(trial_stress(0) - elastic * gamma * n - alpha + (z - 1.) * y * d) - z * y;
 
-        const auto avg_rate = .5 * (z < z_bound ? rate_bound : log(z)) + current_rate;
+        if(1u == counter && residual(0) < 0.) {
+                z = ((trial_stress(0) - alpha) / y - d) / (n - d);
+                return SUANPAN_SUCCESS;
+            }
 
-        residual(0) = fabs(trial_stress(0) - elastic * gamma * n - alpha + (z - 1.) * d) - z * y;
-        residual(1) = z - current_z + gamma * avg_rate * u;
+        residual(1) = z - current_z - gamma * avg_rate;
 
-        jacobian(0, 0) = n * ((z - 1.) * dd - dalpha) - elastic - z * dy;
-        jacobian(0, 1) = n * d - y;
+        jacobian(0, 0) = n * ((z - 1.) * (dd * y + dy * d) - dalpha) - elastic - z * dy;
+        jacobian(0, 1) = n * y * d - y;
 
-        jacobian(1, 0) = avg_rate * u;
-        jacobian(1, 1) = 1. + (z < z_bound ? 0. : .5 * u * gamma / z);
+        jacobian(1, 0) = -avg_rate;
+        jacobian(1, 1) = 1. - u * gamma * .5 * trial_ratio(1);
 
         if(!solve(incre, jacobian, residual)) return SUANPAN_FAIL;
 
@@ -911,22 +918,15 @@ int Subloading1D::update_trial_status(const vec& t_strain) {
         if(1u == counter) ref_error = error;
         suanpan_debug("Local iteration error: {:.5E}.\n", error);
         if(error < tolerance * ref_error || ((error < tolerance || inf_norm(residual) < tolerance) && counter > 5u)) {
-            if(gamma > 0.) {
-                trial_stress -= elastic * gamma * n;
-                trial_stiffness += elastic / det(jacobian) * elastic * jacobian(1, 1);
-            }
-            else {
-                trial_history = current_history;
-                gamma = initial_iso + saturation_iso + k_iso * q - saturation_iso * exp(-m_iso * q); // reuse
-                z = (trial_stress(0) - alpha - d) / (n * gamma - d);
-            }
+            trial_stress -= elastic * gamma * n;
+            trial_stiffness += elastic / det(jacobian) * elastic * jacobian(1, 1);
 
             return SUANPAN_SUCCESS;
         }
 
         gamma -= incre(0);
         z -= incre(1);
-        q = current_q + gamma;
+        if(z > 1.) z = 1. - datum::eps;
     }
 }
 \end{cppcode}
