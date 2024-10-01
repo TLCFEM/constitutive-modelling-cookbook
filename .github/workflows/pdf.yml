@@ -11,8 +11,7 @@ jobs:
         with:
           scheme: full
           run: |
-            tlmgr uninstall minted
-            tlmgr install minted
+            tlmgr install --reinstall minted
             latexmk -shell-escape -pdf COOKBOOK.tex
       - name: Release
         uses: svenstaro/upload-release-action@v2
