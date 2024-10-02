@@ -1,10 +1,4 @@
-FROM texlive/texlive:latest
+FROM ghcr.io/xu-cheng/texlive-full:20240901
 
-ARG USERNAME=nonroot
-ARG USER_UID=1000
-ARG USER_GID=$USER_UID
-
-RUN groupadd --gid $USER_GID $USERNAME \
-    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
-
-USER $USERNAME
+RUN adduser -D nonroot
+USER nonroot
