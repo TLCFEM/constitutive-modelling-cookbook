@@ -418,7 +418,7 @@ The state determination algorithm of this AF model is given in \algoref{algo:af_
 \While{true}
 \State compute $f$ and $\pdfrac{f}{\gamma}$\Comment{\eqsref{eq:af_f} and \eqsref{eq:af_pfpg}}
 \State $\Delta\gamma=\left(\pdfrac{f}{\gamma}\right)^{-1}f$
-\State \If{$\abs{\Delta\gamma}<\text{tolerance}$}
+\If{$\abs{\Delta\gamma}<\text{tolerance}$}
 \State break
 \EndIf
 \State $\gamma\leftarrow\gamma-\Delta\gamma$
@@ -849,13 +849,13 @@ We summarise the state determination as follows.
 \State update $q$, $\alpha$, $d$ according to $\gamma$
 \State formulate $\mb{R}$ and $\mb{J}$
 \State $\Delta=\mb{J}^{-1}\mb{R}$
-\State \If{$\norm{\Delta}<\text{tolerance}$}
+\If{$\norm{\Delta}<\text{tolerance}$}
 \State break
 \EndIf
 \State $\gamma\leftarrow\gamma-\Delta\left(0\right)$
 \State $z\leftarrow{}z-\Delta\left(1\right)$
 \EndWhile
-\State \If{$\gamma>0$}\Comment{plastic}
+\If{$\gamma>0$}\Comment{plastic}
 \State $\sigma_{n+1}=\sigma^\text{trial}-nE\gamma$
 \State $E_{n+1}=E+\dfrac{E^2}{\det\left(\mb{J}\right)}\left(1-\gamma{}\ddfrac{U}{z}\right)$
 \Else\Comment{elastic unloading}
