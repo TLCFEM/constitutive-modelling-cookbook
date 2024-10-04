@@ -960,53 +960,6 @@ int Subloading1D::update_trial_status(const vec& t_strain) {
     }
 }
 \end{cppcode}
-\subsection{Some Further Remarks}
-Assuming no hardening and no elastic core, and $U\left(z\right)$ takes a general form, then the Jacobian could be simplified to
-\begin{gather}
-\mb{J}=\begin{bmatrix}
--E&-\sigma^y\\[2mm]
--U&1-\gamma{}U'
-\end{bmatrix}.
-\end{gather}
-The tangent stiffness shall be then expressed as
-\begin{gather}
-\ddfrac{\sigma}{\varepsilon}=E-\dfrac{E^2}{E\left(1-\gamma{}U'\right)+U\sigma^y}\left(1-\gamma{}U'\right)=E-\dfrac{E}{1+\dfrac{U\sigma^y}{E\left(1-\gamma{}U'\right)}}.
-\end{gather}
-We are interested in the continuity condition, that is, when transiting from $z_n=0$ to some non-zero value, would the tangent stiffness be continuous?
-The answer is positive according to the definition, and this is exactly one of the important contributions by the subloading surface model.
-Here we demonstrate this by exploring the explicit expression for tangent stiffness.
-Given that we are interested in the very first step from $z_n=0$ to some non-zero value, then
-\begin{gather}
-\gamma=\dfrac{z-z_n}{U}=\dfrac{z}{U},
-\end{gather}
-also since $\sigma^y/E$ is a constant, we shall focus on the following limit,
-\begin{gather}
-\lim\limits_{z\rightarrow0^+}\dfrac{U}{1-z\dfrac{U'}{U}}=\lim\limits_{z\rightarrow0^+}\dfrac{U^2}{U-zU'}.
-\end{gather}
-Now if one chooses $U=-u\ln\left(z\right)$ so that $U'=-u/z$, then
-\begin{gather}
-\lim\limits_{z\rightarrow0^+}\dfrac{u^2\ln^2\left(z\right)}{-u\ln\left(z\right)+u}=\lim\limits_{z\rightarrow0^+}\dfrac{2u\ln\left(z\right)/z}{-1/z}=\lim\limits_{z\rightarrow0^+}-u\ln\left(z\right)=\infty.
-\end{gather}
-Thus,
-\begin{gather}
-\lim\limits_{z\rightarrow0^+}\ddfrac{\sigma}{\varepsilon}=E.
-\end{gather}
-
-However, numerically, since infinity is not achievable, and $\dfrac{U^2}{U-zU'}$ quickly departs away from infinity, this continuity is not ideal.
-In the above example, for $z=\num{e-16}$, $\dfrac{U^2}{U-zU'}\approx35.87$.
-
-One can also choose $U=u\cot\left(\dfrac{\pi}{2}z\right)$ so that $U'=-\dfrac{u\pi}{2}\csc^2\left(\dfrac{\pi}{2}z\right)$, then
-\begin{gather}
-\lim\limits_{z\rightarrow0^+}\dfrac{U^2}{U-zU'}=\lim\limits_{z\rightarrow0^+}u\dfrac{\cos\left(\pi{}z\right)+1}{\sin\left(\pi{}z\right)+\pi{}z}=\infty.
-\end{gather}
-For $z=\num{e-16}$, it becomes $\num{e16}$.
-This expression presents much better numerical performance.
-
-Now, we shall impose an additional requirement to ensure such a continuity can be achieved numerically.
-\begin{gather}
-\lim\limits_{z\rightarrow0^+}\dfrac{zU^2}{U-zU'}=\text{constant}.
-\end{gather}
-We could see that the cotangent function satisfies the above condition.
 \section{Uniaxial Model for BRB Steel}\label{sec:uniaxial_brb}
 The previous models show symmetric behaviour regardless under tension or compression. For some application such as buckling restrained braces, buckling under compression would result in lower strength. In this section, a model \cite{Zona2012} suitable for BRB steel is presented with a neat implementation.
 \subsection{Theory}
