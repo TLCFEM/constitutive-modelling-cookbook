@@ -1201,12 +1201,12 @@ The corresponding derivatives are
 \subsubsection{Scalar Equation Iteration}
 With the above expression, it is possible to establish the local residual based on the creep rule, which is
 \begin{multline}
-R=\left(\norm{\sigma^\text{trial}-\sum\dfrac{\beta_n^i}{1+b^i\gamma}}-E\gamma-\sum\dfrac{a^i\gamma}{1+b^i\gamma}\right)\left(\dfrac{\Delta{}t}{\Delta{}t+\mu\gamma}\right)^\epsilon\\-\left(\sigma_y+k_l\left(p_n+\gamma\right)+k_s\left(1-e^{-m\left(p_n+\gamma\right)}\right)\right).
+R=\norm{\sigma^\text{trial}-\sum\dfrac{\beta_n^i}{1+b^i\gamma}}-E\gamma-\sum\dfrac{a^i\gamma}{1+b^i\gamma}\\-\left(\dfrac{\mu\gamma}{\Delta{}t}+1\right)^\epsilon\left(\sigma_y+k_l\left(p_n+\gamma\right)+k_s\left(1-e^{-m\left(p_n+\gamma\right)}\right)\right).
 \end{multline}
 The corresponding derivatives are then
 \begin{gather}
-\pdfrac{R}{\varepsilon^\text{trial}}=uE\left(\dfrac{\Delta{}t}{\Delta{}t+\mu\gamma}\right)^\epsilon,\\
-\pdfrac{R}{\gamma}=\left(\sum\dfrac{b^i\beta_n^iu-a^i}{(1+b^i\gamma)^2}-E-\dfrac{\epsilon\mu\norm{\eta}}{\Delta{}t+\mu\gamma}\right)\left(\dfrac{\Delta{}t}{\Delta{}t+\mu\gamma}\right)^\epsilon-\ddfrac{k}{\gamma}.
+\pdfrac{R}{\varepsilon^\text{trial}}=uE,\\
+\pdfrac{R}{\gamma}=\sum\dfrac{b^i\beta_n^iu-a^i}{(1+b^i\gamma)^2}-E-\left(\dfrac{\mu\gamma}{\Delta{}t}+1\right)^\epsilon\ddfrac{k}{\gamma}-\dfrac{\epsilon\mu}{\Delta{}t}\left(\dfrac{\mu\gamma}{\Delta{}t}+1\right)^{\epsilon-1}k.
 \end{gather}
 \subsubsection{Consistent Tangent Stiffness}
 For stiffness, $\varepsilon^\text{trial}$ is now varying, then
@@ -1219,7 +1219,7 @@ Since the stress can be written as
 \end{gather}
 The derivative is
 \begin{gather}
-\ddfrac{\sigma}{\varepsilon^\text{trial}}=E-Eu\ddfrac{\gamma}{\varepsilon^\text{trial}}=E+E^2\left(\pdfrac{R}{\gamma}\right)^{-1}\left(\dfrac{\Delta{}t}{\Delta{}t+\mu\gamma}\right)^\epsilon.
+\ddfrac{\sigma}{\varepsilon^\text{trial}}=E-Eu\ddfrac{\gamma}{\varepsilon^\text{trial}}=E+E^2\left(\pdfrac{R}{\gamma}\right)^{-1}.
 \end{gather}
 \subsection{Implementation}
 \begin{cppcode}
@@ -1228,16 +1228,18 @@ int VAFCRP1D::update_trial_status(const vec& t_strain) {
 
     trial_history = current_history;
     auto& p = trial_history(size);
+    vec beta(&trial_history(0), size, false, true);
 
-    if(fabs(trial_stress(0) - accu(trial_history.head(size))) < std::max(0., yield + hardening * p + saturated * (1. - exp(-m * p)))) return SUANPAN_SUCCESS;
+    if(fabs(trial_stress(0) - accu(beta)) < std::max(0., yield + hardening * p + saturated * (1. - exp(-m * p)))) return SUANPAN_SUCCESS;
 
-    auto gamma = 0.;
-    double xi, jacobian, exp_gamma;
+    const auto norm_mu = mu / (incre_time && *incre_time > 0. ? *incre_time : 1.);
 
-    unsigned counter = 0;
+    auto gamma = 0., ref_error = 1.;
+
+    auto counter = 0u;
     while(true) {
         if(max_iteration == ++counter) {
-            suanpan_error("VAFCRP1D cannot converge in %u iterations.\n", max_iteration);
+            suanpan_error("Cannot converge within {} iterations.\n", max_iteration);
             return SUANPAN_FAIL;
         }
 
@@ -1247,43 +1249,44 @@ int VAFCRP1D::update_trial_status(const vec& t_strain) {
         auto dk = hardening + m * exp_term;
         if(k < 0.) k = dk = 0.;
 
-        auto sum_a = 0., sum_b = 0.;
-        for(unsigned I = 0; I < size; ++I) {
-            const auto denom = 1. + b(I) * gamma;
-            sum_a += trial_history(I) / denom;
-            sum_b += a(I) / denom;
+        const vec bottom = 1. + b * gamma;
+
+        const auto xi = trial_stress(0) - accu(beta / bottom);
+        const auto q = fabs(xi) - (elastic_modulus + accu(a / bottom)) * gamma;
+
+        const auto fraction_term = norm_mu * gamma + 1.;
+        const auto power_term = pow(fraction_term, epsilon - 1.);
+
+        auto jacobian = -elastic_modulus - power_term * (norm_mu * epsilon * k + fraction_term * dk);
+
+        if(xi > 0.) jacobian += accu((b % beta - a) / square(bottom));
+        else jacobian -= accu((b % beta + a) / square(bottom));
+
+        const auto residual = q - fraction_term * power_term * k;
+        const auto incre = residual / jacobian;
+        const auto error = fabs(incre);
+        if(1u == counter) ref_error = error;
+        suanpan_debug("Local iteration error: {:.5E}.\n", error);
+        if(error < tolerance * ref_error || ((error < tolerance || fabs(residual) < tolerance * yield) && counter > 5u)) {
+            if(xi > 0.) {
+                beta += a * gamma;
+
+                trial_stress -= elastic_modulus * gamma;
+            }
+            else {
+                beta -= a * gamma;
+
+                trial_stress += elastic_modulus * gamma;
+            }
+            beta /= bottom;
+
+            trial_stiffness += elastic_modulus / jacobian * elastic_modulus;
+
+            return SUANPAN_SUCCESS;
         }
-
-        const auto q = fabs(xi = trial_stress(0) - sum_a) - (elastic_modulus + sum_b) * gamma;
-
-        exp_gamma = pow(*incre_time / (*incre_time + mu * gamma), epsilon);
-
-        jacobian = -elastic_modulus - epsilon * mu * q / (*incre_time + mu * gamma);
-
-        if(xi > 0.) for(unsigned I = 0; I < size; ++I) jacobian += (b(I) * trial_history(I) - a(I)) * pow(1. + b(I) * gamma, -2.);
-        else for(unsigned I = 0; I < size; ++I) jacobian -= (b(I) * trial_history(I) + a(I)) * pow(1. + b(I) * gamma, -2.);
-
-        const auto incre = (q * exp_gamma - k) / ((jacobian *= exp_gamma) -= dk);
-        suanpan_extra_debug("VAFCRP1D local iterative loop error: %.5E.\n", fabs(incre));
-        if(fabs(incre) <= tolerance) break;
 
         gamma -= incre;
         p -= incre;
     }
-
-    if(xi > 0.) {
-        for(unsigned I = 0; I < size; ++I) trial_history(I) = (trial_history(I) + a(I) * gamma) / (1. + b(I) * gamma);
-
-        trial_stress -= elastic_modulus * gamma;
-    }
-    else {
-        for(unsigned I = 0; I < size; ++I) trial_history(I) = (trial_history(I) - a(I) * gamma) / (1. + b(I) * gamma);
-
-        trial_stress += elastic_modulus * gamma;
-    }
-
-    trial_stiffness += elastic_modulus / jacobian * elastic_modulus * exp_gamma;
-
-    return SUANPAN_SUCCESS;
 }
 \end{cppcode}
