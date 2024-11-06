@@ -1,8 +1,9 @@
-\usepackage{algorithm,algpseudocode,amsfonts,amsmath,amssymb,bm,booktabs,hyperref,listings,lmodern,lscape,mathtools,minted,pgfplots,scrhack,scrlayer-scrpage,setspace,siunitx,structmech,subcaption,tikz}
+\usepackage{algorithm,algpseudocode,amsfonts,amsmath,amssymb,bm,booktabs,hyperref,listings,lmodern,lscape,mathtools,minted,pgfplots,setspace,siunitx,structmech,subcaption,tikz}
 \pgfplotsset{compat=1.18}
 \usepackage[T1]{fontenc}
 \usepackage[makeroom]{cancel}
 \usepackage[fontsize=50pt]{draftwatermark}
+\usepackage[margin=1in]{geometry}
 \SetWatermarkText{DRAFT COPY\\WORK IN PROGRESS\\MAY CONTAIN ERRORS}
 \hypersetup{colorlinks}
 \usetikzlibrary{decorations.pathmorphing,shapes.geometric}
@@ -54,7 +55,7 @@
 \newenvironment{breakablealgorithm}
 {\begin{center}
 \refstepcounter{algorithm}
-\hrule\kern-8pt
+\hrule\kern2pt
 \renewcommand{\caption}[2][\relax]{
 {\raggedright\textbf{\ALG@name~\thealgorithm} ##2\par}
 \ifx\relax##1\relax
