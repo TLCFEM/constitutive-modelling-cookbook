@@ -3,20 +3,26 @@
 In this section, the concrete damage plasticity model proposed by \cite{Lee1998} is presented.
 A slightly different version (with Lode angle dependency and other minor changes) is implemented in ABAQUS.
 
-The CDP model follows Lemaitre's damage theory \cite{Lemaitre1985} and is developed under the assumption of isotropic damage. Accordingly, the final stress $\bsigma$ can be expressed as the product of the effective stress $\bbsigma$ and some function of damage measure.
+The CDP model follows Lemaitre's damage theory \cite{Lemaitre1985} and is developed under the assumption of isotropic damage.
+Accordingly, the final stress $\bsigma$ can be expressed as the product of the effective stress $\bbsigma$ and some function of damage measure.
 \begin{gather}
 \bsigma=h\left(d_t,d_c\right)\bbsigma,
 \end{gather}
 where $h\left(d_t,d_c\right)$ is a function of two damage variables $d_t$ and $d_c$, which depend on some internal history variables.
+It can be understood by using the two--surface concept, that is, the final stress $\bsigma$ is the projection of $\bbsigma$ onto the final yield surface.
 
-The effective part $\bbsigma$ fully resembles the conventional plasticity. Thus $h\left(d_t,d_c\right)$ and $\bbsigma$ can be handled in a relatively independent manner.
+The effective stress $\bbsigma$ itself is bounded by the effective yield surface that fully resembles the conventional plasticity.
+The damage measure $h\left(d_t,d_c\right)$ can be independently computed once all internal historic variables are determined.
+Thus $h\left(d_t,d_c\right)$ and $\bbsigma$ can be handled in a relatively independent manner.
 \subsection{Plasticity Theory}
 \subsubsection{Yield Function}
 The yield function is defined as
 \begin{gather}
 f=\alpha\bar{I}_1+\sqrt{\dfrac{3}{2}}\norm{\bar{\bs}}+\beta\left\langle\hat{\sigma}_1\right\rangle-\left(1-\alpha\right)c_c,
 \end{gather}
-with $\bar{I}_1=\tr{\bbsigma}$ is the first invariant of effective stress tensor $\bbsigma$, $\hat{\sigma}_1$ is the major effective principal stress, $c_c=-\bar{f}_c$ denotes cohesion and $\beta=\dfrac{\bar{f}_c}{\bar{f}_t}(\alpha-1)-(\alpha+1)$. The effective backbone stresses (both positive) $\bar{f}_c$ and $\bar{f}_t$ will be defined later.
+with $\bar{I}_1=\tr{\bbsigma}$ is the first invariant of effective stress tensor $\bbsigma$, $\hat{\sigma}_1$ is the major effective principal stress, $c_c=-\bar{f}_c$ denotes cohesion and $\beta=\dfrac{\bar{f}_c}{\bar{f}_t}(\alpha-1)-(\alpha+1)$ where $\alpha$ is a material constant.
+The effective backbone stresses (both positive) $\bar{f}_c$ and $\bar{f}_t$ will be defined later.
+It is assumed that $\hat{\sigma}_1\geqslant\hat{\sigma}_2\geqslant\hat{\sigma}_3$.
 \subsubsection{Flow Rule}
 The flow potential $g$ is chosen to be
 \begin{gather}
@@ -28,7 +34,7 @@ The flow rule is accordingly defined as
 \end{gather}
 In deviatoric and spherical components,
 \begin{gather}
-\dot{\bvarepsilon^{d,p}}=\gamma\bn,\quad\dot{\varepsilon^{v,p}}=\gamma3\alpha_p.
+\dot{\bvarepsilon^{d,p}}=\dev{\dot{\bvarepsilon^p}}=\gamma\bn,\quad\dot{\varepsilon^{v,p}}=\tr{\dot{\bvarepsilon^p}}=\gamma3\alpha_p.
 \end{gather}
 
 Noting that
@@ -57,9 +63,11 @@ where $\hat{\bs}$ denotes the principal stress tensor of the deviatoric stress t
 \end{gather}
 and can be formulated from eigenanalysis.
 \subsubsection{Hardening Law}
-Since concrete shows different behaviour under compression and tension, the subscript $\left(\cdot\right)_\aleph$ is used to denoted either tension $\left(\cdot\right)_t$ or compression $\left(\cdot\right)_c$.
+Both compression and tension backbones are described by functions of the same form.
+Since concrete shows different behaviour under compression and tension, different material parameters are used accordingly.
+The subscript $\left(\cdot\right)_\aleph$ may denote either tension $\left(\cdot\right)_t$ or compression $\left(\cdot\right)_c$ in the following expressions.
 
-Internal hardening parameters $\kappa_\aleph$ shall satisfy the following expression,
+Internal hardening parameters $\kappa_\aleph$ is governed by the following evolution rule,
 \begin{gather}
 \dot{\kappa_\aleph}=\gamma{}H_\aleph,
 \end{gather}
@@ -68,7 +76,7 @@ where $H_\aleph$ defines the hardening law. Different $H_\aleph$ shall be used f
 H_t=r\dfrac{f_t}{g_t}\left(\hat{n}_1+\alpha_p\right),\\
 H_c=\left(1-r\right)\dfrac{f_c}{g_c}\left(\hat{n}_3+\alpha_p\right).
 \end{gather}
-In which $\hat{n}_1$ and $\hat{n}_3$ denotes the maximum and minimum components in $\hat{\bn}$ and $r$ is a scalar valued function of the effective principal stress. In the original model, it is defined as
+In which $\hat{n}_1\geqslant\hat{n}_3$ denote the maximum and minimum in $\hat{\bn}$ and $r$ is a scalar--valued function of the effective principal stress. In the original model, it is defined as
 \begin{gather}
 r\left(\hat{\bsigma}\right)=\dfrac{\left\langle\hat{\sigma}_1\right\rangle+\left\langle\hat{\sigma}_2\right\rangle+\left\langle\hat{\sigma}_3\right\rangle}{\abs{\hat{\sigma}_1}+\abs{\hat{\sigma}_2}+\abs{\hat{\sigma}_3}}.
 \end{gather}
@@ -93,13 +101,13 @@ with
 d_\aleph=1-\Phi_\aleph^{c_\aleph/b_\aleph}.
 \end{gather*}
 
-In general, the backbone curve can be customised. The main algorithm has no interested in how the backbone curve is computed, only $f_\aleph$, $\bar{f}_\aleph$ and $d_\aleph$ and their derivatives with regard to $\kappa_\aleph$ need to be provided. The exponential form adopted in the original model may encounter some numerical difficulties, which in the author's opinion is not ideal. One can always choose another form, such as providing those quantities in a tabulated fashion. This is also what ABAQUS offers.
+In general, the backbone curve can be customised. The main algorithm has no interested in how the backbone curve is computed, only $f_\aleph$, $\bar{f}_\aleph$ and $d_\aleph$ and their derivatives with regard to $\kappa_\aleph$ need to be provided. The exponential form adopted in the original model may encounter some numerical difficulties, which in the author's opinion is not ideal. One can always choose other forms, such as providing those quantities in a tabulated fashion. This is also what ABAQUS offers.
 \subsection{Damage Theory}
 The damage measure takes the form
 \begin{gather}
 h\left(d_t,d_c\right)=\left(1-d_c\right)\left(1-sd_t\right)
 \end{gather}
-with $s=s_0+\left(1-s_0\right)r$ is the recovery factor.
+where $s=s_0+\left(1-s_0\right)r$ is the recovery factor.
 \subsection{Plasticity Formulation}
 The CDP model is driven by three quantities $\kappa_t$, $\kappa_c$ and $\bvarepsilon^p$. The governing equations are listed as follows.
 \begin{table}[ht]
@@ -126,7 +134,8 @@ with $\beta$ and $c_c$ computed by using $\kappa_{t,n}$ and $\kappa_{c,n}$. If $
 \bsigma_{n+1}=\left(1-d_{c,n}\right)\left(1-sd_{t,n}\right)\bbsigma^\text{trial}.
 \end{gather}
 
-The corresponding tangent stiffness is then
+Since $r$ is a function of $\bbsigma_{n+1}$, the corresponding tangent stiffness is \textbf{not} a scaled version of the elastic stiffness.
+It can be derived as follows using the chain rule.
 \begin{gather}\label{eq:cdp_ed}
 \begin{split}
 \pdfrac{\bsigma_{n+1}}{\bvarepsilon_{n+1}}&=\pdfrac{\bsigma_{n+1}}{\bbsigma_{n+1}}:\pdfrac{\bbsigma_{n+1}}{\bvarepsilon_{n+1}}\\
@@ -135,7 +144,7 @@ The corresponding tangent stiffness is then
 \end{split}
 \end{gather}
 \subsubsection{Plasticity Evolution}
-The yield function and the damage evolutions are three local equations shall be satisfied.
+The local system consists of three residuals.
 \begin{gather}\label{eq:cdp_r}
 \mb{R}=\left\{
 \begin{array}{l}
@@ -186,7 +195,7 @@ f_c\dfrac{\hat{n}_3+\alpha_p}{g_c}\left(1-r-\gamma\pdfrac{r}{\gamma}\right)&\cdo
 \subsection{Damage Formulation}
 There is no local iteration required in the damage part. Once $\kappa_t$ and $\kappa_c$ are determined, the effective part $\bar\bsigma$ can be determined. Damage measures $d_t$ and $d_c$ can be computed accordingly.
 \subsection{Consistent Tangent Stiffness}
-In order to take derivatives with regard to trial strain, one can replace $\norm{\hat{\bs}^\text{trial}}$ and $\norm{\bar{\bs}^\text{trial}}$, which yields
+In order to take derivatives with regard to the trial strain $\bvarepsilon_{n+1}$, one can replace $\norm{\hat{\bs}^\text{trial}}$ and $\norm{\bar{\bs}^\text{trial}}$, which yields
 \begin{gather}
 \pdfrac{\mb{R}}{\bvarepsilon_{n+1}}=\left\{
 \begin{array}{l}
