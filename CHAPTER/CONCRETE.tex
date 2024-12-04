@@ -1,14 +1,15 @@
 \chapter{Concrete}
 \section{Concrete Damage Plasticity (CDP) Model}
 In this section, the concrete damage plasticity model proposed by \cite{Lee1998} is presented.
+It can be seen as a continuation and further extension of the Barcelona model \cite{Lubliner1989}, in which a unified uniaxial backbone curve that possess some interesting features is proposed.
 A slightly different version (with Lode angle dependency and other minor changes) is implemented in ABAQUS.
 
 The CDP model follows Lemaitre's damage theory \cite{Lemaitre1985} and is developed under the assumption of isotropic damage.
 Accordingly, the final stress $\bsigma$ can be expressed as the product of the effective stress $\bbsigma$ and some function of damage measure.
 \begin{gather}
-\bsigma=h\left(d_t,d_c\right)\bbsigma,
+\bsigma=h\cdot\bbsigma,
 \end{gather}
-where $h\left(d_t,d_c\right)$ is a function of two damage variables $d_t$ and $d_c$, which depend on some internal history variables.
+where $h=h\left(d_t,d_c\right)$ is a function of two damage variables $d_t$ and $d_c$, which depend on some internal history variables.
 It can be understood by using the two--surface concept, that is, the final stress $\bsigma$ is the projection of $\bbsigma$ onto the final yield surface.
 
 The effective stress $\bbsigma$ itself is bounded by the effective yield surface that fully resembles the conventional plasticity.
@@ -23,15 +24,26 @@ f=\alpha\bar{I}_1+\sqrt{\dfrac{3}{2}}\norm{\bar{\bs}}+\beta\left\langle\hat{\sig
 with $\bar{I}_1=\tr{\bbsigma}$ is the first invariant of effective stress tensor $\bbsigma$, $\hat{\sigma}_1$ is the major effective principal stress, $c_c=-\bar{f}_c$ denotes cohesion and $\beta=\dfrac{\bar{f}_c}{\bar{f}_t}(\alpha-1)-(\alpha+1)$ where $\alpha$ is a material constant.
 The effective backbone stresses (both positive) $\bar{f}_c$ and $\bar{f}_t$ will be defined later.
 It is assumed that $\hat{\sigma}_1\geqslant\hat{\sigma}_2\geqslant\hat{\sigma}_3$.
+
+It shall be noted that, for the given $\bbsigma$, one can perform the eigen decomposition to obtain the principal stress $\hat{\bsigma}$, with which, the following holds
+\begin{gather}
+\hat{I}_1=\tr{\hat{\bsigma}}=\bar{I}_1,\qquad
+\norm{\hat{\bs}}=\norm{\bar{\bs}},
+\end{gather}
+because they are effectively invariants of the given tensor.
+In the following, we do not distinguish between those two forms of invariants.
+One shall realise that the same quantity can be computed using different tensors and depending on the context, one form may be more convenient than the other.
 \subsubsection{Flow Rule}
 The flow potential $g$ is chosen to be
 \begin{gather}
-g=\sqrt{2\bar{J}_2}+\alpha_p\bar{I}_1=\norm{\bar{\bs}}+\tr{\alpha_p\bbsigma}.
+g=\sqrt{2\bar{J}_2}+\alpha_p\bar{I}_1=\norm{\bar{\bs}}+\tr{\alpha_p\bbsigma},
 \end{gather}
+in which $\alpha_p$ is a material constant that controls dilatation.
 The flow rule is accordingly defined as
 \begin{gather}
 \dot{\bvarepsilon^p}=\gamma\pdfrac{g}{\bbsigma}=\gamma\left(\dfrac{\bar{\bs}}{\norm{\bar{\bs}}}+\alpha_p\mb{1}\right)=\gamma\left(\bn+\alpha_p\mb{1}\right).
 \end{gather}
+It is clearly \textbf{not} associative.
 In deviatoric and spherical components,
 \begin{gather}
 \dot{\bvarepsilon^{d,p}}=\dev{\dot{\bvarepsilon^p}}=\gamma\bn,\quad\dot{\varepsilon^{v,p}}=\tr{\dot{\bvarepsilon^p}}=\gamma3\alpha_p.
@@ -53,8 +65,8 @@ Furthermore, $\bs$ and $\bs^\text{trial}$ are coaxial (why?), thus,
 \end{gather}
 It simply means the flow direction is fixed for all iterations in each sub-step. And due to the coaxiality, $\bar{\bs}$ and $\bar{\bs}^\text{trial}$ share the same eigen space. More importantly, the eigenvectors remain constant for each iteration. Thus,
 \begin{gather}
-\dfrac{\bar{\bs}}{\norm{\bar{\bs}}}=\dfrac{\bar{\bs}^\text{trial}}{\norm{\bar{\bs}^\text{trial}}},\qquad
-\dfrac{\hat{\bs}}{\norm{\hat{\bs}}}=\dfrac{\hat{\bs}^\text{trial}}{\norm{\hat{\bs}^\text{trial}}},
+\bn=\dfrac{\bar{\bs}}{\norm{\bar{\bs}}}=\dfrac{\bar{\bs}^\text{trial}}{\norm{\bar{\bs}^\text{trial}}},\qquad
+\hat{\bn}=\dfrac{\hat{\bs}}{\norm{\hat{\bs}}}=\dfrac{\hat{\bs}^\text{trial}}{\norm{\hat{\bs}^\text{trial}}},
 \end{gather}
 where $\hat{\bs}$ denotes the principal stress tensor of the deviatoric stress tensor $\bar{\bs}$. As the yield function $f$ can be equivalently expressed with the principal stresses, in the following derivation, $\hat{\bn}$ is used to represent the unit principal deviatoric stress which has three components. The transformation matrix $\mb{T}$ is defined as
 \begin{gather}
@@ -81,6 +93,10 @@ In which $\hat{n}_1\geqslant\hat{n}_3$ denote the maximum and minimum in $\hat{\
 r\left(\hat{\bsigma}\right)=\dfrac{\left\langle\hat{\sigma}_1\right\rangle+\left\langle\hat{\sigma}_2\right\rangle+\left\langle\hat{\sigma}_3\right\rangle}{\abs{\hat{\sigma}_1}+\abs{\hat{\sigma}_2}+\abs{\hat{\sigma}_3}}.
 \end{gather}
 The purpose of $r$ is to characterise the proportion of tension in a multiaxial loading case.
+Other forms can also be used, for example,
+\begin{gather}
+r\left(\hat{\bsigma}\right)=\dfrac{\norm{\left\langle\hat{\bsigma}\right\rangle}}{\norm{\hat{\bsigma}}}.
+\end{gather}
 \subsubsection{Backbone Curve}
 The backbone curve $f_\aleph$ is related to the internal parameter $\kappa_\aleph$.
 \begin{gather*}
@@ -96,10 +112,15 @@ The effective counterpart $\bar{f}_\aleph$ is defined as
 \begin{gather*}
 \bar{f}_\aleph=\dfrac{f_\aleph}{1-d_\aleph}=f_{\aleph,0}\sqrt{\phi_\aleph}\Phi_\aleph^{1-c_\aleph/b_\aleph},
 \end{gather*}
-with
+with the damage variable $d_\aleph$,
 \begin{gather*}
 d_\aleph=1-\Phi_\aleph^{c_\aleph/b_\aleph}.
 \end{gather*}
+One can observe that $f_\aleph=\left(1-d_\aleph\right)\bar{f}_\aleph$ also follows the damage theory.
+When $d_\aleph=0$, there is no damage, then $f_\aleph=\bar{f}_\aleph$.
+When $d_\aleph=1$, the material has completely failed, then $f_\aleph=0$.
+We do not discuss those functions in detail here.
+One can refer to the Barcelona model \cite{Lubliner1989} for an extensive discussion.
 
 In general, the backbone curve can be customised. The main algorithm has no interested in how the backbone curve is computed, only $f_\aleph$, $\bar{f}_\aleph$ and $d_\aleph$ and their derivatives with regard to $\kappa_\aleph$ need to be provided. The exponential form adopted in the original model may encounter some numerical difficulties, which in the author's opinion is not ideal. One can always choose other forms, such as providing those quantities in a tabulated fashion. This is also what ABAQUS offers.
 \subsection{Damage Theory}
@@ -108,6 +129,11 @@ The damage measure takes the form
 h\left(d_t,d_c\right)=\left(1-d_c\right)\left(1-sd_t\right)
 \end{gather}
 where $s=s_0+\left(1-s_0\right)r$ is the recovery factor.
+When $r=1$, indicating pure tension loading, $s=1$, the tension damage $d_t$ is fully accounted.
+When $r=0$, indicating pure compression loading, $s=s_0$, the effective tension damage is $s_0d_t<d_t$.
+This is a convenient approach to simulate the strength recovery when the material is initially pulled and later compressed.
+No similar counterpart is considered for compression damage as typically once the material is crushed, further tension is not possible.
+The alternative to achieve a similar effect is to use anisotropic damage measure.
 \subsection{Plasticity Formulation}
 The CDP model is driven by three quantities $\kappa_t$, $\kappa_c$ and $\bvarepsilon^p$. The governing equations are listed as follows.
 \begin{table}[ht]
