@@ -10,9 +10,16 @@ NonlinearGurson::update_trial_status
 In this section, we present a frame element that supports customisation of the $N$-$M$ interaction with the generalised plasticity theory. The core model is taken mainly from the literature, further discussions can be seen elsewhere \cite{Chang2023}.
 
 This element fuses the concepts of element, section and material altogether, thus, it can be deemed as a material model as well.
+
+However, due to the exact same reason, calibration can only be made per beam element.
+In this regard, one may argue that conventional fibre/material based elements are inherently superior.
+This is typically valid.
+But fibre based elements cannot capture section level effects easily, which largely depend on the formulation of the specific beam element used.
+On the other hand, the element introduced in this section allows flexible customisation of response, which may not necessarily be strictly tied to the underlying material response.
+This is beneficial for engineering design, as often standards adopt much more conservative $N$-$M$ envelopes, which are quite different from the `actual' envelope derived from material models.
 \subsection{Preliminaries}
 \subsubsection{Definitions and Kinematics}
-Consider a two--node beam\footnote{The word `beam' is used interchangeably with `frame' and/or `beam--column'.} element connecting nodes $i$ and $j$ with its rigid body motions removed, the resulting degrees of freedom are axial deformation $u$, rotational deformation $\theta_{z,i}$ of end $i$ and rotational deformation $\theta_{z,j}$ of end $j$, and additional two end rotations, $\theta_{y,i}$ and $\theta_{y,j}$ about weak axis in case of a 3D beam.
+Consider a two--node beam\footnote{The word `beam' is used interchangeably with `frame' and/or `beam--column'.} element connecting nodes $i$ and $j$ with its rigid body motions removed, the resulting degrees of freedom are axial deformation $u$, rotational deformation $\theta_{z,i}$ of end $i$ and rotational deformation $\theta_{z,j}$ of end $j$, and additional two end rotations, $\theta_{y,i}$ and $\theta_{y,j}$ about weak axis in the case of a 3D beam.
 It is assumed that the beam is rigid against torsion (no torsion deformation).
 \begin{figure}[H]
 \centering
