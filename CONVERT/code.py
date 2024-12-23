@@ -77,6 +77,9 @@ def walk_tex(source: str):
                 ):
                     all_code_blocks.append(i + 1)
 
+            if not all_code_blocks:
+                continue
+
             # replace all lines within the text context by the code block extracted
             new_content = []
             for i, line in enumerate(tex_content):
