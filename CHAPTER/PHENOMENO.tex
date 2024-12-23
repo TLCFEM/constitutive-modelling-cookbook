@@ -59,51 +59,7 @@ To wrap up,
 \subsection{Implementation}
 The CPP implementation can be found as follows.
 \begin{cppcode}
-int RambergOsgood::update_trial_status(const vec& t_strain) {
-	incre_strain = (trial_strain = t_strain) - current_strain;
-
-	if(fabs(incre_strain(0)) <= datum::eps) return SUANPAN_SUCCESS;
-
-	trial_history = current_history;
-	auto& load_sign = trial_history(0);
-	auto& reverse_strain = trial_history(1);
-	auto& reverse_stress = trial_history(2);
-	auto& p_reverse_strain = trial_history(3);
-	auto& p_reverse_stress = trial_history(4);
-
-	if(const auto trial_load_sign = suanpan::sign(incre_strain(0)); !suanpan::approx_equal(trial_load_sign, load_sign)) {
-		if(!suanpan::approx_equal(load_sign, 0.)) {
-			p_reverse_strain = reverse_strain;
-			p_reverse_stress = reverse_stress;
-			reverse_strain = current_strain(0);
-			reverse_stress = current_stress(0);
-		}
-		load_sign = trial_load_sign;
-	}
-
-	const auto elastic_predictor = elastic_modulus * fabs(trial_strain(0) - reverse_strain);
-
-	const auto norm_yield_stress = std::max(datum::eps, 0. == p_reverse_stress || fabs(p_reverse_stress) < fabs(reverse_stress) ? std::max(fabs(reverse_stress - p_reverse_stress), yield_stress + fabs(reverse_stress)) : fabs(reverse_stress - p_reverse_stress));
-
-	const auto pow_a = pow(norm_yield_stress, nm);
-
-	auto norm_stress = fabs(current_stress(0) - reverse_stress);
-
-	unsigned counter = 0;
-	while(true) {
-		const auto pow_b = offset * pow(norm_stress, nm);
-		const auto jacobian = pow_a + n * pow_b;
-		const auto incre = (norm_stress * (pow_a + pow_b) - elastic_predictor * pow_a) / jacobian;
-		const auto error = fabs(incre) / yield_stress;
-		suanpan_debug("RambergOsgood local iteraton error: %.5E.\n", error);
-		if(error <= tolerance || max_iteration == ++counter) {
-			trial_stress = load_sign * norm_stress + reverse_stress;
-			trial_stiffness = elastic_modulus * pow_a / jacobian;
-			return SUANPAN_SUCCESS;
-		}
-		norm_stress -= incre;
-	}
-}
+RambergOsgood::update_trial_status
 \end{cppcode}
 \section{MPF Steel Model}
 The MPF model is a widely used phenomenological model for steel.
@@ -198,65 +154,7 @@ where $\zeta$ is difference between previous two reversed points, $\varepsilon_{
 \subsection{Implementation}
 The CPP implementation can be found as follows.
 \begin{cppcode}
-int MPF::update_trial_status(const vec& t_strain) {
-	incre_strain = (trial_strain = t_strain) - current_strain;
-
-	if(fabs(incre_strain(0)) <= datum::eps) return SUANPAN_SUCCESS;
-
-	trial_history = current_history;
-	auto& reverse_stress = trial_history(0);
-	auto& reverse_strain = trial_history(1);
-	auto& inter_stress = trial_history(2);
-	auto& inter_strain = trial_history(3);
-	auto& pre_inter_strain = trial_history(4);
-	auto& max_strain = trial_history(5);
-	auto& load_sign = trial_history(6);
-
-	auto shift_stress = 0.;
-	if(isotropic_hardening) {
-		shift_stress = std::max(0., A3 * yield_stress * (max_strain / yield_strain - A4));
-		max_strain = std::max(max_strain, fabs(trial_strain(0)));
-	}
-
-	if(const auto trial_load_sign = suanpan::sign(incre_strain(0)); !suanpan::approx_equal(trial_load_sign, load_sign)) {
-		if(!suanpan::approx_equal(load_sign, 0.)) {
-			reverse_stress = current_stress(0);
-			reverse_strain = current_strain(0);
-			pre_inter_strain = inter_strain;
-			inter_strain = yield_stress * hardening_ratio - yield_stress - shift_stress;
-			if(trial_load_sign > 0.) inter_strain = -inter_strain;
-			inter_strain = (inter_strain + elastic_modulus * reverse_strain - reverse_stress) / (elastic_modulus - hardening_ratio * elastic_modulus);
-			inter_stress = elastic_modulus * (inter_strain - reverse_strain) + reverse_stress;
-		}
-		else if(trial_load_sign > 0.) {
-			inter_stress = yield_stress;
-			inter_strain = yield_strain;
-		}
-		else {
-			inter_stress = -yield_stress;
-			inter_strain = -yield_strain;
-		}
-		load_sign = trial_load_sign;
-	}
-
-	auto radius = R0;
-	if(!constant_radius) {
-		// update radius
-		const auto xi = fabs(reverse_strain - pre_inter_strain) / yield_strain;
-		radius -= A1 * xi / (A2 + xi);
-	}
-
-	const auto gap_strain = inter_strain - reverse_strain;
-	const auto gap_stress = inter_stress - reverse_stress;
-	const auto normal_strain = std::max(datum::eps, (trial_strain(0) - reverse_strain) / gap_strain);
-	const auto factor_a = 1. + pow(normal_strain, radius);
-	const auto factor_b = (1. - hardening_ratio) * pow(factor_a, -1. / radius);
-
-	trial_stress = (hardening_ratio + factor_b) * normal_strain * gap_stress + reverse_stress;
-	trial_stiffness = gap_stress / gap_strain * (hardening_ratio + factor_b / factor_a);
-
-	return SUANPAN_SUCCESS;
-}
+MPF::update_trial_status
 \end{cppcode}
 \section{Bouc--Wen Model}
 \subsection{Theory}
@@ -301,45 +199,7 @@ A=1,\qquad\gamma+\beta=1.
 \subsection{Formulation}
 \subsection{Implementation}
 \begin{cppcode}
-int BoucWen::update_trial_status(const vec& t_strain) {
-    incre_strain = (trial_strain = t_strain) - current_strain;
-
-    if(fabs(incre_strain(0)) <= datum::eps) return SUANPAN_SUCCESS;
-
-    const auto n_strain = incre_strain(0) / yield_strain;
-
-    trial_history = current_history;
-    const auto& current_z = current_history(0); // z
-    auto& z = trial_history(0);                 // z
-
-    auto incre = .5 * n_strain;
-    unsigned counter = 0;
-    while(true) {
-        if(max_iteration == ++counter) {
-            suanpan_error("BoucWen cannot converge within %u iterations.\n", max_iteration);
-            return SUANPAN_FAIL;
-        }
-
-        z += incre;
-
-        const auto p_term = (gamma + (z * n_strain >= 0. ? beta : -beta)) * pow(std::max(datum::eps, fabs(z)), n);
-        const auto t_term = n_strain * p_term;
-
-        const auto residual = z - current_z + t_term - n_strain;
-        const auto jacobian = z + n * t_term;
-
-        const auto error = fabs(incre = -residual * z / jacobian);
-
-        suanpan_debug("BoucWen local iteration error: %.5E.\n", error);
-
-        if(error <= tolerance) {
-            trial_stress = modulus_a * trial_strain + modulus_b * z;
-            trial_stiffness = modulus_a + modulus_b / yield_strain * (1. - p_term) * z / jacobian;
-
-            return SUANPAN_SUCCESS;
-        }
-    }
-}
+BoucWen::update_trial_status
 \end{cppcode}
 \section{General Framework for Hysteresis Models}
 \subsection{Theory}
@@ -420,118 +280,7 @@ The control points can be updated on the demand with some auxiliary methods.
 
 The following CPP code snippet shows a working implementation of such a state determination procedure.
 \begin{cppcode}
-int SimpleHysteresis::update_trial_status(const vec& t_strain) {
-	incre_strain = (trial_strain = t_strain) - current_strain;
-
-	if(fabs(incre_strain(0)) <= datum::eps) return SUANPAN_SUCCESS;
-
-	if(current_history.is_empty() || !any(current_history)) {
-		current_history.zeros(8);
-		auto point = compute_compression_initial_reverse();
-		current_history(2) = point(0);
-		current_history(3) = point(1);
-		point = compute_tension_initial_reverse();
-		current_history(4) = point(0);
-		current_history(5) = point(1);
-		initial_history = current_history;
-	}
-	else if(current_history.size() != 8) {
-		current_history.resize(8);
-		initial_history = current_history;
-	}
-
-	trial_history = current_history;
-	auto& max_c_strain = trial_history(0);      // maximum compression strain recorded
-	auto& max_t_strain = trial_history(1);      // maximum tension strain recorded
-	auto& reverse_c_strain = trial_history(2);  // unloading point strain compression side
-	auto& reverse_c_stress = trial_history(3);  // unloading point stress compression side
-	auto& reverse_t_strain = trial_history(4);  // unloading point strain tension side
-	auto& reverse_t_stress = trial_history(5);  // unloading point stress tension side
-	auto& residual_c_strain = trial_history(6); // residual strain in compression unloading path
-	auto& residual_t_strain = trial_history(7); // residual strain in compression unloading path
-
-	podarray<double> response;
-
-	if(Status::NONE == current_flag) {
-		if(incre_strain(0) > 0.) {
-			trial_flag = Status::TBACKBONE;
-			response = compute_tension_backbone(max_t_strain = trial_strain(0));
-		}
-		else {
-			trial_flag = Status::CBACKBONE;
-			response = compute_compression_backbone(max_c_strain = trial_strain(0));
-		}
-	}
-	else if(Status::CBACKBONE == current_flag) {
-		if(incre_strain(0) > 0.) {
-			residual_c_strain = compute_compression_residual(reverse_c_strain = current_strain(0), reverse_c_stress = current_stress(0));
-			if(trial_strain(0) > reverse_t_strain) {
-				trial_flag = Status::TBACKBONE;
-				response = compute_tension_backbone(max_t_strain = trial_strain(0));
-			}
-			else {
-				trial_flag = Status::CINNER;
-				response = compute_compression_inner(trial_strain(0));
-			}
-		}
-		else {
-			trial_flag = Status::CBACKBONE;
-			response = compute_compression_backbone(max_c_strain = trial_strain(0));
-		}
-	}
-	else if(Status::TBACKBONE == current_flag) {
-		if(incre_strain(0) < 0.) {
-			residual_t_strain = compute_tension_residual(reverse_t_strain = current_strain(0), reverse_t_stress = current_stress(0));
-			if(trial_strain(0) < reverse_c_strain) {
-				trial_flag = Status::CBACKBONE;
-				response = compute_compression_backbone(max_c_strain = trial_strain(0));
-			}
-			else {
-				trial_flag = Status::TINNER;
-				response = compute_tension_inner(trial_strain(0));
-			}
-		}
-		else {
-			trial_flag = Status::TBACKBONE;
-			response = compute_tension_backbone(max_t_strain = trial_strain(0));
-		}
-	}
-	else if(Status::CINNER == current_flag) {
-		if(trial_strain(0) > reverse_t_strain) {
-			trial_flag = Status::TBACKBONE;
-			response = compute_tension_backbone(max_t_strain = trial_strain(0));
-		}
-		else if(trial_strain(0) < reverse_c_strain) {
-			trial_flag = Status::CBACKBONE;
-			response = compute_compression_backbone(max_c_strain = trial_strain(0));
-		}
-		else {
-			trial_flag = Status::CINNER;
-			response = compute_compression_inner(trial_strain(0));
-		}
-	}
-	else if(Status::TINNER == current_flag) {
-		if(trial_strain(0) > reverse_t_strain) {
-			trial_flag = Status::TBACKBONE;
-			response = compute_tension_backbone(max_t_strain = trial_strain(0));
-		}
-		else if(trial_strain(0) < reverse_c_strain) {
-			trial_flag = Status::CBACKBONE;
-			response = compute_compression_backbone(max_c_strain = trial_strain(0));
-		}
-		else {
-			trial_flag = Status::TINNER;
-			response = compute_tension_inner(trial_strain(0));
-		}
-	}
-
-	trial_stress = response(0);
-	trial_stiffness = response(1);
-
-	suanpan_debug([&]() { if(!trial_stress.is_finite() || !trial_stiffness.is_finite()) throw invalid_argument("infinite number detected.\n"); });
-
-	return SUANPAN_SUCCESS;
-}
+SimpleHysteresis::update_trial_status
 \end{cppcode}
 \subsubsection{Remarks}
 A lot of hysteresis models can be reformulated in the above framework. For example, by fixing residual points to origin, all unloading paths (either linear or nonlinear) converge to origin, which correspond to a class of models that are often called origin--oriented. Alternatively, the reloading curve can be defined in a way so that it always loads back to the peak point on the backbone curve on the opposite side. This is often known as peak--oriented model.
