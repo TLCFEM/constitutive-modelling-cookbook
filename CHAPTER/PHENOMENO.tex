@@ -158,17 +158,25 @@ MPF::update_trial_status
 \end{cppcode}
 \section{Bouc--Wen Model}
 \subsection{Theory}
-The relative resistance can be expressed as a summation of two terms.
+The relative force $\dfrac{f}{f_y}$ can be expressed as a summation of two terms.
 \begin{gather}
 \dfrac{f}{f_y}=a\dfrac{u}{u_y}+\left(1-a\right)z.
 \end{gather}
-In which $a$ denotes the hardening ratio.
+In which $a$ denotes the hardening ratio, $\dfrac{u}{u_y}$ is the relative displacement.
+Naturally, $u_y$ and $f_y$ are the yield displacement and force, respectively.
 The field $z$ is an internal variable that does not necessarily possess any physical meaning.
 Judging from its form in the above expression, one can infer that $z$ is some sort of relative displacement, similar to $u/u_y$.
 It's evolution is governed by the following ODE.
 \begin{gather}\label{eq:bouc-wen}
 \dot{z}=\dfrac{\dot{u}}{u_y}\left(A-\left(\gamma+\sign{z\dot{u}}\beta\right)\abs{z}^n\right).
 \end{gather}
+After careful examination, one may find that the above ODE is essentially a more evolved extension of the equivalent differential equation of the expression $y=A-A\exp(-Bx)$, which is
+\begin{gather}
+	\dot{y}=\dot{x}AB\exp(-Bx)=\dot{x}B\left(A-y\right).
+\end{gather}
+Thus, $z$ obeying \eqsref{eq:bouc-wen} would show a saturation behaviour.
+Since the change of loading direction changes the value of $\gamma+\sign{z\dot{u}}\beta$, cyclic loading would then yield a hysteresis loop.
+\subsection{Formulation}
 In this incremental form, for a given $\Delta{}u$, using the implicit Euler method, one can obtain
 \begin{gather}
 R=z-z_n-\dfrac{\Delta{}u}{u_y}\left(A-\left(\gamma+\sign{z\Delta{}u}\beta\right)\abs{z}^n\right).
@@ -178,6 +186,9 @@ Its derivatives are then
 \pdfrac{R}{u}=\dfrac{A-\left(\gamma+\sign{z\Delta{}u}\beta\right)\abs{z}^n}{u_y},\\
 \pdfrac{R}{z}=\dfrac{1}{z}\left(z+\dfrac{\Delta{}u}{u_y}n\left(\gamma+\sign{z\Delta{}u}\beta\right)\abs{z}^n\right).
 \end{gather}
+There is no other expression involved in this model.
+The only task is to iteratively find the solution of the above residual to update the internal field $z$.
+
 Denoting $P=\left(\gamma+\sign{z\Delta{}u}\beta\right)\abs{z}^n$, the tangent stiffness can then be written as
 \begin{gather}\label{eq:bouc-wen-stiffness}
 \begin{split}
@@ -191,15 +202,25 @@ Here we have presented the formulation using the implicit Euler method. Other me
 The adoption of various solving method does not actually affect the computation of tangent stiffness.
 Once the convergence is achieved, \eqsref{eq:bouc-wen-stiffness} can be used to compute the stiffness.
 
-The Bouc--Wen model has received many criticisms. Since it is a phenomenological model, in which the internal field $z$ has no physical implication, this model may violate thermodynamics.
+It should be clear now that the Bouc--Wen model is a phenomenological model.
+The major difference between this model and previous phenomenological models is that the evolution function is explicitly defined in previous models, while in the Bouc--Wen model, the evolution function is implicitly defined as an ODE.
+They are fundamentally similar to each other but are different from the conventional plasticity models, which acknowledge the existence of some sort of `potential'.
+
+The Bouc--Wen model has received many criticisms.
+Since it is a phenomenological model, in which the internal field $z$ has no physical implication, this model may violate thermodynamics.
 To alleviate the potential problems, the following constraints are imposed \cite{Ma2004}.
 \begin{gather}
 A=1,\qquad\gamma+\beta=1.
 \end{gather}
-\subsection{Formulation}
 \subsection{Implementation}
 \begin{cppcode}
 BoucWen::update_trial_status
+\end{cppcode}
+\section{BWBN Model}
+The BWBN model is a further extension of the Bouc--Wen model.
+\subsection{Implementation}
+\begin{cppcode}
+	BWBN::update_trial_status
 \end{cppcode}
 \section{General Framework for Hysteresis Models}
 \subsection{Theory}
