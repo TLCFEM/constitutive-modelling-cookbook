@@ -8,8 +8,32 @@ The von Mises yield criterion is adopted,
 \begin{gather}
 f=\norm{\beeta}-\sqrt{\dfrac{2}{3}}\sigma^y,
 \end{gather}
-with $\beeta=\bs-\balpha$ is the shifted stress with $\balpha$ denoting the back stress and $\bs=\dev{\bsigma}$ denoting the deviatoric stress. The only purpose of the constant $\sqrt{\dfrac{2}{3}}$ is to produce consistent response under uniaxial loading compared to the uniaxial version with the same set of model parameters. By definition, the back stress $\balpha$ is also a deviatoric stress, thus $\tr{\balpha}=0$.
+with $\beeta=\bs-\balpha$ is the shifted stress with $\balpha$ denoting the back stress and $\bs=\dev{\bsigma}$ denoting the deviatoric stress.
+By definition, the back stress $\balpha$ is also a deviatoric stress, thus $\tr{\balpha}=0$.
 It shifts the centre of yield surface in the deviatoric stress space.
+
+The only purpose of the constant $\sqrt{\dfrac{2}{3}}$ is to produce consistent response under uniaxial loading with the same set of model parameters.
+To see this point, consider the uniaxial loading case, which can be represented by the following stress tensor
+\begin{gather}
+    \bsigma=\begin{bmatrix}
+        \sigma & 0 & 0 \\
+        0      & 0 & 0 \\
+        0      & 0 & 0
+    \end{bmatrix},
+\end{gather}
+in absence of $\balpha$, the shifted stress $\beeta$ is
+\begin{gather}
+    \beeta=\begin{bmatrix}
+        \dfrac{2}{3}\sigma & 0                   & 0                   \\
+        0                  & -\dfrac{1}{3}\sigma & 0                   \\
+        0                  & 0                   & -\dfrac{1}{3}\sigma
+    \end{bmatrix},
+\end{gather}
+thus, its norm can be computed as
+\begin{gather}
+    \norm{\beeta}=\sqrt{\left(\dfrac{2}{3}\right)^2+\left(\dfrac{1}{3}\right)^2+\left(\dfrac{1}{3}\right)^2}\sigma=\sqrt{\dfrac{2}{3}}\sigma.
+\end{gather}
+Inserting it back, the yield function effectively defines $\sigma=\sigma^y$.
 
 There are many equivalent alternative forms of the von Mises yield function.
 For example, one can also write it as
