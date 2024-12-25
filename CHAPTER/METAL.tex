@@ -10,6 +10,17 @@ f=\norm{\beeta}-\sqrt{\dfrac{2}{3}}\sigma^y,
 \end{gather}
 with $\beeta=\bs-\balpha$ is the shifted stress with $\balpha$ denoting the back stress and $\bs=\dev{\bsigma}$ denoting the deviatoric stress. The only purpose of the constant $\sqrt{\dfrac{2}{3}}$ is to produce consistent response under uniaxial loading compared to the uniaxial version with the same set of model parameters. By definition, the back stress $\balpha$ is also a deviatoric stress, thus $\tr{\balpha}=0$.
 It shifts the centre of yield surface in the deviatoric stress space.
+
+There are many equivalent alternative forms of the von Mises yield function.
+For example, one can also write it as
+\begin{gather}
+    f=\sqrt{\dfrac{3}{2}}\norm{\beeta}-\sigma^y=\sqrt{3J_2}-\sigma^y,\qquad
+    f=3J_2-\left(\sigma^y\right)^2,
+\end{gather}
+given that $J_2=\dfrac{1}{2}\beeta:\beeta$.
+One may find all those forms (and maybe more) in the literature.
+In principle, one can choose any of those forms if the yield function is the only factor considered.
+However, accounting for the associated numerical implementation, which involves computing the derivative of $f$, some forms are more convenient than the others.
 \subsubsection{Flow Rule}
 Assuming associative rule, the flow rule is
 \begin{gather}\label{eq:j2_flow}
