@@ -20,7 +20,7 @@ For example, a linear function can be chosen so that
 \sigma^y=\sigma^i+Kq,
 \end{gather}
 where $\sigma^i$ is the initial yield stress (non-negative) and $K$ is the isotropic hardening modulus (either positive for hardening or negative for softening).
-Typically, it is further constrained that $\sigma^y\geqslant0~\forall{}q$.
+Typically, it is further constrained that $\sigma^y\geqslant0~\forall{}q$ as no solution can be found if $\sigma^y<0$.
 \subsubsection{Flow Rule}
 It is reasonable to define that the direction of plastic flow coincides with the direction of stress, that is
 \begin{gather}\label{eq:isotropic_flow_rule}
@@ -32,15 +32,15 @@ Noting that according to \eqsref{eq:isotropic_yield_function}, $\pdfrac{f}{\sigm
 \begin{gather}
 \dot{\varepsilon^p}=\gamma\pdfrac{f}{\sigma}.
 \end{gather}
-In 3D space, such a flow rule is often called the \textbf{associative} rule, as the flow of plastic strain is now associated with the gradient of the yield function defined in stress space.
-It shall be emphasised that, the direction of plastic flow does not necessarily be associative.
-In many models, plastic flow follows the gradient of another surface, which can be a slight variant of the yield surface $f$, or even totally different.
+In 3D models, such a definition is often called the \textbf{associative} rule, as the flow (direction) of plastic strain is now associated with the gradient of the yield function $f$ defined in the stress space.
+It shall be emphasised that, the associative plastic flow rule is quite common in models for metals, but it is not necessarily the only choice.
+In many other models, the plastic flow often follows the gradient of another surface, which can be either a slight variant of the yield surface $f$, or a totally different surface.
 \subsubsection{Hardening Law}
 For the internal hardening variable $q$, the simplest case would be
 \begin{gather}\label{eq:isotropic_hardening_law}
 \dot{q}=\abs{\dot{\varepsilon^p}}=\gamma.
 \end{gather}
-Thus $q$ characterises the accumulated magnitude of plastic strain. Given that $\gamma\geqslant0$, it is clear that $q$ is a non-decreasing (strictly increasing) function.
+Thus, $q$ characterises the accumulated magnitude of plastic strain. Given that $\gamma\geqslant0$, it is clear that $q$ is a non-decreasing (strictly increasing) function.
 
 We are ready to formulate and implement our first plastic model.
 \subsection{Formulation}
@@ -61,7 +61,7 @@ Hardening Law&$\dot{q}=\gamma$\\\bottomrule
 \end{table}
 \subsubsection{Elastic Loading/Unloading}
 By freezing plasticity, one can first check if the new state is elastic.
-Here, `freezing plasticity' means we assume the plasticity related variables do not evolve, thus the increment of strain $\Delta\varepsilon=\varepsilon_{n+1}-\varepsilon_n$ is purely elastic strain.
+Here, `freezing plasticity' means we assume the plasticity related variables do not evolve, thus the increment of strain $\Delta\varepsilon=\varepsilon_{n+1}-\varepsilon_n$ is purely elastic.
 Since it may not be the final new state, we denote the computed stress as the trial stress.
 According to
 \begin{gather}
@@ -77,7 +77,7 @@ f^\text{trial}=\abs{\sigma^\text{trial}}-\sigma^y=E\abs{\varepsilon_{n+1}-\varep
 f^\text{trial}=\abs{\sigma^\text{trial}}-\sigma^y=\abs{\sigma_n+E\left(\varepsilon_{n+1}-\varepsilon_n\right)}-\left(\sigma^i+Kq_n\right).
 \end{gather}
 
-Here all we are doing is assuming the current state is elastic (regardless of the actual state), and applying the increment $\Delta\varepsilon$ to obtain the trial state.
+Here all we are doing is assuming the current step is elastic (regardless of the actual state), and applying the increment $\Delta\varepsilon$ to obtain the trial state.
 If $f^\text{trial}<0$, meaning the trial state is still in the elastic region, indicating elastic loading/unloading, the new state is simply $\varepsilon^p_{n+1}=\varepsilon^p_n$, $q_{n+1}=q_n$ and $\sigma_{n+1}=\sigma_{n+1}^\text{trial}$.
 \subsubsection{Plastic Evolution}
 Otherwise the new state consists of new evolution of plasticity. In this case,
@@ -124,7 +124,7 @@ It is easy to further compute
 \pdfrac{\gamma}{\varepsilon_{n+1}}=\dfrac{1}{E+K}\pdfrac{f^\text{trial}}{\varepsilon_{n+1}}=\dfrac{E}{E+K}.
 \end{gather}
 \subsection{Implementation}
-The implementation is quite straightforward for such a simple model. \algoref{algo:isotropic} summarised the state determination algorithm for the above isotropic hardening model.
+The implementation is quite straightforward for such a simple model. \algoref{algo:isotropic} summarises the state determination algorithm for the above isotropic hardening model.
 \begin{breakablealgorithm}
 \caption{state determination of uniaxial isotropic hardening model}\label{algo:isotropic}
 \begin{algorithmic}[1]
