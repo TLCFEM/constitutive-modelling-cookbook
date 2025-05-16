@@ -1,54 +1,56 @@
 \chapter{Preface}
-Most books/papers present constitutive models analytically, leaving the corresponding implementation to readers to figure out.
-It, however, could be a challenge for readers to implement the models correctly since it requires not only a good understanding of the model itself but also a good grasp of the numerical methods and programming.
+Most monographs and academic papers present constitutive models analytically with little to no emphasis on implementation, leaving it to readers to figure out on their own.
+It, however, could be a challenge to implement various models, especially those complex ones, correctly since it requires not only a good understanding of the theoretical formulation of models but also a good grasp of the relevant numerical methods and programming details.
 
-This book aims to provide a practical guidance to numerical implementation of plasticity models.
+This book aims to provide a practical guidance to numerical implementations of plasticity models.
 
 Readers are expected to have undergraduate level background of linear algebra, numerical analysis, elasticity and some programming knowledge.
 \section{Overview}
-The book presents a collection of constitutive models covering both uniaxial and triaxial and a wide range of common materials used in (civil) engineering.
+The book presents a collection of constitutive models, covering both uniaxial and triaxial versions, of a wide range of common materials used in (civil) engineering.
 The implementation details are derived for each model.
 
-The ultimate target is to provide an easy--to--follow, error and confusion free reference for readers who are interested in implementing constitutive models under the modern plasticity framework.
+The ultimate target is to provide an easy to follow, error and confusion free reference for readers who are interested in implementing constitutive models under the modern conventional and novel plasticity framework.
 
 A wide range of different constitutive models (both formulations and implementations) are covered in this book, some models are very lengthy.
 There are a huge amount of symbols and formulae.
 
 As the title indicates, this book is drafted as a reference book on constitutive modelling, it shall be self--complete in terms of the theoretical part.
 For practical implementation, algorithms in pseudo code are given for most models.
-Core CPP implementations are also provided as references/comparisons for readers who are familiar with CPP and scientific computation with relevant tools.
-The code snippets are taken from the implementations from \texttt{suanPan} \cite{Chang2022}.
-In this regard, this book can also be used as the program manual.
+Core \texttt{C++} implementations are also provided as references/comparisons for readers who are familiar with \texttt{C++} and scientific computation with relevant tools.
+The code snippets are taken from the implementations in \texttt{suanPan} \cite{Chang2022}.
+This book can also be used as the program manual.
 \section{Implementation}
 \subsection{Which Programming Language?}
-In early days, \texttt{C} and \texttt{Fortran} were the most popular languages for scientific computation, mainly due to their performance.
+In early days, \texttt{C} and \texttt{Fortran} were the most popular languages for scientific computation.
+One can easily find a large amount of libraries written in either \texttt{C} or \texttt{Fortran} that are quietly driving the whole scientific computation community.
 
-For \texttt{C}, vectors/matrices/tensors are represented by plain arrays.
-Some metadata, such as dimensions, can, at best, be stored in structs.
+However, the procedural programming may not necessarily be the ideal paradigm to be exercised in scientific computation.
+Consider, for example, in those languages, vectors/matrices/tensors are represented by plain arrays.
+The corresponding metadata, such as dimensions, can, at best, be stored in \texttt{struct}s.
 Operating on arrays is cumbersome and error--prone.
 As there is no operator overloading, all linear algebra operations have to be implemented as functions.
 The implementation quickly becomes lengthy and hard to read, especially for 2D/3D elements and material models.
 
 For \texttt{Fortran}, since matrix is natively supported, the implementation would be more concise.
 However, the language itself does not have a rich feature set, writing \texttt{Fortran} is boring (my very subjective opinion) and often ends up with writing one dull loop after another.
-Besides, it has a smaller ecosystem.
 
 It appears that, as of writing, \texttt{C++} is still a better choice for scientific computation.
-Despite its monstrous complexity, \texttt{C++} has 1) operator overloading (which makes scientific code much more concise), 2) meta-programming (templating that saves boilerplate code), 3) object--oriented programming (which offers a decent way to organise and structure data) and 4) a rich ecosystem.
-It also has a good performance, comparable to \texttt{C} and \texttt{Fortran}.
-
-Thus, in this book, \texttt{C++} is chosen as the primary language for implementation.
-However, which language is actually used is not very important in this context.
-At the end of the day, one would realise that the implementation highly resembles its mathematical counterpart.
-Once the mathematical model is understood, the implementation in any language should not be a great concern.
-\subsection{State Determination}
+Despite its monstrous complexity, \texttt{C++} has 1) operator overloading (which makes scientific code much more concise with a good abstraction of linear algebra), 2) meta-programming (templating that saves boilerplate code), 3) object--oriented programming support (which offers a decent way to organise and structure data) and 4) a rich ecosystem.
+Yet, the performance is not compromised.
+\subsection{Notes on Miscellaneous Things}
+\subsubsection{State Determination}
 In all the state determination algorithms presented in this book, by default it is assumed all local iterations eventually converge.
-Thus the handling of failure of convergence is not presented for brevity.
-One shall always bear in mind that not all algorithms converge, and for robust, practical algorithms, more numerical processes are required.
-\subsection{Internal Storage}
-Accounting for the Cauchy stress theory, under which strain and stress tensors are symmetric, there seems to be no need to actually store second order tensors in matrices and fourth order tensors in 4D cubes.
-Tensor operations on those high dimensional arrays are cumbersome and may have a performance penalty.
-While the Voigt notation is used, row/column vectors and 2D matrices are sufficient to implement most models.
+However, this is often not what would happen in practice.
+For example, most algorithms solve a local nonlinear system with the Newton--Raphson method, which is known to only have local convergence guarantee.
+This implies that the algorithm would happily fail if the initial starting point is far enough from the desired solution.
+To improve robustness, it is always possible to add more numerical processes to safeguard the algorithm.
+Thus, the presented implementations are the `reference' ones, not the `golden' ones.
+\subsubsection{Internal Storage}
+The mathematical objects, such as tensors, can be loyally represented in programs just like what they imply in mathematics.
+This means, for example, second order tensors can be represented as 2D matrices, fourth order tensors can be represented as 4D cubes.
+A complete set of rules can be defined in order to do tensor algebra.
+
+This can be seen in many other applications.
+However, accounting for the Cauchy stress theory, with the Voigt notation, row/column vectors and 2D matrices are sufficient to implement most models.
 
 In this book, all models are implemented in this way.
-However, some other applications choose to use the full tensor representation.
