@@ -1,9 +1,4 @@
-# FROM ghcr.io/xu-cheng/texlive-full:20240901
+FROM ghcr.io/xu-cheng/texlive-full
 
-# RUN adduser -D nonroot
-# USER nonroot
-
-FROM texlive/texlive
-
-RUN useradd -m nonroot
+RUN adduser -D nonroot
 USER nonroot
