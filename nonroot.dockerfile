@@ -1,4 +1,4 @@
-FROM ghcr.io/xu-cheng/texlive-full
+FROM ghcr.io/xu-cheng/texlive-full:20240901
 
 RUN adduser -D -h /home/nonroot nonroot
 
