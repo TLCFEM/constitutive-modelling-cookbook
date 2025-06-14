@@ -327,15 +327,25 @@ It is now clear that nonlinearity is introduced since $\dot{\alpha_i}=g\left(\al
 \begin{gather}
 \alpha_{i,n+1}=\alpha_{i,n}+g\left(\alpha_{i,n+1},\cdots\right),
 \end{gather}
-\item mid-point method
+\end{itemize}
+or second order methods such as
+\begin{itemize}
+\item trapezoidal method
 \begin{gather}
 \alpha_{i,n+1}=\alpha_{i,n}+\dfrac{g\left(\alpha_{i,n},\cdots\right)+g\left(\alpha_{i,n+1},\cdots\right)}{2}.
 \end{gather}
 \end{itemize}
 
 Theoretically, other higher order numerical methods for ODEs can also be applied.
-However, higher order methods often involves complex expressions, making the computation of the corresponding derivative difficult.
-We mainly use the implicit Euler method in our plastic models, although it is significantly more complex than the explicit one.
+However, higher order methods often involve complex expressions, making the corresponding derivatives difficult to compute.
+For some complex models, deriving the consistent tangent stiffness would be extremely hard when higher order methods are used.
+Their benefits rarely outweigh the computational cost and complexity they introduce.
+
+We thus mainly use the implicit Euler method in our plastic models, although it is significantly more complex than the explicit one.
+In some cases, the trapezoidal method may also be used.
+The main benefit is that the model is second order accurate.
+In dynamic analyses, the plasticity integration will not be the bottleneck of accuracy --- if a second order accurate time integration method is used, the global accuracy can still be second order.
+For material models employing the implicit Euler method, the global accuracy can at most be first order.
 
 Then $\alpha_{i,n+1}$ can be expressed as
 \begin{gather}
@@ -357,16 +367,16 @@ Rearranging leads to
 \begin{gather}
 \eta_{n+1}+E\gamma{}n+\sum\dfrac{a_i\gamma{}n}{1+b_i\gamma}=\sigma^\text{trial}-\sum\dfrac{\alpha_{i,n}}{1+b_i\gamma}.
 \end{gather}
-Given that $n=\sign{\eta_{n+1}}$ and $\gamma\geqslant0$,
+Given that $n=\sign{\eta_{n+1}}$ and $\gamma>0$,
 \begin{gather}
 \left(\abs{\eta_{n+1}}+E\gamma+\sum\dfrac{a_i\gamma{}}{1+b_i\gamma}\right)n=\abs{\sigma^\text{trial}-\sum\dfrac{\alpha_{i,n}}{1+b_i\gamma}}~\sign{\sigma^\text{trial}-\sum\dfrac{\alpha_{i,n}}{1+b_i\gamma}}.
 \end{gather}
-Thus,
+The whole parenthesis on the left hand side is positive by definition, thus,
 \begin{gather}
 n=\sign{\eta_{n+1}}=\sign{\sigma^\text{trial}-\sum\dfrac{\alpha_{i,n}}{1+b_i\gamma}},\\
 \abs{\eta_{n+1}}+E\gamma+\sum\dfrac{a_i\gamma{}}{1+b_i\gamma}=\abs{\sigma^\text{trial}-\sum\dfrac{\alpha_{i,n}}{1+b_i\gamma}}.
 \end{gather}
-This is such a nice expression that gives the magnitude of the shifted stress as a function of sole $\gamma$.
+This is such a nice expression that gives the magnitude of the shifted stress $\abs{\eta_{n+1}}$ as a function of sole $\gamma$.
 
 With the above expressions, the yield function can be explicitly evaluated in terms of $\gamma$ as
 \begin{gather}\label{eq:af_f}
