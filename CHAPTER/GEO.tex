@@ -109,8 +109,8 @@ By using the elastic relationship,
 \end{gather}
 one can rearrange and obtain the following,
 \begin{gather}
-\bs=\dfrac{M^2}{M^2+6G\Delta\gamma}\bs^\text{trial},\qquad
-q=\dfrac{M^2}{M^2+6G\Delta\gamma}q^\text{trial}.
+\bs=\dfrac{M^2}{M^2+6G\gamma}\bs^\text{trial},\qquad
+q=\dfrac{M^2}{M^2+6G\gamma}q^\text{trial}.
 \end{gather}
 
 The governing residual equations for independent variables $\mb{x}=\begin{bmatrix}\gamma&\alpha\end{bmatrix}^\mathrm{T}$ can be expressed as
@@ -122,9 +122,8 @@ The governing residual equations for independent variables $\mb{x}=\begin{bmatri
 \end{gather}
 where $p_e=p^\text{trial}-K\alpha+K\alpha_n-p_t+a$ since
 \begin{gather}
-p=K\varepsilon^e_v=K\left(\varepsilon^\text{trial}_v-\Delta\varepsilon^p_v\right)=p^\text{trial}-K\left(\alpha-\alpha_n\right),
+p=K\varepsilon^e_v=K\left(\varepsilon^\text{trial}_v-\Delta\varepsilon^p_v\right)=p^\text{trial}-K\left(\alpha-\alpha_n\right).
 \end{gather}
-and $q=\dfrac{M^2}{M^2+6G\Delta\gamma}q^\text{trial}$.
 \subsubsection{Local Iteration}
 The Jacobian can be formed accordingly.
 \begin{gather}
@@ -157,7 +156,7 @@ Taking derivatives about $\bvarepsilon$ gives
 
 The stress can be expressed as
 \begin{gather}
-\bsigma=\bs+p\mb{1}=\dfrac{M^2}{M^2+6G\Delta\gamma}\bs^\text{trial}+\left(p^\text{trial}-K\left(\alpha-\alpha_n\right)\right)\mb{1}.
+\bsigma=\bs+p\mb{1}=\dfrac{M^2}{M^2+6G\gamma}\bs^\text{trial}+\left(p^\text{trial}-K\left(\alpha-\alpha_n\right)\right)\mb{1}.
 \end{gather}
 Direct differentiation gives
 \begin{gather}
