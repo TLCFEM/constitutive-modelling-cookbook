@@ -14,6 +14,7 @@ In addition,
 \bs=\dev{\bsigma},\qquad{}p=\dfrac{\tr{\bsigma}}{3},\qquad{}q=\sqrt{3J_2}=\sqrt{\dfrac{3}{2}\bs:\bs}=\sqrt{\dfrac{3}{2}}\norm{\bs}.
 \end{gather}
 If $q_1=q_2=1$, the above yield function falls back to the original one \cite{Gurson1977}.
+If $q_1=q_3=0$, the above yield function reduces to the von Mises yield function.
 \subsubsection{Flow Rule}
 The associated flow rule is used.
 \begin{gather}
@@ -24,17 +25,11 @@ The associated flow rule is used.
 Note we have used $\sinh{}$ to denote $\sinh\left(\dfrac{3}{2}\dfrac{q_2p}{\sigma_y}\right)$ for brevity.
 In the following, we'll also use $\cosh{}$ to denote $\cosh\left(\dfrac{3}{2}\dfrac{q_2p}{\sigma_y}\right)$.
 
-By using the elastic relationship,
+It is clear that
 \begin{gather}
-\bs=2G\bvarepsilon^e_d=2G\left(\bvarepsilon^\text{trial}_d-\dot{\bvarepsilon^p_d}\right)=\bs^\text{trial}-\gamma6G\bs\quad\longrightarrow\quad\bs=\dfrac{1}{1+6G\gamma}\bs^\text{trial},\\
-q=\dfrac{1}{1+6G\gamma}q^\text{trial},\\
-p=K\varepsilon^e_v=K\left(\varepsilon^\text{trial}_v-\dot{\varepsilon^p_v}\right)=p^\text{trial}-\gamma3Kq_1q_2f\sigma_y\sinh.
+    \dot{\bvarepsilon^p_d}=\gamma3\bs,\qquad
+    \dot{\varepsilon^p_v}=\gamma3q_1q_2f\sigma_y\sinh.
 \end{gather}
-Since $q$ can be explicitly expressed as a function of $\gamma$, one could obtain
-\begin{gather}
-\ddfrac{q}{\gamma}=\dfrac{-6G}{\left(1+6G\gamma\right)^2}q^\text{trial}=\dfrac{-6G}{1+6G\gamma}q.
-\end{gather}
-However, $p$ is implicitly related to other variables, it can be treated as an independent variable.
 \subsubsection{Hardening Rule}
 The equivalent plastic strain $\varepsilon^p_m$ evolves based on the following expression.
 \begin{gather}
@@ -55,6 +50,17 @@ with $A_N=\dfrac{f_N}{s_N\sqrt{2\pi}}\exp\left(-\dfrac{1}{2}\left(\dfrac{\vareps
 \end{gather}
 The function $A_N$ is essentially a normal distribution with mean $\varepsilon_N$ and variance $s_N^2$.
 \subsection{Formulation}
+By using the elastic relationship,
+\begin{gather}
+    \bs=2G\bvarepsilon^e_d=2G\left(\bvarepsilon^\text{trial}_d-\dot{\bvarepsilon^p_d}\right)=\bs^\text{trial}-\gamma6G\bs\quad\longrightarrow\quad\bs=\dfrac{1}{1+6G\gamma}\bs^\text{trial},\\
+    q=\dfrac{1}{1+6G\gamma}q^\text{trial},\\
+    p=K\varepsilon^e_v=K\left(\varepsilon^\text{trial}_v-\dot{\varepsilon^p_v}\right)=p^\text{trial}-\gamma3Kq_1q_2f\sigma_y\sinh.
+\end{gather}
+Since $q$ can be explicitly expressed as a function of $\gamma$, one could obtain
+\begin{gather}
+    \ddfrac{q}{\gamma}=\dfrac{-6G}{\left(1+6G\gamma\right)^2}q^\text{trial}=\dfrac{-6G}{1+6G\gamma}q.
+\end{gather}
+However, $p$ is implicitly related to other variables, it can be treated as an independent variable.
 \subsubsection{Local System}
 With $\mb{x}=\begin{bmatrix}\gamma&\varepsilon^p_m&f&p\end{bmatrix}^\mT$, the residual equations are
 \begin{gather}
