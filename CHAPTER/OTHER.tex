@@ -1,7 +1,104 @@
 \chapter{Other}
 \section{Gurson Model}
 \subsection{Theory}
+\subsubsection{Yield Function}
+The yield function is chosen to be
+\begin{gather}
+F=q^2+2q_1f\sigma_y^2\cosh\left(\dfrac{3}{2}\dfrac{q_2p}{\sigma_y}\right)-\sigma_y^2\left(q_3f^2+1\right),
+\end{gather}
+where $\sigma_y$ is a function of the equivalent plastic strain $\varepsilon^p_m$, $f$ is the void volume fraction, the remaining $q_1$, $q_2$ and $q_3$ are material constants.
+In addition,
+\begin{gather}
+\bs=\dev{\bsigma},\qquad{}p=\dfrac{\tr{\bsigma}}{3},\qquad{}q=\sqrt{3J_2}=\sqrt{\dfrac{3}{2}\bs:\bs}=\sqrt{\dfrac{3}{2}}\norm{\bs}.
+\end{gather}
+\subsubsection{Flow Rule}
+The associated flow rule is used.
+\begin{gather}
+\begin{split}
+\dot{\bvarepsilon^p}=\gamma\pdfrac{F}{\bsigma}&=\gamma\left(\pdfrac{F}{q^2}\ddfrac{q^2}{\bsigma}+\pdfrac{F}{p}\ddfrac{p}{\bsigma}\right)\\&=\gamma\left(\pdfrac{F}{q^2}3\bs+\pdfrac{F}{p}\dfrac{1}{3}\mb{1}\right)=\gamma\left(3\bs+q_1q_2f\sigma_y\sinh{}\mb{1}\right).
+\end{split}
+\end{gather}
+Note we have used $\sinh{}$ to denote $\sinh\left(\dfrac{3}{2}\dfrac{q_2p}{\sigma_y}\right)$ for brevity.
+In the following, we'll also use $\cosh{}$ to denote $\cosh\left(\dfrac{3}{2}\dfrac{q_2p}{\sigma_y}\right)$.
+
+By using the elastic relationship,
+\begin{gather}
+\bs=2G\bvarepsilon^e_d=2G\left(\bvarepsilon^\text{trial}_d-\dot{\bvarepsilon^p_d}\right)=\bs^\text{trial}-\gamma6G\bs\quad\longrightarrow\quad\bs=\dfrac{1}{1+6G\gamma}\bs^\text{trial},\\
+q=\dfrac{1}{1+6G\gamma}q^\text{trial},\\
+p=K\varepsilon^e_v=K\left(\varepsilon^\text{trial}_v-\dot{\varepsilon^p_v}\right)=p^\text{trial}-\gamma3Kq_1q_2f\sigma_y\sinh.
+\end{gather}
+Since $q$ can be explicitly expressed as a function of $\gamma$, one could obtain
+\begin{gather}
+\ddfrac{q}{\gamma}=\dfrac{-6G}{\left(1+6G\gamma\right)^2}q^\text{trial}=\dfrac{-6G}{1+6G\gamma}q.
+\end{gather}
+However, $p$ is implicitly related to other variables, it can be treated as an independent variable.
+\subsubsection{Hardening Rule}
+The equivalent plastic strain $\varepsilon^p_m$ evolves based on the following expression.
+\begin{gather}
+\left(1-f\right)\sigma_y\dot{\varepsilon^p_m}=\bsigma:\dot{\bvarepsilon^p}=\gamma\left(2q^2+3pq_1q_2f\sigma_y\sinh\right).
+\end{gather}
+The rate form of the void volume fraction $f$ is governed by the following equation.
+\begin{gather}
+\dot{f}=\dot{f_g}+\dot{f_n},
+\end{gather}
+where
+\begin{gather}
+\dot{f_g}=\left(1-f\right)\dot{\varepsilon^p_v},\qquad
+\dot{f_n}=A_N\dot{\varepsilon^p_m},
+\end{gather}
+with $A_N=\dfrac{f_N}{s_N\sqrt{2\pi}}\exp\left(-\dfrac{1}{2}\left(\dfrac{\varepsilon^p_m-\varepsilon_N}{s_N}\right)^2\right)$. The corresponding derivative is
+\begin{gather}
+\ddfrac{A_N}{\varepsilon^p_m}=A_N\dfrac{\varepsilon_N-\varepsilon^p_m}{s_N^2}.
+\end{gather}
+The function $A_N$ is essentially a normal distribution with mean $\varepsilon_N$ and variance $s_N^2$.
 \subsection{Formulation}
+\subsubsection{Local System}
+With $\mb{x}=\begin{bmatrix}\gamma&\varepsilon^p_m&f&p\end{bmatrix}^\mT$, the residual equations are
+\begin{gather}
+R=\begin{Bmatrix}
+F\\E\\V\\P
+\end{Bmatrix}=\left\{\begin{array}{l}
+\left(\dfrac{q^\text{trial}}{1+6G\gamma}\right)^2+2q_1f\sigma_y^2\cosh-\sigma_y^2\left(q_3f^2+1\right),\\
+\left(1-f\right)\sigma_y\left(\varepsilon^p_m-\varepsilon^p_{m,k}\right)-2\gamma\left(\dfrac{q^\text{trial}}{1+6G\gamma}\right)^2+\dfrac{p^2-pp^\text{trial}}{K},\\
+f-f_k+\left(1-f\right)\left(\dfrac{p-p^\text{trial}}{K}\right)-A_N\left(\varepsilon^p_m-\varepsilon^p_{m,k}\right),\\[4mm]
+p-p^\text{trial}+3Kq_1q_2\gamma{}f\sigma_y\sinh.
+\end{array}\right.
+\end{gather}
+The Jacobian can be computed via the partial derivatives with $T=3Kq_1q_2$,
+\begin{gather}
+\pdfrac{F}{\gamma}=\dfrac{-12Gq^2}{1+6G\gamma},\qquad
+\pdfrac{F}{\varepsilon^p_m}=\left(4q_1f\sigma_y\cosh-3q_1q_2fp\sinh-2\sigma_y\left(q_3f^2+1\right)\right)\sigma_y',\\
+\pdfrac{F}{f}=2\sigma_y^2\left(q_1\cosh-q_3f\right),\qquad
+\pdfrac{F}{p}=3q_1q_2f\sigma_y\sinh,\\
+\pdfrac{E}{\gamma}=-2q^2\dfrac{1-6G\gamma}{1+6G\gamma},\qquad
+\pdfrac{E}{\varepsilon^p_m}=\left(1-f\right)\left(\sigma_y'\left(\varepsilon^p_m-\varepsilon^p_{m,k}\right)+\sigma_y\right),\\
+\pdfrac{E}{f}=-\sigma_y\left(\varepsilon^p_m-\varepsilon^p_{m,k}\right),\qquad
+\pdfrac{E}{p}=\dfrac{2p-p^\text{trial}}{K},\\
+\pdfrac{V}{\gamma}=0,\qquad
+\pdfrac{V}{\varepsilon^p_m}=A_N\dfrac{\varepsilon^p_m-\varepsilon_N}{s_N^2}\left(\varepsilon^p_m-\varepsilon^p_{m,k}\right)-A_N,\\
+\pdfrac{V}{f}=1-\dfrac{p-p^\text{trial}}{K},\qquad
+\pdfrac{V}{p}=\dfrac{1-f}{K},\\
+\pdfrac{P}{\gamma}=Tf\sigma_y\sinh,\qquad
+\pdfrac{P}{\varepsilon^p_m}=T\gamma{}f\left(\sinh-\dfrac{3}{2}\dfrac{q_2p}{\sigma_y}\cosh\right)\sigma_y',\\
+\pdfrac{P}{f}=T\gamma{}\sigma_y\sinh,\qquad
+\pdfrac{P}{p}=1+\dfrac{3}{2}Tq_2\gamma{}f\cosh.
+\end{gather}
+The corresponding derivatives about the trial strain $\varepsilon^\text{trial}$ are
+\begin{gather}
+\pdfrac{F}{\bvarepsilon^\text{trial}}=\dfrac{6G}{1+6G\gamma}\bs,\qquad
+\pdfrac{E}{\bvarepsilon^\text{trial}}=-2\gamma\dfrac{6G}{1+6G\gamma}\bs-p\mb{1},\\
+\pdfrac{V}{\bvarepsilon^\text{trial}}=\left(f-1\right)\mb{I},\qquad
+\pdfrac{P}{\bvarepsilon^\text{trial}}=-K\mb{I}.
+\end{gather}
+\subsubsection{Consistent Tangent Stiffness}
+The stress update can be expressed as
+\begin{gather}
+\bsigma=\dfrac{1}{1+6G\gamma}\bs^\text{trial}+q\mb{1},
+\end{gather}
+then
+\begin{gather}
+\ddfrac{\bsigma}{\bvarepsilon^\text{trial}}=\dfrac{2G}{1+6G\gamma}\mathbb{I}^\text{dev}-\dfrac{6G}{\left(1+6G\gamma\right)^2}\otimes\bs^\text{trial}\ddfrac{\gamma}{\bvarepsilon^\text{trial}}+\mb{1}\otimes\ddfrac{p}{\bvarepsilon^\text{trial}}.
+\end{gather}
 \subsection{Implementation}
 \begin{cppcode}
 NonlinearGurson::update_trial_status
@@ -188,9 +285,9 @@ P^y&\cdot&\cdot\\\cdot&M_z^y&\cdot\\\cdot&\cdot&M_y^y
 \end{gather}
 \subsubsection{\texorpdfstring{$N$-$M$}{N-M} Interaction Surface}
 The \textbf{initial} $N$-$M$ interaction surface is often defined as a non-homogeneous polynomial. For example, for a 2D element, a common option is
-\begin{gather*}
+\begin{gather}
 \Phi_\aleph=1.15\left(\overline{P}-\overline{\beta}_P\right)^2+\left(\overline{M}_z-\overline{\beta}_{M_z}\right)^2+3.67\left(\overline{P}-\overline{\beta}_P\right)^2\left(\overline{M}_z-\overline{\beta}_{M_z}\right)^2-c,
-\end{gather*}
+\end{gather}
 where $\overline{\beta}_P$ and $\overline{\beta}_{M_z}$ denote the corresponding components of $\overline{\bbeta}_\aleph$, $c$ is a constant that determines the initial size of the surface.
 
 Introducing isotropic hardening to the above equation via $c=c\left(\overline{\alpha}\right)$ indeed introduces hardening into the model but cannot recover the desired hardening behaviour due to the non-homogeneous attribute of $\Phi_\aleph$.
