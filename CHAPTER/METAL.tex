@@ -103,7 +103,7 @@ Due to symmetry of both strain and stress tensors, it is often more performant t
 This means tensor quantities are expressed in compressed vector/matrix form.
 For a given expression, one shall always question what operation it implies and how it would be eventually computed for operands expressed in different forms.
 
-It can be observed that $\dot{\bvarepsilon^p}$ has a magnitude of $\gamma$ while $\bn$ is a unit tensor in $\mathbb{R}^3\times\mathbb{R}^3$ hyper space. Thus $\bn$ serves as a direction indicator, $\bvarepsilon^p$ evolves towards $\bn$ by the amount of $\gamma$. Since $\bn$ is deviatoric, $\bvarepsilon^p$ is also deviatoric.
+It can be observed that $\dot{\bvarepsilon^p}$ has a magnitude of $\gamma$ while $\bn$ is a unit tensor in $\mathbb{R}^3\times\mathbb{R}^3$ hyper space. Thus $\bn$ serves as a direction indicator, $\bvarepsilon^p$ evolves towards $\bn$ by the amount of $\gamma$. Since $\bn$ is deviatoric, $\dot{\bvarepsilon^p}$ is also deviatoric (so as $\bvarepsilon^p$).
 Furthermore, since $\bn$ is a unit tensor,
 \begin{gather}
 \norm{\dot{\bvarepsilon^p}}=\gamma.
@@ -177,7 +177,7 @@ In matrix representation, it is
      \gamma^p_{23,n}\\
      \gamma^p_{31,n}
 \end{bmatrix}.
-\right)}_{\dot{\bvarepsilon_{n+1}}-\dot{\bvarepsilon^p_n}}
+\right)}_{\bvarepsilon_{n+1}-\bvarepsilon^p_n}
 \end{gather}
 
 Then $\beeta^\text{trial}=\dev{\bsigma^\text{trial}}-\balpha_n$, which gives trial yield function
@@ -212,13 +212,15 @@ Noting that, by definition, $\bn=\dfrac{\beeta_{n+1}}{\norm{\beeta_{n+1}}}$, thu
 \begin{gather}
 \underbrace{\left(1+\dfrac{2G\gamma+\sqrt{\dfrac{2}{3}}\dot{H}}{\norm{\beeta_{n+1}}}\right)}_{\text{scalar}}\beeta_{n+1}=\beeta^\text{trial}.
 \end{gather}
-The above expression implies that $\beeta_{n+1}$ and $\beeta^\text{trial}$ are \textbf{coaxial}. Thus, $\beeta_{n+1}$ always points to the direction of $\beeta^\text{trial}$, which is a constant in each time step within that time step. Only its magnitude would be adjusted in local iterations.
+The above expression implies that $\beeta_{n+1}$ and $\beeta^\text{trial}$ are \textbf{coaxial}. Thus, $\beeta_{n+1}$ always points to the direction of $\beeta^\text{trial}$, which is a constant in each time step within that time step.
+Only its magnitude would be adjusted in local iterations.
+Thus, $\bn=\dfrac{\beeta_{n+1}}{\norm{\beeta_{n+1}}}=\dfrac{\beeta^\text{trial}}{\norm{\beeta^\text{trial}}}$ is also a constant during the local iteration.
 One can further derive
 \begin{gather}
 \norm{\beeta_{n+1}}+2G\gamma+\sqrt{\dfrac{2}{3}}\dot{H}=\norm{\beeta^\text{trial}}.
 \end{gather}
 
-The yield function evaluated at the new state reads
+The yield function evaluated at the new state thus reads
 \begin{gather}\label{eq:j2_f}
 f=\norm{\beeta^\text{trial}}-\left(2G\gamma+\sqrt{\dfrac{2}{3}}\left(H_{n+1}-H_n\right)\right)-\sqrt{\dfrac{2}{3}}\sigma^y_{n+1}.
 \end{gather}
@@ -400,8 +402,8 @@ The subloading surface is then pulled from the original centre $\bbeta$ towards 
         \draw[|<->|](A)--++(140:\FF)node[midway,fill=white,sloped]{$F$};
         \draw[|<->|](C)--++(140:\SF)node[midway,fill=white,sloped]{$zF$};
         \draw[<-]($(A)+(60:\FF)$)--++(60:1.4)--++(1,0)node[right,fill=white]{yield surface $f$};
-        \draw[<-]($(A)+(60:\SF)$)--++(60:1)--++(2,0)node[right,fill=white,align=left]{subloading surface\\in the original proposal};
-        \draw[<-]($(C)+(60:\SF)$)--++(60:1.7)--++(1,0)node[right,fill=white,align=left]{subloading surface\\in the extended version};
+        \draw[<-]($(A)+(60:\SF)$)--++(60:.8)--++(2,0)node[right,fill=white,align=left]{subloading surface\\in the original proposal};
+        \draw[<-]($(C)+(60:\SF)$)--++(60:1.8)--++(1,0)node[right,fill=white,align=left]{subloading surface\\in the extended version};
         \draw[<-]($(C)!.5!(B)$)--++(-60:1.5)--++(2,0)node[right,fill=white]{$z\left(\bc-\bbeta\right)$};
         \draw[<-]($(A)!.5!(C)$)--++(-60:2)--++(2.5,0)node[right,fill=white]{$\left(1-z\right)\left(\bc-\bbeta\right)$};
         \draw[black!20]($(A)+(140:\FF)$)--(B);
