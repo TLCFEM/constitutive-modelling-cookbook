@@ -1,7 +1,12 @@
 \chapter{Other}
-\section{Gurson Model}
-We present an extended Gurson's void growth model by \cite{Tvergaard1984}.
+\section{Gurson's Void Growth Model}
+We present an extended version \cite{Tvergaard1984} of Gurson's void growth model \cite{Gurson1977}.
 It is slightly different from the one discussed by \cite{SouzaNeto2008} in Chapter 12.5.
+It is (almost) identical to the one implemented in ABAQUS (see, for example, \S~4.3.6 in \cite{ABAQUS2011}).
+
+As suggested \cite{ABAQUS2011}, it is `\textit{intended for use with mildly voided metals}'.
+In principle, it is suitable for porous materials in which damage is mainly driven by the development of voids.
+However, since a von Mise like yield criterion is used, modelling materials that do not follow the von Mises rule may not be appropriate.
 \subsection{Theory}
 \subsubsection{Yield Function}
 The yield function is chosen to be
