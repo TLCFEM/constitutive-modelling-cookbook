@@ -1095,8 +1095,6 @@ The trial yield function can then be computed using the unchanged plastic strain
 f^\text{trial}=\dfrac{1}{2}\bsigma^\text{trial,T}\mb{P}\bsigma^\text{trial}+\mb{q}^\mT\bsigma^\text{trial}-\sigma_{y,n}^2.
 \end{gather}
 \subsubsection{Plastic Evolution}
-Since it is an anisotropic model, the local iteration may have difficulties in convergence, especially when a high anisotropy is defined. Some implementations \cite{Krasnovskiy2004,SouzaNeto2008} adopt line search, which does mitigate the local convergence issue but does not address it at the global level.
-
 In this work, we still use the first order accurate backward Euler method for numerical integration. In specific, the discretised evolution of plastic strain is written as
 \begin{gather}
 \bvarepsilon^p_{n+1}=\bvarepsilon^p_{n}+\Delta\bvarepsilon^p=\bvarepsilon^p_{n}+\gamma\bn_{n+1}=\bvarepsilon^p_{n}+\gamma\left(\mb{P}\bsigma_{n+1}+\mb{q}\right).
@@ -1129,6 +1127,24 @@ In the above expression,
 \end{gather}
 
 Some references would further derive a scalar local residual at the cost of complicating gradient. Here we choose to increase the size of local system in order to express the Jacobian in a simpler form. Performance wise, a scalar local residual does not necessarily leads to faster state determination.
+
+Since it is an anisotropic model, the local iteration may have difficulties in convergence, especially when a high anisotropy is defined.
+Some implementations \cite{Krasnovskiy2004,SouzaNeto2008} adopt line search.
+The idea can be explained as follows.
+For a given $\gamma$, it is possible to compute the stress $\bsigma$ via
+\begin{gather}
+\bsigma=\bsigma^\text{trial}-\gamma\mb{E}\bn,
+\end{gather}
+thus
+\begin{gather}
+\left(\mb{I}+\gamma{}\mb{E}\mb{P}\right)\bsigma=\bsigma^\text{trial}-\gamma\mb{E}\mb{q}\qquad\longrightarrow\qquad
+\bsigma=\left(\mb{I}+\gamma{}\mb{E}\mb{P}\right)^{-1}\left(\bsigma^\text{trial}-\gamma\mb{E}\mb{q}\right).
+\end{gather}
+Once $\bsigma$ is known, the yield function can be evaluated.
+This effectively turns $f=f\left(\gamma\right)$ into a univariate function of $\gamma$, and noting that utilizing the above procedure, no iteration is required to evaluate $f$ for a given $\gamma$, and such an evaluation is precise.
+One can then use root finding methods to find the solution $\gamma$ as the initial guess.
+
+The implementation presented later in this section includes such a logic.
 \subsubsection{Consistent Tangent Stiffness}
 The consistent tangent stiffness can be directly computed from the local residual, given that $\bsigma_{n+1}$ is chosen as the variable. Differentiating $\mb{R}$ at equilibrium $\mb{R}=\mb{0}$ gives
 \begin{gather}\label{eq:universal_consistent_tangent}
