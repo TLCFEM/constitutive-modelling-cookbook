@@ -1016,7 +1016,7 @@ But since \cite{Oller2003} uses matrix notation, we shall follow this convention
 For example, the Hoffman criterion can be expressed as
 \begin{tiny}
 \begin{gather}\label{eq:hoffman_criterion}
-\mb{P}=\begin{bmatrix}
+\dfrac{1}{2}\mb{P}=\begin{bmatrix}
 T_1&-\dfrac{T_1+T_2-T_3}{2}&-\dfrac{T_3+T_1-T_2}{2}&&&\\[4mm]
 -\dfrac{T_1+T_2-T_3}{2}&T_2&-\dfrac{T_2+T_3-T_1}{2}&&&\\[4mm]
 -\dfrac{T_3+T_1-T_2}{2}&-\dfrac{T_2+T_3-T_1}{2}&T_3&&&\\[4mm]
@@ -1055,18 +1055,18 @@ The reference yield stress $\sigma_y$ is defined as a function of the accumulate
 \begin{gather}
 \sigma_y=H\left(\varepsilon^{p}\right).
 \end{gather}
-The evolution of $\varepsilon^{p}$ is driven by the norm of $\dot{\bvarepsilon^p}$.
+The evolution of $\varepsilon^{p}$ is defined by
 \begin{gather}
-\dot{\varepsilon^p}=\norm{\dot{\bvarepsilon^p}}=\gamma\norm{\bn},
+\dot{\varepsilon^p}=\sqrt{\dfrac{2}{3}\dot{\bvarepsilon^p}:\dot{\bvarepsilon^p}}=\gamma\sqrt{\dfrac{2}{3}\bn:\bn},
 \end{gather}
-where $\norm{\bn}$, in matrix form, can be expressed as
+where $\bn:\bn$ shall be treated as double contraction of strain tensors, that is,
 \begin{gather}
-\norm{\bn}=\sqrt{\dfrac{2}{3}\bn^\mT\mb{T}\bn},
+\underbrace{\bn:\bn}_\text{tensor}=\underbrace{\bn^\mT\mb{T}\bn}_\text{vector},
 \end{gather}
 with $\mb{T}=\diag{\begin{matrix}
 1&1&1&\dfrac{1}{2}&\dfrac{1}{2}&\dfrac{1}{2}
 \end{matrix}}$.
-Here, one shall treat $\norm{\cdot}$ as a `special' operator that is defined as above.
+Although not correct, we'll use $\norm{\bn}$ to represent $\sqrt{\dfrac{2}{3}\bn:\bn}$ for brevity in the following.
 \subsection{Formulation}
 To some extend, the model is even simpler than the von Mises model as there is no back stress to support kinematic hardening. Furthermore, the yield function involves only matrix--vector operations, the corresponding derivatives are relatively easy to compute.
 \begin{table}[ht]
@@ -1097,24 +1097,17 @@ f^\text{trial}=\dfrac{1}{2}\bsigma^\text{trial,T}\mb{P}\bsigma^\text{trial}+\mb{
 \subsubsection{Plastic Evolution}
 Since it is an anisotropic model, the local iteration may have difficulties in convergence, especially when a high anisotropy is defined. Some implementations \cite{Krasnovskiy2004,SouzaNeto2008} adopt line search, which does mitigate the local convergence issue but does not address it at the global level.
 
-In this work, we choose another approach to alleviate the problem. Instead of the first order accurate backward Euler method for numerical integration, the higher order accurate method is used. In specific, the discretised evolution of plastic strain is written as
+In this work, we still use the first order accurate backward Euler method for numerical integration. In specific, the discretised evolution of plastic strain is written as
 \begin{gather}
-\bvarepsilon^p_{n+1}=\bvarepsilon^p_{n}+\Delta\bvarepsilon^p=\bvarepsilon^p_{n}+\gamma\bn_{m},
+\bvarepsilon^p_{n+1}=\bvarepsilon^p_{n}+\Delta\bvarepsilon^p=\bvarepsilon^p_{n}+\gamma\bn_{n+1}=\bvarepsilon^p_{n}+\gamma\left(\mb{P}\bsigma_{n+1}+\mb{q}\right).
 \end{gather}
-where $\bn_{m}$ is $\bn$ evaluated at the middle of the substep. Since it is a linear function of $\sigma$,
-\begin{gather}
-\bn_m=\dfrac{\bn_n+\bn_{n+1}}{2}=\mb{P}\dfrac{\bsigma_n+\bsigma_{n+1}}{2}+\mb{q}.
-\end{gather}
-We effectively use the trapezoidal rule here.
-It it second order accurate.
-One shall note that replacing $\bn_m$ with $\bn_{n+1}=\mb{P}\bsigma_{n+1}+\mb{q}$ gives the evolution formula of the implicit Euler method.
 \subsubsection{Local Residual}
 The residual is chosen as follows. For brevity, all subscripts $\left(\cdot\right)_{n+1}$ are dropped.
 \begin{gather}
 \mb{R}=\left\{
 \begin{array}{l}
 \dfrac{1}{2}\bsigma^\mT\mb{P}\bsigma+\mb{q}^\mT\bsigma-\sigma_y^2,\\[4mm]
-\bsigma+\gamma\mb{E}\bn_m-\bsigma^\text{trial}.
+\bsigma+\gamma\mb{E}\bn-\bsigma^\text{trial}.
 \end{array}
 \right.
 \end{gather}
@@ -1126,13 +1119,13 @@ By choosing $\mb{x}=\begin{bmatrix}
 \end{bmatrix}^\mT$ as the independent variables, the Jacobian can be then computed as
 \begin{gather}
 \mb{J}=\pdfrac{\mb{R}}{\mb{x}}=\begin{bmatrix}
--2\sigma_y\ddfrac{\sigma_y}{\varepsilon_{p}}\norm{\bn_m}&\bn^\mT-\sigma_y\ddfrac{\sigma_y}{\varepsilon_{p}}\gamma\ddfrac{\norm{\bn_m}}{\bn_m}\mb{P}\\[4mm]
-\mb{E}\mb{n}_m&\mb{I}+\dfrac{\gamma}{2}\mb{E}\mb{P}
+-2\sigma_y\ddfrac{\sigma_y}{\varepsilon_{p}}\norm{\bn}&\bn^\mT-2\sigma_y\ddfrac{\sigma_y}{\varepsilon_{p}}\gamma\ddfrac{\norm{\bn}}{\bn}\mb{P}\\[4mm]
+\mb{E}\mb{n}&\mb{I}+\gamma\mb{E}\mb{P}
 \end{bmatrix}.
 \end{gather}
 In the above expression,
 \begin{gather}
-\ddfrac{\norm{\bn_m}}{\bn_m}=\dfrac{2}{3}\dfrac{\bn_m^\mT\mb{T}}{\norm{\bn_m}}.
+\ddfrac{\norm{\bn}}{\bn}=\dfrac{2}{3}\dfrac{\bn^\mT\mb{T}}{\norm{\bn}}.
 \end{gather}
 
 Some references would further derive a scalar local residual at the cost of complicating gradient. Here we choose to increase the size of local system in order to express the Jacobian in a simpler form. Performance wise, a scalar local residual does not necessarily leads to faster state determination.
