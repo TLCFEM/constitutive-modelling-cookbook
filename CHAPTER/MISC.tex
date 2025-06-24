@@ -1,0 +1,36 @@
+\chapter{Miscellaneous Topics}
+In this chapter, we discuss some miscellaneous topics that are relevant to numerical implemenntations of consitutive models.
+\section{Equivalent But Preferred?}
+Some (yield) functions are mathematically equivalent, is there a preferred one?
+Or any form can be used?
+Consider for example, we want to define a yield function that enforces the magnitude of stress $\sigma$ to be less than a yield stress $\sigma_y\geqslant0$, one can write
+\begin{gather}
+    f=\abs{\sigma}-\sigma_y,
+\end{gather}
+or alternatively, one can write
+\begin{gather}
+    f=\sigma^2-\sigma_y^2.
+\end{gather}
+They are indeed mathematically equivalent as we have defined the yield stress to be non-negative.
+However, they may have different implications in terms of numerical implementation.
+First, the involvement of squares is discouraged.
+It easily leads to precision issues, especially when the local nonlinear system also contains some nondimentionsal history variables.
+Second, if associative flow is used, the above two yield functions lead to
+\begin{gather}
+    \dot{\varepsilon^p}=\gamma\pdfrac{f}{\sigma}=\left\{\begin{array}{ll}
+        \gamma\sign{\sigma}, & \text{for~}f=\abs{\sigma}-\sigma_y, \\[4mm]
+        \gamma2\sigma,       & \text{for~}f=\sigma^2-\sigma_y^2.
+    \end{array}\right.
+\end{gather}
+It is easy to see that in the first case, $\abs{\dot{\varepsilon^p}}=\gamma$, meaning that $\gamma<\abs{\dot{\varepsilon}}$ is bounded as the increment of plastic strain can never exceed the increment of total strain.
+However, in the second case, it is not easy to determine the upper bound of $\gamma$.
+Since the whole plasticity development is driven by the plastic multiplier $\gamma$, it is possible to use root finding algorithms to solve for $\gamma$ when an explicit bound can be found.
+This is particularly useful when the local Newton--Raphson iteration fails to converge.
+
+For numerical robustness, it is preferred to use the first form of yield function in this case.
+Similar arguments can be made for other more complex formulations.
+
+Can you analyze the pros and cons of the third option shown below?
+\begin{gather}
+    f=\dfrac{\abs{\sigma}}{\sigma_y}-1.
+\end{gather}
