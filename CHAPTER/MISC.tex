@@ -55,5 +55,15 @@ Now, lest consider integrating this ODE using the first--order backward Euler me
 \figref{fig:convergence} presents the error of the numerical solutions for $a=1$ and $b=20$.
 The system is integrated to $t=10$.
 As expected, when $\Delta{}t$ decreases, the Trapezoidal method shows a second--order convergence, while the backward Euler method shows a first--order convergence.
+This is well understood via the truncation error analysis.
 
-However, when $\Delta{}t$ is large, the absolute error of the Euler method is smaller.
+However, when $\Delta{}t$ is large, the absolute error of the Euler method is smaller in the above example.
+Even if both methods show perfect first--order and second--order convergence for arbitrary $\Delta{}t$, there would exist a threshold such that when $\Delta{}t$ is larger than the threshold, the first--order method would yield a smaller absolute error than the second--order method.
+After all, the term `second--order' only tells us that the error is $\mathcal{O}\left(\Delta{}t^2\right)$, it does not imply that for a given $\Delta{}t$, second--order methods will always yield a smaller absolute error than first--order methods.
+The constant factor dropped in the big-$\mathcal{O}$ notation can be large enough to make the second--order method worse than the first--order method for a given $\Delta{}t$.
+
+This is not surprising --- two straight lines with different slopes will eventually cross each other.
+The question is, is this `threshold' practically relevant?
+There does not exist a universal answer to this question.
+One shall thus be aware of this subtle implication.
+When designing a numerical implementation, a second--order method is not necessarily universally better than a first--order method.

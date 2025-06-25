@@ -212,6 +212,19 @@ To alleviate the potential problems, the following constraints are imposed \cite
 \begin{gather}
 A=1,\qquad\gamma+\beta=1.
 \end{gather}
+
+Finally, we present an alternative formulation using the trapezoidal method.
+The discrete update can be written as
+\begin{gather}
+	2z-2z_n=\dfrac{\Delta{}u}{u_y}\left(\left(A-\left(\gamma+\sign{z_n\Delta{}u}\beta\right)\abs{z_n}^n\right)+\left(A-\left(\gamma+\sign{z\Delta{}u}\beta\right)\abs{z}^n\right)\right).
+\end{gather}
+By using $P=\left(\gamma+\sign{z\Delta{}u}\beta\right)\abs{z}^n$ and $P_n=\left(\gamma+\sign{z_n\Delta{}u}\beta\right)\abs{z_n}^n$, the residual can be formulated as
+\begin{gather}
+	R=2z-2z_n-\dfrac{\Delta{}u}{u_y}\left(2A-P_n-P\right).
+\end{gather}
+The derivatives can be computed accordingly.
+Readers are encouraged to derive them as an exercise.
+The following implementation uses the implicit Euler method when $\Delta{}u$ is relatively large and switches to the trapezoidal method when $\Delta{}u$ is smaller than a threshold.
 \subsection{Implementation}
 \begin{cppcode}
 BoucWen::update_trial_status
