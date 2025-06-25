@@ -11,7 +11,7 @@ jobs:
         with:
           docker_image: ghcr.io/xu-cheng/texlive-full
           run: |
-            python3 -m ensurepip --upgrade
+            apk add --no-cache py3-pip build-base
             pip install -r requirements.txt
             python3 ./CONVERT/code.py
             python3 ./CONVERT/convergence.py
