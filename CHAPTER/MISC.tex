@@ -34,3 +34,26 @@ Can you analyze the pros and cons of the third option shown below?
 \begin{gather}
     f=\dfrac{\abs{\sigma}}{\sigma_y}-1.
 \end{gather}
+\section{First Order or Second Order?}
+Let's consider the following ODE,
+\begin{gather}
+    \dot{y}=a-by,
+\end{gather}
+with the initial condition $y(0)=0$.
+The analytical solution can be easily obtained as
+\begin{gather}
+    y(t)=\dfrac{a}{b}\left(1-e^{-bt}\right).
+\end{gather}
+
+Now, lest consider integrating this ODE using the first--order backward Euler method and the second--order Trapezoidal method.
+\begin{figure}[ht]
+    \centering
+    \includegraphics{PIC/convergence.integration.pdf}
+    \caption{comparison of first--order backward Euler method and second--order Trapezoidal method for the ODE $\dot{y}=a-by$.}
+    \label{fig:convergence}
+\end{figure}
+\figref{fig:convergence} presents the error of the numerical solutions for $a=1$ and $b=20$.
+The system is integrated to $t=10$.
+As expected, when $\Delta{}t$ decreases, the Trapezoidal method shows a second--order convergence, while the backward Euler method shows a first--order convergence.
+
+However, when $\Delta{}t$ is large, the absolute error of the Euler method is smaller.
