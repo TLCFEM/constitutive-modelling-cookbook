@@ -70,7 +70,7 @@ if __name__ == "__main__":
 
     be_errors, trap_errors = compute_errors(a, b, y0, T, time_steps)
 
-    plt.figure(figsize=(6, 2))
+    plt.figure(figsize=(6, 2.5))
     plt.loglog(time_steps, be_errors, "o-", label="Backward Euler")
     plt.loglog(time_steps, trap_errors, "s-", label="Trapezoidal")
     plt.xlabel(r"Time Step ($\Delta{}t$)")
