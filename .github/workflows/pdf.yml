@@ -12,6 +12,8 @@ jobs:
           docker_image: ghcr.io/xu-cheng/texlive-full
           run: |
             apk add --no-cache py3-pip build-base
+            python3 -m venv venv
+            . venv/bin/activate
             pip install -r requirements.txt
             python3 ./CONVERT/code.py
             python3 ./CONVERT/convergence.py
