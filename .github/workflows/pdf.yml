@@ -11,7 +11,8 @@ jobs:
         with:
           docker_image: ghcr.io/xu-cheng/texlive-full
           run: |
-            pip3 install -r requirements.txt
+            python3 -m ensurepip --upgrade
+            pip install -r requirements.txt
             python3 ./CONVERT/code.py
             python3 ./CONVERT/convergence.py
             latexmk -shell-escape -pdf COOKBOOK.tex
