@@ -1255,6 +1255,21 @@ thus
 Once $\bsigma$ is known, the yield function can be evaluated.
 This effectively turns $f=f\left(\gamma\right)$ into a univariate function of $\gamma$, and noting that utilizing the above procedure, no iteration is required to evaluate $f$ for a given $\gamma$, and such an evaluation is precise.
 One can then use root finding methods to find the solution $\gamma$ as the initial guess.
+\subsubsection{Return Mapping Implementation}
+The following is a reference implementation that switches between the implicit Euler method and the trapezoidal method based on the size of strain increment.
+The criterion used to determine which method to use is purely heuristic, and it is not guaranteed to be optimal.
+The general idea is to use the second order method when the strain increment is small so that the asymptotic convergence can be retained.
 \begin{cppcode}
 NonlinearOrthotropic::update_trial_status
+\end{cppcode}
+
+The two integration methods follow a similar structure.
+Note the computation of the onset state.
+\begin{cppcode}
+NonlinearOrthotropic::trapezoidal_return
+\end{cppcode}
+
+The Euler method is simpler.
+\begin{cppcode}
+NonlinearOrthotropic::euler_return
 \end{cppcode}
