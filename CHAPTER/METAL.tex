@@ -1000,7 +1000,7 @@ Subloading::update_trial_status
 Compared to the previous implementation \cite{Fincato2017,Anjiki2019}, the formulation proposed in this work dramatically reduces the size of the local system from \num{20} to \num{2}.
 We also present the explicit expression of the consistent tangent operator, which is not available in the previous works.
 If \eqsref{eq:original_z} can be explicitly integrated by choosing a specific function $U$ (such as the cotangent function used in the original proposal), the local system can be further reduced to a scalar residual.
-\section{Hoffman J2 Model}\label{sec:hoffman}
+\section{Orthotropic Hoffman Model}\label{sec:hoffman}
 Here we introduce an anisotropic model that adopts the orthotropic Hoffman yielding criterion.
 This framework resembles the isotropic von Mises model.
 As a matter of fact, the von Mises model can be seen as a degenerated version of the Hoffman model.
@@ -1194,7 +1194,8 @@ is on the yield surface, that is,
 \end{gather}
 Note in this procedure, plasticity is frozen, the only variable is the ratio $r$.
 This is a well bounded problem --- $r$ is guaranteed to be greater than zero and less than one.
-The solution $r$ can be computed using either a root finding method or a local Newton--Raphson iteration.
+The solution $r$ can be computed using a root finding method.
+Alternatively, noting that $f_\text{onset}$ is a quadratic function of $r$, one can compute the roots of the equation directly.
 Once $r$ is known, $\bsigma_\text{onset}$ can then be computed, as well as $\bn_\text{onset}$.
 
 It is necessary to compute the derivative as well.
@@ -1241,7 +1242,12 @@ Rearranging the above gives
 The above can be inserted into \eqsref{eq:ortho_consistent_tangent} to obtain the consistent tangent stiffness.
 \subsubsection{Line Search}
 Since it is an anisotropic model, the local iteration may have difficulties in convergence, especially when a high anisotropy is defined.
-Some implementations \cite{Krasnovskiy2004,SouzaNeto2008} adopt line search.
+Some implementations \cite{Krasnovskiy2004,SouzaNeto2008,Scherzinger2017} adopt line search, which effectively becomes a damped Newton--Raphson method.
+It indeed improves numerical stability in certain cases, but does not guarantee global convergence.
+The additional cost of searching is not necessarily negligible, as a desired step size is not guaranteed to be found in a fixed number of searches.
+What we end up with is a more costly algorithm that may not converge.
+
+Instead of line search, noting that there must exist a solution for some $\gamma>0$, it is possible to use a bracketing method that guarantees a solution can be found for arbitrary specified accuracy.
 The idea can be explained as follows.
 For a given $\gamma$, it is possible to compute the stress $\bsigma$ via
 \begin{gather}
@@ -1254,7 +1260,10 @@ thus
 \end{multline}
 Once $\bsigma$ is known, the yield function can be evaluated.
 This effectively turns $f=f\left(\gamma\right)$ into a univariate function of $\gamma$, and noting that utilizing the above procedure, no iteration is required to evaluate $f$ for a given $\gamma$, and such an evaluation is precise.
-One can then use root finding methods to find the solution $\gamma$ as the initial guess.
+Knowing that $f\left(0\right)>0$, to use a root finding method, one may start with a small $\gamma_b>0$ and compute $f\left(\gamma_b\right)$.
+If $f\left(\gamma_b\right)>0$, double $\gamma_b$ by, for example, $\gamma_b\leftarrow2\gamma_b$ and continue evaluating $f\left(\gamma_b\right)$ until $f\left(\gamma_b\right)\leqslant0$.
+This ensures that the solution shall be bracketed by $0$ and $\gamma_b$.
+One can then use root finding methods to find the solution $\gamma$.
 \subsubsection{Return Mapping Implementation}
 The following is a reference implementation that switches between the implicit Euler method and the trapezoidal method based on the size of strain increment.
 The criterion used to determine which method to use is purely heuristic, and it is not guaranteed to be optimal.
