@@ -1012,10 +1012,10 @@ The yield function adopts the Hoffman criterion, which is expressed in matrix fo
 \begin{gather}
 f=\dfrac{1}{2}\bsigma^\mT\mb{P}\bsigma+\mb{q}^\mT\bsigma-\sigma_y^2,
 \end{gather}
-where $\mb{P}=\mb{P}^\mT$ and $\bq$ are constant scaling matrix/vector of various forms \cite{Oller2003} that depend on material constants.
+where $\mb{P}=\mb{P}^\mT$ and $\bq$ are constant scaling matrix/vector.
+Various other orthotropic yielding criteria can also fit in this form, see \cite{Oller2003} for details.
 Apparently, $\mb{P}$ and $\bq$ represent two tensors of order four and two, respectively.
 But since \cite{Oller2003} uses matrix notation, we shall follow this convention.
-
 For example, the Hoffman criterion can be expressed as
 \begin{tiny}
 \begin{gather}\label{eq:hoffman_criterion}
@@ -1071,9 +1071,12 @@ where $\bn:\bn$ shall be treated as double contraction of strain tensors, that i
 with $\mb{T}=\diag{\begin{matrix}
 1&1&1&\dfrac{1}{2}&\dfrac{1}{2}&\dfrac{1}{2}
 \end{matrix}}$.
-Although not correct, we'll use $\norm{\bn}$ to represent $\sqrt{\dfrac{2}{3}\bn:\bn}$ for brevity in the following.
+Although \textbf{not} correct, we'll use $\norm{\bn}$ to represent $\sqrt{\dfrac{2}{3}\bn:\bn}$ for brevity in the following.
 \subsection{Formulation}
-To some extend, the model is even simpler than the von Mises model as there is no back stress to support kinematic hardening. Furthermore, the yield function involves only matrix--vector operations, the corresponding derivatives are relatively easy to compute.
+To some extend, the model is even simpler than the von Mises model as there is no back stress to support kinematic hardening.
+This is reasonable as there is no experimental evidence that timber exhibits the Bauschinger effect.
+For other materials, specific models can be developed, in which kinematic hardening can be introduced.
+Furthermore, the yield function involves only matrix--vector operations, the corresponding derivatives are relatively easy to compute.
 \begin{table}[ht]
 \centering
 \begin{tabular}{rl}
@@ -1234,7 +1237,7 @@ With $\bn_\text{onset}$, it is possible to compute the explicit expression of $\
 \end{gather}
 Rearranging the above gives
 \begin{gather}
-    \pdfrac{\mb{R}}{\bvarepsilon_{n+1}}\begin{bmatrix}
+    \pdfrac{\mb{R}}{\bvarepsilon_{n+1}}=\begin{bmatrix}
         -\sigma_yr\gamma\ddfrac{\sigma_y}{\varepsilon_{p}}\ddfrac{\norm{\bn_m}}{\bn_m}\mb{P}\left(\mb{I}-\dfrac{\Delta\bsigma\bn_\text{onset}^\mT}{\bn_\text{onset}^\mT\Delta\bsigma}\right) \\[4mm]
         \dfrac{r\gamma}{2}\mb{EP}\left(\mb{I}-\dfrac{\Delta\bsigma\bn_\text{onset}^\mT}{\bn_\text{onset}^\mT\Delta\bsigma}\right)-\mb{I}
     \end{bmatrix}\mb{E}.
