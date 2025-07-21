@@ -1354,3 +1354,13 @@ One can spot a few interesting features of \eqsref{eq:yld0418p_yield_function}.
 \end{enumerate}
 
 It is necessary to derive the gradients of $f$ in order to implement the plasticity model.
+\subsection{Implementation}
+The following method computes the yield function and its corresponding derivatives/gradients.
+\begin{cppcode}
+YLD0418P::compute_yield_surface
+\end{cppcode}
+
+The local returning mapping can be seen in the following method.
+\begin{cppcode}
+YLD0418P::update_trial_status
+\end{cppcode}
