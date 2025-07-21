@@ -1285,3 +1285,34 @@ The Euler method is simpler.
 \begin{cppcode}
 NonlinearOrthotropic::euler_return
 \end{cppcode}
+\section{YLD0418P}
+In \cite{SouzaNeto2008}, an anisotropic yield criterion named as the Barlat--Lian criterion \cite{Barlat1989} is discussed in the context of plane stress for sheet metals.
+The yield criterion was further extended to the 3D space \cite{Barlat2005}, which is known as the YLD2004-18P criterion since it was formulated in 2004 and has 18 parameters.
+Here, we use a slightly different notation, YLD0418P, to denote this criterion.
+\subsection{Theory}
+Since it is just a yield criterion, to make it a complete plasticity model, one needs to provide the corresponding elasticity, flow rule and hardening law.
+
+For elasticity, we assume either isotropic or orthotropic elasticity such that
+\begin{gather}
+    \bsigma=\mb{E}\left(\bvarepsilon-\bvarepsilon^p\right),
+\end{gather}
+where $\mb{E}$ is the elastic stiffness matrix that can be either isotropic or orthotropic.
+
+For the flow rule, we assume the associative plasticity such that the plastic potential is identical to the yield function.
+\begin{gather}
+    \dot{\bvarepsilon^p}=\gamma\bn=\gamma\pdfrac{f}{\bsigma}.
+\end{gather}
+For the hardening rule, let the isotropic yield stress be a function of the accumulated equivalent plastic strain $\varepsilon^p$.
+\begin{gather}
+    \sigma_y=H\left(\varepsilon^{p}\right),
+\end{gather}
+with
+\begin{gather}
+    \dot{\varepsilon^p}=\sqrt{\dfrac{2}{3}\dot{\bvarepsilon^p}:\dot{\bvarepsilon^p}}=\gamma\sqrt{\dfrac{2}{3}\underbrace{\bn:\bn}_\text{tensor}}=\gamma\sqrt{\dfrac{2}{3}\underbrace{\bn^\mT\mb{T}\bn}_\text{vector}},
+\end{gather}
+with $\mb{T}=\diag{\begin{matrix}
+            1 & 1 & 1 & \dfrac{1}{2} & \dfrac{1}{2} & \dfrac{1}{2}
+        \end{matrix}}$.
+Both rules are effectively identical to the ones introduced previously in \S~\ref{sec:hoffman}.
+However, since we only focus on the yield criterion in this section, we are not going to explore various alternatives.
+Nevertheless, one shall be aware of the fact that based on the framework presented here, it is relatively easy to employ more complex hardening rules.
