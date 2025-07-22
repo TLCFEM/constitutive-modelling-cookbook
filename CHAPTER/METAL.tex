@@ -1353,7 +1353,32 @@ One can spot a few interesting features of \eqsref{eq:yld0418p_yield_function}.
     \item Noting that $\bs$ is a deviatoric stress tensor, thus the yield function hydrostatic pressure dependent. However, $\balpha$ and $\bbeta$ may or may not be deviatoric --- depending on the transformation matrices. If the associative plasticity is used, the resulting plastic flow may be \textbf{dilatant}.
 \end{enumerate}
 
+It is important to also notice that $f$ has a unit of that of stress.
+Considering that $m$ could be potentially (very) large, up to \num{40} or so, to avoid numerical issues, we use the following revision in this section.
+\begin{gather}\label{eq:yld0418p_yield_function_normalized}
+    f=\sum_{i=1,j=1}^3\abs{\dfrac{\alpha_i-\beta_j}{\sigma_\text{ref}}}^m-4\sigma_y^m,
+\end{gather}
+where $\sigma_\text{ref}$ is a reference stress.
+As a result, $\sigma_y$ shall be dimensionless and evaluates to unity for zero plastic strain.
+
 It is necessary to derive the gradients of $f$ in order to implement the plasticity model.
+Using the chain rule, by denoting $\Delta_{ij}=\dfrac{\alpha_i-\beta_j}{\sigma_\text{ref}}$, it is straightforward to derive the following.
+\begin{gather}
+    \pdfrac{f}{\alpha_i}=\dfrac{m}{\sigma_\text{ref}}\sum_{j=1}^3\abs{\Delta_{ij}}^{m-1}\sign{\Delta_{ij}}=\dfrac{m}{\sigma_\text{ref}}\sum_{j=1}^3\abs{\Delta_{ij}}^{m-2}\Delta_{ij},\\
+    \pdfrac{f}{\beta_j}=\dfrac{m}{\sigma_\text{ref}}\sum_{j=1}^3\abs{\Delta_{ij}}^{m-1}\sign{\Delta_{ij}}=\dfrac{m}{\sigma_\text{ref}}\sum_{j=1}^3\abs{\Delta_{ij}}^{m-2}\Delta_{ij},
+\end{gather}
+and the second order derivatives
+\begin{gather}
+    \pdfrac{^2f}{\alpha_i^2}=\dfrac{m\left(m-1\right)}{\sigma_\text{ref}^2}\sum_{j=1}^3\abs{\Delta_{ij}}^{m-2},\\
+    \pdfrac{^2f}{\beta_j^2}=\dfrac{m\left(m-1\right)}{\sigma_\text{ref}^2}\sum_{i=1}^3\abs{\Delta_{ij}}^{m-2},\\
+    \pdfrac{^2f}{\alpha_i\partial\beta_j}=-\dfrac{m\left(m-1\right)}{\sigma_\text{ref}^2}\abs{\Delta_{ij}}^{m-2}.
+\end{gather}
+
+Now let $\lambda_i$ be the eigenvalues of the stress tensor $\mb{\aleph}$ and $\bv_i$ be the corresponding eigenvectors, one has
+\begin{gather}
+    \lambda_i=\bv_i^\mT\mb{\aleph}\bv_i,\quad\text{(no summation)},\\
+    \mb{\aleph}=\lambda_i\bv_i\otimes\bv_i\quad\text{(summation applies)}.
+\end{gather}
 \subsection{Implementation}
 The following method computes the yield function and its corresponding derivatives/gradients.
 \begin{cppcode}
