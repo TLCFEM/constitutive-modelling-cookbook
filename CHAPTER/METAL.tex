@@ -1350,7 +1350,7 @@ One can spot a few interesting features of \eqsref{eq:yld0418p_yield_function}.
     \item The shape is controlled by principal stresses.
     \item The summation involves nine terms in total.
     \item Depending on the parameters used to define the transformation matrices, the transformed stresses $\balpha$ and $\bbeta$ may or may not share the same principal directions.
-    \item Noting that $\bs$ is a deviatoric stress tensor, thus the yield function is hydrostatic pressure dependent. However, $\balpha$ and $\bbeta$ may or may not be deviatoric --- depending on the transformation matrices.
+    \item Noting that $\bs$ is a deviatoric stress tensor, thus the yield function is hydrostatic pressure independent. However, $\balpha$ and $\bbeta$ may or may not be deviatoric --- depending on the transformation matrices.
 \end{enumerate}
 
 It is important to also notice that $f$ has a unit of that of stress.
@@ -1365,7 +1365,7 @@ It is necessary to derive the gradients of $f$ in order to implement the plastic
 Using the chain rule, by denoting $\Delta_{ij}=\dfrac{\alpha_i-\beta_j}{\sigma_\text{ref}}$, it is straightforward to derive the following.
 \begin{gather}
     \pdfrac{f}{\alpha_i}=\dfrac{m}{\sigma_\text{ref}}\sum_{j=1}^3\abs{\Delta_{ij}}^{m-1}\sign{\Delta_{ij}}=\dfrac{m}{\sigma_\text{ref}}\sum_{j=1}^3\abs{\Delta_{ij}}^{m-2}\Delta_{ij},\\
-    \pdfrac{f}{\beta_j}=\dfrac{m}{\sigma_\text{ref}}\sum_{i=1}^3\abs{\Delta_{ij}}^{m-1}\sign{\Delta_{ij}}=\dfrac{m}{\sigma_\text{ref}}\sum_{i=1}^3\abs{\Delta_{ij}}^{m-2}\Delta_{ij},
+    \pdfrac{f}{\beta_j}=-\dfrac{m}{\sigma_\text{ref}}\sum_{i=1}^3\abs{\Delta_{ij}}^{m-1}\sign{\Delta_{ij}}=-\dfrac{m}{\sigma_\text{ref}}\sum_{i=1}^3\abs{\Delta_{ij}}^{m-2}\Delta_{ij},
 \end{gather}
 and the second order derivatives
 \begin{gather}
