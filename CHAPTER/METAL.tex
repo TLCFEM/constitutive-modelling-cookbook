@@ -1285,3 +1285,300 @@ The Euler method is simpler.
 \begin{cppcode}
 NonlinearOrthotropic::euler_return
 \end{cppcode}
+\section{YLD0418P}
+In \cite{SouzaNeto2008}, an anisotropic yield criterion named as the Barlat--Lian criterion \cite{Barlat1989} is discussed in the context of plane stress for sheet metals.
+The yield criterion was further extended to the 3D space \cite{Barlat2005}, which is known as the YLD2004-18P criterion since it was formulated in 2004 and has 18 parameters.
+Here, we use a slightly different notation, YLD0418P, to denote this criterion.
+\subsection{Miscellaneous Aspects}
+Before introducing the yield criterion, we shall first introduce some miscellaneous aspects to make it a complete plasticity model.
+Namely, one needs to provide the corresponding elasticity, flow rule and hardening law.
+
+For elasticity, we assume either isotropic or orthotropic elasticity such that
+\begin{gather}
+    \bsigma=\mb{E}\left(\bvarepsilon-\bvarepsilon^p\right),
+\end{gather}
+where $\mb{E}$ is the elastic stiffness matrix that can be either isotropic or orthotropic.
+For the flow rule, we assume the associative plasticity such that the plastic potential is identical to the yield function.
+\begin{gather}
+    \dot{\bvarepsilon^p}=\gamma\bn=\gamma\pdfrac{f}{\bsigma}.
+\end{gather}
+For the hardening rule, let the isotropic yield stress be a function of the accumulated equivalent plastic strain $\varepsilon^p$.
+\begin{gather}
+    \sigma_y=H\left(\varepsilon^{p}\right),
+\end{gather}
+with
+\begin{gather}
+    \dot{\varepsilon^p}=\sqrt{\dfrac{2}{3}\dot{\bvarepsilon^p}:\dot{\bvarepsilon^p}}=\gamma\sqrt{\dfrac{2}{3}\underbrace{\bn:\bn}_\text{tensor}}=\gamma\sqrt{\dfrac{2}{3}\underbrace{\bn^\mT\mb{T}\bn}_\text{vector}},
+\end{gather}
+with $\mb{T}=\diag{\begin{matrix}
+            1 & 1 & 1 & \dfrac{1}{2} & \dfrac{1}{2} & \dfrac{1}{2}
+        \end{matrix}}$.
+Both rules are effectively identical to the ones introduced previously in \S~\ref{sec:hoffman}.
+However, since we only focus on the yield criterion in this section, we are not going to explore various alternatives.
+Nevertheless, one shall be aware of the fact that based on the framework presented here, it is relatively easy to employ more complex hardening rules.
+\subsection{Yield Function}
+The YLD0418P yield criterion is expressed as a function of a set of \textbf{transformed} stress tensors, that is, in its most general form,
+\begin{gather}
+    f=f\left(\balpha,\bbeta,\bgamma,\cdots\right),
+\end{gather}
+where $\balpha$, $\bbeta$, $\bgamma$ are the transformed stress tensors that can be obtained by linear transformations of the deviatoric stress tensor $\bs=\dev{\bsigma}$.
+In matrix form, for example,
+\begin{gather}
+    \mb{\aleph}=\mb{C_\aleph}\bs,
+\end{gather}
+where $\mb{\aleph}$ is the transformed stress tensor (any of $\balpha$, $\bbeta$, etc.), and $\mb{C_\aleph}$ is the corresponding constant transformation matrix that has the following structure.
+\begin{gather}
+    \mb{C_\aleph}=
+    \begin{bmatrix}
+                              & -C^{\mb{\aleph}}_{12} & -C^{\mb{\aleph}}_{13} &                      &                      &                      \\[2mm]
+        -C^{\mb{\aleph}}_{21} &                       & -C^{\mb{\aleph}}_{23} &                      &                      &                      \\[2mm]
+        -C^{\mb{\aleph}}_{31} & -C^{\mb{\aleph}}_{32} &                       &                      &                      &                      \\[2mm]
+                              &                       &                       & C^{\mb{\aleph}}_{44} &                      &                      \\[2mm]
+                              &                       &                       &                      & C^{\mb{\aleph}}_{55} &                      \\[2mm]
+                              &                       &                       &                      &                      & C^{\mb{\aleph}}_{66}
+    \end{bmatrix}.
+\end{gather}
+As mainly discussed in \cite{Barlat2005}, the YLD0418P yield function only focus on two of those transformed stress tensors, namely $\balpha$ and $\bbeta$.
+Let $\alpha_i$ and $\beta_i$ ($i\in\{1,2\}$ for 2D and $i\in\{1,2,3\}$ for 3D) be the principal values of $\balpha$ and $\bbeta$, viz., the eigenvalues of the corresponding tensors.
+In 3D stress space, the yield function is then expressed as
+\begin{gather}\label{eq:yld0418p_yield_function}
+    f=\sum_{i=1,j=1}^3\abs{\alpha_i-\beta_j}^m-4\sigma_y^m.
+\end{gather}
+In above, the exponent $m$ is a model parameter that controls the shape of the yield surface.
+One can spot a few interesting features of \eqsref{eq:yld0418p_yield_function}.
+\begin{enumerate}
+    \item The shape is controlled by principal stresses.
+    \item The summation involves nine terms in total.
+    \item Depending on the parameters used to define the transformation matrices, the transformed stresses $\balpha$ and $\bbeta$ may or may not share the same principal directions.
+    \item Noting that $\bs$ is a deviatoric stress tensor, thus the yield function is hydrostatic pressure independent. However, $\balpha$ and $\bbeta$ may or may not be deviatoric --- depending on the transformation matrices.
+\end{enumerate}
+
+It is important to also notice that $f$ has a unit of that of stress.
+Considering that $m$ could be potentially (very) large, up to \num{40} or so, to avoid numerical issues, we use the following revision in this section.
+\begin{gather}\label{eq:yld0418p_yield_function_normalized}
+    f=\sum_{i=1,j=1}^3\abs{\dfrac{\alpha_i-\beta_j}{\sigma_\text{ref}}}^m-4\sigma_y^m,
+\end{gather}
+where $\sigma_\text{ref}$ is a reference stress.
+As a result, $\sigma_y$ shall be dimensionless and evaluates to unity for zero plastic strain.
+
+It is necessary to derive the gradients of $f$ in order to implement the plasticity model.
+Using the chain rule, by denoting $\Delta_{ij}=\dfrac{\alpha_i-\beta_j}{\sigma_\text{ref}}$, it is straightforward to derive the following.
+\begin{gather}
+    \pdfrac{f}{\alpha_i}=\dfrac{m}{\sigma_\text{ref}}\sum_{j=1}^3\abs{\Delta_{ij}}^{m-1}\sign{\Delta_{ij}}=\dfrac{m}{\sigma_\text{ref}}\sum_{j=1}^3\abs{\Delta_{ij}}^{m-2}\Delta_{ij},\\
+    \pdfrac{f}{\beta_j}=-\dfrac{m}{\sigma_\text{ref}}\sum_{i=1}^3\abs{\Delta_{ij}}^{m-1}\sign{\Delta_{ij}}=-\dfrac{m}{\sigma_\text{ref}}\sum_{i=1}^3\abs{\Delta_{ij}}^{m-2}\Delta_{ij},
+\end{gather}
+and the second order derivatives
+\begin{gather}
+    \pdfrac{^2f}{\alpha_i^2}=\dfrac{m\left(m-1\right)}{\sigma_\text{ref}^2}\sum_{j=1}^3\abs{\Delta_{ij}}^{m-2},\\
+    \pdfrac{^2f}{\beta_j^2}=\dfrac{m\left(m-1\right)}{\sigma_\text{ref}^2}\sum_{i=1}^3\abs{\Delta_{ij}}^{m-2},\\
+    \pdfrac{^2f}{\alpha_i\partial\beta_j}=-\dfrac{m\left(m-1\right)}{\sigma_\text{ref}^2}\abs{\Delta_{ij}}^{m-2}.
+\end{gather}
+
+Now let $\lambda_i$ be the eigenvalues of the stress tensor $\mb{\aleph}$ and $\bv_i$ be the corresponding normalized eigenvectors, one has
+\begin{gather}\label{eq:eigenvalue_def}
+    \lambda_i=\underbrace{\bv_i^\mT\mb{\aleph}\bv_i}_{\text{vector/matrix}}=\underbrace{\bv_i\cdot\mb{\aleph}\cdot\bv_i}_{\text{tensor contraction}}=\underbrace{\left(\bv_i\otimes\bv_i\right):\mb{\aleph}}_{\text{tensor contraction}},\qquad
+    \mb{\aleph}=\sum_{i}\lambda_i\bv_i\otimes\bv_i.
+\end{gather}
+The first attribute to note is that since $\bv_i$ is normalized, viz., $\bv_i\cdot\bv_i=1$, then
+\begin{gather}
+    \md{\left(\bv_i\cdot\bv_i\right)}=\md{\bv_i}\cdot\bv_i+\bv_i\cdot\md{\bv_i}=2\bv_i\cdot\md{\bv_i}=\md{1}=0\qquad\longrightarrow\qquad\bv_i\cdot\md{\bv_i}=0.
+\end{gather}
+Without loss of generality, one arrives at the conclusion that the change of a unit vector (or first order tensor) is perpendicular to the vector/tensor itself, i.e., $\bv_i\perp\md{\bv_i}$.
+With this, it is possible to further write
+\begin{gather}
+    \md{\bv_i}\cdot\mb{\aleph}\cdot\bv_i=\lambda_i\cdot\md{\bv_i}\cdot\bv_i=0,
+\end{gather}
+thus, the differentiation of $\lambda_i$ can be expressed as
+\begin{gather}\label{eq:eigenvalue_diff_def}
+    \md{\lambda_i}=\md{\bv_i}\cdot\mb{\aleph}\cdot\bv_i+\bv_i\cdot\md{\mb{\aleph}}\cdot\bv_i+\bv_i\cdot\mb{\aleph}\cdot\md{\bv_i}=\bv_i\cdot\md{\mb{\aleph}}\cdot\bv_i+2\md{\bv_i}\cdot\mb{\aleph}\cdot\bv_i=\bv_i\cdot\md{\mb{\aleph}}\cdot\bv_i.
+\end{gather}
+Comparing \eqsref{eq:eigenvalue_def} and \eqsref{eq:eigenvalue_diff_def}, it is quite interesting to note that the mapping between $\lambda_i$ and $\mb{\aleph}$ is identical to that between $\md{\lambda_i}$ and $\md{\mb{\aleph}}$.
+Alternatively, the above expressions are equivalent to the following,
+\begin{gather}
+    \md{\lambda_i}=\left(\bv_i\otimes\bv_i\right):\md{\mb{\aleph}}=\mb{P}_{ii}:\md{\mb{\aleph}}.
+\end{gather}
+We have defined $\mb{P}_{ii}=\bv_i\otimes\bv_i$.
+In matrix form,
+\begin{gather}
+    \lambda_i=\underbrace{\mb{P}_{ii}}_{1\times6}\underbrace{\mb{\aleph}}_{6\times1},\qquad
+    \md{\lambda_i}=\underbrace{\mb{P}_{ii}}_{1\times6}\underbrace{\md{\mb{\aleph}}}_{6\times1}.
+\end{gather}
+
+For $\md{\bv_i}$ itself, it can be derived and explicitly expressed as
+\begin{gather}\label{eq:eigenvector_diff_def}
+    \md{\bv_i}=\sum_{j=1,i\neq{}j}^3\dfrac{\mb{P}_{ij}:\md{\mb{\aleph}}}{\lambda_i-\lambda_j}\bv_j.
+\end{gather}
+It can be observed that $ \md{\bv_i}$ is a linear combination of the other two eigenvectors.
+Since $\bv_i\cdot\bv_j=\delta_{ij}$, indeed $\md{\bv_i}\cdot\bv_i=0$.
+\eqsref{eq:eigenvector_diff_def} allows the following.
+\begin{gather}
+    \begin{split}
+        \md{\mb{P}_{ii}}=\md{\left(\bv_i\otimes\bv_i\right)}=2\md{\bv_i}\otimes\bv_i & =2\sum_{j=1,i\neq{}j}^3\dfrac{\mb{P}_{ij}:\md{\mb{\aleph}}}{\lambda_i-\lambda_j}\bv_j\otimes\bv_i \\&=2\sum_{j=1,i\neq{}j}^3\dfrac{\mb{P}_{ij}:\md{\mb{\aleph}}}{\lambda_i-\lambda_j}\mb{P}_{ij}=2\sum_{j=1,i\neq{}j}^3\dfrac{\mb{P}_{ij}\otimes\mb{P}_{ij}}{\lambda_i-\lambda_j}:\md{\mb{\aleph}}.
+    \end{split}
+\end{gather}
+In the above, we have used the definition $\mb{P}_{ij}=\dfrac{1}{2}\left(\bv_i\otimes\bv_j+\bv_j\otimes\bv_i\right)$.
+It is also assumed that $\lambda_i\neq\lambda_j$, that is, the eigenvalues are distinct.
+For degenerated cases, the above expression is \textbf{not} valid.
+
+We have prepared all necessary ingredients to compute the full derivatives of the yield function.
+\begin{gather}
+    \begin{split}
+        \pdfrac{f}{\bs} & =\sum_{i=1}^{3}\pdfrac{f}{\alpha_i}\ddfrac{\alpha_i}{\balpha}\ddfrac{\balpha}{\bs}+\sum_{i=1}^{3}\pdfrac{f}{\beta_i}\ddfrac{\beta_i}{\bbeta}\ddfrac{\bbeta}{\bs} \\
+                        & =\sum_{i=1}^{3}\pdfrac{f}{\alpha_i}\mb{P}_{ii}^{\balpha}:\mb{C}_{\balpha}+\sum_{i=1}^{3}\pdfrac{f}{\beta_i}\mb{P}_{ii}^{\bbeta}:\mb{C}_{\bbeta}.
+    \end{split}
+\end{gather}
+Note that in the above we only consider the contribution of the summation term, while the contribution of $\sigma_y$ is not included.
+This is also the reason why we use partial derivative notation in the above expression.
+It is possible to rewrite the above expression in a more compact form, using the following notation.
+\begin{gather}
+    \pdfrac{f}{\balpha}=\underbrace{\begin{bmatrix}
+            \pdfrac{f}{\alpha_1} & \pdfrac{f}{\alpha_2} & \pdfrac{f}{\alpha_3}
+        \end{bmatrix}}_{1\times3}\underbrace{\begin{bmatrix}
+            \mb{P}_{11}^{\balpha} \\[2mm]\mb{P}_{22}^{\balpha}\\[2mm]\mb{P}_{33}^{\balpha}
+        \end{bmatrix}}_{3\times6},\qquad
+    \pdfrac{f}{\bbeta}=\underbrace{\begin{bmatrix}
+            \pdfrac{f}{\beta_1} & \pdfrac{f}{\beta_2} & \pdfrac{f}{\beta_3}
+        \end{bmatrix}}_{1\times3}\underbrace{\begin{bmatrix}
+            \mb{P}_{11}^{\bbeta} \\[2mm]\mb{P}_{22}^{\bbeta}\\[2mm]\mb{P}_{33}^{\bbeta}
+        \end{bmatrix}}_{3\times6}.
+\end{gather}
+Thus,
+\begin{gather}
+    \pdfrac{f}{\bs}=\pdfrac{f}{\balpha}:\mb{C}_{\balpha}+\pdfrac{f}{\bbeta}:\mb{C}_{\bbeta}.
+\end{gather}
+In explicit matrix form, (the transpose of) the above can be expressed as a column vector
+\begin{gather}
+    \underbrace{\pdfrac{f}{\bs}}_{6\times1}=\sum_{\mb{\aleph}\in\{\balpha,\bbeta\}}\mb{C}_{\mb{\aleph}}^\mT\begin{bmatrix}
+        1 &   &   &   &   &   \\
+          & 1 &   &   &   &   \\
+          &   & 1 &   &   &   \\
+          &   &   & 2 &   &   \\
+          &   &   &   & 2 &   \\
+          &   &   &   &   & 2
+    \end{bmatrix}\underbrace{\begin{bmatrix}
+            \mb{P}_{11}^{\mb{\aleph},\mT} & \mb{P}_{22}^{\mb{\aleph},\mT} & \mb{P}_{33}^{\mb{\aleph},\mT}
+        \end{bmatrix}}_{6\times3}\underbrace{\begin{bmatrix}
+            \pdfrac{f}{\aleph_1} \\[4mm] \pdfrac{f}{\aleph_2} \\[4mm] \pdfrac{f}{\aleph_3}
+        \end{bmatrix}}_{3\times1}.
+\end{gather}
+Accordingly, the plastic flow direction is simply the deviatoric part, that is,
+\begin{gather}
+    \pdfrac{f}{\bsigma}=\dev{\pdfrac{f}{\bs}}.
+\end{gather}
+
+Furthermore,
+\begin{gather}\label{eq:yld0418p_dfdaleph}
+    \begin{split}
+        \pdfrac{^2f}{\mb{\aleph}^2} & =\sum_{i=1}^{3}\left(\pdfrac{^2f}{\aleph_i^2}\mb{P}_{ii}^{\mb{\aleph}}\otimes\mb{P}_{ii}^{\mb{\aleph}}+2\pdfrac{f}{\aleph_i}\sum_{j=1,i\neq{}j}^3\dfrac{\mb{P}_{ij}^{\mb{\aleph}}\otimes\mb{P}_{ij}^{\mb{\aleph}}}{\aleph_i-\aleph_j}\right)                                   \\
+                                    & =\sum_{i=1}^{3}\pdfrac{^2f}{\aleph_i^2}\mb{P}_{ii}^{\mb{\aleph}}\otimes\mb{P}_{ii}^{\mb{\aleph}}+\sum_{(i,j)\in\{(12),(23),(31)\}}\dfrac{2}{\aleph_i-\aleph_j}\left(\pdfrac{f}{\aleph_i}-\pdfrac{f}{\aleph_j}\right)\mb{P}_{ij}^{\mb{\aleph}}\otimes\mb{P}_{ij}^{\mb{\aleph}}.
+    \end{split}
+\end{gather}
+In matrix form, if we define
+\begin{gather}
+    \mb{P}^{\mb{\aleph}}=\underbrace{\begin{bmatrix}
+            \mb{P}_{11}^{\mb{\aleph}} \\[3mm]
+            \mb{P}_{22}^{\mb{\aleph}} \\[3mm]
+            \mb{P}_{33}^{\mb{\aleph}} \\[3mm]
+            \mb{P}_{12}^{\mb{\aleph}} \\[3mm]
+            \mb{P}_{23}^{\mb{\aleph}} \\[3mm]
+            \mb{P}_{31}^{\mb{\aleph}}
+        \end{bmatrix}}_{6\times6},
+\end{gather}
+\eqsref{eq:yld0418p_dfdaleph} can be equivalently expressed as
+\begin{gather}
+    \pdfrac{^2f}{\mb{\aleph}^2}= \mb{P}^{\mb{\aleph},\mT}\diag{\begin{matrix}
+            \pdfrac{^2f}{\aleph_1^2}                                                           \\[3mm]
+            \pdfrac{^2f}{\aleph_2^2}                                                           \\[3mm]
+            \pdfrac{^2f}{\aleph_3^2}                                                           \\[3mm]
+            \dfrac{2}{\aleph_1-\aleph_2}\left(\pdfrac{f}{\aleph_1}-\pdfrac{f}{\aleph_2}\right) \\[3mm]
+            \dfrac{2}{\aleph_2-\aleph_3}\left(\pdfrac{f}{\aleph_2}-\pdfrac{f}{\aleph_3}\right) \\[3mm]
+            \dfrac{2}{\aleph_3-\aleph_1}\left(\pdfrac{f}{\aleph_3}-\pdfrac{f}{\aleph_1}\right)
+        \end{matrix}}\mb{P}^{\mb{\aleph}}.
+\end{gather}
+What a compact and elegant expression!
+The matrix $\mb{P}^{\mb{\aleph}}$ is a projection matrix that purely depends on the eigenvectors.
+The diagonal matrix accounts for both the direct second order partial derivatives and the contribution of the rotating eigenvectors.
+If we further define $\mb{H}^{\mb{\aleph}}=\mb{P}^{\mb{\aleph}}:\mb{C}_{\mb{\aleph}}$, then,
+\begin{gather}
+    \pdfrac{^2f}{\bs^2}=\mb{H}^{\mb{\aleph},\mT}\diag{\cdots}\mb{H}^{\mb{\aleph}},
+\end{gather}
+in which for brevity the middle diagonal matrix is not repeated.
+\subsection{Formulation}
+The expressions are summarised in the following table.
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{rl}
+        \toprule
+        Constitutive Law & $\bsigma=\mb{E}\left(\bvarepsilon-\bvarepsilon^p\right)$                \\[2mm]
+        Yield Function   & $\displaystyle{}f=\sum_{i=1,j=1}^3\abs{\alpha_i-\beta_j}^m-4\sigma_y^m$ \\[2mm]
+        Flow Rule        & $\dot{\bvarepsilon^p}=\gamma\bn=\gamma\cdot\dev{\pdfrac{f}{\bs}}$       \\[4mm]
+        Hardening Law    & $\dot{\varepsilon^p}=\gamma\norm{\bn}=\gamma\sqrt{\dfrac{2}{3}\bn:\bn}$ \\\bottomrule
+    \end{tabular}
+\end{table}
+\subsubsection{Local System}
+It is very important to note that since the yield function $f$ is defined in the deviatoric stress space, it is \textbf{not} possible to take $\bsigma$ as an independent variable as done in the previous orthotropic model.
+This is reasonable as it is \textbf{not} possible to determine $\bsigma$ from $\bs$ as the spherical part remains unknown.
+Thus, the local variable is taken as $\mb{x}=\underbrace{\begin{bmatrix}\gamma&\bs\end{bmatrix}^\mT}_{7\times1}$, the local system consists of two residuals.
+\begin{gather}
+    \mb{R}=\left\{\begin{array}{l}\displaystyle
+        \sum_{i=1,j=1}^3\abs{\alpha_i-\beta_j}^m-4\sigma_y^m, \\[4mm]
+        \bs+\mb{E}\bn\gamma-\bs^\text{trial}.
+    \end{array}\right.
+\end{gather}
+The Jacobian is thus
+\begin{gather}
+    \mb{J}=\underbrace{\begin{bmatrix}
+    -4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\norm{\bn} & \pdfrac{f}{\bs}-4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\gamma\ddfrac{\norm{\bn}}{\bn}\mathbb{I}_\text{dev}\pdfrac{^2f}{\bs^2} \\[4mm]
+        \mb{E}\bn                                                   & \mb{I}+\gamma\mb{E}\mathbb{I}_\text{dev}\pdfrac{^2f}{\bs^2}
+    \end{bmatrix}}_{7\times7}.
+    \end{gather}
+    \subsubsection{Consistent Tangent Stiffness}
+    From the stress update expression,
+    \begin{gather}
+        \bsigma=\bsigma^\text{trial}-\gamma\mb{E}\bn,
+    \end{gather}
+    the consistent tangent stiffness can be derived as
+    \begin{gather}
+        \begin{split}
+            \ddfrac{\bsigma}{\bvarepsilon} & =\mb{E}-\mb{E}\left(\gamma\ddfrac{\bn}{\bvarepsilon}+\bn\ddfrac{\gamma}{\bvarepsilon}\right)=\mb{E}-\mb{E}\left(\gamma\mathbb{I}_\text{dev}\pdfrac{^2f}{\bs^2}\ddfrac{\bs}{\bvarepsilon}+\bn\ddfrac{\gamma}{\bvarepsilon}\right) \\
+                                           & =\mb{E}-\mb{E}\begin{bmatrix}
+                                                               \bn & \gamma\mathbb{I}_\text{dev}\pdfrac{^2f}{\bs^2}
+                                                           \end{bmatrix}\begin{bmatrix}
+                                                                            \ddfrac{\gamma}{\bvarepsilon} \\[4mm]
+                                                                            \ddfrac{\bs}{\bvarepsilon}
+                                                                        \end{bmatrix}=\mb{E}-\mb{E}\mathbb{I}_\text{dev}\begin{bmatrix}
+                                                                                                                            \pdfrac{f}{\bs} & \gamma\pdfrac{^2f}{\bs^2}
+                                                                                                                        \end{bmatrix}\ddfrac{\mb{x}}{\bvarepsilon}.
+        \end{split}
+    \end{gather}
+    In the above, $\ddfrac{\mb{x}}{\bvarepsilon}$ can be obtained from the local equilibrium,
+    \begin{gather}
+        \md{\mb{R}}=\pdfrac{\mb{R}}{\mb{x}}\md{\mb{x}}+\pdfrac{\mb{R}}{\bvarepsilon}\md{\bvarepsilon}=\mb{0}\qquad\longrightarrow\qquad\ddfrac{\mb{x}}{\bvarepsilon}=-\mb{J}^{-1}\pdfrac{\mb{R}}{\bvarepsilon},
+    \end{gather}
+    with
+    \begin{gather}
+        \pdfrac{\mb{R}}{\bvarepsilon}=\begin{bmatrix}
+            \mb{0} \\[4mm]
+            -\mathbb{I}_\text{dev}\mb{E}
+        \end{bmatrix},
+    \end{gather}
+    thus, the final expression of the consistent tangent stiffness is
+    \begin{gather}
+    \ddfrac{\bsigma}{\bvarepsilon}=\mb{E}-\mb{E}\mathbb{I}_\text{dev}\underbrace{\begin{bmatrix}
+            \pdfrac{f}{\bs} & \gamma\pdfrac{^2f}{\bs^2}
+        \end{bmatrix}}_{6\times7}\mb{J}^{-1}\underbrace{\begin{bmatrix}
+            \mb{0} \\[4mm]
+            \mathbb{I}_\text{dev}\mb{E}
+        \end{bmatrix}}_{7\times6}.
+\end{gather}
+It is also worth noting that $\mathbb{I}_\text{dev}\mb{E}=\mb{E}\mathbb{I}_\text{dev}$ regardless of orthotropic or isotropic elasticity.
+\subsection{Implementation}
+The following method computes the yield function and its corresponding derivatives/gradients.
+\begin{cppcode}
+YLD0418P::compute_yield_surface
+\end{cppcode}
+
+The local returning mapping can be seen in the following method.
+\begin{cppcode}
+YLD0418P::update_trial_status
+\end{cppcode}
