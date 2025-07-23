@@ -1500,7 +1500,37 @@ If we further define $\mb{H}^{\mb{\aleph}}=\mb{P}^{\mb{\aleph}}:\mb{C}_{\mb{\ale
 \begin{gather}
     \pdfrac{^2f}{\bs^2}=\mb{H}^{\mb{\aleph},\mT}\diag{\cdots}\mb{H}^{\mb{\aleph}},
 \end{gather}
-in which the middle diagonal matrix is not repeated.
+in which for brevity the middle diagonal matrix is not repeated.
+\subsection{Formulation}
+The expressions are summarised in the following table.
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{rl}
+        \toprule
+        Constitutive Law & $\bsigma=\mb{E}\left(\bvarepsilon-\bvarepsilon^p\right)$                \\[2mm]
+        Yield Function   & $\displaystyle{}f=\sum_{i=1,j=1}^3\abs{\alpha_i-\beta_j}^m-4\sigma_y^m$ \\[2mm]
+        Flow Rule        & $\dot{\bvarepsilon^p}=\gamma\bn=\gamma\cdot\dev{\pdfrac{f}{\bs}}$       \\[4mm]
+        Hardening Law    & $\dot{\varepsilon^p}=\gamma\norm{\bn}=\gamma\sqrt{\dfrac{2}{3}\bn:\bn}$ \\\bottomrule
+    \end{tabular}
+\end{table}
+\subsubsection{Local System}
+It is very important to note that since the yield function $f$ is defined in the deviatoric stress space, it is not possible to take $\bsigma$ as an independent variable as done in the previous orthotropic model.
+This is reasonable as it is \textbf{not} possible to determine $\bsigma$ from $\bs$ as the spherical part remains unknown.
+
+Thus, the local vairable is taken as $\mb{x}=\begin{bmatrix}\gamma&\bs\end{bmatrix}$, the local system consists of two residuals.
+\begin{gather}
+    \mb{R}=\left\{\begin{array}{l}\displaystyle
+        \sum_{i=1,j=1}^3\abs{\alpha_i-\beta_j}^m-4\sigma_y^m, \\[4mm]
+        \bs+\mb{E}\bn\gamma-\bs^\text{trial}.
+    \end{array}\right.
+\end{gather}
+The Jacobian is thus
+\begin{gather}
+    \mb{J}=\begin{bmatrix}
+        -4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\norm{\bn} & \pdfrac{f}{\bs}-4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\gamma\ddfrac{\norm{\bn}}{\bn}\pdfrac{^2f}{\bs^2} \\[4mm]
+        \mb{E}\bn                                                   & \mb{I}+\gamma\mb{E}\mathbb{I}_\text{dev}\pdfrac{^2f}{\bs^2}
+    \end{bmatrix}.
+\end{gather}
 \subsection{Implementation}
 The following method computes the yield function and its corresponding derivatives/gradients.
 \begin{cppcode}
