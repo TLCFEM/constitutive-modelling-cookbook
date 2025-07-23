@@ -1516,10 +1516,9 @@ The expressions are summarised in the following table.
     \end{tabular}
 \end{table}
 \subsubsection{Local System}
-It is very important to note that since the yield function $f$ is defined in the deviatoric stress space, it is not possible to take $\bsigma$ as an independent variable as done in the previous orthotropic model.
+It is very important to note that since the yield function $f$ is defined in the deviatoric stress space, it is \textbf{not} possible to take $\bsigma$ as an independent variable as done in the previous orthotropic model.
 This is reasonable as it is \textbf{not} possible to determine $\bsigma$ from $\bs$ as the spherical part remains unknown.
-
-Thus, the local vairable is taken as $\mb{x}=\begin{bmatrix}\gamma&\bs\end{bmatrix}$, the local system consists of two residuals.
+Thus, the local variable is taken as $\mb{x}=\underbrace{\begin{bmatrix}\gamma&\bs\end{bmatrix}^\mT}_{7\times1}$, the local system consists of two residuals.
 \begin{gather}
     \mb{R}=\left\{\begin{array}{l}\displaystyle
         \sum_{i=1,j=1}^3\abs{\alpha_i-\beta_j}^m-4\sigma_y^m, \\[4mm]
@@ -1528,11 +1527,51 @@ Thus, the local vairable is taken as $\mb{x}=\begin{bmatrix}\gamma&\bs\end{bmatr
 \end{gather}
 The Jacobian is thus
 \begin{gather}
-    \mb{J}=\begin{bmatrix}
-        -4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\norm{\bn} & \pdfrac{f}{\bs}-4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\gamma\ddfrac{\norm{\bn}}{\bn}\pdfrac{^2f}{\bs^2} \\[4mm]
+    \mb{J}=\underbrace{\begin{bmatrix}
+    -4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\norm{\bn} & \pdfrac{f}{\bs}-4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\gamma\ddfrac{\norm{\bn}}{\bn}\mathbb{I}_\text{dev}\pdfrac{^2f}{\bs^2} \\[4mm]
         \mb{E}\bn                                                   & \mb{I}+\gamma\mb{E}\mathbb{I}_\text{dev}\pdfrac{^2f}{\bs^2}
-    \end{bmatrix}.
+    \end{bmatrix}}_{7\times7}.
+    \end{gather}
+    \subsubsection{Consistent Tangent Stiffness}
+    From the stress update expression,
+    \begin{gather}
+        \bsigma=\bsigma^\text{trial}-\gamma\mb{E}\bn,
+    \end{gather}
+    the consistent tangent stiffness can be derived as
+    \begin{gather}
+        \begin{split}
+            \ddfrac{\bsigma}{\bvarepsilon} & =\mb{E}-\mb{E}\left(\gamma\ddfrac{\bn}{\bvarepsilon}+\bn\ddfrac{\gamma}{\bvarepsilon}\right)=\mb{E}-\mb{E}\left(\gamma\mathbb{I}_\text{dev}\pdfrac{^2f}{\bs^2}\ddfrac{\bs}{\bvarepsilon}+\bn\ddfrac{\gamma}{\bvarepsilon}\right) \\
+                                           & =\mb{E}-\mb{E}\begin{bmatrix}
+                                                               \bn & \gamma\mathbb{I}_\text{dev}\pdfrac{^2f}{\bs^2}
+                                                           \end{bmatrix}\begin{bmatrix}
+                                                                            \ddfrac{\gamma}{\bvarepsilon} \\[4mm]
+                                                                            \ddfrac{\bs}{\bvarepsilon}
+                                                                        \end{bmatrix}=\mb{E}-\mb{E}\mathbb{I}_\text{dev}\begin{bmatrix}
+                                                                                                                            \pdfrac{f}{\bs} & \gamma\pdfrac{^2f}{\bs^2}
+                                                                                                                        \end{bmatrix}\ddfrac{\mb{x}}{\bvarepsilon}.
+        \end{split}
+    \end{gather}
+    In the above, $\ddfrac{\mb{x}}{\bvarepsilon}$ can be obtained from the local equilibrium,
+    \begin{gather}
+        \md{\mb{R}}=\pdfrac{\mb{R}}{\mb{x}}\md{\mb{x}}+\pdfrac{\mb{R}}{\bvarepsilon}\md{\bvarepsilon}=\mb{0}\qquad\longrightarrow\qquad\ddfrac{\mb{x}}{\bvarepsilon}=-\mb{J}^{-1}\pdfrac{\mb{R}}{\bvarepsilon},
+    \end{gather}
+    with
+    \begin{gather}
+        \pdfrac{\mb{R}}{\bvarepsilon}=\begin{bmatrix}
+            \mb{0} \\[4mm]
+            -\mathbb{I}_\text{dev}\mb{E}
+        \end{bmatrix},
+    \end{gather}
+    thus, the final expression of the consistent tangent stiffness is
+    \begin{gather}
+    \ddfrac{\bsigma}{\bvarepsilon}=\mb{E}-\mb{E}\mathbb{I}_\text{dev}\underbrace{\begin{bmatrix}
+            \pdfrac{f}{\bs} & \gamma\pdfrac{^2f}{\bs^2}
+        \end{bmatrix}}_{6\times7}\mb{J}^{-1}\underbrace{\begin{bmatrix}
+            \mb{0} \\[4mm]
+            \mathbb{I}_\text{dev}\mb{E}
+        \end{bmatrix}}_{7\times6}.
 \end{gather}
+It is also worth noting that $\mathbb{I}_\text{dev}\mb{E}=\mb{E}\mathbb{I}_\text{dev}$ regardless of orthotropic or isotropic elasticity.
 \subsection{Implementation}
 The following method computes the yield function and its corresponding derivatives/gradients.
 \begin{cppcode}
