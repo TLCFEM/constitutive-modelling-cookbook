@@ -1404,10 +1404,11 @@ In matrix form,
     \md{\lambda_i}=\underbrace{\mb{P}_{ii}}_{1\times6}\underbrace{\md{\mb{\aleph}}}_{6\times1}.
 \end{gather}
 
-For $\md{\bv_i}$ itself, it can be derived and explicitly expressed as
+For $\md{\bv_i}$ itself, it can be derived, see \cite{Wu2006} and the references therein, and explicitly expressed as
 \begin{gather}\label{eq:eigenvector_diff_def}
-    \md{\bv_i}=\sum_{j=1,i\neq{}j}^3\dfrac{\mb{P}_{ij}:\md{\mb{\aleph}}}{\lambda_i-\lambda_j}\bv_j.
+    \md{\bv_i}=\sum_{j=1,i\neq{}j}^3\dfrac{\mb{P}_{ij}:\md{\mb{\aleph}}}{\lambda_i-\lambda_j}\bv_j
 \end{gather}
+with $\mb{P}_{ij}=\dfrac{1}{2}\left(\bv_i\otimes\bv_j+\bv_j\otimes\bv_i\right)$.
 It can be observed that $ \md{\bv_i}$ is a linear combination of the other two eigenvectors.
 Since $\bv_i\cdot\bv_j=\delta_{ij}$, indeed $\md{\bv_i}\cdot\bv_i=0$.
 \eqsref{eq:eigenvector_diff_def} allows the following.
@@ -1416,11 +1417,14 @@ Since $\bv_i\cdot\bv_j=\delta_{ij}$, indeed $\md{\bv_i}\cdot\bv_i=0$.
         \md{\mb{P}_{ii}}=\md{\left(\bv_i\otimes\bv_i\right)}=2\md{\bv_i}\otimes\bv_i & =2\sum_{j=1,i\neq{}j}^3\dfrac{\mb{P}_{ij}:\md{\mb{\aleph}}}{\lambda_i-\lambda_j}\bv_j\otimes\bv_i \\&=2\sum_{j=1,i\neq{}j}^3\dfrac{\mb{P}_{ij}:\md{\mb{\aleph}}}{\lambda_i-\lambda_j}\mb{P}_{ij}=2\sum_{j=1,i\neq{}j}^3\dfrac{\mb{P}_{ij}\otimes\mb{P}_{ij}}{\lambda_i-\lambda_j}:\md{\mb{\aleph}}.
     \end{split}
 \end{gather}
-In the above, we have used the definition $\mb{P}_{ij}=\dfrac{1}{2}\left(\bv_i\otimes\bv_j+\bv_j\otimes\bv_i\right)$.
-It is also assumed that $\lambda_i\neq\lambda_j$, that is, the eigenvalues are distinct.
+It is assumed that $\lambda_i\neq\lambda_j$, that is, the eigenvalues are distinct.
 For degenerated cases, the above expression is \textbf{not} valid.
+But is it actually a problem?
+In practice, it's likely that the algorithm used to perform eigen analysis is iterative, exactly identical eigenvalues are not likely to be obtained.
+This is also guaranteed by the fact that $\mb{\aleph}$ are transformed tensors.
+Unless carefully designed, to obtain very close eigenvalues is practically difficult.
 
-We have prepared all necessary ingredients to compute the full derivatives of the yield function.
+We have prepared all necessary ingredients to compute the full derivatives of (the summation term of) the yield function.
 \begin{gather}
     \begin{split}
         \pdfrac{f}{\bs} & =\sum_{i=1}^{3}\pdfrac{f}{\alpha_i}\ddfrac{\alpha_i}{\balpha}\ddfrac{\balpha}{\bs}+\sum_{i=1}^{3}\pdfrac{f}{\beta_i}\ddfrac{\beta_i}{\bbeta}\ddfrac{\bbeta}{\bs} \\
