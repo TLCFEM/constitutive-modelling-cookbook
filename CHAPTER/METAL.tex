@@ -1508,9 +1508,21 @@ If we further define $\mb{H}^{\mb{\aleph}}=\mb{P}^{\mb{\aleph}}:\mb{C}_{\mb{\ale
     \pdfrac{^2f}{\bs^2}=\mb{H}^{\mb{\aleph},\mT}\diag{\cdots}\mb{H}^{\mb{\aleph}},
 \end{gather}
 in which for brevity the middle diagonal matrix is not repeated.
+
+Now let's study the degenerated case when $\alpha_i$ approaches $\alpha_j$.
+By examine the expression,
+\begin{gather}
+    \pdfrac{f}{\alpha_i}=\dfrac{m}{\sigma_\text{ref}}\sum_{j=1}^3\abs{\Delta_{ij}}^{m-2}\Delta_{ij},
+\end{gather}
+it is easy to see that $\pdfrac{f}{\alpha_i}$ is a function of $\alpha_i$ only (in the sense that the other two principal stresses in $\balpha$ do not appear in the expression).
+When $\alpha_i\approx\alpha_j$, the fraction essentially approximates the second order derivative.
+\begin{gather}
+    \lim_{\aleph_1\approx\aleph_2}\dfrac{2}{\aleph_i-\aleph_j}\left(\pdfrac{f}{\aleph_i}-\pdfrac{f}{\aleph_j}\right)=2\pdfrac{^2f}{\aleph_i^2}\Big|_{\aleph_j}=2\pdfrac{^2f}{\aleph_j^2}\Big|_{\aleph_i}.
+\end{gather}
+To account for symmetry, it is possible to use $\pdfrac{^2f}{\aleph_i^2}\Big|_{\aleph_j}+\pdfrac{^2f}{\aleph_j^2}\Big|_{\aleph_i}$ to approximate it.
 \subsection{Formulation}
 The expressions are summarised in the following table.
-\begin{table}[ht]
+\begin{table}[H]
     \centering
     \begin{tabular}{rl}
         \toprule
