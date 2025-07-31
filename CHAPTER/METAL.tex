@@ -1071,7 +1071,7 @@ where $\bn:\bn$ shall be treated as double contraction of strain tensors, that i
 with $\mb{T}=\diag{\begin{matrix}
 1&1&1&\dfrac{1}{2}&\dfrac{1}{2}&\dfrac{1}{2}
 \end{matrix}}$.
-Although \textbf{not} correct, we'll use $\norm{\bn}$ to represent $\sqrt{\dfrac{2}{3}\bn:\bn}$ for brevity in the following.
+Although \textbf{not} correct, we'll use $\norm{\bn}_e$ to represent $\sqrt{\dfrac{2}{3}\bn:\bn}$ for brevity in the following.
 \subsection{Formulation}
 To some extend, the model is even simpler than the von Mises model as there is no back stress to support kinematic hardening.
 This is reasonable as there is no experimental evidence that timber exhibits the Bauschinger effect.
@@ -1084,7 +1084,7 @@ Furthermore, the yield function involves only matrix--vector operations, the cor
 Constitutive Law&$\bsigma=\mb{D}:\left(\bvarepsilon-\bvarepsilon^p\right)$\\
 Yield Function&$f=\dfrac{1}{2}\bsigma^\mT\mb{P}\bsigma+\mb{q}^\mT\bsigma-\sigma_y^2$\\
 Flow Rule&$\dot{\bvarepsilon^p}=\gamma\bn$\\
-Hardening Law&$\dot{\varepsilon^p}=\gamma\norm{\bn}$\\\bottomrule
+Hardening Law&$\dot{\varepsilon^p}=\gamma\norm{\bn}_e$\\\bottomrule
 \end{tabular}
 \end{table}
 
@@ -1130,7 +1130,7 @@ By choosing $\mb{x}=\begin{bmatrix}
 \end{bmatrix}^\mT$ as the independent variables, the Jacobian can be then computed as
 \begin{gather}
 \mb{J}=\pdfrac{\mb{R}}{\mb{x}}=\begin{bmatrix}
--2\sigma_y\ddfrac{\sigma_y}{\varepsilon_{p}}\norm{\bn_m}&\bn^\mT-2\sigma_y\ddfrac{\sigma_y}{\varepsilon_{p}}\gamma\ddfrac{\norm{\bn_m}}{\bsigma}\\[4mm]
+-2\sigma_y\ddfrac{\sigma_y}{\varepsilon_{p}}\norm{\bn_m}_e&\bn^\mT-2\sigma_y\ddfrac{\sigma_y}{\varepsilon_{p}}\gamma\ddfrac{\norm{\bn_m}_e}{\bsigma}\\[4mm]
 \mb{E}\bn_m&\mb{I}+\gamma\mb{E}\ddfrac{\bn_m}{\bsigma}
 \end{bmatrix}.
 \end{gather}
@@ -1228,17 +1228,17 @@ It is clear that when $r\rightarrow0$, the derivative approaches constant as $\d
 With $\bn_\text{onset}$, it is possible to compute the explicit expression of $\pdfrac{\mb{R}}{\bvarepsilon_{n+1}}$ as
 \begin{gather}
     \pdfrac{\mb{R}}{\bvarepsilon_{n+1}}=\begin{bmatrix}
-        -2\sigma_y\ddfrac{\sigma_y}{\varepsilon_{p}}\gamma\ddfrac{\norm{\bn_m}}{\bvarepsilon_{n+1}} \\[4mm]
+        -2\sigma_y\ddfrac{\sigma_y}{\varepsilon_{p}}\gamma\ddfrac{\norm{\bn_m}_e}{\bvarepsilon_{n+1}} \\[4mm]
         \gamma\mb{E}\ddfrac{\bn_m}{\bvarepsilon_{n+1}}-\mb{E}
     \end{bmatrix}=\begin{bmatrix}
-        -\sigma_y\ddfrac{\sigma_y}{\varepsilon_{p}}\gamma\ddfrac{\norm{\bn_m}}{\bn_m}r\mb{P}\left(\mb{I}-\dfrac{\Delta\bsigma\bn_\text{onset}^\mT}{\bn_\text{onset}^\mT\Delta\bsigma}\right)\mb{E} \\[4mm]
+        -\sigma_y\ddfrac{\sigma_y}{\varepsilon_{p}}\gamma\ddfrac{\norm{\bn_m}_e}{\bn_m}r\mb{P}\left(\mb{I}-\dfrac{\Delta\bsigma\bn_\text{onset}^\mT}{\bn_\text{onset}^\mT\Delta\bsigma}\right)\mb{E} \\[4mm]
         \dfrac{\gamma}{2}\mb{E}r\mb{P}\left(\mb{I}-\dfrac{\Delta\bsigma\bn_\text{onset}^\mT}{\bn_\text{onset}^\mT\Delta\bsigma}\right)\mb{E}-\mb{E}
     \end{bmatrix}.
 \end{gather}
 Rearranging the above gives
 \begin{gather}
     \pdfrac{\mb{R}}{\bvarepsilon_{n+1}}=\begin{bmatrix}
-        -\sigma_yr\gamma\ddfrac{\sigma_y}{\varepsilon_{p}}\ddfrac{\norm{\bn_m}}{\bn_m}\mb{P}\left(\mb{I}-\dfrac{\Delta\bsigma\bn_\text{onset}^\mT}{\bn_\text{onset}^\mT\Delta\bsigma}\right) \\[4mm]
+        -\sigma_yr\gamma\ddfrac{\sigma_y}{\varepsilon_{p}}\ddfrac{\norm{\bn_m}_e}{\bn_m}\mb{P}\left(\mb{I}-\dfrac{\Delta\bsigma\bn_\text{onset}^\mT}{\bn_\text{onset}^\mT\Delta\bsigma}\right) \\[4mm]
         \dfrac{r\gamma}{2}\mb{EP}\left(\mb{I}-\dfrac{\Delta\bsigma\bn_\text{onset}^\mT}{\bn_\text{onset}^\mT\Delta\bsigma}\right)-\mb{I}
     \end{bmatrix}\mb{E}.
 \end{gather}
@@ -1510,7 +1510,7 @@ If we further define $\mb{H}^{\mb{\aleph}}=\mb{P}^{\mb{\aleph}}:\mb{C}_{\mb{\ale
 in which for brevity the middle diagonal matrix is not repeated.
 
 Now let's study the degenerated case when $\alpha_i$ approaches $\alpha_j$.
-By examine the expression,
+By examining the expression,
 \begin{gather}
     \pdfrac{f}{\alpha_i}=\dfrac{m}{\sigma_\text{ref}}\sum_{j=1}^3\abs{\Delta_{ij}}^{m-2}\Delta_{ij},
 \end{gather}
@@ -1529,7 +1529,7 @@ The expressions are summarised in the following table.
         Constitutive Law & $\bsigma=\mb{E}\left(\bvarepsilon-\bvarepsilon^p\right)$                \\[2mm]
         Yield Function   & $\displaystyle{}f=\sum_{i=1,j=1}^3\abs{\alpha_i-\beta_j}^m-4\sigma_y^m$ \\[2mm]
         Flow Rule        & $\dot{\bvarepsilon^p}=\gamma\bn=\gamma\cdot\dev{\pdfrac{f}{\bs}}$       \\[4mm]
-        Hardening Law    & $\dot{\varepsilon^p}=\gamma\norm{\bn}=\gamma\sqrt{\dfrac{2}{3}\bn:\bn}$ \\\bottomrule
+        Hardening Law    & $\dot{\varepsilon^p}=\gamma\norm{\bn}_e=\gamma\sqrt{\dfrac{2}{3}\bn:\bn}$ \\\bottomrule
     \end{tabular}
 \end{table}
 \subsubsection{Local System}
@@ -1545,7 +1545,7 @@ Thus, the local variable is taken as $\mb{x}=\underbrace{\begin{bmatrix}\gamma&\
 The Jacobian is thus
 \begin{gather}
     \mb{J}=\underbrace{\begin{bmatrix}
-    -4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\norm{\bn} & \pdfrac{f}{\bs}-4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\gamma\ddfrac{\norm{\bn}}{\bn}\mathbb{I}_\text{dev}\pdfrac{^2f}{\bs^2} \\[4mm]
+    -4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\norm{\bn}_e & \pdfrac{f}{\bs}-4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\gamma\ddfrac{\norm{\bn}_e}{\bn}\mathbb{I}_\text{dev}\pdfrac{^2f}{\bs^2} \\[4mm]
         \mb{E}\bn                                                   & \mb{I}+\gamma\mb{E}\mathbb{I}_\text{dev}\pdfrac{^2f}{\bs^2}
     \end{bmatrix}}_{7\times7}.
     \end{gather}
@@ -1599,3 +1599,17 @@ The local returning mapping can be seen in the following method.
 \begin{cppcode}
 YLD0418P::update_trial_status
 \end{cppcode}
+\subsubsection{Kinematic Hardening Extension}
+Common orthotropic materials such as timber, bones, etc., do not exhibit kinematic hardening, this is the reason that kinematic hardening was not introduced in the previous sections.
+
+However, as the YLD0418P yield criterion is widely used in the context of sheet metals, extending the model to include kinematic hardening is meaningful.
+There is a distinctive feature to note, unlike the von Mises criterion, the YLD0418P yield surface is no longer a cylinder in the principal deviatoric stress space.
+This results in a substantial difference in defining kinematic hardening.
+In the von Mises case, as the radial size does not change (a circle/sphere), it is perfectly fine to use the plasticity direction to define/guide kinematic hardening.
+However, using the same approach for the YLD0418P yield surface would lead to different hardening ratios in different directions.
+Furthermore, an isotropic translation of an anisotropic yield surface appears to be non-physical.
+
+The rate form of the back stress $\ba$ can be defined as
+\begin{gather}
+    \dot{\ba}=\gamma{}\left(k_f\sigma_y+k_c\right)\left(\dfrac{\bn}{\norm{\bn}}-k_r\ba\right).
+\end{gather}
