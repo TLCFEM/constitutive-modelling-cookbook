@@ -1608,7 +1608,11 @@ In the von Mises case, as the radial size does not change (a circle/sphere), it 
 However, using the same approach for the YLD0418P yield surface would lead to different hardening ratios in different directions.
 Furthermore, an isotropic translation of an anisotropic yield surface appears to be non-physical.
 
-The rate form of the back stress $\ba$ can be defined as
+With the introduction of the reference back stress $\ba$, the corresponding shifted stress shall be defined as the difference between $\bs$ and $\left(k_f\norm{\beeta}+k_c\right)\ba$ as
 \begin{gather}
-    \dot{\ba}=\gamma{}\left(k_f\sigma_y+k_c\right)\left(\dfrac{\bn}{\norm{\bn}}-k_r\ba\right).
+\beeta=\bs-\left(k_f\norm{\beeta}+k_c\right)\ba.
+\end{gather}
+The evolution of $\ba$ can be defined as
+\begin{gather}
+\dot{\ba}=k_r\left(\sqrt{\dfrac{2}{3}}\dfrac{\bn}{\norm{\bn}}-\ba\right)\gamma.
 \end{gather}
