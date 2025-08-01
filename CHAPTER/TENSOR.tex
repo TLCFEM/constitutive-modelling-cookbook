@@ -233,6 +233,12 @@ If $\mb{A}$ and $\mb{B}$ represent \textbf{strain} tensors, a similar expression
 With the Mandel notation, again no additional scaling matrix is required, $C=\mb{A}^\mT\mb{B}$.
 
 The Mandel notation is constructed on top of orthonormal basis of second order tensors. The advantage in obvious: there is no need to handle covariant and contravariant representations. However, it is not widely used as its physical meaning is not that obvious. In this book, the Voigt notation is used by default.
+
+Finally, if $\mb{A}$ and $\mb{B}$ represent a stress tensor and a strain tensor, one shall easily derive
+\begin{gather}
+    C=\mb{A}^\mT\mb{B}=\mb{B}^\mT\mb{A}.
+\end{gather}
+There is no scaling matrix involved in this case!
 \section{Stress Tensor Norm}
 The double contraction between a second order tensor $\mb{A}$ and itself results in a scalar that can be used to characterise the norm of $\mb{A}$. In this sense, double contraction of second order tensors can be deemed as an equivalent version of dot product of vectors.
 
@@ -286,12 +292,13 @@ In fact, we shall express \eqsref{eq:norm_derivative} as
     \md{\norm{\mb{\sigma}}}=\mb{n}:\md{\mb{\sigma}}
 \end{gather}
 such that there is no confusion.
-Due to the presence of double contraction, if expressed in the Voigt notation, the additional scaling matrix $\mb{S}$ is required.
+Due to the presence of double contraction, it is clearly a tensor operation.
+If expressed in the Voigt notation, the additional scaling matrix $\mb{S}$ is required.
 
 Now we proceed to compute the derivative of $\mb{n}$ with respect to $\mb{\sigma}$.
 \begin{gather}
 \ddfrac{\mb{n}}{\mb{\sigma}}
-=\dfrac{\ddfrac{\mb{\sigma}}{\mb{\sigma}}\norm{\mb{\sigma}}-\mb{\sigma}\ddfrac{\norm{\mb{\sigma}}}{\mb{\sigma}}}{\norm{\mb{\sigma}}^2}
+=\dfrac{\ddfrac{\mb{\sigma}}{\mb{\sigma}}\norm{\mb{\sigma}}-\mb{\sigma}\otimes\ddfrac{\norm{\mb{\sigma}}}{\mb{\sigma}}}{\norm{\mb{\sigma}}^2}
 =\dfrac{1}{\norm{\mb{\sigma}}}\left(\mathbb{I}-\mb{n}\otimes\mb{n}\right)\qquad\text{in tensor notation}.
 \end{gather}
 
