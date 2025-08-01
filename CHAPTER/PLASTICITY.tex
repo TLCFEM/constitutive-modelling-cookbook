@@ -157,15 +157,16 @@ In tensor notation,
 By simple comparison, one can immediately find
 \begin{gather}
 \mathbb{I}^\text{dev}=\begin{bmatrix}
-\frac{2}{3}&-\frac{1}{3}&-\frac{1}{3}&&&\\
--\frac{1}{3}&\frac{2}{3}&-\frac{1}{3}&&&\\
--\frac{1}{3}&-\frac{1}{3}&\frac{2}{3}&&&\\
-&&&1&&\\
-&&&&1&\\
-&&&&&1
+\dfrac{2}{3}&-\dfrac{1}{3}&-\dfrac{1}{3}&&&\\[2mm]
+-\dfrac{1}{3}&\dfrac{2}{3}&-\dfrac{1}{3}&&&\\[2mm]
+-\dfrac{1}{3}&-\dfrac{1}{3}&\dfrac{2}{3}&&&\\[2mm]
+&&&\dfrac{1}{2}&&\\[2mm]
+&&&&\dfrac{1}{2}&\\[2mm]
+&&&&&\dfrac{1}{2}
 \end{bmatrix}
 \end{gather}
-is the matrix representation of the fourth order deviatoric operator $\mathbb{I}^\text{dev}$. It must be noted that due to the adoption of the Voigt notation, the matrix representation of $\mathbb{I}^\text{dev}$ is \textbf{not} unique.
+is the matrix representation of the fourth order deviatoric operator $\mathbb{I}^\text{dev}$.
+It must be noted that due to the adoption of the Voigt notation, the matrix representation of $\mathbb{I}^\text{dev}$ is \textbf{not} unique.
 The above expression is \textbf{only} valid for stress tensors.
 
 It can be expressed as
@@ -372,12 +373,6 @@ s_{31}
 2\varepsilon_{31}
 \end{bmatrix}}_{\bvarepsilon}.
 \end{gather}
-In this case, the matrix representation of $\mathbb{I}$ (as well as $\mathbb{I^\text{dev}}$) changes its form since it links strain with stress while in previous examples those unit tensors associate strain with strain, or stress with stress.
-
-This inconsistency is caused by the Voigt notation.
-If the Mandel notation is used, the unit tensors are the same for all cases.
-Readers are encouraged to derive the above expression using the Mandel notation to gain a better understanding.
-One can again refer to \cite{Helnwein2001} for detailed explanation.
 
 After some manipulations, total stress can be expressed by total strain as follows.
 \begin{gather}

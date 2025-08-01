@@ -258,9 +258,9 @@ where $\mathbb{I}$ is the fourth order identity tensor. It shall be noted \eqsre
 \ddfrac{\norm{\mb{\sigma}}}{\mb{\sigma}}&=\dfrac{1}{2}\dfrac{1}{\norm{\mb{\sigma}}}\begin{bmatrix}
 2\sigma_{11}&2\sigma_{22}&2\sigma_{33}&4\sigma_{12}&4\sigma_{23}&4\sigma_{31}
 \end{bmatrix}\\
-&=\left(\dfrac{\mb{\sigma}}{\norm{\mb{\sigma}}}\right)^\mT\diag{\begin{pmatrix}
+&=\left(\dfrac{\mb{\sigma}}{\norm{\mb{\sigma}}}\right)^\mT\diag{\begin{matrix}
 1&1&1&2&2&2
-\end{pmatrix}}\\
+\end{matrix}}\\
 &=\dfrac{1}{\norm{\mb{\sigma}}}\begin{bmatrix}
 \sigma_{11}&\sigma_{22}&\sigma_{33}&\sigma_{12}&\sigma_{23}&\sigma_{31}
 \end{bmatrix}\begin{bmatrix}
@@ -280,6 +280,13 @@ It is clear that with the Voigt notation, the vector/matrix representation diffe
 \end{bmatrix},
 \end{gather}
 which matches the tensor notation.
+
+In fact, we shall express \eqsref{eq:norm_derivative} as
+\begin{gather}
+    \md{\norm{\mb{\sigma}}}=\mb{n}:\md{\mb{\sigma}}
+\end{gather}
+such that there is no confusion.
+Due to the presence of double contraction, if expressed in the Voigt notation, the additional scaling matrix $\mb{S}$ is required.
 
 Now we proceed to compute the derivative of $\mb{n}$ with respect to $\mb{\sigma}$.
 \begin{gather}
@@ -310,7 +317,7 @@ With the Voigt notation, it can be computed as follows.
 It is essentially
 \begin{gather}
 \ddfrac{\mb{n}}{\mb{\sigma}}=
-\dfrac{1}{\norm{\mb{\sigma}}}\left(\mb{I}-\mb{n}\mb{n}^\mT
+\dfrac{1}{\norm{\mb{\sigma}}}\left(\mathbb{I}-\mb{n}\mb{n}^\mT\right)
 \begin{bmatrix}
 1&&&&&\\
 &1&&&&\\
@@ -318,9 +325,19 @@ It is essentially
 &&&2&&\\
 &&&&2&\\
 &&&&&2
-\end{bmatrix}\right),
+\end{bmatrix},
 \end{gather}
-where $\mb{I}$ is the identity matrix of size \num{6}.
+where $\mathbb{I}$ can be explicitly expressed as
+\begin{gather}
+    \mathbb{I}=\begin{bmatrix}
+        1 &   &   &              &              &              \\
+          & 1 &   &              &              &              \\
+          &   & 1 &              &              &              \\
+          &   &   & \dfrac{1}{2} &              &              \\
+          &   &   &              & \dfrac{1}{2} &              \\
+          &   &   &              &              & \dfrac{1}{2}
+    \end{bmatrix}.
+\end{gather}
 \section{Tensor Function of Stress Tensors}
 Some tensor--valued functions of stress tensors are frequently used in the analysis of plasticity. Let $\mb{\beta}=f\left(\mb{\sigma},\mb{\alpha}\right)$ denote a tensor-valued function of the stress tensor $\mb{\sigma}$ and some other tensors denoted by $\mb{\alpha}$. Let the tensor--valued function $\mb{\gamma}=g\left(\mb{\beta}\right)$ be the normalised version of $\mb{\beta}$, that is
 \begin{gather}
