@@ -158,10 +158,47 @@ In matrix representation, it is
 \lambda+2G&\lambda&\lambda&\cdot&\cdot&\cdot\\
 \lambda&\lambda+2G&\lambda&\cdot&\cdot&\cdot\\
 \lambda&\lambda&\lambda+2G&\cdot&\cdot&\cdot\\
+\cdot&\cdot&\cdot&2G&\cdot&\cdot\\
+\cdot&\cdot&\cdot&\cdot&2G&\cdot\\
+\cdot&\cdot&\cdot&\cdot&\cdot&2G
+\end{bmatrix}}_{\mb{D}}
+\underbrace{\left(\begin{bmatrix}
+        \varepsilon_{11,n+1} \\
+        \varepsilon_{22,n+1} \\
+        \varepsilon_{33,n+1} \\
+        \varepsilon_{12,n+1} \\
+        \varepsilon_{23,n+1} \\
+        \varepsilon_{31,n+1}
+    \end{bmatrix}-\begin{bmatrix}
+        \varepsilon^p_{11,n} \\
+        \varepsilon^p_{22,n} \\
+        \varepsilon^p_{33,n} \\
+        \varepsilon^p_{12,n} \\
+        \varepsilon^p_{23,n} \\
+        \varepsilon^p_{31,n}
+    \end{bmatrix}
+    \right).}_{\bvarepsilon_{n+1}-\bvarepsilon^p_n}
+\end{gather}
+Using engineering strains, the above must be adjusted to
+\begin{gather}
+\underbrace{
+    \begin{bmatrix}
+        \sigma^\text{trial}_{11} \\
+        \sigma^\text{trial}_{22} \\
+        \sigma^\text{trial}_{33} \\
+        \sigma^\text{trial}_{12} \\
+        \sigma^\text{trial}_{23} \\
+        \sigma^\text{trial}_{31}
+    \end{bmatrix}}_{\bsigma^\text{trial}}
+=
+\underbrace{\begin{bmatrix}
+\lambda+2G&\lambda&\lambda&\cdot&\cdot&\cdot\\
+\lambda&\lambda+2G&\lambda&\cdot&\cdot&\cdot\\
+\lambda&\lambda&\lambda+2G&\cdot&\cdot&\cdot\\
 \cdot&\cdot&\cdot&G&\cdot&\cdot\\
 \cdot&\cdot&\cdot&\cdot&G&\cdot\\
 \cdot&\cdot&\cdot&\cdot&\cdot&G
-\end{bmatrix}}_{\mb{D}}
+\end{bmatrix}}_{\mb{D}\text{ or conventionally }\mb{E}}
 \underbrace{\left(\begin{bmatrix}
 \varepsilon_{11,n+1}\\
 \varepsilon_{22,n+1}\\
@@ -176,8 +213,8 @@ In matrix representation, it is
      \gamma^p_{12,n}\\
      \gamma^p_{23,n}\\
      \gamma^p_{31,n}
-\end{bmatrix}.
-\right)}_{\bvarepsilon_{n+1}-\bvarepsilon^p_n}
+\end{bmatrix}
+\right).}_{\bvarepsilon_{n+1}-\bvarepsilon^p_n}
 \end{gather}
 
 Then $\beeta^\text{trial}=\dev{\bsigma^\text{trial}}-\balpha_n$, which gives trial yield function
@@ -227,11 +264,11 @@ f=\norm{\beeta^\text{trial}}-\left(2G\gamma+\sqrt{\dfrac{2}{3}}\left(H_{n+1}-H_n
 
 The Jacobian reads
 \begin{gather}
-\pdfrac{f}{\gamma}=-2G-\sqrt{\dfrac{2}{3}}\pdfrac{H_{n+1}}{q_{n+1}}\pdfrac{q_{n+1}}{\gamma}-\sqrt{\dfrac{2}{3}}\pdfrac{\sigma^y_{n+1}}{q_{n+1}}\pdfrac{q_{n+1}}{\gamma}.
+\pdfrac{f}{\gamma}=-2G-\sqrt{\dfrac{2}{3}}\ddfrac{H_{n+1}}{q_{n+1}}\ddfrac{q_{n+1}}{\gamma}-\sqrt{\dfrac{2}{3}}\ddfrac{\sigma^y_{n+1}}{q_{n+1}}\ddfrac{q_{n+1}}{\gamma}.
 \end{gather}
-Since $q_{n+1}=q_n+\sqrt{\dfrac{2}{3}}\gamma$, $\pdfrac{q_{n+1}}{\gamma}=\sqrt{\dfrac{2}{3}}$. Hence,
+Since $q_{n+1}=q_n+\sqrt{\dfrac{2}{3}}\gamma$, $\ddfrac{q_{n+1}}{\gamma}=\sqrt{\dfrac{2}{3}}$. Hence,
 \begin{gather}\label{eq:j2_df}
-\pdfrac{f}{\gamma}=-2G-\dfrac{2}{3}\pdfrac{H_{n+1}}{q_{n+1}}-\dfrac{2}{3}\pdfrac{\sigma^y_{n+1}}{q_{n+1}}.
+\pdfrac{f}{\gamma}=-2G-\dfrac{2}{3}\ddfrac{H_{n+1}}{q_{n+1}}-\dfrac{2}{3}\ddfrac{\sigma^y_{n+1}}{q_{n+1}}.
 \end{gather}
 \subsubsection{Consistent Tangent Stiffness}
 From $\bsigma_{n+1}=\bsigma^\text{trial}-\gamma2G\bn$, as $\bn=\dfrac{\beeta}{\norm{\beeta}}=\dfrac{\beeta^\text{trial}}{\norm{\beeta^\text{trial}}}$, the consistent tangent stiffness can be computed via the chain rule as
@@ -262,7 +299,7 @@ Thus the final expression for consistent tangent stiffness can be assembled as
 \pdfrac{\bsigma_{n+1}}{\bvarepsilon_{n+1}}&=\mb{D}-2G\left(-2G\left(\pdfrac{f}{\gamma}\right)^{-1}\bn\otimes\bn+\gamma\dfrac{2G}{\norm{\beeta^\text{trial}}}\left(\mathbb{I}^\text{dev}-\bn\otimes\bn\right)\right)\\
 &=\mb{D}+4G^2\left(\pdfrac{f}{\gamma}\right)^{-1}\bn\otimes\bn+\dfrac{4G^2\gamma}{\norm{\beeta^\text{trial}}}\left(\bn\otimes\bn-\mathbb{I}^\text{dev}\right)\\
 &=\mb{D}+4G^2\left(\left(\pdfrac{f}{\gamma}\right)^{-1}+\dfrac{\gamma}{\norm{\beeta^\text{trial}}}\right)\bn\otimes\bn-\dfrac{4G^2\gamma}{\norm{\beeta^\text{trial}}}\mathbb{I}^\text{dev}\\
-&=\mb{D}+4G^2\left(\dfrac{\gamma}{\norm{\beeta^\text{trial}}}-\dfrac{1}{2G+\dfrac{2}{3}\pdfrac{H_{n+1}}{q_{n+1}}+\dfrac{2}{3}\pdfrac{\sigma^y_{n+1}}{q_{n+1}}}\right)\bn\otimes\bn-\dfrac{4G^2\gamma}{\norm{\beeta^\text{trial}}}\mathbb{I}^\text{dev}.
+&=\mb{D}+4G^2\left(\dfrac{\gamma}{\norm{\beeta^\text{trial}}}-\dfrac{1}{2G+\dfrac{2}{3}\ddfrac{H_{n+1}}{q_{n+1}}+\dfrac{2}{3}\ddfrac{\sigma^y_{n+1}}{q_{n+1}}}\right)\bn\otimes\bn-\dfrac{4G^2\gamma}{\norm{\beeta^\text{trial}}}\mathbb{I}^\text{dev}.
 \end{split}
 \end{gather}
 It shall be noted that $\mathbb{I}^\text{dev}$ takes the form as presented in \eqsref{eq:dev_tensor_se}. Readers are strongly suggested to derive it via both tensor notation and compression matrix representation as a practice. Both leads to identical results.
