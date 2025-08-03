@@ -1053,6 +1053,8 @@ The flow rule can be defined as
 \begin{gather}
 \dot{\bvarepsilon^p}=\gamma\bn.
 \end{gather}
+It is worth noting that since the yield function is expressed as a function of the stress (Voigt) vector rather than the stress tensor, the partial derivative $\mb{P}\bsigma+\mb{q}$ is the derivative with regard to the vector $\bsigma$, which already contains the scaling factor for shear terms.
+This is different from other models that use the tensor notation.
 \subsubsection{Hardening Law}
 The reference yield stress $\sigma_y$ is defined as a function of the accumulated equivalent plastic strain $\varepsilon_{p}$.
 \begin{gather}
@@ -1298,6 +1300,11 @@ For elasticity, we assume either isotropic or orthotropic elasticity such that
     \bsigma=\mb{E}\left(\bvarepsilon-\bvarepsilon^p\right),
 \end{gather}
 where $\mb{E}$ is the elastic stiffness matrix that can be either isotropic or orthotropic.
+Because in the following both matrix and tensor notations may be used, the elasticity may also be equivalently expresssed in tensor notation as
+\begin{gather}
+    \bsigma=\mb{D}:\left(\bvarepsilon-\bvarepsilon^p\right).
+\end{gather}
+The convention is simple: when $\mb{D}$ is used, it represents a tensor, thus tensor operations are required, while when $\mb{E}$ is used, it represents a matrix, thus matrix operations are required.
 For the flow rule, we assume the associative plasticity such that the plastic potential is identical to the yield function.
 \begin{gather}
     \dot{\bvarepsilon^p}=\gamma\bn=\gamma\pdfrac{f}{\bsigma}.
@@ -1356,7 +1363,7 @@ One can spot a few interesting features of \eqsref{eq:yld0418p_yield_function}.
 It is important to also notice that $f$ has a unit of that of stress.
 Considering that $m$ could be potentially (very) large, up to \num{40} or so, to avoid numerical issues, we use the following revision in this section.
 \begin{gather}\label{eq:yld0418p_yield_function_normalized}
-    f=\sum_{i=1,j=1}^3\abs{\dfrac{\alpha_i-\beta_j}{\sigma_\text{ref}}}^m-4\sigma_y^m,
+    f=\sum_{i=1}^3\sum_{j=1}^3\abs{\dfrac{\alpha_i-\beta_j}{\sigma_\text{ref}}}^m-4\sigma_y^m,
 \end{gather}
 where $\sigma_\text{ref}$ is a reference stress.
 As a result, $\sigma_y$ shall be dimensionless and evaluates to unity for zero plastic strain.
@@ -1428,7 +1435,7 @@ We will revisit this issue later.
 We have prepared all necessary ingredients to compute the full derivatives of (the summation term of) the yield function.
 \begin{gather}
     \begin{split}
-        \pdfrac{f}{\bs} & =\sum_{i=1}^{3}\pdfrac{f}{\alpha_i}\ddfrac{\alpha_i}{\balpha}\ddfrac{\balpha}{\bs}+\sum_{i=1}^{3}\pdfrac{f}{\beta_i}\ddfrac{\beta_i}{\bbeta}\ddfrac{\bbeta}{\bs} \\
+        \pdfrac{f}{\bs} & =\sum_{i=1}^{3}\pdfrac{f}{\alpha_i}\ddfrac{\alpha_i}{\balpha}:\ddfrac{\balpha}{\bs}+\sum_{i=1}^{3}\pdfrac{f}{\beta_i}\ddfrac{\beta_i}{\bbeta}:\ddfrac{\bbeta}{\bs} \\
                         & =\sum_{i=1}^{3}\pdfrac{f}{\alpha_i}\mb{P}_{ii}^{\balpha}:\mb{C}_{\balpha}+\sum_{i=1}^{3}\pdfrac{f}{\beta_i}\mb{P}_{ii}^{\bbeta}:\mb{C}_{\bbeta}.
     \end{split}
 \end{gather}
@@ -1451,16 +1458,17 @@ Thus,
 \begin{gather}
     \pdfrac{f}{\bs}=\pdfrac{f}{\balpha}:\mb{C}_{\balpha}+\pdfrac{f}{\bbeta}:\mb{C}_{\bbeta}.
 \end{gather}
+One shall be aware of the fact that in the above expression, double contraction stemming from tensor operations is required between quantities expressed in matrix form.
 In explicit matrix form, (the transpose of) the above can be expressed as a column vector
 \begin{gather}
-    \underbrace{\pdfrac{f}{\bs}}_{6\times1}=\sum_{\mb{\aleph}\in\{\balpha,\bbeta\}}\mb{C}_{\mb{\aleph}}^\mT\begin{bmatrix}
+    \underbrace{\pdfrac{f}{\bs}}_{6\times1}=\sum_{\mb{\aleph}\in\{\balpha,\bbeta\}}\mb{C}_{\mb{\aleph}}^\mT\underbrace{\begin{bmatrix}
         1 &   &   &   &   &   \\
           & 1 &   &   &   &   \\
           &   & 1 &   &   &   \\
           &   &   & 2 &   &   \\
           &   &   &   & 2 &   \\
           &   &   &   &   & 2
-    \end{bmatrix}\underbrace{\begin{bmatrix}
+    \end{bmatrix}}_{\text{double contraction scaling}}\underbrace{\begin{bmatrix}
             \mb{P}_{11}^{\mb{\aleph},\mT} & \mb{P}_{22}^{\mb{\aleph},\mT} & \mb{P}_{33}^{\mb{\aleph},\mT}
         \end{bmatrix}}_{6\times3}\underbrace{\begin{bmatrix}
             \pdfrac{f}{\aleph_1} \\[4mm] \pdfrac{f}{\aleph_2} \\[4mm] \pdfrac{f}{\aleph_3}
@@ -1529,9 +1537,9 @@ The expressions are summarised in the following table.
     \begin{tabular}{rl}
         \toprule
         Constitutive Law & $\bsigma=\mb{E}\left(\bvarepsilon-\bvarepsilon^p\right)$                \\[2mm]
-        Yield Function   & $\displaystyle{}f=\sum_{i=1,j=1}^3\abs{\alpha_i-\beta_j}^m-4\sigma_y^m$ \\[2mm]
+        Yield Function   & $\displaystyle{}f=\sum_{i=1}^3\sum_{j=1}^3\abs{\alpha_i-\beta_j}^m-4\sigma_y^m$ \\[2mm]
         Flow Rule        & $\dot{\bvarepsilon^p}=\gamma\bn=\gamma\cdot\dev{\pdfrac{f}{\bs}}$       \\[4mm]
-        Hardening Law    & $\dot{\varepsilon^p}=\gamma\norm{\bn}_e=\gamma\sqrt{\dfrac{2}{3}\bn:\bn}$ \\\bottomrule
+        Hardening Law    & $\displaystyle{}\dot{\varepsilon^p}=\gamma\norm{\bn}_e=\gamma\sqrt{\dfrac{2}{3}\bn:\bn}$ \\\bottomrule
     \end{tabular}
 \end{table}
 \subsubsection{Local System}
@@ -1540,15 +1548,15 @@ This is reasonable as it is \textbf{not} possible to determine $\bsigma$ from $\
 Thus, the local variable is taken as $\mb{x}=\underbrace{\begin{bmatrix}\gamma&\bs\end{bmatrix}^\mT}_{7\times1}$, the local system consists of two residuals.
 \begin{gather}
     \mb{R}=\left\{\begin{array}{l}\displaystyle
-        \sum_{i=1,j=1}^3\abs{\alpha_i-\beta_j}^m-4\sigma_y^m, \\[4mm]
-        \bs+\mb{E}\bn\gamma-\bs^\text{trial}.
+       \sum_{i=1}^3\sum_{j=1}^3\abs{\alpha_i-\beta_j}^m-4\sigma_y^m, \\[4mm]
+       \bs+\mb{E}\bn\gamma-\bs^\text{trial}.
     \end{array}\right.
 \end{gather}
 The Jacobian is thus
 \begin{gather}
     \mb{J}=\underbrace{\begin{bmatrix}
-    -4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\norm{\bn}_e & \pdfrac{f}{\bs}-4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\gamma\ddfrac{\norm{\bn}_e}{\bn}\mathbb{I}_\text{dev}\pdfrac{^2f}{\bs^2} \\[4mm]
-        \mb{E}\bn                                                   & \mb{I}+\gamma\mb{E}\mathbb{I}_\text{dev}\pdfrac{^2f}{\bs^2}
+    -4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\norm{\bn}_e & \pdfrac{f}{\bs}-4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\gamma\ddfrac{\norm{\bn}_e}{\bn}:\mathbb{I}_\text{dev}:\pdfrac{^2f}{\bs^2} \\[4mm]
+    \mb{E}\bn                                                   & \mb{I}+\mb{E}mathbb{I}_\text{dev}:\pdfrac{^2f}{\bs^2}
     \end{bmatrix}}_{7\times7}.
     \end{gather}
     \subsubsection{Consistent Tangent Stiffness}
@@ -1559,13 +1567,13 @@ The Jacobian is thus
     the consistent tangent stiffness can be derived as
     \begin{gather}
         \begin{split}
-            \ddfrac{\bsigma}{\bvarepsilon} & =\mb{E}-\mb{E}\left(\gamma\ddfrac{\bn}{\bvarepsilon}+\bn\ddfrac{\gamma}{\bvarepsilon}\right)=\mb{E}-\mb{E}\left(\gamma\mathbb{I}_\text{dev}\pdfrac{^2f}{\bs^2}\ddfrac{\bs}{\bvarepsilon}+\bn\ddfrac{\gamma}{\bvarepsilon}\right) \\
+            \ddfrac{\bsigma}{\bvarepsilon} & =\mb{E}-\mb{E}\left(\gamma\ddfrac{\bn}{\bvarepsilon}+\bn\ddfrac{\gamma}{\bvarepsilon}\right)=\mb{E}-\mb{E}\left(\gamma\mathbb{I}_\text{dev}:\pdfrac{^2f}{\bs^2}\ddfrac{\bs}{\bvarepsilon}+\bn\ddfrac{\gamma}{\bvarepsilon}\right) \\
                                            & =\mb{E}-\mb{E}\begin{bmatrix}
-                                                               \bn & \gamma\mathbb{I}_\text{dev}\pdfrac{^2f}{\bs^2}
+                                                               \bn & \gamma\mathbb{I}_\text{dev}:\pdfrac{^2f}{\bs^2}
                                                            \end{bmatrix}\begin{bmatrix}
                                                                             \ddfrac{\gamma}{\bvarepsilon} \\[4mm]
                                                                             \ddfrac{\bs}{\bvarepsilon}
-                                                                        \end{bmatrix}=\mb{E}-\mb{E}\mathbb{I}_\text{dev}\begin{bmatrix}
+                                                                        \end{bmatrix}=\mb{E}-\mb{E}\mathbb{I}_\text{dev}:\begin{bmatrix}
                                                                                                                             \pdfrac{f}{\bs} & \gamma\pdfrac{^2f}{\bs^2}
                                                                                                                         \end{bmatrix}\ddfrac{\mb{x}}{\bvarepsilon}.
         \end{split}
@@ -1583,7 +1591,7 @@ The Jacobian is thus
     \end{gather}
     thus, the final expression of the consistent tangent stiffness is
     \begin{gather}
-    \ddfrac{\bsigma}{\bvarepsilon}=\mb{E}-\mb{E}\mathbb{I}_\text{dev}\underbrace{\begin{bmatrix}
+    \ddfrac{\bsigma}{\bvarepsilon}=\mb{E}-\mb{E}\mathbb{I}_\text{dev}:\underbrace{\begin{bmatrix}
             \pdfrac{f}{\bs} & \gamma\pdfrac{^2f}{\bs^2}
         \end{bmatrix}}_{6\times7}\mb{J}^{-1}\underbrace{\begin{bmatrix}
             \mb{0} \\[4mm]
@@ -1604,17 +1612,75 @@ YLD0418P::update_trial_status
 \subsection{Kinematic Hardening Extension}
 Common orthotropic materials such as timber, bones, etc., do not exhibit kinematic hardening, this is the reason that kinematic hardening was not introduced in the previous sections.
 However, as the YLD0418P yield criterion is widely used in the context of sheet metals, extending the model to include kinematic hardening is meaningful.
-There is a distinctive feature to note, unlike the von Mises criterion, the YLD0418P yield surface is no longer a cylinder in the principal deviatoric stress space.
-This results in a substantial difference in defining kinematic hardening.
-In the von Mises case, as the radial size does not change (a circle/sphere), it is perfectly fine to use the plasticity direction to define/guide kinematic hardening.
-However, using the same approach for the YLD0418P yield surface would lead to different hardening ratios in different directions.
-Furthermore, an isotropic translation of an anisotropic yield surface appears to be non-physical.
 
-With the introduction of the reference back stress $\ba$, the corresponding shifted stress shall be defined as the difference between $\bs$ and $\left(k_f\norm{\beeta}+k_c\right)\ba$ as
+With the introduction of the back stress $\ba$, the corresponding shifted stress shall be defined as the difference between $\bs$ and $\ba$ as
 \begin{gather}
-\beeta=\bs-\left(k_f\norm{\beeta}+k_c\right)\ba.
+\beeta=\bs-\ba.
 \end{gather}
 The evolution of $\ba$ can be defined as
 \begin{gather}
-\dot{\ba}=k_r\left(\sqrt{\dfrac{2}{3}}\dfrac{\bn}{\norm{\bn}}-\ba\right)\gamma.
+\dot{\ba}=k_r\left(\sqrt{\dfrac{2}{3}}k_b\dfrac{\bn}{\norm{\bn}}-\ba\right)\gamma=k_r\left(\sqrt{\dfrac{2}{3}}k_b\bu-\ba\right)\gamma.
+\end{gather}
+It is very important to point out that the above definition is isotropic, whether it is appropriate with an anisotropic yield criterion remains to be investigated.
+
+Expressing the above evolution rule in its discretised form using the implicit Euler method, one has
+\begin{gather}
+    \ba=\ba_n+k_r\left(\sqrt{\dfrac{2}{3}}k_b\bu-\ba\right)\gamma.
+\end{gather}
+Rearranging gives
+\begin{gather}
+    \left(1+\gamma{}k_r\right)\ba=\ba_n+\gamma\sqrt{\dfrac{2}{3}}k_rk_b\bu.
+\end{gather}
+Denoting
+\begin{gather}
+    R_{\ba}=\ba_n+\gamma\sqrt{\dfrac{2}{3}}k_rk_b\bu-\left(1+\gamma{}k_r\right)\ba,
+\end{gather}
+then the corresponding derivatives are
+\begin{gather}
+    \pdfrac{R_{\ba}}{\gamma}=\sqrt{\dfrac{2}{3}}k_rk_b\bu-k_r\ba,\\
+    \pdfrac{R_{\ba}}{\bs}=\gamma\sqrt{\dfrac{2}{3}}k_rk_b\pdfrac{\bu}{\bs},\\
+    \pdfrac{R_{\ba}}{\ba}=\gamma\sqrt{\dfrac{2}{3}}k_rk_b\pdfrac{\bu}{\ba}-\left(1+\gamma{}k_r\right)\mb{I}.
+\end{gather}
+The term $\pdfrac{\bu}{\bs}$ can be explicitly derived using the chain rule,
+\begin{gather}
+    \pdfrac{\bu}{\bs}=\pdfrac{\bu}{\bn}:\pdfrac{\bn}{\bs}=\dfrac{1}{\norm{\bn}}\left(\mathbb{I}-\bu\otimes\bu\right):\mathbb{I}_\text{dev}:\pdfrac{^2f}{\bs^2}=\dfrac{1}{\norm{\bn}}\left(\mathbb{I}_\text{dev}-\bu\otimes\bu\right):\pdfrac{^2f}{\bs^2}.
+\end{gather}
+
+With the presence of $\ba$, one shall see that now
+\begin{gather}
+    \mb{\aleph}=\mb{C_\aleph}\beeta,
+\end{gather}
+and
+\begin{gather}
+    \pdfrac{\mb{\aleph}}{\bs}=-\pdfrac{\mb{\aleph}}{\ba}.
+\end{gather}
+Furthermore, since
+\begin{gather}
+    \pdfrac{\beeta}{\bs}=\mb{I}\quad\text{(Voigt vector notation)},\qquad
+    \pdfrac{\beeta}{\bs}=\mathbb{I}\quad\text{(tensor notation)},
+\end{gather}
+the explicit expression of $\pdfrac{f}{\bs}$ remains unchanged, and
+\begin{gather}
+    \pdfrac{f}{\ba}=-\pdfrac{f}{\bs}.
+\end{gather}
+\subsubsection{Local System}
+Taking $\ba$ as the additional local variable such that $\mb{x}=\underbrace{\begin{bmatrix}\gamma&\bs&\ba\end{bmatrix}^\mT}_{13\times1}$, now the local system becomes
+\begin{gather}
+    \mb{R}=\left\{\begin{array}{l}\displaystyle
+        \sum_{i=1}^3\sum_{j=1}^3\abs{\alpha_i-\beta_j}^m-4\sigma_y^m, \\[4mm]
+        \bs+\mb{E}\bn\gamma-\bs^\text{trial},                         \\[4mm]
+        \ba_n+\gamma\sqrt{\dfrac{2}{3}}k_rk_b\bu-\left(1+\gamma{}k_r\right)\ba.
+    \end{array}\right.
+\end{gather}
+The Jacobian is thus
+\begin{gather}
+    \mb{J}=\underbrace{\begin{bmatrix}
+            -4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\norm{\bn}_e & \pdfrac{R_f}{\bs}                                            & -\pdfrac{R_f}{\bs}                                                                \\[4mm]
+            \mb{E}\bn                                                     & \mb{I}+\gamma\mb{E}\mathbb{I}_\text{dev}:\pdfrac{^2f}{\bs^2} & -\gamma\mb{E}\mathbb{I}_\text{dev}:\pdfrac{^2f}{\bs^2}                            \\[4mm]
+            \sqrt{\dfrac{2}{3}}k_rk_b\bu-k_r\ba                           & \gamma\sqrt{\dfrac{2}{3}}k_rk_b\pdfrac{\bu}{\bs}             & \gamma\sqrt{\dfrac{2}{3}}k_rk_b\pdfrac{\bu}{\ba}-\left(1+\gamma{}k_r\right)\mb{I}
+        \end{bmatrix}}_{13\times13}.
+\end{gather}
+In which the following is used,
+\begin{gather}
+\pdfrac{R_f}{\bs}=\pdfrac{f}{\bs}-4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\gamma\ddfrac{\norm{\bn}_e}{\bn}:\mathbb{I}_\text{dev}:\pdfrac{^2f}{\bs^2}.
 \end{gather}
