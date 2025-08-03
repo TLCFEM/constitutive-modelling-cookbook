@@ -1596,7 +1596,7 @@ The Jacobian is thus
 \begin{gather}
     \mb{J}=\underbrace{\begin{bmatrix}
     -4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\norm{\bn}_e & \pdfrac{f}{\bs}-4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\gamma\ddfrac{\norm{\bn}_e}{\bn}:\mathbb{I}^\text{dev}:\pdfrac{^2f}{\bs^2} \\[4mm]
-    \mb{E}\bn                                                   & \mb{I}+\mb{E}mathbb{I}_\text{dev}:\pdfrac{^2f}{\bs^2}
+    \mb{E}\bn                                                   & \mb{I}+\mb{E}\mathbb{I}_\text{dev}:\pdfrac{^2f}{\bs^2}
     \end{bmatrix}}_{7\times7}.
     \end{gather}
     \subsubsection{Consistent Tangent Stiffness}
@@ -1673,8 +1673,10 @@ then the corresponding derivatives are
 \end{gather}
 The term $\pdfrac{\bu}{\bs}$ can be explicitly derived using the chain rule,
 \begin{gather}
-    \pdfrac{\bu}{\bs}=\pdfrac{\bu}{\bn}:\pdfrac{\bn}{\bs}=\dfrac{1}{\norm{\bn}}\left(\mathbb{I}-\bu\otimes\bu\right):\mathbb{I}^\text{dev}:\pdfrac{^2f}{\bs^2}=\dfrac{1}{\norm{\bn}}\left(\mathbb{I}^\text{dev}-\bu\otimes\bu\right):\pdfrac{^2f}{\bs^2}.
+    \pdfrac{\bu}{\bs}=\pdfrac{\bu}{\bn}:\pdfrac{\bn}{\bs}=\dfrac{1}{\norm{\bn}}\left(\mathbb{I}-\bu\otimes\bu\right):\mathbb{I}^\text{dev}:\pdfrac{^2f}{\bs^2}.
 \end{gather}
+One must pay extra attention to two double contractions in the above expression, are they identical?
+Interested readers are encouraged to verify this by explicitly writing down the matrix form of the above expression.
 
 With the presence of $\ba$, one shall see that now
 \begin{gather}
@@ -1714,13 +1716,26 @@ In which the following is used,
 \begin{gather}
 \pdfrac{R_f}{\bs}=\pdfrac{f}{\bs}-4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\gamma\ddfrac{\norm{\bn}_e}{\bn}:\mathbb{I}^\text{dev}:\pdfrac{^2f}{\bs^2}.
 \end{gather}
+
+As a practice, please derive the consistent tangent stiffness following a similar approach used in the previous section.
 \subsection{Implementation}
 The following method computes the yield function and its corresponding derivatives/gradients.
 \begin{cppcode}
 YLD0418P::compute_yield_surface
 \end{cppcode}
 
-The local returning mapping can be seen in the following method.
+The local returning mapping further uses two algorithms depending on whether kinematic hardening is used.
 \begin{cppcode}
 YLD0418P::update_trial_status
+\end{cppcode}
+
+With kinematic hardening enabled, the local system has a size of \num{13}.
+\begin{cppcode}
+YLD0418P::with_kinematic
+\end{cppcode}
+
+With kinematic hardening disabled, the local system has a size of \num{7}.
+This makes the Jacobian \SI{70}{\percent} smaller compared to the one with kinematic hardening.
+\begin{cppcode}
+YLD0418P::without_kinematic
 \end{cppcode}
