@@ -886,7 +886,7 @@ Its derivatives can be computed as follows.
 \begin{gather}\label{eq:zeta_d1}
     \pdfrac{\bzeta}{\gamma}=-\dfrac{\ddfrac{a^y}{\gamma}\left(1+\gamma{}b\right)-ba^y}{\left(1+\gamma{}b\right)^2}\balpha_n+\left(z-1\right)\dfrac{\ddfrac{\sigma^y}{\gamma}\left(1+\gamma{}c_e\right)-c_e\sigma^y}{\left(1+\gamma{}c_e\right)^2}\bd_n,\\\label{eq:zeta_d2}
     \pdfrac{\bzeta}{z}=\dfrac{\sigma^y}{1+\gamma{}c_e}\bd_n,\\\label{eq:zeta_d3}
-    \pdfrac{\bzeta}{\bvarepsilon}=2G\mathbb{I}_\text{dev}.
+    \pdfrac{\bzeta}{\bvarepsilon}=2G\mathbb{I}^\text{dev}.
 \end{gather}
 \subsubsection{Local System}
 The local system consists of two residuals, $f_s$ and $z$.
@@ -928,7 +928,7 @@ This gives
 \end{gather}
 Noting that
 \begin{gather}
-    \pdfrac{\norm{\beeta}}{\bvarepsilon}=\bn:\pdfrac{\bzeta}{\bvarepsilon}=2G\bn:\mathbb{I}_\text{dev}=2G\bn,
+    \pdfrac{\norm{\beeta}}{\bvarepsilon}=\bn:\pdfrac{\bzeta}{\bvarepsilon}=2G\bn:\mathbb{I}^\text{dev}=2G\bn,
 \end{gather}
 then in the matrix form,
 \begin{gather}
@@ -947,11 +947,11 @@ Now from the stress update expression $\bsigma=\bsigma^\text{trial}-\gamma2G\bn$
 where $\mb{D}_e$ is the elastic stiffness.
 In the meantime, by $\bn=\dfrac{\bzeta}{\norm{\bzeta}}$, the derivative of $\bn$ with respect to $\bvarepsilon$ can be shown as
 \begin{gather}
-    \pdfrac{\bn}{\bvarepsilon}=\dfrac{2G}{\norm{\bzeta}}\left(\mathbb{I}_\text{dev}-\bn\bn^\mT\right),
+    \pdfrac{\bn}{\bvarepsilon}=\dfrac{2G}{\norm{\bzeta}}\left(\mathbb{I}^\text{dev}-\bn\bn^\mT\right),
 \end{gather}
 after some algebra, the consistent tangent operator can be written as
 \begin{gather}\label{eq:consistent_tangent}
-    \ddfrac{\bsigma}{\bvarepsilon}=\mb{D}_e-\dfrac{4G^2\gamma}{\norm{\bzeta}}\mathbb{I}_\text{dev}+4G^2\left(\dfrac{\gamma}{\norm{\bzeta}}+\dfrac{1-\sqrt{\dfrac{2}{3}}\gamma{}\ddfrac{U}{z}}{\det\mb{J}}\right)\bn\bn^\mT.
+    \ddfrac{\bsigma}{\bvarepsilon}=\mb{D}_e-\dfrac{4G^2\gamma}{\norm{\bzeta}}\mathbb{I}^\text{dev}+4G^2\left(\dfrac{\gamma}{\norm{\bzeta}}+\dfrac{1-\sqrt{\dfrac{2}{3}}\gamma{}\ddfrac{U}{z}}{\det\mb{J}}\right)\bn\bn^\mT.
 \end{gather}
 \subsection{Implementation}
 The complete algorithm is presented in \algoref{algo:subloading_steel}.
@@ -1555,7 +1555,7 @@ Thus, the local variable is taken as $\mb{x}=\underbrace{\begin{bmatrix}\gamma&\
 The Jacobian is thus
 \begin{gather}
     \mb{J}=\underbrace{\begin{bmatrix}
-    -4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\norm{\bn}_e & \pdfrac{f}{\bs}-4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\gamma\ddfrac{\norm{\bn}_e}{\bn}:\mathbb{I}_\text{dev}:\pdfrac{^2f}{\bs^2} \\[4mm]
+    -4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\norm{\bn}_e & \pdfrac{f}{\bs}-4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\gamma\ddfrac{\norm{\bn}_e}{\bn}:\mathbb{I}^\text{dev}:\pdfrac{^2f}{\bs^2} \\[4mm]
     \mb{E}\bn                                                   & \mb{I}+\mb{E}mathbb{I}_\text{dev}:\pdfrac{^2f}{\bs^2}
     \end{bmatrix}}_{7\times7}.
     \end{gather}
@@ -1567,13 +1567,13 @@ The Jacobian is thus
     the consistent tangent stiffness can be derived as
     \begin{gather}
         \begin{split}
-            \ddfrac{\bsigma}{\bvarepsilon} & =\mb{E}-\mb{E}\left(\gamma\ddfrac{\bn}{\bvarepsilon}+\bn\ddfrac{\gamma}{\bvarepsilon}\right)=\mb{E}-\mb{E}\left(\gamma\mathbb{I}_\text{dev}:\pdfrac{^2f}{\bs^2}\ddfrac{\bs}{\bvarepsilon}+\bn\ddfrac{\gamma}{\bvarepsilon}\right) \\
+            \ddfrac{\bsigma}{\bvarepsilon} & =\mb{E}-\mb{E}\left(\gamma\ddfrac{\bn}{\bvarepsilon}+\bn\ddfrac{\gamma}{\bvarepsilon}\right)=\mb{E}-\mb{E}\left(\gamma\mathbb{I}^\text{dev}:\pdfrac{^2f}{\bs^2}\ddfrac{\bs}{\bvarepsilon}+\bn\ddfrac{\gamma}{\bvarepsilon}\right) \\
                                            & =\mb{E}-\mb{E}\begin{bmatrix}
-                                                               \bn & \gamma\mathbb{I}_\text{dev}:\pdfrac{^2f}{\bs^2}
+                                                               \bn & \gamma\mathbb{I}^\text{dev}:\pdfrac{^2f}{\bs^2}
                                                            \end{bmatrix}\begin{bmatrix}
                                                                             \ddfrac{\gamma}{\bvarepsilon} \\[4mm]
                                                                             \ddfrac{\bs}{\bvarepsilon}
-                                                                        \end{bmatrix}=\mb{E}-\mb{E}\mathbb{I}_\text{dev}:\begin{bmatrix}
+                                                                        \end{bmatrix}=\mb{E}-\mb{E}\mathbb{I}^\text{dev}:\begin{bmatrix}
                                                                                                                             \pdfrac{f}{\bs} & \gamma\pdfrac{^2f}{\bs^2}
                                                                                                                         \end{bmatrix}\ddfrac{\mb{x}}{\bvarepsilon}.
         \end{split}
@@ -1586,19 +1586,19 @@ The Jacobian is thus
     \begin{gather}
         \pdfrac{\mb{R}}{\bvarepsilon}=\begin{bmatrix}
             \mb{0} \\[4mm]
-            -\mathbb{I}_\text{dev}\mb{E}
+            -\mathbb{I}^\text{dev}\mb{E}
         \end{bmatrix},
     \end{gather}
     thus, the final expression of the consistent tangent stiffness is
     \begin{gather}
-    \ddfrac{\bsigma}{\bvarepsilon}=\mb{E}-\mb{E}\mathbb{I}_\text{dev}:\underbrace{\begin{bmatrix}
+    \ddfrac{\bsigma}{\bvarepsilon}=\mb{E}-\mb{E}\mathbb{I}^\text{dev}:\underbrace{\begin{bmatrix}
             \pdfrac{f}{\bs} & \gamma\pdfrac{^2f}{\bs^2}
         \end{bmatrix}}_{6\times7}\mb{J}^{-1}\underbrace{\begin{bmatrix}
             \mb{0} \\[4mm]
-            \mathbb{I}_\text{dev}\mb{E}
+            \mathbb{I}^\text{dev}\mb{E}
         \end{bmatrix}}_{7\times6}.
 \end{gather}
-It is also worth noting that $\mathbb{I}_\text{dev}\mb{E}=\mb{E}\mathbb{I}_\text{dev}$ regardless of orthotropic or isotropic elasticity.
+It is also worth noting that $\mathbb{I}^\text{dev}\mb{E}=\mb{E}\mathbb{I}^\text{dev}$ regardless of orthotropic or isotropic elasticity.
 \subsection{Implementation}
 The following method computes the yield function and its corresponding derivatives/gradients.
 \begin{cppcode}
@@ -1643,7 +1643,7 @@ then the corresponding derivatives are
 \end{gather}
 The term $\pdfrac{\bu}{\bs}$ can be explicitly derived using the chain rule,
 \begin{gather}
-    \pdfrac{\bu}{\bs}=\pdfrac{\bu}{\bn}:\pdfrac{\bn}{\bs}=\dfrac{1}{\norm{\bn}}\left(\mathbb{I}-\bu\otimes\bu\right):\mathbb{I}_\text{dev}:\pdfrac{^2f}{\bs^2}=\dfrac{1}{\norm{\bn}}\left(\mathbb{I}_\text{dev}-\bu\otimes\bu\right):\pdfrac{^2f}{\bs^2}.
+    \pdfrac{\bu}{\bs}=\pdfrac{\bu}{\bn}:\pdfrac{\bn}{\bs}=\dfrac{1}{\norm{\bn}}\left(\mathbb{I}-\bu\otimes\bu\right):\mathbb{I}^\text{dev}:\pdfrac{^2f}{\bs^2}=\dfrac{1}{\norm{\bn}}\left(\mathbb{I}^\text{dev}-\bu\otimes\bu\right):\pdfrac{^2f}{\bs^2}.
 \end{gather}
 
 With the presence of $\ba$, one shall see that now
@@ -1676,11 +1676,11 @@ The Jacobian is thus
 \begin{gather}
     \mb{J}=\underbrace{\begin{bmatrix}
             -4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\norm{\bn}_e & \pdfrac{R_f}{\bs}                                            & -\pdfrac{R_f}{\bs}                                                                \\[4mm]
-            \mb{E}\bn                                                     & \mb{I}+\gamma\mb{E}\mathbb{I}_\text{dev}:\pdfrac{^2f}{\bs^2} & -\gamma\mb{E}\mathbb{I}_\text{dev}:\pdfrac{^2f}{\bs^2}                            \\[4mm]
+            \mb{E}\bn                                                     & \mb{I}+\gamma\mb{E}\mathbb{I}^\text{dev}:\pdfrac{^2f}{\bs^2} & -\gamma\mb{E}\mathbb{I}^\text{dev}:\pdfrac{^2f}{\bs^2}                            \\[4mm]
             \sqrt{\dfrac{2}{3}}k_rk_b\bu-k_r\ba                           & \gamma\sqrt{\dfrac{2}{3}}k_rk_b\pdfrac{\bu}{\bs}             & \gamma\sqrt{\dfrac{2}{3}}k_rk_b\pdfrac{\bu}{\ba}-\left(1+\gamma{}k_r\right)\mb{I}
         \end{bmatrix}}_{13\times13}.
 \end{gather}
 In which the following is used,
 \begin{gather}
-\pdfrac{R_f}{\bs}=\pdfrac{f}{\bs}-4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\gamma\ddfrac{\norm{\bn}_e}{\bn}:\mathbb{I}_\text{dev}:\pdfrac{^2f}{\bs^2}.
+\pdfrac{R_f}{\bs}=\pdfrac{f}{\bs}-4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\gamma\ddfrac{\norm{\bn}_e}{\bn}:\mathbb{I}^\text{dev}:\pdfrac{^2f}{\bs^2}.
 \end{gather}
