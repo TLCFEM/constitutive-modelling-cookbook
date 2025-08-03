@@ -984,11 +984,11 @@ Now from the stress update expression $\bsigma=\bsigma^\text{trial}-\gamma2G\bn$
 where $\mb{D}_e$ is the elastic stiffness.
 In the meantime, by $\bn=\dfrac{\bzeta}{\norm{\bzeta}}$, the derivative of $\bn$ with respect to $\bvarepsilon$ can be shown as
 \begin{gather}
-    \pdfrac{\bn}{\bvarepsilon}=\dfrac{2G}{\norm{\bzeta}}\left(\mathbb{I}^\text{dev}-\bn\bn^\mT\right),
+    \pdfrac{\bn}{\bvarepsilon}=\dfrac{2G}{\norm{\bzeta}}\left(\mathbb{I}^\text{dev}-\bn\otimes\bn\right),
 \end{gather}
 after some algebra, the consistent tangent operator can be written as
 \begin{gather}\label{eq:consistent_tangent}
-    \ddfrac{\bsigma}{\bvarepsilon}=\mb{D}_e-\dfrac{4G^2\gamma}{\norm{\bzeta}}\mathbb{I}^\text{dev}+4G^2\left(\dfrac{\gamma}{\norm{\bzeta}}+\dfrac{1-\sqrt{\dfrac{2}{3}}\gamma{}\ddfrac{U}{z}}{\det\mb{J}}\right)\bn\bn^\mT.
+    \ddfrac{\bsigma}{\bvarepsilon}=\mb{D}_e-\dfrac{4G^2\gamma}{\norm{\bzeta}}\mathbb{I}^\text{dev}+4G^2\left(\dfrac{\gamma}{\norm{\bzeta}}+\dfrac{1-\sqrt{\dfrac{2}{3}}\gamma{}\ddfrac{U}{z}}{\det\mb{J}}\right)\bn\otimes\bn.
 \end{gather}
 \subsection{Implementation}
 The complete algorithm is presented in \algoref{algo:subloading_steel}.
@@ -1120,7 +1120,7 @@ Furthermore, the yield function involves only matrix--vector operations, the cor
 \centering
 \begin{tabular}{rl}
 \toprule
-Constitutive Law&$\bsigma=\mb{D}:\left(\bvarepsilon-\bvarepsilon^p\right)$\\
+Constitutive Law&$\bsigma=\mb{E}\left(\bvarepsilon-\bvarepsilon^p\right)$\\
 Yield Function&$f=\dfrac{1}{2}\bsigma^\mT\mb{P}\bsigma+\mb{q}^\mT\bsigma-\sigma_y^2$\\
 Flow Rule&$\dot{\bvarepsilon^p}=\gamma\bn$\\
 Hardening Law&$\dot{\varepsilon^p}=\gamma\norm{\bn}_e$\\\bottomrule
@@ -1133,7 +1133,7 @@ This is important as different notations imply differences in implementation.
 \subsubsection{Elastic Loading/Unloading}
 Compared with the von Mises framework, there is no essential difference in terms of elastic loading/unloading, the plasticity is frozen at the beginning of each substep, allowing one to compute the trial stress such that
 \begin{gather}
-\bsigma^\text{trial}=\mb{D}:\left(\bvarepsilon_{n+1}-\bvarepsilon^p_n\right)\xcancel{=\bsigma_n+\mb{D}:\left(\bvarepsilon_{n+1}-\bvarepsilon_n\right)}.
+\bsigma^\text{trial}=\mb{E}\left(\bvarepsilon_{n+1}-\bvarepsilon^p_n\right)\xcancel{=\bsigma_n+\mb{E}\left(\bvarepsilon_{n+1}-\bvarepsilon_n\right)}.
 \end{gather}
 One shall note that the second form is not used here.
 In most cases, both forms are equivalent.
@@ -1161,7 +1161,7 @@ The residual is chosen as follows. For brevity, all subscripts $\left(\cdot\righ
 \end{array}
 \right.
 \end{gather}
-We use $\mb{E}$ to denote $\mb{D}$ expressed in the matrix form.
+We use $\mb{E}$ to denote the elasticity tensor $\mb{D}$ expressed in matrix form.
 They represent the same quantity.
 
 By choosing $\mb{x}=\begin{bmatrix}
@@ -1360,7 +1360,7 @@ with $\mb{T}=\diag{\begin{matrix}
 Both rules are effectively identical to the ones introduced previously in \S~\ref{sec:hoffman}.
 However, since we only focus on the yield criterion in this section, we are not going to explore various alternatives.
 Nevertheless, one shall be aware of the fact that based on the framework presented here, it is relatively easy to employ more complex hardening rules.
-\subsection{Yield Function}
+\subsection{Yield Function}\label{sec:yld0418p_yield_function}
 The YLD0418P yield criterion is expressed as a function of a set of \textbf{transformed} stress tensors, that is, in its most general form,
 \begin{gather}
     f=f\left(\balpha,\bbeta,\bgamma,\cdots\right),
