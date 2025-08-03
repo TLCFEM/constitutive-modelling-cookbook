@@ -1639,16 +1639,6 @@ The Jacobian is thus
         \end{bmatrix}}_{7\times6}.
 \end{gather}
 It is also worth noting that $\mathbb{I}^\text{dev}\mb{E}=\mb{E}\mathbb{I}^\text{dev}$ regardless of orthotropic or isotropic elasticity.
-\subsection{Implementation}
-The following method computes the yield function and its corresponding derivatives/gradients.
-\begin{cppcode}
-YLD0418P::compute_yield_surface
-\end{cppcode}
-
-The local returning mapping can be seen in the following method.
-\begin{cppcode}
-YLD0418P::update_trial_status
-\end{cppcode}
 \subsection{Kinematic Hardening Extension}
 Common orthotropic materials such as timber, bones, etc., do not exhibit kinematic hardening, this is the reason that kinematic hardening was not introduced in the previous sections.
 However, as the YLD0418P yield criterion is widely used in the context of sheet metals, extending the model to include kinematic hardening is meaningful.
@@ -1724,3 +1714,13 @@ In which the following is used,
 \begin{gather}
 \pdfrac{R_f}{\bs}=\pdfrac{f}{\bs}-4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\gamma\ddfrac{\norm{\bn}_e}{\bn}:\mathbb{I}^\text{dev}:\pdfrac{^2f}{\bs^2}.
 \end{gather}
+\subsection{Implementation}
+The following method computes the yield function and its corresponding derivatives/gradients.
+\begin{cppcode}
+YLD0418P::compute_yield_surface
+\end{cppcode}
+
+The local returning mapping can be seen in the following method.
+\begin{cppcode}
+YLD0418P::update_trial_status
+\end{cppcode}
