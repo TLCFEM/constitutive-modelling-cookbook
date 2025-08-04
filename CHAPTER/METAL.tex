@@ -1363,6 +1363,75 @@ with $\mb{T}=\diag{\begin{matrix}
 Both rules are effectively identical to the ones introduced previously in \S~\ref{sec:hoffman}.
 However, since we only focus on the yield criterion in this section, we are not going to explore various alternatives.
 Nevertheless, one shall be aware of the fact that based on the framework presented here, it is relatively easy to employ more complex hardening rules.
+\subsection{Derivatives of Eigenvalues and Eigenvectors}\label{sec:derivative_eigen}
+Now let $\lambda_i$ be the eigenvalues of the stress tensor $\mb{\aleph}$ and $\bv_i$ be the corresponding normalized eigenvectors, one has
+\begin{gather}\label{eq:eigenvalue_def}
+    \lambda_i=\underbrace{\bv_i^\mT\mb{\aleph}\bv_i}_{\text{vector/matrix}}=\underbrace{\bv_i\cdot\mb{\aleph}\cdot\bv_i}_{\text{tensor contraction}}=\underbrace{\left(\bv_i\otimes\bv_i\right):\mb{\aleph}}_{\text{tensor contraction}},\qquad
+    \mb{\aleph}=\sum_{i}\lambda_i\bv_i\otimes\bv_i.
+\end{gather}
+The first attribute to note is that since $\bv_i$ is normalized, viz., $\bv_i\cdot\bv_i=1$, then
+\begin{gather}
+    \md{\left(\bv_i\cdot\bv_i\right)}=\md{\bv_i}\cdot\bv_i+\bv_i\cdot\md{\bv_i}=2\bv_i\cdot\md{\bv_i}=\md{1}=0\qquad\longrightarrow\qquad\bv_i\cdot\md{\bv_i}=0.
+\end{gather}
+Without loss of generality, one arrives at the conclusion that the change of a unit vector (or first order tensor) is perpendicular to the vector/tensor itself, i.e., $\bv_i\perp\md{\bv_i}$.
+With this, it is possible to further write
+\begin{gather}
+    \md{\bv_i}\cdot\mb{\aleph}\cdot\bv_i=\lambda_i\cdot\md{\bv_i}\cdot\bv_i=0,
+\end{gather}
+thus, the differentiation of $\lambda_i$ can be expressed as
+\begin{gather}\label{eq:eigenvalue_diff_def}
+    \md{\lambda_i}=\md{\bv_i}\cdot\mb{\aleph}\cdot\bv_i+\bv_i\cdot\md{\mb{\aleph}}\cdot\bv_i+\bv_i\cdot\mb{\aleph}\cdot\md{\bv_i}=\bv_i\cdot\md{\mb{\aleph}}\cdot\bv_i+2\md{\bv_i}\cdot\mb{\aleph}\cdot\bv_i=\bv_i\cdot\md{\mb{\aleph}}\cdot\bv_i.
+\end{gather}
+Comparing \eqsref{eq:eigenvalue_def} and \eqsref{eq:eigenvalue_diff_def}, it is quite interesting to note that the mapping between $\lambda_i$ and $\mb{\aleph}$ is identical to that between $\md{\lambda_i}$ and $\md{\mb{\aleph}}$.
+Alternatively, the above expressions are equivalent to the following,
+\begin{gather}
+    \md{\lambda_i}=\left(\bv_i\otimes\bv_i\right):\md{\mb{\aleph}}=\mb{P}_{ii}:\md{\mb{\aleph}}.
+\end{gather}
+We have defined $\mb{P}_{ii}=\bv_i\otimes\bv_i$ as a second order tensor.
+Just like the stress/strain tensor, since $\mb{P}_{ii}$ is symmetric, it can also be expressed in the Voigt vector form.
+In matrix form,
+\begin{gather}
+    \lambda_i=\underbrace{\mb{P}_{ii}}_{1\times6}\underbrace{\mb{\aleph}}_{6\times1},\qquad
+    \md{\lambda_i}=\underbrace{\mb{P}_{ii}}_{1\times6}\underbrace{\md{\mb{\aleph}}}_{6\times1}.
+\end{gather}
+Note the double contraction is embedded in $\mb{P}_{ii}$, thus, the explicit matrix form of $\mb{P}_{ii}$ shall contain the corresponding scaling factor, which shall be
+\begin{gather}
+    \lambda_i=\underbrace{\mb{P}_{ii}}_{1\times6}\underbrace{\mb{\aleph}}_{6\times1}=\begin{bmatrix}
+        \bv_{i,1}^2 & \bv_{i,2}^2 & \bv_{i,3}^2 & 2\bv_{i,1}\bv_{i,2} & 2\bv_{i,2}\bv_{i,3} & 2\bv_{i,3}\bv_{i,1}
+    \end{bmatrix}\begin{bmatrix}
+        \mb{\aleph}_{11} \\\mb{\aleph}_{22}\\\mb{\aleph}_{33}\\\mb{\aleph}_{12}\\\mb{\aleph}_{23}\\\mb{\aleph}_{31}
+    \end{bmatrix}.
+\end{gather}
+One can also keep both the Voigt representation and the double contraction by defining
+\begin{gather}
+    \lambda_i=\underbrace{\mb{P}_{ii}}_{1\times6}:\underbrace{\mb{\aleph}}_{6\times1}=\begin{bmatrix}
+        \bv_{i,1}^2 & \bv_{i,2}^2 & \bv_{i,3}^2 & \bv_{i,1}\bv_{i,2} & \bv_{i,2}\bv_{i,3} & \bv_{i,3}\bv_{i,1}
+    \end{bmatrix}\diag{\begin{matrix}1\\1\\1\\2\\2\\2\end{matrix}}\begin{bmatrix}
+        \mb{\aleph}_{11} \\\mb{\aleph}_{22}\\\mb{\aleph}_{33}\\\mb{\aleph}_{12}\\\mb{\aleph}_{23}\\\mb{\aleph}_{31}
+    \end{bmatrix}.
+\end{gather}
+Such a mixed notation may appear to be a bit confusing, but it is actually quite useful in practice.
+
+For $\md{\bv_i}$ itself, it can be derived, see \cite{Wu2006} and the references therein, and explicitly expressed as
+\begin{gather}\label{eq:eigenvector_diff_def}
+    \md{\bv_i}=\sum_{j=1,i\neq{}j}^3\dfrac{\mb{P}_{ij}:\md{\mb{\aleph}}}{\lambda_i-\lambda_j}\bv_j
+\end{gather}
+with $\mb{P}_{ij}=\dfrac{1}{2}\left(\bv_i\otimes\bv_j+\bv_j\otimes\bv_i\right)$ being also a symmetric second order tensor.
+It can be observed that $ \md{\bv_i}$ is a linear combination of the other two eigenvectors.
+Since $\bv_i\cdot\bv_j=\delta_{ij}$, indeed $\md{\bv_i}\cdot\bv_i=0$.
+\eqsref{eq:eigenvector_diff_def} allows the following.
+\begin{gather}
+    \begin{split}
+        \md{\mb{P}_{ii}}=\md{\left(\bv_i\otimes\bv_i\right)}=2\md{\bv_i}\otimes\bv_i & =2\sum_{j=1,i\neq{}j}^3\dfrac{\mb{P}_{ij}:\md{\mb{\aleph}}}{\lambda_i-\lambda_j}\bv_j\otimes\bv_i \\&=2\sum_{j=1,i\neq{}j}^3\dfrac{\mb{P}_{ij}:\md{\mb{\aleph}}}{\lambda_i-\lambda_j}\mb{P}_{ij}=2\sum_{j=1,i\neq{}j}^3\dfrac{\mb{P}_{ij}\otimes\mb{P}_{ij}}{\lambda_i-\lambda_j}:\md{\mb{\aleph}}.
+    \end{split}
+\end{gather}
+It is assumed that $\lambda_i\neq\lambda_j$, that is, the eigenvalues are distinct.
+For degenerated cases, the above expression is \textbf{not} valid.
+But is it actually a problem?
+In practice, it's likely that the algorithm used to perform eigen analysis is iterative, exactly identical eigenvalues are not likely to be obtained.
+This is also guaranteed by the fact that $\mb{\aleph}$ are transformed tensors.
+Unless carefully designed, to obtain very close eigenvalues is practically difficult, let alone exactly identical eigenvalues.
+We will revisit this issue later.
 \subsection{Yield Function}\label{sec:yld0418p_yield_function}
 The YLD0418P yield criterion is expressed as a function of a set of \textbf{transformed} stress tensors, that is, in its most general form,
 \begin{gather}
@@ -1421,58 +1490,7 @@ and the second order derivatives
     \pdfrac{^2f}{\alpha_i\partial\beta_j}=-\dfrac{m\left(m-1\right)}{\sigma_\text{ref}^2}\abs{\Delta_{ij}}^{m-2}.
 \end{gather}
 
-Now let $\lambda_i$ be the eigenvalues of the stress tensor $\mb{\aleph}$ and $\bv_i$ be the corresponding normalized eigenvectors, one has
-\begin{gather}\label{eq:eigenvalue_def}
-    \lambda_i=\underbrace{\bv_i^\mT\mb{\aleph}\bv_i}_{\text{vector/matrix}}=\underbrace{\bv_i\cdot\mb{\aleph}\cdot\bv_i}_{\text{tensor contraction}}=\underbrace{\left(\bv_i\otimes\bv_i\right):\mb{\aleph}}_{\text{tensor contraction}},\qquad
-    \mb{\aleph}=\sum_{i}\lambda_i\bv_i\otimes\bv_i.
-\end{gather}
-The first attribute to note is that since $\bv_i$ is normalized, viz., $\bv_i\cdot\bv_i=1$, then
-\begin{gather}
-    \md{\left(\bv_i\cdot\bv_i\right)}=\md{\bv_i}\cdot\bv_i+\bv_i\cdot\md{\bv_i}=2\bv_i\cdot\md{\bv_i}=\md{1}=0\qquad\longrightarrow\qquad\bv_i\cdot\md{\bv_i}=0.
-\end{gather}
-Without loss of generality, one arrives at the conclusion that the change of a unit vector (or first order tensor) is perpendicular to the vector/tensor itself, i.e., $\bv_i\perp\md{\bv_i}$.
-With this, it is possible to further write
-\begin{gather}
-    \md{\bv_i}\cdot\mb{\aleph}\cdot\bv_i=\lambda_i\cdot\md{\bv_i}\cdot\bv_i=0,
-\end{gather}
-thus, the differentiation of $\lambda_i$ can be expressed as
-\begin{gather}\label{eq:eigenvalue_diff_def}
-    \md{\lambda_i}=\md{\bv_i}\cdot\mb{\aleph}\cdot\bv_i+\bv_i\cdot\md{\mb{\aleph}}\cdot\bv_i+\bv_i\cdot\mb{\aleph}\cdot\md{\bv_i}=\bv_i\cdot\md{\mb{\aleph}}\cdot\bv_i+2\md{\bv_i}\cdot\mb{\aleph}\cdot\bv_i=\bv_i\cdot\md{\mb{\aleph}}\cdot\bv_i.
-\end{gather}
-Comparing \eqsref{eq:eigenvalue_def} and \eqsref{eq:eigenvalue_diff_def}, it is quite interesting to note that the mapping between $\lambda_i$ and $\mb{\aleph}$ is identical to that between $\md{\lambda_i}$ and $\md{\mb{\aleph}}$.
-Alternatively, the above expressions are equivalent to the following,
-\begin{gather}
-    \md{\lambda_i}=\left(\bv_i\otimes\bv_i\right):\md{\mb{\aleph}}=\mb{P}_{ii}:\md{\mb{\aleph}}.
-\end{gather}
-We have defined $\mb{P}_{ii}=\bv_i\otimes\bv_i$.
-In matrix form,
-\begin{gather}
-    \lambda_i=\underbrace{\mb{P}_{ii}}_{1\times6}\underbrace{\mb{\aleph}}_{6\times1},\qquad
-    \md{\lambda_i}=\underbrace{\mb{P}_{ii}}_{1\times6}\underbrace{\md{\mb{\aleph}}}_{6\times1}.
-\end{gather}
-
-For $\md{\bv_i}$ itself, it can be derived, see \cite{Wu2006} and the references therein, and explicitly expressed as
-\begin{gather}\label{eq:eigenvector_diff_def}
-    \md{\bv_i}=\sum_{j=1,i\neq{}j}^3\dfrac{\mb{P}_{ij}:\md{\mb{\aleph}}}{\lambda_i-\lambda_j}\bv_j
-\end{gather}
-with $\mb{P}_{ij}=\dfrac{1}{2}\left(\bv_i\otimes\bv_j+\bv_j\otimes\bv_i\right)$.
-It can be observed that $ \md{\bv_i}$ is a linear combination of the other two eigenvectors.
-Since $\bv_i\cdot\bv_j=\delta_{ij}$, indeed $\md{\bv_i}\cdot\bv_i=0$.
-\eqsref{eq:eigenvector_diff_def} allows the following.
-\begin{gather}
-    \begin{split}
-        \md{\mb{P}_{ii}}=\md{\left(\bv_i\otimes\bv_i\right)}=2\md{\bv_i}\otimes\bv_i & =2\sum_{j=1,i\neq{}j}^3\dfrac{\mb{P}_{ij}:\md{\mb{\aleph}}}{\lambda_i-\lambda_j}\bv_j\otimes\bv_i \\&=2\sum_{j=1,i\neq{}j}^3\dfrac{\mb{P}_{ij}:\md{\mb{\aleph}}}{\lambda_i-\lambda_j}\mb{P}_{ij}=2\sum_{j=1,i\neq{}j}^3\dfrac{\mb{P}_{ij}\otimes\mb{P}_{ij}}{\lambda_i-\lambda_j}:\md{\mb{\aleph}}.
-    \end{split}
-\end{gather}
-It is assumed that $\lambda_i\neq\lambda_j$, that is, the eigenvalues are distinct.
-For degenerated cases, the above expression is \textbf{not} valid.
-But is it actually a problem?
-In practice, it's likely that the algorithm used to perform eigen analysis is iterative, exactly identical eigenvalues are not likely to be obtained.
-This is also guaranteed by the fact that $\mb{\aleph}$ are transformed tensors.
-Unless carefully designed, to obtain very close eigenvalues is practically difficult, let alone exactly identical eigenvalues.
-We will revisit this issue later.
-
-We have prepared all necessary ingredients to compute the full derivatives of (the summation term of) the yield function.
+We have prepared all necessary ingredients to compute the full derivatives of (the summation term of) the yield function in the previous sections.
 \begin{gather}
     \begin{split}
         \pdfrac{f}{\bs} & =\sum_{i=1}^{3}\pdfrac{f}{\alpha_i}\ddfrac{\alpha_i}{\balpha}:\ddfrac{\balpha}{\bs}+\sum_{i=1}^{3}\pdfrac{f}{\beta_i}\ddfrac{\beta_i}{\bbeta}:\ddfrac{\bbeta}{\bs} \\
