@@ -1,5 +1,5 @@
 name: PDF
-on: [ push ]
+on: [ push, pull_request ]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,6 +19,7 @@ jobs:
             python3 ./CONVERT/convergence.py
             latexmk -shell-escape -pdf COOKBOOK.tex
       - name: Release
+        if: github.event_name == 'push'
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
