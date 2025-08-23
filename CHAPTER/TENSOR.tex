@@ -1,5 +1,8 @@
 \chapter{Tensor Basics}
-In engineering, often tensors are defined in Euclidean spaces and belong to Cartesian tensor (type). Transformation between covariant and contravariant bases, thus raising/lowering indices, is somehow not emphasised (but implied). The most likely reason is that, often orthonormal bases are used so that covariant and contravariant bases lead to the same coordinates. Thus, only subscripts ($i$, $j$, $k$, $l$, etc.) are used to represent tensor indices, implying that contravariant bases are used. Furthermore, scalars are denoted by normal symbols such as $A$ while vectors and tensors are not distinguished, all denoted by boldface symbols such as $\mb{A}$.
+In engineering, often tensors are defined in Euclidean spaces and thus belong to Cartesian tensor (type).
+Transformation between covariant and contravariant bases, thus raising/lowering indices, is somehow not emphasised (but implied).
+The most likely reason is that, often orthonormal bases are used so that covariant and contravariant bases lead to the same coordinates.
+Hence, only subscripts ($i$, $j$, $k$, $l$, etc.) are used to represent tensor indices, implying that contravariant bases are used. Furthermore, scalars are denoted by normal symbols such as $A$ while vectors and tensors are not distinguished, all denoted by boldface symbols such as $\mb{A}$.
 \section{Notations}
 Let $\mb{A}\in\mathbb{R}^2\times\mathbb{R}^2$ denote a second order tensor with contravariant bases $\mb{e}^1$ and $\mb{e}^2$. With that, $\mb{A}$ has four components that can be arranged in the following matrix.
 \begin{gather}\label{eq:matrix_tensor}
@@ -34,7 +37,7 @@ The following expressions are equivalent.
 \begin{gather}
 \mb{A}=A_{ij}\mb{e}^i\mb{e}^j=A_{ik}\mb{e}^i\mb{e}^k=A_{ji}\mb{e}^j\mb{e}^i=A_{jk}\mb{e}^j\mb{e}^k=A_{ki}\mb{e}^k\mb{e}^i=A_{kj}\mb{e}^k\mb{e}^j.
 \end{gather}
-But it is not equivalent to
+But they are not equivalent to
 \begin{gather}
 \mb{A}\neq{}A_{ii}\mb{e}^i\mb{e}^i=A_{jj}\mb{e}^j\mb{e}^j=A_{kk}\mb{e}^k\mb{e}^k.
 \end{gather}
@@ -87,7 +90,7 @@ If $\mb{A}$ represents a symmetric strain tensor $\mb{\varepsilon}$, then its ma
 In above, $\gamma_{xy}=2\varepsilon_{12}=2\varepsilon_{21}$ is commonly known as the engineering shear strain.
 Using engineering strains in the Voigt notation is a common practice.
 However, due to the discrepancy in stress and strain, the same tensorial operations may behave differently depending on the involving operands.
-We shall further point out that using engineering strain has its physical meaning: $\bsigma$ and $\bvarepsilon$ need to be energy conjugate pairs such that $\bsigma\cdot\bvarepsilon=\bsigma^\mT\bvarepsilon$ has to represent the actual energy.
+We shall further point out that using engineering strain has its physical meaning: vectors $\bsigma$ and $\bvarepsilon$ need to be energy conjugate pairs such that $\bsigma\cdot\bvarepsilon=\bsigma^\mT\bvarepsilon$ has to represent the actual energy.
 In this sense, the factor \num{2} has to be added to either shear stress or strain components to ensure the energy consistency.
 One shall be aware of this issue as it often causes confusions, if not mistakes.
 We will further discuss similarities and differences when we run into concrete examples.
@@ -96,7 +99,7 @@ We will further discuss similarities and differences when we run into concrete e
 \section{Tensor Operations}
 \subsection{Tensor Product}
 \subsubsection{Definition}
-The tensor (tensorial) product is also called the dyadic product, which is an operation to construct an high order tensor from two low order tensors. Let $\mb{A}=A_i\mb{e}^i\in\mathbb{R}^2$ and $\mb{B}=B_i\mb{e}^i\in\mathbb{R}^2$ be two first order tensors (vectors), then tensor product of $\mb{A}$ and $\mb{B}$ gives a second order tensor $\mb{C}\in\mathbb{R}^2\times\mathbb{R}^2$
+The tensor (tensorial) product is also called the dyadic product, which is an operation that constructs an high order tensor from two low order tensors. Let $\mb{A}=A_i\mb{e}^i\in\mathbb{R}^2$ and $\mb{B}=B_i\mb{e}^i\in\mathbb{R}^2$ be two first order tensors (vectors), then tensor product of $\mb{A}$ and $\mb{B}$ gives a second order tensor $\mb{C}\in\mathbb{R}^2\times\mathbb{R}^2$
 \begin{gather}
 \mb{C}=\mb{A}\otimes\mb{B}=A_i\mb{e}^i\otimes{}B_j\mb{e}^j=A_iB_j\mb{e}^i\otimes{}\mb{e}^j=C_{ij}\mb{e}^i\otimes{}\mb{e}^j.
 \end{gather}
@@ -201,6 +204,11 @@ If $\mb{A}=A_{ij}\mb{e}^i\mb{e}^j$ and $\mb{B}=B_{ij}\mb{e}^i\mb{e}^j$ are two s
 C&=\mb{A}:\mb{B}=A_{ij}\mb{e}^i\mb{e}^j:B_{kl}\mb{e}^k\mb{e}^l=A_{ij}B_{kl}(\mb{e}^i\cdot\mb{e}^k)(\mb{e}^j\cdot\mb{e}^l)\\&=\delta_{ik}\delta_{jl}A_{ij}B_{kl}=A_{ij}B_{ij}.
 \end{split}
 \end{gather}
+
+The corresponding differentiation is straightforward,
+\begin{gather}
+    \md{C}=\mb{B}:\md{\mb{A}}+\mb{A}:\md{\mb{B}}.
+\end{gather}
 \subsubsection{Vector/Matrix Representation}
 Let $\mb{A}=A_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ and $\mb{B}=B_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ be two symmetric second order \textbf{stress} tensors. According to \eqsref{eq:tensor_stress} and \eqsref{eq:double_contraction}, the double contraction of the two gives
 \begin{multline}
@@ -248,7 +256,12 @@ If $\mb{A}$ and $\mb{B}$ represent \textbf{strain} tensors, a similar expression
 \end{gather}
 With the Mandel notation, again no additional scaling matrix is required, $C=\mb{A}^\mT\mb{B}$.
 
-The Mandel notation is constructed on top of orthonormal basis of second order tensors. The advantage in obvious: there is no need to handle covariant and contravariant representations. However, it is not widely used as its physical meaning is not that obvious. In this book, the Voigt notation is used by default.
+The Mandel notation is constructed on top of orthonormal basis of second order tensors.
+The advantage in obvious: there is no need to handle covariant and contravariant representations.
+With the Mandel notation, the corresponding numerical implementation can be greatly simplified as it fully mimics linear algebra operations.
+However, it is not widely used in theory as its physical meaning is not that obvious.
+For the exact same reason, it is almost not seen in any numerical implementations.
+In this book, the Voigt notation is used by default.
 
 Finally, if $\mb{A}$ and $\mb{B}$ represent a stress tensor and a strain tensor, one shall easily derive
 \begin{gather}
@@ -286,7 +299,14 @@ Noting that $\bsigma:\mathbb{I}=\bsigma$, it is easy to see that
           &   &   &              &              & \dfrac{1}{2}
     \end{bmatrix}.
 \end{gather}
-It shall be noted \eqsref{eq:norm_derivative} is shown in tensor notation. For column vector representation in the Voigt notation, it shall be expressed as
+It shall be noted \eqsref{eq:norm_derivative} is shown in tensor notation.
+One can also express the corresponding derivative as
+\begin{gather}
+    \ddfrac{\norm{\bsigma}}{\bsigma}=\bn,
+\end{gather}
+but it must be emphasised that the double contraction is still implied.
+
+For column vector representation in the Voigt notation, it shall be expressed as
 \begin{gather}\label{eq:norm_derivative2}
 \begin{split}
 \ddfrac{\norm{\bsigma}}{\bsigma}&=\dfrac{1}{2}\dfrac{1}{\norm{\bsigma}}\begin{bmatrix}
@@ -354,6 +374,8 @@ It is essentially
 &&&&&2
 \end{bmatrix}.
 \end{gather}
+
+From the above example, we shall point out that, given that we typically use tensor notations in analytical expressions while compressed matrix representations in implementations, both forms may resemble each other in most cases, additional scaling matrices may be required to ensure correctness.
 \section{Tensor Function of Stress Tensors}
 Some tensor--valued functions of stress tensors are frequently used in the analysis of plasticity. Let $\mb{\beta}=f\left(\bsigma,\mb{\alpha}\right)$ denote a tensor-valued function of the stress tensor $\bsigma$ and some other tensors denoted by $\mb{\alpha}$. Let the tensor--valued function $\mb{\gamma}=g\left(\mb{\beta}\right)$ be the normalised version of $\mb{\beta}$, that is
 \begin{gather}
