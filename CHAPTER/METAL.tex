@@ -103,7 +103,7 @@ Due to symmetry of both strain and stress tensors, it is often more performant t
 This means tensor quantities are expressed in compressed vector/matrix form.
 For a given expression, one shall always question what operation it implies and how it would be eventually computed for operands expressed in different forms.
 For example, if $\dot{\bvarepsilon^p}$ is used in intermediate computation, is can simply be replaced by $\gamma\bn$ --- the mathematics would be correct as long as we are using the consistent tensor notation.
-However, it $\bvarepsilon^p$ needs to be stored in the Voigt notation, one shall carefully scale the shear components by a factor of $2$.
+However, if $\bvarepsilon^p$ needs to be stored in the Voigt notation, one shall carefully scale the shear components by a factor of $2$ when committing new $\bvarepsilon^p$.
 
 It can be observed that $\dot{\bvarepsilon^p}$ has a magnitude of $\gamma$ while $\bn$ is a unit tensor in $\mathbb{R}^3\times\mathbb{R}^3$ hyper space. Thus $\bn$ serves as a direction indicator, $\bvarepsilon^p$ evolves towards $\bn$ by the amount of $\gamma$. Since $\bn$ is deviatoric, $\dot{\bvarepsilon^p}$ is also deviatoric (so as $\bvarepsilon^p$).
 Furthermore, since $\bn$ is a unit tensor,
@@ -224,10 +224,13 @@ Then $\beeta^\text{trial}=\dev{\bsigma^\text{trial}}-\balpha_n$, which gives tri
 f^\text{trial}=\norm{\beeta^\text{trial}}-\sqrt{\dfrac{2}{3}}\sigma^y_n
 \end{gather}
 with $\sigma^y_n=\sigma^y\left(q_n\right)$ evaluated with current $q_n$.
+The above expression simply assumes the current loading increment $\Delta\bvarepsilon=\bvarepsilon_{n+1}-\bvarepsilon_n$ is purely elastic, thus all plasticity related variables remain unchanged.
+The yield function evaluated in this way gives an upper bound of the actual yield function.
+If this value is negative, the actual state must be elastic, otherwise, plasticity evolution must occur.
 \subsubsection{Plastic Evolution}
 By default, we present the formulation with the implicit Euler method.
 
-If plasticity evolution occurs,
+If plasticity evolution occurs, that is, $f^\text{trial}>0$, $\gamma$ must be non-zero and thus needs to be solved.
 \begin{gather}
 \beeta_{n+1}=\dev{\bsigma_{n+1}}-\balpha_{n+1}.
 \end{gather}
@@ -240,7 +243,7 @@ one can further derive
 \begin{gather}
 \beeta_{n+1}=\dev{\bsigma^\text{trial}-\gamma2G\bn}-\balpha_n-\sqrt{\dfrac{2}{3}}\dot{H}\bn.
 \end{gather}
-Since $\bn$ is already deviatoric, meaning $\dev{\bn}=\bn$, thus,
+Since $\bn$ is already deviatoric, meaning $\dev{\bn}=\bn$, then,
 \begin{gather}
 \begin{split}
 \beeta_{n+1}&=\dev{\bsigma^\text{trial}}-\gamma2G\bn-\balpha_n-\sqrt{\dfrac{2}{3}}\dot{H}\bn\\
@@ -254,6 +257,8 @@ Noting that, by definition, $\bn=\dfrac{\beeta_{n+1}}{\norm{\beeta_{n+1}}}$, thu
 The above expression implies that $\beeta_{n+1}$ and $\beeta^\text{trial}$ are \textbf{coaxial}. Thus, $\beeta_{n+1}$ always points to the direction of $\beeta^\text{trial}$, which is a constant in each time step within that time step.
 Only its magnitude would be adjusted in local iterations.
 Thus, $\bn=\dfrac{\beeta_{n+1}}{\norm{\beeta_{n+1}}}=\dfrac{\beeta^\text{trial}}{\norm{\beeta^\text{trial}}}$ is also a constant during the local iteration.
+This is a quite convenient property, although it may not exist in other complex models.
+However, when it is available, it can be exploited to simplify the formulation.
 One can further derive
 \begin{gather}
 \norm{\beeta_{n+1}}+2G\gamma+\sqrt{\dfrac{2}{3}}\dot{H}=\norm{\beeta^\text{trial}}.
@@ -304,7 +309,10 @@ Thus the final expression for consistent tangent stiffness can be assembled as
 &=\mb{D}+4G^2\left(\dfrac{\gamma}{\norm{\beeta^\text{trial}}}-\dfrac{1}{2G+\dfrac{2}{3}\ddfrac{H_{n+1}}{q_{n+1}}+\dfrac{2}{3}\ddfrac{\sigma^y_{n+1}}{q_{n+1}}}\right)\bn\otimes\bn-\dfrac{4G^2\gamma}{\norm{\beeta^\text{trial}}}\mathbb{I}^\text{dev}.
 \end{split}
 \end{gather}
-It shall be noted that $\mathbb{I}^\text{dev}$ takes the form as presented in \eqsref{eq:dev_tensor_se}. Readers are strongly suggested to derive it via both tensor notation and compression matrix representation as a practice. Both leads to identical results.
+It is a symmetric tensor/matrix.
+It shall be noted that $\mathbb{I}^\text{dev}$ takes the form as presented in \eqsref{eq:dev_tensor_se}.
+Readers are strongly suggested to derive it via both tensor notation and compressed matrix representation as a practice.
+Both shall lead to identical results.
 
 Since the local iteration is a scalar function, the closed--form of consistent tangent stiffness is relatively easy to compute. It will be seen in more complex models that closed--forms do not always possess simple forms.
 
@@ -395,6 +403,9 @@ thus, \eqsref{eq:j2_two_form} becomes
 \bs^\text{trial}-\bs_{n+1}=\gamma2G\bn.
 \end{gather}
 No matter which notation is used, the same expression holds.
+This is based on the fact that $\dot{\bvarepsilon^p}$ is used as an intermediate variable.
+The intermediate scaling matrices cancel out and eventually the same expression is obtained.
+
 This is a beautiful attribute, though could be confusing for beginners.
 \section{Extended Subloading Surface Model}\label{sec:subloading}
 The model is published \cite{Chang2025}.
@@ -992,7 +1003,8 @@ after some algebra, the consistent tangent operator can be written as
 \begin{gather}\label{eq:consistent_tangent}
     \ddfrac{\bsigma}{\bvarepsilon}=\mb{D}_e-\dfrac{4G^2\gamma}{\norm{\bzeta}}\mathbb{I}^\text{dev}+4G^2\left(\dfrac{\gamma}{\norm{\bzeta}}+\dfrac{1-\sqrt{\dfrac{2}{3}}\gamma{}\ddfrac{U}{z}}{\det\mb{J}}\right)\bn\otimes\bn.
 \end{gather}
-One shall easily see that it is a symmetric matrix.
+It is a symmetric tensor/matrix.
+One can also observe some resemblance between \eqsref{eq:j2_stiffness} and \eqsref{eq:consistent_tangent}.
 \subsection{Implementation}
 The complete algorithm is presented in \algoref{algo:subloading_steel}.
 It adopts a standard Newton--Raphson scheme (implicit, closest point projection) to solve the local equilibrium.
@@ -1048,7 +1060,7 @@ It can be used to model orthtropic materials such sheet steel and timber.
 One can further refer to the corresponding section (\S~10.3) in \cite{SouzaNeto2008}.
 \subsection{Theory}
 \subsubsection{Yield Function}
-The yield function adopts the Hoffman criterion, which is expressed in matrix form,
+The yield function adopts the Hoffman criterion, which is expressed in compressed matrix form,
 \begin{gather}\label{eq:orthotropic_yield_function_proto}
 f=\dfrac{1}{2}\bsigma^\mT\mb{P}\bsigma+\mb{q}^\mT\bsigma-\sigma_y^2,
 \end{gather}
@@ -1134,10 +1146,6 @@ Flow Rule&$\dot{\bvarepsilon^p}=\gamma\bn$\\
 Hardening Law&$\dot{\varepsilon^p}=\gamma\norm{\bn}_e$\\\bottomrule
 \end{tabular}
 \end{table}
-
-We have used both tensor and matrix notations in the above table.
-Can you identify which expressions use which notation?
-This is important as different notations imply differences in implementation.
 \subsubsection{Elastic Loading/Unloading}
 Compared with the von Mises framework, there is no essential difference in terms of elastic loading/unloading, the plasticity is frozen at the beginning of each substep, allowing one to compute the trial stress such that
 \begin{gather}

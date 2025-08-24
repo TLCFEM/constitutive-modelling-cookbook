@@ -336,6 +336,17 @@ However, with the Mandel notation,
 \end{gather}
 there is no need to consider the scaling matrix.
 
+To summarise, if the symbol $\bsigma$ represents a stress tensor, then
+\begin{gather}
+    \ddfrac{\norm{\bsigma}}{\bsigma}=\bn\qquad\text{all tensors};
+\end{gather}
+if it represents a stress Voigt vector, then
+\begin{gather}
+    \ddfrac{\norm{\bsigma}}{\bsigma}=\bn^\mT\diag{\begin{matrix}
+            1 & 1 & 1 & 2 & 2 & 2
+        \end{matrix}}\qquad\text{all vectors}.
+\end{gather}
+
 Now we proceed to compute the derivative of $\mb{n}$ with respect to $\bsigma$.
 \begin{gather}
 \md{\bn}=\dfrac{\norm{\bsigma}\mathbb{I}-\bsigma\otimes\md{\norm{\bsigma}}}{\norm{\bsigma}^2}:\md{\bsigma}
