@@ -1298,6 +1298,7 @@ Rearranging the above gives
     \end{bmatrix}\mb{E}.
 \end{gather}
 The above can be inserted into \eqsref{eq:ortho_consistent_tangent} to obtain the consistent tangent stiffness.
+There is no tensor algebra involved, all expressions are in matrix form.
 \subsubsection{Line Search}
 Since it is an anisotropic model, the local iteration may have difficulties in convergence, especially when a high anisotropy is defined.
 Some implementations \cite{Krasnovskiy2004,SouzaNeto2008,Scherzinger2017} adopt line search, which effectively becomes a damped Newton--Raphson method.
@@ -1601,6 +1602,11 @@ When $\alpha_i\approx\alpha_j$, the fraction essentially approximates the second
 To account for symmetry, it is possible to use $\pdfrac{^2f}{\aleph_i^2}\Big|_{\aleph_j}+\pdfrac{^2f}{\aleph_j^2}\Big|_{\aleph_i}$ to approximate it.
 
 Finally, it must be pointed out that the above derivation, without loss of generality, can be applied to 2D cases \cite{Barlat2003} with minor modifications.
+
+For computing derivatives of eigenvalues and eigenvectors alone, we have used tensor algebra.
+Combined with the yield function, we have also employed matrix algebra.
+Thus the above expressions are a mixture of both notations.
+One shall apply appropriate scaling matrices when necessary.
 \subsection{Formulation}
 The expressions are summarised in the following table.
 \begin{table}[H]
@@ -1659,7 +1665,7 @@ The Jacobian is thus
     \begin{gather}
         \pdfrac{\mb{R}}{\bvarepsilon}=\begin{bmatrix}
             \mb{0} \\[4mm]
-            -\mathbb{I}^\text{dev}\mb{E}
+            -\mathbb{I}^\text{dev}:\mb{E}
         \end{bmatrix},
     \end{gather}
     thus, the final expression of the consistent tangent stiffness is
@@ -1668,10 +1674,23 @@ The Jacobian is thus
             \pdfrac{f}{\bs} & \gamma\pdfrac{^2f}{\bs^2}
         \end{bmatrix}}_{6\times7}\mb{J}^{-1}\underbrace{\begin{bmatrix}
             \mb{0} \\[4mm]
-            \mathbb{I}^\text{dev}\mb{E}
+            \mathbb{I}^\text{dev}:\mb{E}
         \end{bmatrix}}_{7\times6}.
 \end{gather}
-It is also worth noting that $\mathbb{I}^\text{dev}\mb{E}=\mb{E}\mathbb{I}^\text{dev}$ regardless of orthotropic or isotropic elasticity.
+The term $\mathbb{I}^\text{dev}:\mb{E}$ can be equivalently expressed in matrix notation such that
+\begin{gather}
+    \mathbb{I}^\text{dev}:\mb{E}=\mb{E}\mb{I}^\text{dev}=\mb{I}^\text{dev}\mb{E},
+\end{gather}
+then
+\begin{gather}
+    \ddfrac{\bsigma}{\bvarepsilon}=\mb{E}-\mb{I}^\text{dev}\mb{E}\underbrace{\begin{bmatrix}
+            \pdfrac{f}{\bs} & \gamma\pdfrac{^2f}{\bs^2}
+        \end{bmatrix}}_{6\times7}\mb{J}^{-1}\underbrace{\begin{bmatrix}
+            \mb{0} \\[4mm]
+            \mb{I}^\text{dev}\mb{E}
+        \end{bmatrix}}_{7\times6}.
+\end{gather}
+The above expression is in pure matrix form.
 \subsection{Kinematic Hardening Extension}
 Common orthotropic materials such as timber, bones, etc., do not exhibit kinematic hardening, this is the reason that kinematic hardening was not introduced in the previous sections.
 However, as the YLD0418P yield criterion is widely used in the context of sheet metals, extending the model to include kinematic hardening is meaningful.

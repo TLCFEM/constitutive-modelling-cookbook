@@ -346,6 +346,11 @@ if it represents a stress Voigt vector, then
             1 & 1 & 1 & 2 & 2 & 2
         \end{matrix}}\qquad\text{all vectors}.
 \end{gather}
+In some cases, the chain rule may be applied, resulting in the cancellation of scaling matrices, thus one may obtain
+\begin{gather}
+    \ddfrac{\norm{\bsigma}}{\bsigma}=\bn^\mT\qquad\text{all vectors}.
+\end{gather}
+We thus must emphasis that such a subtle difference shall always be kept in mind.
 
 Now we proceed to compute the derivative of $\mb{n}$ with respect to $\bsigma$.
 \begin{gather}
