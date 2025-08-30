@@ -6,7 +6,7 @@ This book aims to provide a practical guidance to numerical implementations of p
 
 Readers are expected to have undergraduate level background of linear algebra, numerical analysis, elasticity and some programming knowledge.
 \section{Overview}
-The book presents a collection of constitutive models, covering both uniaxial and triaxial versions, of a wide range of common materials used in (civil) engineering.
+The book presents a collection of constitutive models, covering both uniaxial and triaxial versions, of a wide range of common materials used in (civil/mechanical) engineering.
 The implementation details are derived for each model.
 
 The ultimate target is to provide an easy to follow, error and confusion free reference for readers who are interested in implementing constitutive models under the modern conventional and novel plasticity framework.
@@ -19,7 +19,18 @@ For practical implementation, algorithms in pseudo code are given for most model
 Core \texttt{C++} implementations are also provided as references/comparisons for readers who are familiar with \texttt{C++} and scientific computation with relevant tools.
 The code snippets are taken from the implementations in \texttt{suanPan} \cite{Chang2022}.
 This book can also be used as the program manual.
+\section{What Knowledge Is Needed?}
+Constitutive modelling effectively concerns numerical implementations of various plasticity theories.
+Readers are expected to have a good understanding of undergraduate level of linear algebra and shall feel comfortable with matrix/vector operations and analysis tools such as eigenanalysis.
+Readers shall also be fairly familiar with elasticity theories, especially the small strain theory.
+Furthermore, as can be seen later, plasticity theories can essentially be interpreted as differential equations, thus a good grasp of numerical methods for differential equations (ODEs and PDEs) is also required.
+It, however, shall be pointed out that, in most cases, only low order (very basic) methods are needed.
+
+If 2D and 3D models are of interest, it is likely that basic understanding of tensor algebra (literally I mean the first one or two chapters of any monographs on tensor algebra and nothing more) is also required.
+Chapter \ref{chap:tensor} provides a brief summary of all necessary tensor algebra knowledge needed in this book.
+If one is able to understand the contents of Chapter \ref{chap:tensor}, then it is sufficient.
 \section{Implementation}
+To get hands on the actual implementation, one shall then consider practical programming issues such as which programming language to use, which paradigm to follow, etc.
 \subsection{Which Programming Language?}
 In early days, \texttt{C} and \texttt{Fortran} were the most popular languages for scientific computation.
 One can easily find a large amount of libraries written in either \texttt{C} or \texttt{Fortran} that are quietly driving the whole scientific computation community.
