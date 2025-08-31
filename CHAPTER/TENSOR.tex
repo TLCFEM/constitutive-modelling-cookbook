@@ -1,8 +1,14 @@
 \chapter{Tensor Basics}\label{chap:tensor}
 In engineering, often tensors are defined in Euclidean spaces and thus belong to Cartesian tensor (type).
 Transformation between covariant and contravariant bases, thus raising/lowering indices, is somehow not emphasised (but implied).
+
 The most likely reason is that, often orthonormal bases are used so that covariant and contravariant bases lead to the same coordinates.
-Hence, only subscripts ($i$, $j$, $k$, $l$, etc.) are used to represent tensor indices, implying that contravariant bases are used. Furthermore, scalars are denoted by normal symbols such as $A$ while vectors and tensors are not distinguished, all denoted by boldface symbols such as $\mb{A}$.
+Due to this exact reason, in this book, only subscripts ($i$, $j$, $k$, $l$, etc.) are used to represent tensor indices, implying that contravariant bases are used. Furthermore, scalars are denoted by normal symbols such as $A$ while vectors and tensors are not distinguished, all denoted by boldface symbols such as $\mb{A}$.
+
+In this chapter, we will briefly summarise the main concepts of tensors and tensor algebra.
+They are practically useful in 3D constitutive models.
+It must be pointed out that, the contents presented here are not complete, but sufficient for the purpose of this book.
+Readers are referred to monographs on this topic if a systematic introduction is desired.
 \section{Notations}
 Let $\mb{A}\in\mathbb{R}^2\times\mathbb{R}^2$ denote a second order tensor with contravariant bases $\mb{e}^1$ and $\mb{e}^2$. With that, $\mb{A}$ has four components that can be arranged in the following matrix.
 \begin{gather}\label{eq:matrix_tensor}
@@ -20,11 +26,11 @@ In some literature, it is omitted for simplicity, resulting in
 \end{gather}
 This notation will be used in this book.
 In this case, $\mb{e}^i\mb{e}^j$ does not represent the dot product of two vectors (or first order tensors).
-Rather, the operator $\cdot$ shall be explicitly shown as $\mb{e}^i\cdot\mb{e}^j$ to avoid potential confusion.
+Rather, the corresponding dot product operator $\cdot$ shall be explicitly shown as $\mb{e}^i\cdot\mb{e}^j$ to avoid potential confusion.
 One shall also note that, the matrix representation only explicitly show the four components of $A_{ij}$, the corresponding contravariant bases $\mb{e}^1$ and $\mb{e}^2$ are not shown at all!
 This comes handy as those bases do not need to be repeated every time given the fact that they typically do not change within a given context/system/problem.
 The tensor notation is often used in tensor operations, making the computation compact and concise thus easier to follow and understand.
-The matrix representation is widely used in implementation, where the majority of computation only involves vector/matrix operations (for most problems).
+The matrix representation is widely used in numerical implementations due to performance considerations, where the majority of computation only involves vector/matrix operations (for most problems).
 
 The Einstein summation convention is adopted, that is, for each single term, if the same index appears exactly twice, the summation of that term over all values of that index has to be carried out.
 In this 2D example, $i,j=\{1,2\}$.
@@ -184,10 +190,13 @@ C_{3311}&C_{3322}&C_{3333}&2C_{3312}&2C_{3323}&2C_{3331}\\
 2C_{3111}&2C_{3122}&2C_{3133}&4C_{3112}&4C_{3123}&4C_{3131}
 \end{bmatrix}.
 \end{gather}
-This is the direct result of the presence of scaling factor \num{2}.
+This \textbf{wrong} expression is the direct result of the presence of scaling factor \num{2} in shear terms.
+One thus must scale them back to obtain the correct result.
 We'll not emphasis on this but one must be clear about such difference and apply proper scaling vectors/matrices when necessary with compressed matrix representations.
 In practice, the strain tensor under consideration may be derived/associated with some function of some stress tensor, and it may or may not be necessary to manually scale the shear components.
 This affects how the corresponding implementation is carried out.
+
+Given that most constitutive models are formulated in the stress space, we will rarely encounter tensor products between strain tensors.
 \subsection{Double Contraction}
 \subsubsection{Definition}
 We are familiar with the concept of the dot product. Let $\mb{A}=A_i\mb{e}^i$ and $\mb{B}=B_i\mb{e}^i$ be two first order tensors (vectors), then dot product of $\mb{A}$ and $\mb{B}$ gives a zeroth order tensor (scalar) $C$ as
@@ -198,17 +207,27 @@ where $\delta_{ij}$ is the Kronecker delta which equals \num{1} if $i=j$ or \num
 We have assumed that $\mb{e}^i\cdot\mb{e}^j=\delta_{ij}$, which is valid for orthonormal bases that are commonly used in engineering.
 
 The double contraction, also known as the double dot product, is a tensor operation to construct low order tensors from high order tensors.
+
 If $\mb{A}=A_{ij}\mb{e}^i\mb{e}^j$ and $\mb{B}=B_{ij}\mb{e}^i\mb{e}^j$ are two second order tensors, then the double contraction performs dot product twice on different indices, resulting in a zeroth order tensor (scalar) as
 \begin{gather}\label{eq:double_contraction}
 \begin{split}
 C&=\mb{A}:\mb{B}=A_{ij}\mb{e}^i\mb{e}^j:B_{kl}\mb{e}^k\mb{e}^l=A_{ij}B_{kl}(\mb{e}^i\cdot\mb{e}^k)(\mb{e}^j\cdot\mb{e}^l)\\&=\delta_{ik}\delta_{jl}A_{ij}B_{kl}=A_{ij}B_{ij}.
 \end{split}
 \end{gather}
-
 The corresponding differentiation is straightforward,
 \begin{gather}
     \md{C}=\mb{B}:\md{\mb{A}}+\mb{A}:\md{\mb{B}}.
 \end{gather}
+In essence, double contraction results in the summation of element-wise multiplications of each and every components of two second order tensors.
+
+For high order tensors, the procedure is similar: dot product is performed twice on different indices.
+For example, if $\mb{A}=A_{ijkl}\mb{e}^i\mb{e}^j\mb{e}^k\mb{e}^l$ and $\mb{B}=B_{ij}\mb{e}^i\mb{e}^j$, then
+\begin{gather}
+    \begin{split}
+        C & =\mb{A}:\mb{B}=A_{ijkl}\mb{e}^i\mb{e}^j\mb{e}^k\mb{e}^l:B_{mn}\mb{e}^m\mb{e}^n=A_{ijkl}B_{mn}\mb{e}^i\mb{e}^j(\mb{e}^k\cdot\mb{e}^m)(\mb{e}^l\cdot\mb{e}^n) \\&=\delta_{km}\delta_{ln}A_{ijkl}B_{mn}\mb{e}^i\mb{e}^j=A_{ijkl}B_{kl}\mb{e}^i\mb{e}^j.
+    \end{split}
+\end{gather}
+This is thus a second order tensor with $C_{ij}=A_{ijkl}B_{kl}$.
 \subsubsection{Vector/Matrix Representation}
 Let $\mb{A}=A_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ and $\mb{B}=B_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ be two symmetric second order \textbf{stress} tensors. According to \eqsref{eq:tensor_stress} and \eqsref{eq:double_contraction}, the double contraction of the two gives
 \begin{multline}
@@ -268,6 +287,7 @@ Finally, if $\mb{A}$ and $\mb{B}$ represent a stress tensor and a strain tensor,
     C=\mb{A}^\mT\mb{B}=\mb{B}^\mT\mb{A}.
 \end{gather}
 There is no scaling matrix involved in this case!
+Readers can verify the above three cases by explicitly writing out all components.
 \section{Stress Tensor Norm}
 The double contraction between a second order tensor $\mb{A}$ and itself results in a scalar that can be used to characterise the norm of $\mb{A}$. In this sense, double contraction of second order tensors can be deemed as an equivalent version of dot product of vectors.
 
