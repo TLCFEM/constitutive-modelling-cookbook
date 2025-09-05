@@ -48,25 +48,27 @@ Furthermore, the language itself does not have a rich feature set, writing \text
 
 When choosing a proper language for scientific computation, the following three aspects are important.
 \begin{itemize}
-    \item Operator Overloading\\Operator overloading is a mechanism that allows one to define custom behaviour for standard operators (e.g., $+$, $-$, $*$, $/$.) when applied to user-defined types.
-          This is particularly useful in scientific computing, where mathematical operations on vectors, matrices, and tensors are common.
-          With operator overloading, one can write code that closely resembles mathematical notation, making it more readable and easier to understand.
-          It also offers possible performance optimisation.
-          Consider the matrix multiplication of three matrices, with operator overloading it can be concisely expressed as
-          \begin{cppcode}
-              mat A, B, C;
-              auto D = A * B * C;
-          \end{cppcode}
-          However, if the chosen language does not support it, it can only be done via conventional function calls.
-          \begin{cppcode}
-              mat matmul(const mat&, const mat&);
-              mat A, B, C;
-              auto D = matmul(matmul(A, B), C);
-          \end{cppcode}
-    \item Ecosystem\\
-          For implementing standalone material models, whether there is a rich ecosystem may not be a big concern.
-          However, at higher levels, material models need to be integrated into larger analysis frameworks, a rich ecosystem can significantly avoid reinventing the wheel and reduce the overall workload.
-    \item Multiparadigm Support\\Although not strictly necessary, multiparadigm support can be very useful in scientific computation.
+\item Operator Overloading\\
+Operator overloading is a mechanism that allows one to define custom behaviour for standard operators (e.g., $+$, $-$, $*$, $/$.) when applied to custom types.
+This is particularly useful in scientific computing, where mathematical operations on vectors, matrices, and tensors are common.
+With operator overloading, one can write code that closely resembles mathematical notation, making it more readable and easier to understand.
+It also offers possible performance optimisation.
+Consider the matrix multiplication of three matrices, with operator overloading it can be concisely expressed as
+\begin{cppcode}
+    mat A, B, C;
+    auto D = A * B * C;
+\end{cppcode}
+However, if the chosen language does not support it, it can only be done via conventional function calls.
+\begin{cppcode}
+    mat matmul(const mat&, const mat&);
+    mat A, B, C;
+    auto D = matmul(matmul(A, B), C);
+\end{cppcode}
+\item Ecosystem\\
+For implementing standalone material models, whether there is a rich ecosystem may not be a big concern.
+However, at higher levels, material models need to be integrated into larger analysis frameworks, a rich ecosystem can significantly avoid reinventing the wheel and reduce the overall workload.
+\item Multiparadigm Support\\
+Although not strictly necessary, multiparadigm support can be very useful in scientific computation.
 \end{itemize}
 \subsection{Notes on Miscellaneous Things}
 \subsubsection{State Determination}
