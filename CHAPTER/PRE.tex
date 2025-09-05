@@ -42,14 +42,32 @@ Operating on arrays is cumbersome and error--prone.
 As there is no operator overloading, all linear algebra operations have to be implemented as functions.
 The implementation quickly becomes lengthy and hard to read, especially for 2D/3D elements and material models.
 
-For \texttt{Fortran}, since matrix is natively supported, the implementation would be more concise.
-However, the language itself does not have a rich feature set, writing \texttt{Fortran} is boring (my very subjective opinion) and often ends up with writing one dull loop after another.
+For \texttt{Fortran}, since matrix operations are natively supported, the corresponding implementation would be more concise.
+However, when interfacing with external libraries (which is often necessary because they typically offer optimised performance), following the signature is often lengthy and tedious.
+Furthermore, the language itself does not have a rich feature set, writing \texttt{Fortran} is boring (my very subjective opinion) and often ends up with writing one dull loop after another.
 
-It appears that, as of writing, \texttt{C++} is still a better choice for scientific computation.
-Despite its monstrous complexity, \texttt{C++} has 1) operator overloading (which makes scientific code much more concise with a good abstraction of linear algebra), 2) meta-programming (templating that saves boilerplate code), 3) object--oriented programming support (which offers a decent way to organise and structure data) and 4) a rich ecosystem.
-Yet, the performance is not compromised.
-
-Nevertheless, if one only wants to implement a single model, or a simple state determination algorithm, any language of choice would do.
+When choosing a proper language for scientific computation, the following three aspects are important.
+\begin{itemize}
+    \item Operator Overloading\\Operator overloading is a mechanism that allows one to define custom behaviour for standard operators (e.g., $+$, $-$, $*$, $/$.) when applied to user-defined types.
+          This is particularly useful in scientific computing, where mathematical operations on vectors, matrices, and tensors are common.
+          With operator overloading, one can write code that closely resembles mathematical notation, making it more readable and easier to understand.
+          It also offers possible performance optimisation.
+          Consider the matrix multiplication of three matrices, with operator overloading it can be concisely expressed as
+          \begin{cppcode}
+              mat A, B, C;
+              auto D = A * B * C;
+          \end{cppcode}
+          However, if the chosen language does not support it, it can only be done via conventional function calls.
+          \begin{cppcode}
+              mat matmul(const mat&, const mat&);
+              mat A, B, C;
+              auto D = matmul(matmul(A, B), C);
+          \end{cppcode}
+    \item Ecosystem\\
+          For implementing standalone material models, whether there is a rich ecosystem may not be a big concern.
+          However, at higher levels, material models need to be integrated into larger analysis frameworks, a rich ecosystem can significantly avoid reinventing the wheel and reduce the overall workload.
+    \item Multiparadigm Support\\Although not strictly necessary, multiparadigm support can be very useful in scientific computation.
+\end{itemize}
 \subsection{Notes on Miscellaneous Things}
 \subsubsection{State Determination}
 In all the state determination algorithms presented in this book, by default it is assumed all local iterations eventually converge.
