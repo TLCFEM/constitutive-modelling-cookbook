@@ -67,3 +67,45 @@ The question is, is this `threshold' practically relevant?
 There does not exist a universal answer to this question.
 One shall thus be aware of this subtle implication.
 When designing a numerical implementation, a second--order method is not necessarily universally better than a first--order method.
+\section{Algorithmic Tangent Stiffness}
+In numerical implementations with implicit schemes, the algorithmic tangent stiffness is often required to ensure the quadratic convergence of the global Newton--Raphson iteration.
+It is also called the consistent tangent operator in some literature.
+
+But what is it exactly?
+Let's consider the following ODE as an example,
+\begin{gather}
+    \ddfrac{y}{x}=y.
+\end{gather}
+For a function whose derivative is the function itself, we know the solution is the exponential function,
+\begin{gather}
+    y=e^x+C
+\end{gather}
+where $C$ is some constant.
+
+Now, pretending that we do not know the analytical solution, we want to solve this ODE numerically using the backward Euler method.
+We have
+\begin{gather}
+    y_{n+1}-y_n=y\Delta{}x,
+\end{gather}
+rearranging the equation gives
+\begin{gather}
+    y_{n+1}=\dfrac{y_n}{1-\Delta{}x}.
+\end{gather}
+This shall be our recursion formula.
+Omit the subscript $\left(\cdot\right)_{n+1}$ for simplicity and compute the derivative of $y$ with respect to $\Delta{}x$, one has
+\begin{gather}
+    \ddfrac{y}{\Delta{}x}=\dfrac{y_n}{\left(1-\Delta{}x\right)^2}=\dfrac{y}{1-\Delta{}x}.
+\end{gather}
+On the other hand, because $x=x_n+\Delta{}x$, we have
+\begin{gather}
+    \md{x}=\md{x_n+\Delta{}x}=\md{\Delta{}x},
+\end{gather}
+the above derivative is thus
+\begin{gather}
+    \ddfrac{y}{x}=\dfrac{y}{1-\Delta{}x}.
+\end{gather}
+It is clear that this is not the same as the original ODE $\ddfrac{y}{x}=y$.
+However, when $\Delta{}x\to0$, the derivative obtained from discretized equation converges to the original analytical one.
+
+This is the essence of the algorithmic tangent stiffness.
+It is the derivative obtained from the discretized equation, which is \textit{consistent} with the numerical scheme used.
