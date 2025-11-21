@@ -69,7 +69,13 @@ For implementing standalone material models, whether there is a rich ecosystem m
 However, at higher levels, material models need to be integrated into larger analysis frameworks, a rich ecosystem can significantly avoid reinventing the wheel and reduce the overall workload.
 \item Multiparadigm Support\\
 Although not strictly necessary, multiparadigm support can be very useful in scientific computation.
+For finite element analysis, nodes/elements can be perfectly modelled as objects, thus object--oriented programming (OOP) is a natural choice.
 \end{itemize}
+
+In this book, \texttt{C++} is chosen as the implementation language.
+It may not be the perfect choice for everyone (subject to personal preference), but it is definitely a reasonable choice.
+A similar mindset is also adopted by other authors \cite{Poeschel2010}.
+Nevertheless, one is free to implement the presented algorithms in any programming language of their choice.
 \subsection{Notes on Miscellaneous Things}
 \subsubsection{State Determination}
 In all the state determination algorithms presented in this book, by default it is assumed all local iterations eventually converge.
