@@ -76,13 +76,13 @@ Here, we only present them in their original forms for completeness.
 \subsection{Revisions}\label{sec:revised}
 \subsubsection{Preliminary Remarks}
 In the scalar form, the Armstrong--Frederick evolution rule \cite{Frederick2007} is equivalent to the following ordinary differential equation (ODE),
-\begin{equation}\label{eq:af_ode}
+\begin{gather}\label{eq:af_ode}
     y'=b\left(a-y\right),
-\end{equation}
+\end{gather}
 it can be explicitly integrated to give the solution for the initial condition $y(0)=0$,
-\begin{equation}
+\begin{gather}
     y(x)=a\left(1-\exp\left(-bx\right)\right),
-\end{equation}
+\end{gather}
 which defines a curve that asymptotically approaches the constant bound $a$.
 
 To employ a non-constant bound, it is possible to simply replace the constant $a$ by a function $a(x)$ in the ODE \eqsref{eq:af_ode} such that $y'=b\left(a\left(x\right)-y\right)$.
@@ -636,6 +636,7 @@ Noting that the local iteration does not involve complex tensor algebra, the alg
 \end{breakablealgorithm}
 
 The following is a reference implementation in CPP.
+One shall note the alternative formulation presented in \tabref{tab:summary_alternative} is implemented.
 \begin{cppcode}
     Subloading::update_trial_status
 \end{cppcode}
@@ -643,3 +644,59 @@ The following is a reference implementation in CPP.
 Compared to the previous implementation \cite{Fincato2017,Anjiki2019}, the formulation proposed in this work dramatically reduces the size of the local system from \num{20} to \num{2}.
 We also present the explicit expression of the consistent tangent operator, which is not available in the previous works.
 If \eqsref{eq:original_z} can be explicitly integrated by choosing a specific function $U$ (such as the cotangent function used in the original proposal), the local system can be further reduced to a scalar residual.
+\subsection{Further Discussions}
+One may have observed that the subtle difference between the uniaxial and multiaxial formulations lies in the scaling factor $\sqrt{\dfrac{2}{3}}$.
+Accounting for this factor scattered here and there would be cumbersome and error-prone thus requires excessive attention.
+Is there an alternative approach that may avoid this issue?
+In this section, we explore a possible solution that may better align the uniaxial and multiaxial formulations.
+
+Now since we have introduced the split (e.g., \eqsref{eq:decomposition_back}) that accounts for magnitude and direction separately, we shall further consider additional tweaks.
+Again, let's revisit the ODE \eqsref{eq:af_ode} with both $a$ and $b$ being constants,
+\begin{gather}
+    y'=b(a-y).
+\end{gather}
+For trivial initial condition, the solution is, as stated earlier,
+\begin{gather}
+    y(x)=a\left(1-\exp\left(-bx\right)\right).
+\end{gather}
+It can be observed that it consists of two parts: 1) a scaling bound $a$, and 2) a saturation part that ranges from \num{0} to \num{1}.
+One can easily arrive at the conclusion that such a function can be equivalently expressed as
+\begin{gather}
+    y=a\bar{y},\qquad\text{with}\qquad\bar{y}'=b(1-\bar{y}).
+\end{gather}
+What does it mean?
+It means that for any non-unit bound $a$, one can extract it from the governing ODE, making the saturation part always have a unit bound.
+
+Now consider both \eqsref{eq:decomposition_back} and \eqsref{eq:normalised_back_rule}, what we have at hand is essentially a tensor $\bbeta$ being expressed as a product of a scalar $H$ and a tensor $\balpha$.
+This tensor $\balpha$, however, is not a unit tensor, its saturated value is $\sqrt{\dfrac{2}{3}}$ in the 3D formulation.
+Since we already ave the scalar $H$, applying the above idea, we can formulate the evolution rule for $\bbeta$ as follows for 3D case,
+\begin{gather}
+    \boxed{\bbeta=\sqrt{\dfrac{2}{3}}H\balpha,}
+\end{gather}
+with
+\begin{gather}
+    \boxed{\dot{\balpha}=b\left(\bn-\balpha\right)\dot{q}.}
+\end{gather}
+Effectively, instead of scaling $\balpha$, we scale $H$.
+It is much simpler to do so as the only change is to premultiply $H$ by the constant $\sqrt{\dfrac{2}{3}}$.
+
+The previous formulation can now be equivalently rewritten as shown in \tabref{tab:summary_alternative}.
+It is believed that this alternative formulation better unify the uniaxial and multiaxial cases with the minimum changes.
+\begin{table}[htb]
+    \centering\footnotesize\renewcommand{\arraystretch}{1.6}
+    \caption{alternative formulation of the subloading surface model}\label{tab:summary_alternative}
+    \begin{tabular}{rlll}
+        \toprule
+                           & uniaxial                                                                                 & 3D                                                            &              \\ \midrule
+        Constitutive Law   & $\sigma=E\left(\varepsilon-\varepsilon^p\right)$                                         & $\bsigma=\mb{D}_e:\left(\bvarepsilon-\bvarepsilon^p\right)$   &              \\
+        Subloading Surface & $f_s=\abs{\eta}-z\sigma^y$                                                               & $f_s=\norm{\beeta}-z\sigma^y$                                 &              \\
+                           & $\eta=\sigma-a^y\alpha+\left(z-1\right)\sigma^yd$                                        & $\beeta=\dev{\bsigma}-a^y\balpha+\left(z-1\right)\sigma^y\bd$ & \faLightbulb \\
+        Flow Rule          & $\dot{\varepsilon^p}=\gamma{}n$                                                          & $\dot{\bvarepsilon^p}=\gamma{}\bn$                            &              \\
+                           & $n=\sign{\eta}$                                                                          & $\bn=\pdfrac{f_s}{\bsigma}/\norm{\pdfrac{f_s}{\bsigma}}$      &              \\
+        Evolution Rules    & $\dot{q}=\gamma$                                                                         & $\dot{q}=\sqrt{\dfrac{2}{3}}\gamma$                           &              \\
+                           & $\dot{\alpha}=b\left(n-\alpha\right)\dot{q}$                                             & $\dot{\balpha}=b\left(\bn-\balpha\right)\dot{q}$              & \faLightbulb \\
+                           & $\dot{d}=c_e\left(z_en-d\right)\dot{q}$                                                  & $\dot{\bd}=c_e\left(z_e\bn-\bd\right)\dot{q}$                 & \faLightbulb \\
+                           & $\sigma^y=\sigma^i+k_\text{iso}q+\sigma^s_\text{iso}\left(1-e^{-m^s_\text{iso}q}\right)$ & $\sigma^y\leftarrow\sqrt{\dfrac{2}{3}}\sigma^y$               &              \\
+                           & $a^y=a^i+k_\text{kin}q+a^s_\text{kin}\left(1-e^{-m^s_\text{kin}q}\right)$                & $a^y\leftarrow\sqrt{\dfrac{2}{3}}a^y$                         &              \\                           & \multicolumn{2}{l}{$\dot{z}=U\dot{q}$}                                                   &                                                                              \\ \bottomrule
+    \end{tabular}
+\end{table}

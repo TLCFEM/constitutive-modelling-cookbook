@@ -113,6 +113,18 @@ For internal variable $q$, the hardening law takes the accumulated magnitude of 
 \begin{gather}
     \dot{q}=\sqrt{\dfrac{2}{3}}\norm{\dot{\bvarepsilon^p}}=\sqrt{\dfrac{2}{3}}\gamma.
 \end{gather}
+Similar to the stress counterpart, here the constant $\sqrt{\dfrac{2}{3}}$ needs to be introduced to ensure a consistent and correct uniaxial response.
+To see this, consider the uniaxial loading case again, to have a unit plastic strain increment along the designated axis (say, the $x$-axis), also noting that $\dot{\bvarepsilon^p}$ is \textbf{deviatoric}, the full plastic strain increment tensor must be
+\begin{gather}
+    \dot{\bvarepsilon^p}=\dfrac{1}{2}\begin{bmatrix}
+        2 & -1 & -1 & 0 & 0 & 0
+    \end{bmatrix}^\mT.
+\end{gather}
+Clearly, to have a unit first component, the other two normal components must be $-\dfrac{1}{2}$ each.
+This will lead to $\norm{\dot{\bvarepsilon^p}}=\sqrt{\dfrac{3}{2}}$.
+If we still accept the definition $\dot{q}=\norm{\dot{\bvarepsilon^p}}$, then the same unit plastic strain increment that yields $\dot{q}=1$ in the uniaxial formulation would now give $\dot{q}=\sqrt{\dfrac{3}{2}}$ in the 3D formulation.
+As a result, the same hardening function would produce different responses in two cases.
+To have the identical $\dot{q}$, we must scale down $\norm{\dot{\bvarepsilon^p}}$ by $\sqrt{\dfrac{2}{3}}$, thus the above expression is obtained.
 
 For isotropic hardening, $\sigma^y$ is defined as a general function of $q$,
 \begin{gather}
