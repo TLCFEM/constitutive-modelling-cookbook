@@ -669,7 +669,7 @@ It means that for any non-unit bound $a$, one can extract it from the governing 
 
 Now consider both \eqsref{eq:decomposition_back} and \eqsref{eq:normalised_back_rule}, what we have at hand is essentially a tensor $\bbeta$ being expressed as a product of a scalar $H$ and a tensor $\balpha$.
 This tensor $\balpha$, however, is not a unit tensor, its saturated value is $\sqrt{\dfrac{2}{3}}$ in the 3D formulation.
-Since we already ave the scalar $H$, applying the above idea, we can formulate the evolution rule for $\bbeta$ as follows for 3D case,
+Since we already have the scalar $H$, applying the above idea, we can formulate the evolution rule for $\bbeta$ as follows for 3D case,
 \begin{gather}
     \boxed{\bbeta=\sqrt{\dfrac{2}{3}}H\balpha,}
 \end{gather}
@@ -700,3 +700,6 @@ It is believed that this alternative formulation better unify the uniaxial and m
                            & $a^y=a^i+k_\text{kin}q+a^s_\text{kin}\left(1-e^{-m^s_\text{kin}q}\right)$                & $a^y\leftarrow\sqrt{\dfrac{2}{3}}a^y$                         &              \\                           & \multicolumn{2}{l}{$\dot{z}=U\dot{q}$}                                                   &                                                                              \\ \bottomrule
     \end{tabular}
 \end{table}
+This alternative formulation makes it trivial to convert an existing implementation for uniaxial/multiaxial to the other case.
+One only need to scale the scalar bounds and $\dot{q}$ by $\sqrt{\dfrac{2}{3}}$, this factor can be abstracted into a constant variable that takes value \num{1} for uniaxial and $\sqrt{\dfrac{2}{3}}$ for multiaxial cases.
+The remaining parts of the implementation can largely remain unchanged.
