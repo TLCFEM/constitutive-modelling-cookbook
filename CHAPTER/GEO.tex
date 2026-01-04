@@ -180,10 +180,15 @@ This sand model is a hybrid of several existing models with significant simplifi
 
 Compared to other models for sand, this model is more like a preliminary model just like the bilinear hardening von Mises model compared to other models for metals.
 
-A distinctive feature of sand models is that, often a non-associative plastic flow is used and the hardening law is significantly more complex, involving heavy tensor operations, than aforementioned models. Often the hardening laws are tensor--valued functions, and cannot be simplified to scalar--valued functions. The numerical complexity is higher.
+A distinctive feature of sand models is that, often a non-associative plastic flow is used and the hardening law is significantly more complex, involving heavy tensor operations, than aforementioned models.
+Often the hardening laws are tensor--valued functions, and cannot be simplified to scalar--valued functions.
+The numerical complexity is higher.
 \subsection{Theory}
 \subsubsection{Elastic Constitutive Relation}
-Often for sand, the elastic response is nonlinear (to be specific, hyper-elastic). The shear modulus and bulk modulus often are functions of hydrostatic pressure. In this model, for simplicity, an linear elastic relation is assumed. Readers shall be warned this does no reflect the real behaviour of sand.
+Often for sand, the elastic response is nonlinear (to be specific, hyper-elastic).
+The shear and bulk moduli often are functions of hydrostatic pressure.
+In this model, for simplicity, a linear elastic relation is assumed.
+Readers shall be warned this does no reflect the real behaviour of sand.
 
 The decomposition of total strain into elastic/plastic strain components is still valid. Thus the trial elastic state can be computed via the same expression.
 \begin{gather}\label{eq:ss_tsigma}
