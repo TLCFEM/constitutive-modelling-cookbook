@@ -228,6 +228,9 @@ For example, if $\mb{A}=A_{ijkl}\mb{e}^i\mb{e}^j\mb{e}^k\mb{e}^l$ and $\mb{B}=B_
     \end{split}
 \end{gather}
 This is thus a second order tensor with $C_{ij}=A_{ijkl}B_{kl}$.
+There are different conventions to perform double contraction between tensors of different orders.
+In the above example, the last two indices of $\mb{A}$ are contracted with the two indices of $\mb{B}$.
+One can, in theory, pick any two indices of $\mb{A}$ to be contracted with $\mb{B}$, although not all choices embody physical meanings.
 \subsubsection{Vector/Matrix Representation}
 Let $\mb{A}=A_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ and $\mb{B}=B_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ be two symmetric second order \textbf{stress} tensors. According to \eqsref{eq:tensor_stress} and \eqsref{eq:double_contraction}, the double contraction of the two gives
 \begin{multline}
@@ -255,6 +258,8 @@ Its derivative reads
 \pdfrac{C}{\mb{A}}=\mb{B}^\mT\mb{S},\qquad
 \pdfrac{C}{\mb{B}}=\mb{A}^\mT\mb{S}.
 \end{gather}
+Due to the compact (Voigt) notation, an additional scaling matrix $\mb{S}$ is required to account for the factor \num{2} in shear components if the operation has to be spelled out explicitly in vector/matrix form.
+As a result, this scaling matrix will propagates to other operations such as the derivatives shown above.
 
 However, if the Mandel notation is adopted, it is simply
 \begin{gather}
@@ -289,6 +294,14 @@ Finally, if $\mb{A}$ and $\mb{B}$ represent a stress tensor and a strain tensor,
 \end{gather}
 There is no scaling matrix involved in this case!
 Readers can verify the above three cases by explicitly writing out all components.
+
+It must be confusing, if not frustrating, to realise that for different operands, the scaling matrices $\mb{S}$ are different.
+Thus, one shall always question oneself about what the operands represent before performing those tensor operations in vector/matrix representations.
+This is a vital issue existing at the implementation level but not at the abstraction level.
+It can be fully circumvented if instead of compact vector/matrix representations, one uses full tensor notations such that second order tensors are represented by 2D arrays and fourth order tensors by 4D arrays, at the cost of performance.
+
+The good news is that, the vast majority of the existing constitutive models are formulated in the stress space --- the classic plasticity theory is formulated in the stress space after all.
+In practice, we rarely need to apply different scaling matrices in a single constitutive model.
 \section{Stress Tensor Norm}
 The double contraction between a second order tensor $\mb{A}$ and itself results in a scalar that can be used to characterise the norm of $\mb{A}$. In this sense, double contraction of second order tensors can be deemed as an equivalent version of dot product of vectors.
 
