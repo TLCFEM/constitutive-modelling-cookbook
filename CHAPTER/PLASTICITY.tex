@@ -91,7 +91,7 @@ If plasticity must develop, noting that $f=0$, with the assist of \eqsref{eq:str
 Often the above system is nonlinear by construction and needs to be solved with an iterative method. It can be rewritten in a more nonlinear--flavoured style. Let $\mb{x}=\begin{bmatrix}
 \gamma&\bvarepsilon^p&\bq
 \end{bmatrix}$ denote the local variable vector, and $\mb{R}\left(\gamma,~\bvarepsilon^p,~\bq\right)$ denote the residual of the nonlinear system
-\begin{gather}
+\begin{gather}\label{eq:local_system}
 \mb{R}=\left\{
 \begin{array}{l}
 f\left(\bvarepsilon^p,~\bq\right),\\
@@ -100,7 +100,7 @@ f\left(\bvarepsilon^p,~\bq\right),\\
 \end{array}\right.
 \end{gather}
 The target is to find the solution $\mb{x}$ to $\mb{R}=\mb{0}$ for a prescribed total strain $\bvarepsilon$. The Newton--Raphson method can be adopted with the help of Jacobian $\pdfrac{\mb{R}}{\mb{x}}$. It shall be noted that partial derivatives are used here since fundamentally $\bvarepsilon$ enters the system. It is also a variable which is held constant only at local iteration level.
-\subsection{Consistent Tangent Stiffness}
+\subsection{Consistent Tangent Stiffness}\label{sec:consistent_tangent_general}
 To compute the consistent tangent stiffness, one can start from \eqsref{eq:strain_decomposition},
 \begin{gather}
 \pdfrac{\bsigma}{\bvarepsilon}=\mb{D}-\mb{D}:\pdfrac{\bvarepsilon^p}{\bvarepsilon}.
