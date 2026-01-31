@@ -117,6 +117,7 @@ Fundamentally, both approaches represent alternative numerical strategies for in
 
 Specifically, for the local system of ordinary differential equations given in \eqref{eq:local_system}, the closest-point projection method corresponds to an \textbf{implicit} time integration scheme, whereas the cutting-plane method is based on \textbf{explicit} integration.
 From this perspective, the distinction between the two approaches is primarily algorithmic rather than conceptual.
+It is all about how to discretize the time derivatives in the local evolution equations to find a solution to satisfy the yield condition.
 
 As expected, the cutting-plane method inherits the well-known limitations of explicit time integration schemes, including conditional stability, restrictions on admissible time-step sizes, and the accumulation of numerical errors.
 For this reason, no cutting-plane-based implementation is presented in this book, as its applicability is limited in general-purpose computational settings.
