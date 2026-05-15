@@ -1,0 +1,14 @@
+image: texlive/texlive:latest
+stages:
+  - build
+build_pdf:
+  stage: build
+  script:
+    - apt-get update && apt-get install -y python3-pip
+    - pip install -r requirements.txt
+    - python3 ./CONVERT/code.py
+    - python3 ./CONVERT/convergence.py
+    - latexmk -shell-escape -pdf COOKBOOK.tex
+  artifacts:
+    paths:
+      - COOKBOOK.pdf
