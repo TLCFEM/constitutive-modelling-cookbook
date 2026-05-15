@@ -47,3 +47,20 @@ The following models are covered.
  * Other
     * Gurson's Void Growth Model
     * The $N$-$M$ Frame Element
+
+
+## To Build
+
+The following commands can be used to compile this book with docker.
+Please make sure `docker` and `curl` are available on the system.
+
+```bash
+mkdir -p cookbook
+curl -fsSL https://raw.githubusercontent.com/TLCFEM/constitutive-modelling-cookbook/master/dockerfile -o cookbook/dockerfile
+
+docker build -f cookbook/dockerfile -t cookbook cookbook
+
+cid=$(docker create cookbook)
+docker cp "$cid:/workspace/COOKBOOK.pdf" .
+docker rm "$cid" >/dev/null
+```
