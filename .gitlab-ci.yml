@@ -13,3 +13,4 @@ build_pdf:
   artifacts:
     paths:
       - COOKBOOK.pdf
+    expire_in: 1 week
