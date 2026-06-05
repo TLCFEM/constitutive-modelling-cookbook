@@ -105,7 +105,7 @@ We will further discuss similarities and differences when we run into concrete e
 \section{Tensor Operations}
 \subsection{Tensor Product}
 \subsubsection{Definition}
-The tensor (tensorial) product is also called the dyadic product, which is an operation that constructs an high order tensor from two low order tensors. Let $\mb{A}=A_i\mb{e}^i\in\mathbb{R}^2$ and $\mb{B}=B_i\mb{e}^i\in\mathbb{R}^2$ be two first order tensors (vectors), then tensor product of $\mb{A}$ and $\mb{B}$ gives a second order tensor $\mb{C}\in\mathbb{R}^2\times\mathbb{R}^2$
+The tensor (tensorial) product is also called the dyadic product, which is an operation that constructs a high order tensor from two low order tensors. Let $\mb{A}=A_i\mb{e}^i\in\mathbb{R}^2$ and $\mb{B}=B_i\mb{e}^i\in\mathbb{R}^2$ be two first order tensors (vectors), then tensor product of $\mb{A}$ and $\mb{B}$ gives a second order tensor $\mb{C}\in\mathbb{R}^2\times\mathbb{R}^2$
 \begin{gather}
 \mb{C}=\mb{A}\otimes\mb{B}=A_i\mb{e}^i\otimes{}B_j\mb{e}^j=A_iB_j\mb{e}^i\otimes{}\mb{e}^j=C_{ij}\mb{e}^i\otimes{}\mb{e}^j.
 \end{gather}
@@ -192,7 +192,7 @@ C_{3311}&C_{3322}&C_{3333}&2C_{3312}&2C_{3323}&2C_{3331}\\
 \end{gather}
 This \textbf{wrong} expression is the direct result of the presence of scaling factor \num{2} in shear terms.
 One thus must scale them back to obtain the correct result.
-We'll not emphasis on this but one must be clear about such difference and apply proper scaling vectors/matrices when necessary with compressed matrix representations.
+We will not emphasize this but one must be clear about such difference and apply proper scaling vectors/matrices when necessary with compressed matrix representations.
 In practice, the strain tensor under consideration may be derived/associated with some function of some stress tensor, and it may or may not be necessary to manually scale the shear components.
 This affects how the corresponding implementation is carried out.
 
@@ -259,7 +259,7 @@ Its derivative reads
 \pdfrac{C}{\mb{B}}=\mb{A}^\mT\mb{S}.
 \end{gather}
 Due to the compact (Voigt) notation, an additional scaling matrix $\mb{S}$ is required to account for the factor \num{2} in shear components if the operation has to be spelled out explicitly in vector/matrix form.
-As a result, this scaling matrix will propagates to other operations such as the derivatives shown above.
+As a result, this scaling matrix will propagate to other operations such as the derivatives shown above.
 
 However, if the Mandel notation is adopted, it is simply
 \begin{gather}
@@ -384,7 +384,7 @@ In some cases, the chain rule may be applied, resulting in the cancellation of s
 \begin{gather}
     \ddfrac{\norm{\bsigma}}{\bsigma}=\bn^\mT\qquad\text{all vectors}.
 \end{gather}
-We thus must emphasis that such a subtle difference shall always be kept in mind.
+We thus must emphasize that such a subtle difference shall always be kept in mind.
 
 Now we proceed to compute the derivative of $\mb{n}$ with respect to $\bsigma$.
 \begin{gather}

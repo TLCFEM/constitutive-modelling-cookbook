@@ -1,8 +1,8 @@
 \chapter{Uniaxial Plasticity Models (Other Materials)}
 \section{K4 Concrete}
-In this section, we introduce a uniaxial model for concrete that is formulated within the classic plasticity framework. The model is named as K4 model in this book as the four authors' surnames all start with letter `K'. However, the model presented in the original paper adopts a linear degradation, leading to inevitable sudden zero stiffness after exceeding certain strain limit. Numerical models do not prefer exact zeros, thus, it is revised to adopt an exponentially decaying function instead. It shall be pointed out that the original formulation \cite{Kenawy2020} contains some mistakes, in the event of any discrepancy or inconsistency, we prefer the formulation discussed in this section.
+In this section, we introduce a uniaxial model for concrete that is formulated within the classic plasticity framework. The model is called the K4 model in this book as the four authors' surnames all start with the letter `K'. However, the model presented in the original paper adopts a linear degradation, leading to inevitable sudden zero stiffness after exceeding a certain strain limit. Numerical models do not prefer exact zeros, thus, it is revised to adopt an exponentially decaying function instead. It shall be pointed out that the original formulation \cite{Kenawy2020} contains some mistakes, in the event of any discrepancy or inconsistency, we prefer the formulation discussed in this section.
 
-There are quite a number of phenomenological models for concrete. Since they are phenomenological, it is relatively flexible to define different loading/unloading response. Such kind of flexibility makes the corresponding model easier for engineers to understand and extrapolate, however, they may violate thermodynamic principles.
+There are quite a number of phenomenological models for concrete. Since they are phenomenological, it is relatively flexible to define different loading/unloading response. Such flexibility makes the corresponding model easier for engineers to understand and extrapolate, however, they may violate thermodynamic principles.
 \subsection{Theory}
 The classic plasticity framework does not support definition of stiffness degradation, the elastic loading/unloading paths always follow the gradient of initial stiffness. It is a common practice to combine plasticity and damage \cite{Lemaitre1985} together so that the apparent stiffness can gradually degrade.
 
@@ -42,7 +42,7 @@ For uniaxial models, the flow direction is simply the loading direction,
 \begin{gather}
 \dot{\varepsilon^p}=\gamma~\sign{\bar{\sigma}}=\gamma\pdfrac{F}{\bar{\sigma}}.
 \end{gather}
-One would find this coincide with the associative plasticity (the second equality).
+One would find this coincides with the associative plasticity (the second equality).
 \subsubsection{Hardening Law}
 Any functions can be chosen as the hardening law, meaning that
 \begin{gather}
@@ -193,7 +193,7 @@ To correct the response, it, at least, has to be defined as
 \end{gather}
 where $k_k^i$ is the initial $k_k$ at the beginning of current loading path, and needs to be updated whenever load reversal occurs.
 
-We avoid such a complex presentation as it may cause unnecessary confusions. At its core, the crack closing mechanism tries to close the unclosed crack ($k_t-k_k$) by accumulating a portion of strain increment to $k_k$ ($\Delta{}k_k=\abs{\Delta\varepsilon}\dfrac{E}{E+h_k}$), and this mechanism is conditionally activated.
+We avoid such a complex presentation as it may cause unnecessary confusion. At its core, the crack closing mechanism tries to close the unclosed crack ($k_t-k_k$) by accumulating a portion of strain increment to $k_k$ ($\Delta{}k_k=\abs{\Delta\varepsilon}\dfrac{E}{E+h_k}$), and this mechanism is conditionally activated.
 \subsection{Formulation}
 \subsubsection{Tangent Stiffness}
 By the chain rule, differentiating the expression of stress

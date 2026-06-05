@@ -1,5 +1,5 @@
 \chapter{Miscellaneous Topics}
-In this chapter, we discuss some miscellaneous topics that are relevant to numerical implemenntations of consitutive models.
+In this chapter, we discuss some miscellaneous topics that are relevant to numerical implementations of constitutive models.
 \section{Equivalent But Preferred?}
 Some (yield) functions are mathematically equivalent, is there a preferred one?
 Or any form can be used?
@@ -14,7 +14,7 @@ or alternatively, one can write
 They are indeed mathematically equivalent as we have defined the yield stress to be non-negative.
 However, they may have different implications in terms of numerical implementation.
 First, the involvement of squares is discouraged.
-It easily leads to precision issues, especially when the local nonlinear system also contains some nondimentionsal history variables.
+It easily leads to precision issues, especially when the local nonlinear system also contains some nondimensional history variables.
 Second, if associative flow is used, the above two yield functions lead to
 \begin{gather}
     \dot{\varepsilon^p}=\gamma\pdfrac{f}{\sigma}=\left\{\begin{array}{ll}
@@ -45,7 +45,7 @@ The analytical solution can be easily obtained as
     y(t)=\dfrac{a}{b}\left(1-e^{-bt}\right).
 \end{gather}
 
-Now, lest consider integrating this ODE using the first--order backward Euler method and the second--order Trapezoidal method.
+Now, let's consider integrating this ODE using the first--order backward Euler method and the second--order Trapezoidal method.
 \begin{figure}[ht]
     \centering
     \includegraphics{PIC/convergence.integration.pdf}

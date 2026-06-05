@@ -1,5 +1,5 @@
 \section{YLD0418P}
-In \cite{SouzaNeto2008}, an anisotropic yield criterion named as the Barlat--Lian criterion \cite{Barlat1989} is discussed in the context of plane stress for sheet metals.
+In \cite{SouzaNeto2008}, an anisotropic yield criterion called the Barlat--Lian criterion \cite{Barlat1989} is discussed in the context of plane stress for sheet metals.
 The yield criterion was further generalised \cite{Barlat2003} and extended to the 3D space \cite{Barlat2005}, which is known as the YLD2004-18P criterion since it was formulated in 2004 and has 18 parameters.
 Here, we use a slightly different notation, YLD0418P, to denote this criterion.
 \subsection{Miscellaneous Aspects}
@@ -11,7 +11,7 @@ For elasticity, we assume either isotropic or orthotropic elasticity such that
     \bsigma=\mb{E}\left(\bvarepsilon-\bvarepsilon^p\right),
 \end{gather}
 where $\mb{E}$ is the elastic stiffness matrix that can be either isotropic or orthotropic.
-Because in the following both matrix and tensor notations may be used, the elasticity may also be equivalently expresssed in tensor notation as
+Because in the following both matrix and tensor notations may be used, the elasticity may also be equivalently expressed in tensor notation as
 \begin{gather}
     \bsigma=\mb{D}:\left(\bvarepsilon-\bvarepsilon^p\right).
 \end{gather}
@@ -97,7 +97,7 @@ Since $\bv_i\cdot\bv_j=\delta_{ij}$, indeed $\md{\bv_i}\cdot\bv_i=0$.
     \end{split}
 \end{gather}
 It is assumed that $\lambda_i\neq\lambda_j$, that is, the eigenvalues are distinct.
-For degenerated cases, the above expression is \textbf{not} valid.
+For degenerate cases, the above expression is \textbf{not} valid.
 But is it actually a problem?
 In practice, it's likely that the algorithm used to perform eigen analysis is iterative, exactly identical eigenvalues are not likely to be obtained.
 This is also guaranteed by the fact that $\mb{\aleph}$ are transformed tensors.
@@ -246,7 +246,7 @@ If we further define $\mb{H}^{\mb{\aleph}}=\mb{P}^{\mb{\aleph}}:\mb{C}_{\mb{\ale
 \end{gather}
 in which for brevity the middle diagonal matrix is not repeated.
 
-Now let's study the degenerated case when $\alpha_i$ approaches $\alpha_j$.
+Now let's study the degenerate case when $\alpha_i$ approaches $\alpha_j$.
 By examining the expression,
 \begin{gather}
     \pdfrac{f}{\alpha_i}=\dfrac{m}{\sigma_\text{ref}}\sum_{j=1}^3\abs{\Delta_{ij}}^{m-2}\Delta_{ij},

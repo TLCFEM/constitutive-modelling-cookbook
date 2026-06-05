@@ -11,7 +11,7 @@ with
 \end{gather}
 where $\bp_i$ and $\hat{\sigma}_i$ are eigenvectors and eigenvalues of the second order tensor $\bbsigma$. The above expression shall be interpreted with the tensor notation.
 
-The effective stress $\bbsigma$ obeys the conventional hardening model using the Hoffman yielding criterion, see \secref{sec:hoffman} for details. The final stress can be obtained after applying damage factors on tensile and compressive part of $\bbsigma$.
+The effective stress $\bbsigma$ obeys the conventional hardening model using the Hoffman yielding criterion, see \secref{sec:hoffman} for details. The final stress can be obtained after applying damage factors to the tensile and compressive parts of $\bbsigma$.
 \begin{gather}
 \bsigma=\left(1-\omega_t\right)\bbsigma_t+\left(1-\omega_c\right)\bbsigma_c.
 \end{gather}
@@ -20,7 +20,7 @@ The damage part follows the one proposed in \cite{SirumbalZapata2018}. The damag
 \begin{gather}\label{eq:timber_damage}
 \bar{\tau}_{\aleph}=\sqrt{\dfrac{1}{2}\bbsigma_\aleph^\mT\mb{H}_\aleph\bbsigma_\aleph},
 \end{gather}
-that covers both tensile and compressive cases. The matrix $\mb{H}_\aleph$ is the projection matrix of the Hill criterion, which is a special case of \eqsref{eq:hoffman_criterion}. For $\aleph=t$, set $f_{ii}^c=f_{ii}^t$. For $\aleph=c$, set $f_{ii}^t=f_{ii}^c$. It could be noted that in either case, $\mb{q}=\mb{0}$, thus, \eqsref{eq:timber_damage} does not contain a second term.
+that covers both tensile and compressive cases. The matrix $\mb{H}_\aleph$ is the projection matrix of the Hill criterion, which is a special case of \eqsref{eq:hoffman_criterion}. For $\aleph=t$, set $f_{ii}^c=f_{ii}^t$. For $\aleph=c$, set $f_{ii}^t=f_{ii}^c$. It should be noted that in either case, $\mb{q}=\mb{0}$, thus, \eqsref{eq:timber_damage} does not contain a second term.
 
 The damage variables are updated based on the maximum history of $\bar{\tau}_{\aleph}$, that is
 \begin{gather}

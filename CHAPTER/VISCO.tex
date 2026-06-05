@@ -1,6 +1,6 @@
 \chapter{Viscoplasticity}
 \section{VAFCRP Model}
-Here we present a versatile viscoplastic model that can be used to model metals under dynamic loadings. It is essentially a multiaxial extension of the aforementioned Armstrong--Fredrick uniaxial model with additional viscosity component. Due to the presence of viscosity, the typical formulation and implementation shall be modified a bit, as now transient effects are accounted for and yield function does not need to be non-positive. It is only used to determine whether a trial state is elastic or plastic.
+Here we present a versatile viscoplastic model that can be used to model metals under dynamic loadings. It is essentially a multiaxial extension of the aforementioned Armstrong--Frederick uniaxial model with additional viscosity component. Due to the presence of viscosity, the typical formulation and implementation shall be modified a bit, as now transient effects are accounted for and yield function does not need to be non-positive. It is only used to determine whether a trial state is elastic or plastic.
 \subsection{Theory}
 \subsubsection{Yield Function}
 A von Mises type yielding function is used.
@@ -32,7 +32,7 @@ Similar to the previous model, a Voce type exponential function with a linear co
 \begin{gather}
 k=\sigma_y+k_lp+k_s-k_se^{-mp}.
 \end{gather}
-In which, $m$ is a parameter controls the speed of hardening.
+In which, $m$ is a parameter that controls the speed of hardening.
 
 The incremental form of multiplicative back stress \cite{Chaboche1989} $\displaystyle\bbeta=\sum\bbeta^i$ is defined as
 \begin{gather*}

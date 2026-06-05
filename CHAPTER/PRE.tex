@@ -2,19 +2,19 @@
 Most monographs and academic papers present constitutive models analytically with little to no emphasis on implementation, leaving it to readers to figure out on their own.
 It, however, could be a challenge to implement various models, especially those complex ones, correctly since it requires not only a good understanding of the theoretical formulation of models but also a good grasp of the relevant numerical methods and programming details.
 
-This book aims to provide a practical guidance to numerical implementations of plasticity models.
+This book aims to provide a practical guide to numerical implementations of plasticity models.
 
-Readers are expected to have undergraduate level background of linear algebra, numerical analysis, elasticity and some programming knowledge.
+Readers are expected to have an undergraduate-level background in linear algebra, numerical analysis, elasticity and some programming knowledge.
 \section{Overview}
 The book presents a collection of constitutive models, covering both uniaxial and triaxial versions, of a wide range of common materials used in (civil/mechanical) engineering.
 The implementation details are derived for each model.
 
-The ultimate target is to provide an easy to follow, error and confusion free reference for readers who are interested in implementing constitutive models under the modern conventional and novel plasticity framework.
+The ultimate target is to provide an easy-to-follow, error-free reference for readers who are interested in implementing constitutive models under the modern conventional and novel plasticity framework.
 
 A wide range of different constitutive models (both formulations and implementations) are covered in this book, some models are very lengthy.
-There are a huge amount of symbols and formulae.
+There are a huge number of symbols and formulae.
 
-As the title indicates, this book is drafted as a reference book on constitutive modelling, it shall be self--complete in terms of the theoretical part.
+As the title indicates, this book is drafted as a reference book on constitutive modelling, it shall be self-contained in terms of the theoretical part.
 For practical implementation, algorithms in pseudo code are given for most models.
 Core \texttt{C++} implementations are also provided as references/comparisons for readers who are familiar with \texttt{C++} and scientific computation with relevant tools.
 The code snippets are taken from the implementations in \texttt{suanPan} \cite{Chang2022}.
@@ -81,7 +81,7 @@ Nevertheless, one is free to implement the presented algorithms in any programmi
 In all the state determination algorithms presented in this book, by default it is assumed all local iterations eventually converge.
 However, this is often not what would happen in practice.
 For example, most algorithms solve a local nonlinear system with the Newton--Raphson method, which is known to only have local convergence guarantee.
-This implies that the algorithm would happily fail if the initial starting point is far enough from the desired solution.
+This implies that the algorithm would simply fail if the initial starting point is far enough from the desired solution.
 To improve robustness, it is always possible to add more numerical processes to safeguard the algorithm.
 Thus, the presented implementations are the `reference' ones, not the `golden' ones.
 \subsubsection{Internal Storage}
