@@ -56,15 +56,15 @@ Hyperelastic material models are often defined in terms of the reduced invariant
 \bar{J_2}=I_2I_3^{-2/3},\quad
 \bar{J_3}=I_3^{1/2}.
 \end{gather}
-In which, $I_1$, $I_2$, and $I_3$ are the invariants of $\mb{C}$.
+Here, $I_1$, $I_2$, and $I_3$ are the invariants of $\mb{C}$.
 \section{Mooney--Rivlin Model}
 \subsection{Theory}
-The Mooney--Rivlin model for compressible material uses the following strain energy density function
+The Mooney--Rivlin model for a compressible material uses the following strain energy density function
 \begin{gather}
 W=A_{10}\left(\bar{J_1}-3\right)+A_{01}\left(\bar{J_2}-3\right)+\dfrac{K}{2}\left(\bar{J_3}-1\right)^2,
 \end{gather}
 where $A_{10}$, $A_{01}$ and $K$ are material parameters.
-As one may observe, $\bar{J_3}$ is involved, the bulk modulus $K$ can be set to a large value such that it approaches so called near incompressible behaviour.
+As one may observe, since $\bar{J_3}$ is involved, the bulk modulus $K$ can be set to a large value so that the model approaches so-called near-incompressible behaviour.
 
 To compute the second Piola--Kirchhoff stress tensor $\mb{S}$, the derivatives are required.
 From \eqsref{eq:tensor_invariant_derivative}, using the Voigt notation, one can derive, for example,
@@ -94,7 +94,7 @@ From \eqsref{eq:tensor_invariant_derivative}, using the Voigt notation, one can 
     \end{bmatrix}^\mT\\&=2\left(I_1\mb{1}-\mb{C}\right).
 \end{split}
 \end{gather}
-One shall realize the above result agrees with the expression derived using tensor algebra.
+One should realise that the above result agrees with the expression derived using tensor algebra.
 Here is one more example.
 \begin{gather}
 \begin{split}
@@ -153,20 +153,109 @@ This involves the second order derivatives of invariants $I_1$, $I_2$ and $I_3$.
 \end{gather}
 \subsection{Implementation}
 The implementation is straightforward.
-One shall faithfully calculate the derivatives and then assemble the stress and stiffness tensors.
+One should compute the derivatives faithfully and then assemble the stress and stiffness tensors.
 \begin{cppcode}
-MooneyRivlin::update_trial_status
+int MooneyRivlin::update_trial_status(const vec& t_strain) {
+    const vec G = weight % (trial_strain = t_strain) + tensor::unit_tensor2;
+
+    const auto &C1 = G(0), &C2 = G(1), &C3 = G(2), &C4 = G(3), &C5 = G(4), &C6 = G(5);
+
+    const auto I1 = C1 + C2 + C3;
+    const auto I2 = C1 * C2 + C1 * C3 + C2 * C3 - C4 * C4 - C5 * C5 - C6 * C6;
+    const auto I3 = std::max(datum::eps, C1 * C2 * C3 + 2. * C4 * C5 * C6 - C1 * C5 * C5 - C2 * C6 * C6 - C3 * C4 * C4);
+
+    const auto J3M1 = sqrt(I3) - 1.;
+
+    const vec I2E{C2 + C3, C3 + C1, C1 + C2, -C4, -C5, -C6};
+    const vec I3E{C2 * C3 - C5 * C5, C3 * C1 - C6 * C6, C1 * C2 - C4 * C4, C5 * C6 - C3 * C4, C6 * C4 - C1 * C5, C4 * C5 - C2 * C6};
+
+    auto W1 = pow(I3, -one_three);
+    auto W2 = two_three * I1 * pow(I3, -four_three);
+    auto W3 = 2. * W1 * W1;
+    auto W4 = four_three * I2 * pow(I3, -five_three);
+    auto W5 = pow(I3, -.5);
+
+    const vec J1E = W1 * I1E - W2 * I3E;
+    const vec J2E = W3 * I2E - W4 * I3E;
+    const vec J3E = W5 * I3E;
+
+    trial_stress = A10 * J1E + A01 * J2E + K * J3M1 * J3E;
+
+    mat I3EE(6, 6, fill::zeros);
+    I3EE(1, 2) = I3EE(2, 1) = -2. * (I3EE(4, 4) = -2. * C1);
+    I3EE(0, 2) = I3EE(2, 0) = -2. * (I3EE(5, 5) = -2. * C2);
+    I3EE(0, 1) = I3EE(1, 0) = -2. * (I3EE(3, 3) = -2. * C3);
+    I3EE(2, 3) = I3EE(3, 2) = -2. * (I3EE(4, 5) = I3EE(5, 4) = 2. * C4);
+    I3EE(0, 4) = I3EE(4, 0) = -2. * (I3EE(3, 5) = I3EE(5, 3) = 2. * C5);
+    I3EE(1, 5) = I3EE(5, 1) = -2. * (I3EE(3, 4) = I3EE(4, 3) = 2. * C6);
+
+    const auto W8 = W5;
+    const auto W6 = .5 * W3;
+    W1 = two_three * W8;
+    W2 *= four_three;
+    W3 = .375 * W2;
+    W5 = two_three * W4;
+    W4 = four_three * W8;
+    const auto W7 = .75 * W5;
+    const auto W9 = .5 * W8;
+
+    const mat TA = A10 * W1 * J1E + A01 * W4 * J2E;
+    const mat TB = TA * J3E.t();
+
+    trial_stiffness = (A10 * W2 + A01 * W5 + K - K * J3M1 * W8) * J3E * J3E.t() + (K * J3M1 * W9 - A10 * W3 - A01 * W7) * I3EE + A01 * W6 * I2EE - TB - TB.t();
+
+    return SUANPAN_SUCCESS;
+}
 \end{cppcode}
 \section{Blatz--Ko Model}
 \subsection{Theory}
 \subsection{Formulation}
 \subsection{Implementation}
 \begin{cppcode}
-BlatzKo::update_trial_status
+int BlatzKo::update_trial_status(const vec& t_strain) {
+    trial_strain = t_strain;
+
+    vec G = weight % t_strain + tensor::unit_tensor2;
+
+    vec H(6);
+    H(0) = G(1) * G(2) - G(4) * G(4);
+    H(1) = G(2) * G(0) - G(5) * G(5);
+    H(2) = G(0) * G(1) - G(3) * G(3);
+    H(3) = G(4) * G(5) - G(2) * G(3);
+    H(4) = G(5) * G(3) - G(0) * G(4);
+    H(5) = G(3) * G(4) - G(1) * G(5);
+
+    const auto I3 = G(0) * H(0) + G(3) * H(3) + G(5) * H(5);
+
+    auto factor_a = pow(std::max(datum::eps, I3), -half_beta_two);
+
+    trial_stress = shear_modulus * (tensor::unit_tensor2 - factor_a * H);
+
+    G *= -(factor_a *= 2. * shear_modulus);
+
+    trial_stiffness.zeros(6, 6);
+
+    trial_stiffness(4, 4) = -.5 * (trial_stiffness(1, 2) = G(0));
+    trial_stiffness(5, 5) = -.5 * (trial_stiffness(0, 2) = G(1));
+    trial_stiffness(3, 3) = -.5 * (trial_stiffness(0, 1) = G(2));
+    trial_stiffness(4, 5) = -.5 * (trial_stiffness(2, 3) = -G(3));
+    trial_stiffness(3, 5) = -.5 * (trial_stiffness(0, 4) = -G(4));
+    trial_stiffness(3, 4) = -.5 * (trial_stiffness(1, 5) = -G(5));
+
+    factor_a *= half_beta_two / I3;
+
+    for(auto I = 0; I < 6; ++I) {
+        const auto factor_b = factor_a * H(I);
+        trial_stiffness(I, I) += factor_b * H(I);
+        for(auto J = I + 1; J < 6; ++J) trial_stiffness(J, I) = trial_stiffness(I, J) += factor_b * H(J);
+    }
+
+    return SUANPAN_SUCCESS;
+}
 \end{cppcode}
 \section{Yeoh Model}
 \subsection{Theory}
-The Yeoh's model for compressible materials is given by
+The Yeoh model for compressible materials is given by
 \begin{gather}
     W=\sum_{i=1}^nA_{0,i}\left(J_1-3\right)^i+\sum_{i=1}^nA_{1,i}\left(J_3-1\right)^{2i},
 \end{gather}
@@ -193,10 +282,88 @@ where
 \subsection{Implementation}
 Noting that the scalar derivatives can be computed independently, the following method can be used to simplify the main body of state determination.
 \begin{cppcode}
-Yeoh::compute_derivative
+vec Yeoh::compute_derivative(const double J1M3, const double J3M1) const {
+    const auto J3M12 = J3M1 * J3M1;
+
+    vec D(4, fill::zeros);
+
+    auto &DWDJ1 = D(0), &DWDJ3 = D(1), &DDWDDJ1 = D(2), &DDWDDJ3 = D(3);
+
+    auto TMP = 1., IDX = 1.;
+    for(auto X = 0llu; X < A0.n_elem; ++X) {
+        DWDJ1 += A0(X) * IDX * TMP;
+        ++IDX;
+        TMP *= J1M3;
+    }
+
+    TMP = 1.;
+    IDX = 1.;
+    for(auto X = 1llu; X < A0.n_elem; ++X) {
+        DDWDDJ1 += A0(X) * IDX * (IDX + 1.) * TMP;
+        ++IDX;
+        TMP *= J1M3;
+    }
+
+    TMP = J3M1;
+    IDX = 2.;
+    for(auto X = 0llu; X < A1.n_elem; ++X) {
+        DWDJ3 += A1(X) * IDX * TMP;
+        TMP *= J3M12;
+        IDX += 2.;
+    }
+
+    TMP = 1.;
+    IDX = 1.;
+    for(auto X = 0llu; X < A1.n_elem; ++X) {
+        DDWDDJ3 += A1(X) * IDX * (IDX + 1.) * TMP;
+        IDX += 2.;
+        TMP *= J3M12;
+    }
+
+    return D;
+}
 \end{cppcode}
 
 The state determination is straightforward.
 \begin{cppcode}
-Yeoh::update_trial_status
+int Yeoh::update_trial_status(const vec& t_strain) {
+    const vec G = weight % (trial_strain = t_strain) + tensor::unit_tensor2;
+
+    const auto &C1 = G(0), &C2 = G(1), &C3 = G(2), &C4 = G(3), &C5 = G(4), &C6 = G(5);
+
+    const auto I1 = C1 + C2 + C3;
+    const auto I3 = std::max(datum::eps, C1 * C2 * C3 + 2. * C4 * C5 * C6 - C1 * C5 * C5 - C2 * C6 * C6 - C3 * C4 * C4);
+
+    const vec I3E = 2. * vec{C2 * C3 - C5 * C5, C3 * C1 - C6 * C6, C1 * C2 - C4 * C4, C5 * C6 - C3 * C4, C6 * C4 - C1 * C5, C4 * C5 - C2 * C6};
+
+    const auto W1 = pow(I3, -one_three);
+    const auto W2 = one_three * I1 * pow(I3, -four_three);
+    const auto W5 = .5 * pow(I3, -.5);
+
+    const vec J1E = W1 * I1E - W2 * I3E;
+    const vec J3E = W5 * I3E;
+
+    const auto D = compute_derivative(I1 * W1 - 3., sqrt(I3) - 1.);
+
+    const auto &DWDJ1 = D(0), &DWDJ3 = D(1), &DDWDDJ1 = D(2), &DDWDDJ3 = D(3);
+
+    trial_stress = DWDJ1 * J1E + DWDJ3 * J3E;
+
+    mat I3EE(6, 6, fill::zeros);
+    I3EE(1, 2) = I3EE(2, 1) = -2. * (I3EE(4, 4) = -2. * C1);
+    I3EE(0, 2) = I3EE(2, 0) = -2. * (I3EE(5, 5) = -2. * C2);
+    I3EE(0, 1) = I3EE(1, 0) = -2. * (I3EE(3, 3) = -2. * C3);
+    I3EE(2, 3) = I3EE(3, 2) = -2. * (I3EE(4, 5) = I3EE(5, 4) = 2. * C4);
+    I3EE(0, 4) = I3EE(4, 0) = -2. * (I3EE(3, 5) = I3EE(5, 3) = 2. * C5);
+    I3EE(1, 5) = I3EE(5, 1) = -2. * (I3EE(3, 4) = I3EE(4, 3) = 2. * C6);
+
+    const auto P1 = 2. * four_three * W2 * DWDJ1;
+    const auto P2 = four_three * W5 * DWDJ1;
+    const auto P3 = W2 * DWDJ1;
+    const auto P4 = W5 * DWDJ3;
+
+    trial_stiffness = (P1 + DDWDDJ3 - 2. * P4) * J3E * J3E.t() + (P4 - P3) * I3EE + (DDWDDJ1 * J1E - P2 * J3E) * J1E.t() - P2 * J1E * J3E.t();
+
+    return SUANPAN_SUCCESS;
+}
 \end{cppcode}

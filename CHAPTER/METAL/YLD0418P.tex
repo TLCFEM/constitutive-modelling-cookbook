@@ -3,15 +3,15 @@ In \cite{SouzaNeto2008}, an anisotropic yield criterion called the Barlat--Lian 
 The yield criterion was further generalised \cite{Barlat2003} and extended to the 3D space \cite{Barlat2005}, which is known as the YLD2004-18P criterion since it was formulated in 2004 and has 18 parameters.
 Here, we use a slightly different notation, YLD0418P, to denote this criterion.
 \subsection{Miscellaneous Aspects}
-Before introducing the yield criterion, we shall first introduce some miscellaneous aspects to make it a complete plasticity model.
-Namely, one needs to provide the corresponding elasticity, flow rule and hardening law.
+Before introducing the yield criterion, we first discuss a few miscellaneous aspects to make it a complete plasticity model.
+Namely, one needs to specify the corresponding elasticity, flow rule, and hardening law.
 
 For elasticity, we assume either isotropic or orthotropic elasticity such that
 \begin{gather}
     \bsigma=\mb{E}\left(\bvarepsilon-\bvarepsilon^p\right),
 \end{gather}
 where $\mb{E}$ is the elastic stiffness matrix that can be either isotropic or orthotropic.
-Because in the following both matrix and tensor notations may be used, the elasticity may also be equivalently expressed in tensor notation as
+Because both matrix and tensor notations are used below, the elasticity can also be expressed equivalently in tensor notation as
 \begin{gather}
     \bsigma=\mb{D}:\left(\bvarepsilon-\bvarepsilon^p\right).
 \end{gather}
@@ -32,15 +32,15 @@ with $\mb{T}=\diag{\begin{matrix}
             1 & 1 & 1 & \dfrac{1}{2} & \dfrac{1}{2} & \dfrac{1}{2}
         \end{matrix}}$.
 Both rules are effectively identical to the ones introduced previously in \S~\ref{sec:hoffman}.
-However, since we only focus on the yield criterion in this section, we are not going to explore various alternatives.
-Nevertheless, one shall be aware of the fact that based on the framework presented here, it is relatively easy to employ more complex hardening rules.
+However, since we focus only on the yield criterion in this section, we are not going to explore various alternatives.
+Nevertheless, based on the framework presented here, it is relatively easy to employ more complex hardening rules.
 \subsection{Derivatives of Eigenvalues and Eigenvectors}\label{sec:derivative_eigen}
-Now let $\lambda_i$ be the eigenvalues of the stress tensor $\mb{\aleph}$ and $\bv_i$ be the corresponding normalized eigenvectors, one has
+Now let $\lambda_i$ be the eigenvalues of the stress tensor $\mb{\aleph}$ and $\bv_i$ the corresponding normalized eigenvectors. Then,
 \begin{gather}\label{eq:eigenvalue_def}
     \lambda_i=\underbrace{\bv_i^\mT\mb{\aleph}\bv_i}_{\text{vector/matrix}}=\underbrace{\bv_i\cdot\mb{\aleph}\cdot\bv_i}_{\text{tensor contraction}}=\underbrace{\left(\bv_i\otimes\bv_i\right):\mb{\aleph}}_{\text{tensor contraction}},\qquad
     \mb{\aleph}=\sum_{i}\lambda_i\bv_i\otimes\bv_i.
 \end{gather}
-The first attribute to note is that since $\bv_i$ is normalized, viz., $\bv_i\cdot\bv_i=1$, then
+The first point to note is that since $\bv_i$ is normalized, viz., $\bv_i\cdot\bv_i=1$, then
 \begin{gather}
     \md{\left(\bv_i\cdot\bv_i\right)}=\md{\bv_i}\cdot\bv_i+\bv_i\cdot\md{\bv_i}=2\bv_i\cdot\md{\bv_i}=\md{1}=0\qquad\longrightarrow\qquad\bv_i\cdot\md{\bv_i}=0.
 \end{gather}
@@ -65,7 +65,7 @@ In matrix form,
     \lambda_i=\underbrace{\mb{P}_{ii}}_{1\times6}\underbrace{\mb{\aleph}}_{6\times1},\qquad
     \md{\lambda_i}=\underbrace{\mb{P}_{ii}}_{1\times6}\underbrace{\md{\mb{\aleph}}}_{6\times1}.
 \end{gather}
-Note the double contraction is embedded in $\mb{P}_{ii}$, thus, the explicit matrix form of $\mb{P}_{ii}$ shall contain the corresponding scaling factor, which shall be
+Note that the double contraction is embedded in $\mb{P}_{ii}$; thus, the explicit matrix form of $\mb{P}_{ii}$ should contain the corresponding scaling factor, which is
 \begin{gather}
     \lambda_i=\underbrace{\mb{P}_{ii}}_{1\times6}\underbrace{\mb{\aleph}}_{6\times1}=\begin{bmatrix}
         \bv_{i,1}^2 & \bv_{i,2}^2 & \bv_{i,3}^2 & 2\bv_{i,1}\bv_{i,2} & 2\bv_{i,2}\bv_{i,3} & 2\bv_{i,3}\bv_{i,1}
@@ -83,7 +83,7 @@ One can also keep both the Voigt representation and the double contraction by de
 \end{gather}
 Such a mixed notation may appear to be a bit confusing, but it is actually quite useful in practice.
 
-For $\md{\bv_i}$ itself, it can be derived, see \cite{Wu2006} and the references therein, and explicitly expressed as
+For $\md{\bv_i}$ itself, one can derive the following expression; see \cite{Wu2006} and the references therein:
 \begin{gather}\label{eq:eigenvector_diff_def}
     \md{\bv_i}=\sum_{j=1,i\neq{}j}^3\dfrac{\mb{P}_{ij}:\md{\mb{\aleph}}}{\lambda_i-\lambda_j}\bv_j
 \end{gather}
@@ -99,9 +99,9 @@ Since $\bv_i\cdot\bv_j=\delta_{ij}$, indeed $\md{\bv_i}\cdot\bv_i=0$.
 It is assumed that $\lambda_i\neq\lambda_j$, that is, the eigenvalues are distinct.
 For degenerate cases, the above expression is \textbf{not} valid.
 But is it actually a problem?
-In practice, it's likely that the algorithm used to perform eigen analysis is iterative, exactly identical eigenvalues are not likely to be obtained.
-This is also guaranteed by the fact that $\mb{\aleph}$ are transformed tensors.
-Unless carefully designed, to obtain very close eigenvalues is practically difficult, let alone exactly identical eigenvalues.
+In practice, the algorithm used to perform eigenanalysis is likely iterative, so exactly identical eigenvalues are unlikely to be obtained.
+This is also supported by the fact that $\mb{\aleph}$ are transformed tensors.
+Unless carefully designed, obtaining very close eigenvalues is practically difficult, let alone exactly identical eigenvalues.
 We will revisit this issue later.
 \subsection{Yield Function}\label{sec:yld0418p_yield_function}
 The YLD0418P yield criterion is expressed as a function of a set of \textbf{transformed} stress tensors, that is, in its most general form,
@@ -125,13 +125,13 @@ where $\mb{\aleph}$ is the transformed stress tensor (any of $\balpha$, $\bbeta$
                               &                       &                       &                      &                      & C^{\mb{\aleph}}_{66}
     \end{bmatrix}.
 \end{gather}
-As mainly discussed in \cite{Barlat2005}, the YLD0418P yield function only focus on two of those transformed stress tensors, namely $\balpha$ and $\bbeta$.
+As mainly discussed in \cite{Barlat2005}, the YLD0418P yield function only focuses on two of those transformed stress tensors, namely $\balpha$ and $\bbeta$.
 Let $\alpha_i$ and $\beta_i$ ($i\in\{1,2\}$ for 2D and $i\in\{1,2,3\}$ for 3D) be the principal values of $\balpha$ and $\bbeta$, viz., the eigenvalues of the corresponding tensors.
 In 3D stress space, the yield function is then expressed as
 \begin{gather}\label{eq:yld0418p_yield_function}
     f=\sum_{i=1,j=1}^3\abs{\alpha_i-\beta_j}^m-4\sigma_y^m.
 \end{gather}
-In above, the exponent $m$ is a model parameter that controls the shape of the yield surface.
+In the above expression, the exponent $m$ is a model parameter that controls the shape of the yield surface.
 One can spot a few interesting features of \eqsref{eq:yld0418p_yield_function}.
 \begin{enumerate}
     \item The shape is controlled by principal stresses.
@@ -140,13 +140,13 @@ One can spot a few interesting features of \eqsref{eq:yld0418p_yield_function}.
     \item Noting that $\bs$ is a deviatoric stress tensor, thus the yield function is hydrostatic pressure independent. However, $\balpha$ and $\bbeta$ may or may not be deviatoric --- depending on the transformation matrices.
 \end{enumerate}
 
-It is important to also notice that $f$ has a unit of that of stress.
-Considering that $m$ could be potentially (very) large, up to \num{40} or so, to avoid numerical issues, we use the following revision in this section.
+It is also important to note that $f$ has the same unit as stress.
+Considering that $m$ could be potentially (very) large, up to \num{40} or so, we use the following revision in this section to avoid numerical issues.
 \begin{gather}\label{eq:yld0418p_yield_function_normalized}
     f=\sum_{i=1}^3\sum_{j=1}^3\abs{\dfrac{\alpha_i-\beta_j}{\sigma_\text{ref}}}^m-4\sigma_y^m,
 \end{gather}
 where $\sigma_\text{ref}$ is a reference stress.
-As a result, $\sigma_y$ shall be dimensionless and evaluates to unity for zero plastic strain.
+As a result, $\sigma_y$ becomes dimensionless and evaluates to unity for zero plastic strain.
 
 It is necessary to derive the gradients of $f$ in order to implement the plasticity model.
 Using the chain rule, by denoting $\Delta_{ij}=\dfrac{\alpha_i-\beta_j}{\sigma_\text{ref}}$, it is straightforward to derive the following.
@@ -161,15 +161,15 @@ and the second order derivatives
     \pdfrac{^2f}{\alpha_i\partial\beta_j}=-\dfrac{m\left(m-1\right)}{\sigma_\text{ref}^2}\abs{\Delta_{ij}}^{m-2}.
 \end{gather}
 
-We have prepared all necessary ingredients to compute the full derivatives of (the summation term of) the yield function in the previous sections.
+We have now prepared all the ingredients needed to compute the full derivatives of the summation term of the yield function.
 \begin{gather}
     \begin{split}
         \pdfrac{f}{\bs} & =\sum_{i=1}^{3}\pdfrac{f}{\alpha_i}\ddfrac{\alpha_i}{\balpha}:\ddfrac{\balpha}{\bs}+\sum_{i=1}^{3}\pdfrac{f}{\beta_i}\ddfrac{\beta_i}{\bbeta}:\ddfrac{\bbeta}{\bs} \\
                         & =\sum_{i=1}^{3}\pdfrac{f}{\alpha_i}\mb{P}_{ii}^{\balpha}:\mb{C}_{\balpha}+\sum_{i=1}^{3}\pdfrac{f}{\beta_i}\mb{P}_{ii}^{\bbeta}:\mb{C}_{\bbeta}.
     \end{split}
 \end{gather}
-Note that in the above we only consider the contribution of the summation term, while the contribution of $\sigma_y$ is not included.
-This is also the reason why we use partial derivative notation in the above expression.
+Note that in the above we only consider the contribution of the summation term, while the contribution of $\sigma_y$ is excluded.
+This is also why we use partial derivative notation in the above expression.
 It is possible to rewrite the above expression in a more compact form, using the following notation.
 \begin{gather}
     \pdfrac{f}{\balpha}=\underbrace{\begin{bmatrix}
@@ -187,7 +187,7 @@ Thus,
 \begin{gather}
     \pdfrac{f}{\bs}=\pdfrac{f}{\balpha}:\mb{C}_{\balpha}+\pdfrac{f}{\bbeta}:\mb{C}_{\bbeta}.
 \end{gather}
-One shall be aware of the fact that in the above expression, double contraction stemming from tensor operations is required between quantities expressed in matrix form.
+One should be aware that in the above expression, double contraction stemming from tensor operations is required between quantities expressed in matrix form.
 In explicit matrix form, (the transpose of) the above can be expressed as a column vector
 \begin{gather}
     \underbrace{\pdfrac{f}{\bs}}_{6\times1}=\sum_{\mb{\aleph}\in\{\balpha,\bbeta\}}\mb{C}_{\mb{\aleph}}^\mT\underbrace{\begin{bmatrix}
@@ -258,14 +258,14 @@ When $\alpha_i\approx\alpha_j$, the fraction essentially approximates the second
 \end{gather}
 To account for symmetry, it is possible to use $\pdfrac{^2f}{\aleph_i^2}\Big|_{\aleph_j}+\pdfrac{^2f}{\aleph_j^2}\Big|_{\aleph_i}$ to approximate it.
 
-Finally, it must be pointed out that the above derivation, without loss of generality, can be applied to 2D cases \cite{Barlat2003} with minor modifications.
+Finally, it must be pointed out that the above derivation can, without loss of generality, be applied to 2D cases \cite{Barlat2003} with minor modifications.
 
-For computing derivatives of eigenvalues and eigenvectors alone, we have used tensor algebra.
-Combined with the yield function, we have also employed matrix algebra.
-Thus the above expressions are a mixture of both notations.
-One shall apply appropriate scaling matrices when necessary.
+For computing derivatives of eigenvalues and eigenvectors alone, we use tensor algebra.
+When combined with the yield function, we also employ matrix algebra.
+Thus, the above expressions are a mixture of both notations.
+One should apply appropriate scaling matrices when necessary.
 \subsection{Formulation}
-The expressions are summarised in the following table.
+The main expressions are summarised in the following table.
 \begin{table}[H]
     \centering
     \begin{tabular}{rl}
@@ -277,19 +277,19 @@ The expressions are summarised in the following table.
     \end{tabular}
 \end{table}
 \subsubsection{Local System}
-It is very important to note that since the yield function $f$ is defined in the deviatoric stress space, it is \textbf{not} possible to take $\bsigma$ as an independent variable as done in the previous orthotropic model.
-This is reasonable as it is \textbf{not} possible to determine $\bsigma$ from $\bs$ as the spherical part remains unknown.
-Thus, the local variable is taken as $\mb{x}=\underbrace{\begin{bmatrix}\gamma&\bs\end{bmatrix}^\mT}_{7\times1}$, the local system consists of two residuals.
+It is very important to note that since the yield function $f$ is defined in the deviatoric stress space, it is \textbf{not} possible to take $\bsigma$ as an independent variable, as was done in the previous orthotropic model.
+This is reasonable, as it is \textbf{not} possible to determine $\bsigma$ from $\bs$ while the spherical part remains unknown.
+Thus, the local variable is taken as $\mb{x}=\underbrace{\begin{bmatrix}\gamma&\bs\end{bmatrix}^\mT}_{7\times1}$. The local system consists of two residuals.
 \begin{gather}
     \mb{R}=\left\{\begin{array}{l}\displaystyle
         \sum_{i=1}^3\sum_{j=1}^3\abs{\alpha_i-\beta_j}^m-4\sigma_y^m, \\[4mm]
         \bs+\mb{E}\bn\gamma-\bs^\text{trial}.
     \end{array}\right.
 \end{gather}
-Due to the fact that the yield function is expressed in the deviatoric stress space, the associated plastic flow direction $\bn$ is also deviatoric.
-This makes the plastic strain increment, thus $\mb{E}\bn\gamma$, deviatoric as well.
+Because the yield function is expressed in the deviatoric stress space, the associated plastic flow direction $\bn$ is also deviatoric.
+This makes the plastic strain increment, and thus $\mb{E}\bn\gamma$, deviatoric as well.
 There is no need to take extra steps to compute the deviatoric part of $\mb{E}$ in the second residual.
-Furthermore, only when the material is isotropic, the second residual can be simplified as $\bs+2G\bn\gamma-\bs^\text{trial}$ given that $\bn$ is deviatoric.
+Furthermore, only when the material is isotropic can the second residual be simplified as $\bs+2G\bn\gamma-\bs^\text{trial}$, given that $\bn$ is deviatoric.
 For orthotropic materials, there is no concise way to simplify it anymore.
 The Jacobian is thus
 \begin{gather}
@@ -352,10 +352,10 @@ then
 \end{gather}
 The above expression is in pure matrix form.
 \subsection{Kinematic Hardening Extension}
-Common orthotropic materials such as timber, bones, etc., do not exhibit kinematic hardening, this is the reason that kinematic hardening was not introduced in the previous sections.
+Common orthotropic materials such as timber and bone do not exhibit kinematic hardening. This is why kinematic hardening was not introduced in the previous sections.
 However, as the YLD0418P yield criterion is widely used in the context of sheet metals, extending the model to include kinematic hardening is meaningful.
 
-With the introduction of the back stress $\ba$, the corresponding shifted stress shall be defined as the difference between $\bs$ and $\ba$ as
+With the introduction of the back stress $\ba$, the corresponding shifted stress is defined as the difference between $\bs$ and $\ba$ as
 \begin{gather}
     \beeta=\bs-\ba.
 \end{gather}
@@ -363,7 +363,7 @@ The evolution of $\ba$ can be defined as
 \begin{gather}
     \dot{\ba}=k_r\left(\sqrt{\dfrac{2}{3}}k_b\dfrac{\bn}{\norm{\bn}}-\ba\right)\gamma=k_r\left(\sqrt{\dfrac{2}{3}}k_b\bu-\ba\right)\gamma.
 \end{gather}
-It is very important to point out that the above definition is isotropic, whether it is appropriate with an anisotropic yield criterion remains to be investigated.
+It is very important to point out that the above definition is isotropic; whether it is appropriate for an anisotropic yield criterion remains to be investigated.
 
 Expressing the above evolution rule in its discretised form using the implicit Euler method, one has
 \begin{gather}
@@ -387,10 +387,10 @@ The term $\pdfrac{\bu}{\bs}$ can be explicitly derived using the chain rule,
 \begin{gather}
     \pdfrac{\bu}{\bs}=\pdfrac{\bu}{\bn}:\pdfrac{\bn}{\bs}=\dfrac{1}{\norm{\bn}}\left(\mathbb{I}-\bu\otimes\bu\right):\mathbb{I}^\text{dev}:\pdfrac{^2f}{\bs^2}.
 \end{gather}
-One must pay extra attention to two double contractions in the above expression, are they identical?
+One must pay extra attention to the two double contractions in the above expression: are they identical?
 Interested readers are encouraged to verify this by explicitly writing down the matrix form of the above expression.
 
-With the presence of $\ba$, one shall see that now
+With the presence of $\ba$, one can see that now
 \begin{gather}
     \mb{\aleph}=\mb{C_\aleph}\beeta,
 \end{gather}
@@ -424,30 +424,232 @@ The Jacobian is thus
             \sqrt{\dfrac{2}{3}}k_rk_b\bu-k_r\ba                           & \gamma\sqrt{\dfrac{2}{3}}k_rk_b\pdfrac{\bu}{\bs}             & \gamma\sqrt{\dfrac{2}{3}}k_rk_b\pdfrac{\bu}{\ba}-\left(1+\gamma{}k_r\right)\mb{I}
         \end{bmatrix}}_{13\times13}.
 \end{gather}
-In which the following is used,
+Here, the following is used,
 \begin{gather}
     \pdfrac{R_f}{\bs}=\pdfrac{f}{\bs}-4m\sigma_y^{m-1}\ddfrac{\sigma_y}{\varepsilon^p}\gamma\ddfrac{\norm{\bn}_e}{\bn}:\mathbb{I}^\text{dev}:\pdfrac{^2f}{\bs^2}.
 \end{gather}
 
-As a practice, please derive the consistent tangent stiffness following a similar approach used in the previous section.
+As an exercise, please derive the consistent tangent stiffness following an approach similar to that used in the previous section.
 \subsection{Implementation}
 The following method computes the yield function and its corresponding derivatives/gradients.
 \begin{cppcode}
-    YLD0418P::compute_yield_surface
+YLD0418P::yield_t YLD0418P::compute_yield_surface(const vec3& psa, const mat33& pva, const vec3& psb, const mat33& pvb) const {
+    auto f{0.};
+
+    vec3 pfpa(fill::zeros), pfpb(fill::zeros), pfpaa(fill::zeros), pfpbb(fill::zeros);
+    mat33 pfpab(fill::none);
+
+    for(auto i = 0u; i < 3u; ++i)
+        for(auto j = 0u; j < 3u; ++j) {
+            const auto diff = (psa(i) - psb(j)) / ref_stress;
+            const auto pow_diff = std::pow(std::max(datum::eps, std::fabs(diff)), exponent - 2.);
+            f += pow_diff * diff * diff;
+            pfpa(i) += pow_diff * diff;
+            pfpb(j) -= pow_diff * diff;
+            pfpaa(i) += pow_diff;
+            pfpbb(j) += pow_diff;
+            pfpab(i, j) = -pow_diff;
+        }
+
+    auto factor = exponent / ref_stress;
+
+    pfpa *= factor;
+    pfpb *= factor;
+
+    factor *= (exponent - 1.) / ref_stress;
+
+    pfpaa *= factor;
+    pfpbb *= factor;
+    pfpab *= factor;
+
+    const mat66 proj_a = transform::eigen_to_tensor_base(pva).t() * C1;
+    const mat66 proj_b = transform::eigen_to_tensor_base(pvb).t() * C2;
+
+    const auto trans_a = proj_a.head_rows(3); // 3x6
+    const auto trans_b = proj_b.head_rows(3); // 3x6
+
+    const mat66 pfpmix = trans_a.t() * pfpab * trans_b;
+
+    const auto kernel = [](const vec3& ps, const vec3& pfp, const vec3& pfpp) {
+        const auto item = [&](const unsigned i, const unsigned j) {
+            const auto fraction = 2. * (pfp(i) - pfp(j)) / (ps(i) - ps(j));
+            return std::isfinite(fraction) ? fraction : pfpp(i) + pfpp(j);
+        };
+
+        return vec3{item(0, 1), item(1, 2), item(2, 0)};
+    };
+
+    return {f, trans_a.t() * pfpa + trans_b.t() * pfpb, proj_a.t() * diagmat(join_cols(pfpaa, kernel(psa, pfpa, pfpaa))) * proj_a + proj_b.t() * diagmat(join_cols(pfpbb, kernel(psb, pfpb, pfpbb))) * proj_b + pfpmix + pfpmix.t()};
+}
 \end{cppcode}
 
-The local returning mapping further uses two algorithms depending on whether kinematic hardening is used.
+The local return mapping further uses two algorithms depending on whether kinematic hardening is used.
 \begin{cppcode}
-    YLD0418P::update_trial_status
+int YLD0418P::update_trial_status(const vec& t_strain) {
+    if(tensor::strain::norm(incre_strain = (trial_strain = t_strain) - current_strain) <= datum::eps) return SUANPAN_SUCCESS;
+
+    return kin.active ? with_kinematic() : without_kinematic();
+}
 \end{cppcode}
 
 With kinematic hardening enabled, the local system has a size of \num{13}.
 \begin{cppcode}
-    YLD0418P::with_kinematic
+int YLD0418P::with_kinematic() {
+    trial_history = current_history;
+    const auto& current_ep = current_history(0);
+    auto& ep = trial_history(0);
+    vec plastic_strain(&trial_history(1), 6, false, true);
+    const vec current_back(&current_history(7), 6, false, true);
+    vec back(&trial_history(7), 6, false, true);
+
+    const auto kin_rb = root_two_third * kin.rate * kin.bound;
+
+    const vec6 trial_dev_s = tensor::dev(trial_stress = (trial_stiffness = initial_stiffness) * (trial_strain - plastic_strain));
+
+    auto gamma{0.}, ref_error{0.};
+    auto dev_s = trial_dev_s;
+
+    vec::fixed<13> incre(fill::none), residual(fill::none);
+    mat::fixed<13, 13> jacobian(fill::none);
+
+    auto counter{0u};
+    while(true) {
+        if(max_iteration == ++counter) {
+            suanpan_error("Cannot converge within {} iterations.\n", max_iteration);
+            return SUANPAN_FAIL;
+        }
+
+        const vec6 shifted = dev_s - back;
+
+        vec3 psa, psb;  // 3 eigenvalues
+        mat33 pva, pvb; // 3x3 eigenvectors
+        // !!! using strain version due to additional shear factors combined into transformation matrices
+        if(!eig_sym(psa, pva, tensor::strain::to_tensor(C1 * shifted), "std")) return SUANPAN_FAIL;
+        // !!! using strain version due to additional shear factors combined into transformation matrices
+        if(!eig_sym(psb, pvb, tensor::strain::to_tensor(C2 * shifted), "std")) return SUANPAN_FAIL;
+
+        auto [f, pfps, pfpss] = compute_yield_surface(psa, pva, psb, pvb);
+        const vec6 n = tensor::dev(pfps); // associated plastic flow direction
+        const auto norm_n = root_two_third * tensor::strain::norm(n);
+        const vec6 u = root_two_third / norm_n * n;
+        const auto [k, dk] = compute_hardening(ep = current_ep + gamma * norm_n);
+
+        residual(sa) = f - 4. * std::pow(k, exponent);
+
+        if(1u == counter && residual(sa) < 0.) return SUANPAN_SUCCESS;
+
+        const auto pk = -4. * exponent * std::pow(k, exponent - 1.) * dk;
+        const vec6 en = initial_stiffness * n;
+        const rowvec6 scaled_u = (u % tensor::strain::norm_weight).t();
+
+        residual(sb) = dev_s + en * gamma - trial_dev_s;
+        residual(sc) = current_back + gamma * kin_rb * u - (1. + gamma * kin.rate) * back;
+
+        jacobian(sa, sa) = pk * norm_n;
+        jacobian(sa, sb) = pfps.t() + pk * root_two_third * scaled_u * (pfpss *= gamma);
+        jacobian(sa, sc) = -jacobian(sa, sb);
+        jacobian(sb, sa) = en;
+        jacobian(sb, sc) = -dev_ini_stiffness * pfpss;
+        jacobian(sb, sb) = eye(6, 6) - jacobian(sb, sc);
+        jacobian(sc, sa) = kin_rb * u - kin.rate * back;
+        jacobian(sc, sb) = kin_rb * root_two_third / norm_n * (unit_dev_tensor - u * scaled_u) * pfpss;
+        jacobian(sc, sc) = (-1. - gamma * kin.rate) * eye(6, 6) - jacobian(sc, sb);
+
+        if(!solve(incre, jacobian, residual, solve_opts::equilibrate)) return SUANPAN_FAIL;
+
+        const auto error = suanpan::inf_norm(incre);
+        if(1u == counter) ref_error = error;
+        suanpan_debug("Local plasticity iteration error: {:.5E}.\n", error);
+        if(error < tolerance * ref_error || ((error < tolerance || suanpan::inf_norm(residual) < tolerance) && counter > 5u)) {
+            plastic_strain += n * gamma;
+
+            trial_stress -= en * gamma;
+
+            mat::fixed<13, 6> right(fill::zeros);
+            right.rows(sb) = dev_ini_stiffness;
+
+            trial_stiffness -= dev_ini_stiffness * join_rows(pfps, pfpss, -pfpss) * solve(jacobian, right, solve_opts::equilibrate);
+
+            return SUANPAN_SUCCESS;
+        }
+
+        gamma = std::max(0., gamma - incre(sa));
+        dev_s -= incre(sb);
+        back -= incre(sc);
+    }
+}
 \end{cppcode}
 
-With kinematic hardening disabled, the local system has a size of \num{7}.
-This makes the Jacobian \SI{70}{\percent} smaller compared to the one with kinematic hardening.
+With kinematic hardening disabled, the local system has size \num{7}.
+This makes the Jacobian \SI{70}{\percent} smaller than the one with kinematic hardening.
 \begin{cppcode}
-    YLD0418P::without_kinematic
+int YLD0418P::without_kinematic() {
+    trial_history = current_history;
+    const auto& current_ep = current_history(0);
+    auto& ep = trial_history(0);
+    vec plastic_strain(&trial_history(1), 6, false, true);
+
+    const vec6 trial_dev_s = tensor::dev(trial_stress = (trial_stiffness = initial_stiffness) * (trial_strain - plastic_strain));
+
+    auto gamma{0.}, ref_error{0.};
+    auto dev_s = trial_dev_s;
+
+    vec7 incre(fill::none), residual(fill::none);
+    mat77 jacobian(fill::none);
+
+    auto counter{0u};
+    while(true) {
+        if(max_iteration == ++counter) {
+            suanpan_error("Cannot converge within {} iterations.\n", max_iteration);
+            return SUANPAN_FAIL;
+        }
+
+        vec3 psa, psb;  // 3 eigenvalues
+        mat33 pva, pvb; // 3x3 eigenvectors
+        // !!! using strain version due to additional shear factors combined into transformation matrices
+        if(!eig_sym(psa, pva, tensor::strain::to_tensor(C1 * dev_s), "std")) return SUANPAN_FAIL;
+        // !!! using strain version due to additional shear factors combined into transformation matrices
+        if(!eig_sym(psb, pvb, tensor::strain::to_tensor(C2 * dev_s), "std")) return SUANPAN_FAIL;
+
+        auto [f, pfps, pfpss] = compute_yield_surface(psa, pva, psb, pvb);
+        const vec6 n = tensor::dev(pfps); // associated plastic flow direction
+        const auto norm_n = root_two_third * tensor::strain::norm(n);
+        const auto [k, dk] = compute_hardening(ep = current_ep + gamma * norm_n);
+
+        residual(sa) = f - 4. * std::pow(k, exponent);
+
+        if(1u == counter && residual(sa) < 0.) return SUANPAN_SUCCESS;
+
+        const auto pk = -4. * exponent * std::pow(k, exponent - 1.) * dk;
+        const vec6 en = initial_stiffness * n;
+
+        residual(sb) = dev_s + en * gamma - trial_dev_s;
+
+        jacobian(sa, sa) = pk * norm_n;
+        jacobian(sa, sb) = pfps.t() + pk * two_third / norm_n * (n % tensor::strain::norm_weight).t() * (pfpss *= gamma);
+        jacobian(sb, sa) = en;
+        jacobian(sb, sb) = eye(6, 6) + dev_ini_stiffness * pfpss;
+
+        if(!solve(incre, jacobian, residual, solve_opts::equilibrate)) return SUANPAN_FAIL;
+
+        const auto error = suanpan::inf_norm(incre);
+        if(1u == counter) ref_error = error;
+        suanpan_debug("Local plasticity iteration error: {:.5E}.\n", error);
+        if(error < tolerance * ref_error || ((error < tolerance || suanpan::inf_norm(residual) < tolerance) && counter > 5u)) {
+            plastic_strain += n * gamma;
+
+            trial_stress -= en * gamma;
+
+            mat::fixed<7, 6> right(fill::zeros);
+            right.rows(sb) = dev_ini_stiffness;
+
+            trial_stiffness -= dev_ini_stiffness * join_rows(pfps, pfpss) * solve(jacobian, right, solve_opts::equilibrate);
+
+            return SUANPAN_SUCCESS;
+        }
+
+        gamma = std::max(0., gamma - incre(sa));
+        dev_s -= incre(sb);
+    }
+}
 \end{cppcode}
