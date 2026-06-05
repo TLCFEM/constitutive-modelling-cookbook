@@ -368,66 +368,7 @@ Depending on the stress update used in \eqsref{eq:j2_tsigma}, the history of $\b
 \subsection{Closing Remarks}
 As the first 3D material model introduced, the von Mises framework allows beginners to become familiar with multiaxial constitutive modelling with a relatively smooth learning curve. The formulation is expressed in tensor notation. Readers are strongly encouraged to derive the formulation independently from the three governing equations in both tensor and compressed matrix notations. It is good practice to get every small detail correct.
 \begin{cppcode}
-int NonlinearJ2::update_trial_status(const vec& t_strain) {
-    incre_strain = (trial_strain = t_strain) - current_strain;
-
-    if(norm(incre_strain) <= datum::eps) return SUANPAN_SUCCESS;
-
-    trial_stress = current_stress + (trial_stiffness = initial_stiffness) * incre_strain;
-
-    trial_history = current_history;
-    auto& plastic_strain = trial_history(0);
-    vec back_stress(&trial_history(1), 6, false, true);
-
-    const vec rel_stress = tensor::dev(trial_stress) - back_stress;
-    const auto norm_rel_stress = tensor::stress::norm(rel_stress);
-
-    double k, dk;
-
-    auto update_isotropic_hardening = [&] {
-        k = compute_k(plastic_strain);
-        dk = 0.;
-        k < 0. ? k = 0. : dk = compute_dk(plastic_strain);
-    };
-
-    update_isotropic_hardening();
-
-    auto yield_func = norm_rel_stress - root_two_third * k;
-
-    if(yield_func <= 0.) return SUANPAN_SUCCESS;
-
-    const auto current_h = compute_h(plastic_strain);
-    auto gamma = 0., incre_h = 0.;
-    double denom;
-    auto counter = 0u;
-    auto ref_error = 1.;
-    while(true) {
-        if(max_iteration == ++counter) {
-            suanpan_error("Cannot converge within {} iterations.\n", max_iteration);
-            return SUANPAN_FAIL;
-        }
-
-        denom = double_shear + two_third * (dk + compute_dh(plastic_strain));
-        const auto incre_gamma = yield_func / denom;
-        const auto error = std::fabs(incre_gamma);
-        if(1u == counter) ref_error = error;
-        suanpan_debug("Local iteration error: {:.5E}.\n", error);
-        if(error < tolerance * ref_error || ((error < tolerance || std::fabs(yield_func) < tolerance) && counter > 5u)) break;
-        incre_h = compute_h(plastic_strain = current_history(0) + root_two_third * (gamma += incre_gamma)) - current_h;
-        update_isotropic_hardening();
-        yield_func = norm_rel_stress - double_shear * gamma - root_two_third * (k + incre_h);
-    }
-
-    back_stress += root_two_third * incre_h / norm_rel_stress * rel_stress;
-
-    auto t_factor = double_shear * gamma / norm_rel_stress;
-    trial_stress -= t_factor * rel_stress;
-
-    t_factor *= double_shear;
-    trial_stiffness += (t_factor - square_double_shear / denom) / norm_rel_stress / norm_rel_stress * rel_stress * rel_stress.t() - t_factor * unit_dev_tensor;
-
-    return SUANPAN_SUCCESS;
-}
+NonlinearJ2::update_trial_status
 \end{cppcode}
 
 Finally, in \eqsref{eq:j2_flow}, we have discussed that the same expression
