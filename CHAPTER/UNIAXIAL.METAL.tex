@@ -240,10 +240,10 @@ The state determination algorithm resembles the previous one for isotropic harde
 \EndIf
 \end{algorithmic}
 \end{breakablealgorithm}
-\section{Armstrong--Fredrick Hardening Model}
+\section{Armstrong--Frederick Hardening Model}
 So far, two simple models have been introduced. The linear isotropic/kinematic hardening law is adopted so that the local residual is a linear function which can be solved within one step. However, linear hardening has limited applications.
 
-To allow more versatile applications, in this section, a metal model incorporating Armstrong--Fredrick type kinematic hardening \cite{Frederick2007} and Voce type isotropic hardening \cite{Voce1955} is introduced. Both hardening types are nonlinear.
+To allow more versatile applications, in this section, a metal model incorporating Armstrong--Frederick type kinematic hardening \cite{Frederick2007} and Voce type isotropic hardening \cite{Voce1955} is introduced. Both hardening types are nonlinear.
 \subsection{Theory}
 \subsubsection{Yield Function and Flow Rule}
 The same yield function and flow rule used in the previous combined isotropic/kinematic hardening model are adopted.
@@ -285,7 +285,7 @@ An equivalent form would be
 \sigma^y=\sigma^i+Kq+\sum_{j=1}^{n}\sigma^s_j\left(1-e^{-m^s_jq}\right).
 \end{gather}
 \paragraph{Kinematic Hardening}
-A multiplicative formulation \cite{Chaboche1989} for back stress is adopted with the Armstrong--Fredrick type hardening rule. The back stress is defined to be the summation of several back stresses that evolve independently with different rates. That is,
+A multiplicative formulation \cite{Chaboche1989} for back stress is adopted with the Armstrong--Frederick type hardening rule. The back stress is defined to be the summation of several back stresses that evolve independently with different rates. That is,
 \begin{gather}
 \alpha=\sum_{i=1}^n\alpha_i
 \end{gather}
@@ -451,8 +451,8 @@ The state determination algorithm of this AF model is given in \algoref{algo:af_
 So far it is clear that for both simple and complex models, the structure of state determination algorithm remains more or less the same. The core formulation only differs due to different yield function, flow rule and hardening law. Nevertheless, some simplifications are often possible.
 
 We will present the C++ implementation after the enhancement introduced in the coming section.
-\section{Armstrong--Fredrick with Strain Memory}
-The discussed Armstrong--Fredrick model allows a versatile modelling of kinematic hardening.
+\section{Armstrong--Frederick with Strain Memory}
+The discussed Armstrong--Frederick model allows a versatile modelling of kinematic hardening.
 However, it is noticed in many experiments that the magnitude of isotropic hardening gradually decreases with increasing number of cycles --- even if cycles with fixed strain range.
 To better model such a behaviour, \cite{Ohno1982} introduced the concept of non-hardening strain region.
 It is a region that characterises a neighbourhood of a finite size around the current plastic strain. Just like the isotropic hardening of stress, the size of this region grows with the development of plastic strain.
@@ -613,7 +613,7 @@ The increment of plastic strain is defined to be a portion of the increment of t
 \abs{\dfrac{\sigma-K\varepsilon^p}{\sigma_y^-}}^{\alpha^-}\dot{\varepsilon}.&\text{compression evolution}
 \end{array}\right.
 \end{gather}
-The term $K\varepsilon^p$ defines the linear hardening, which serves as a baseline, given than yield stress $\sigma_y^+$ ($\sigma_y^-)$ defines the boundary, the fraction is always smaller than unity.
+The term $K\varepsilon^p$ defines the linear hardening, which serves as a baseline, given that the yield stress $\sigma_y^+$ ($\sigma_y^-)$ defines the boundary, the fraction is always smaller than unity.
 \subsubsection{Hardening Law}
 The yield stress follows a Voce type rule.
 \begin{gather}
@@ -715,7 +715,7 @@ The CPP implementation of the state determination algorithm is shown as follows.
 SteelBRB::update_trial_status
 \end{cppcode}
 \section{VAFCRP1D}
-Finally, an extension of Armstrong--Fredrick model is presented to close this chapter. A 3D version will be introduced later.
+Finally, an extension of Armstrong--Frederick model is presented to close this chapter. A 3D version will be introduced later.
 \subsection{Theory}
 \subsubsection{Yield Function}
 A von Mises yielding function is used.
