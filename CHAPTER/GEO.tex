@@ -1,7 +1,7 @@
 \chapter{Geomaterial}
-In geotechnical engineering, the compression-positive convention is used in the existing literature. This brings some convenience to geotechnical engineering specific applications but conflicts with the common convention adopted in continuum mechanics (tension positive).
+In geotechnical engineering, the existing literature commonly uses the compression-positive convention. This is convenient for geotechnical-specific applications, but it conflicts with the convention commonly adopted in continuum mechanics, where tension is positive.
 
-To be consistent with other models, in this chapter the continuum mechanics convention is adopted. Thus the formulations presented here may differ from what readers can find in other literature.
+To remain consistent with the other models in this book, this chapter adopts the continuum-mechanics convention. As a result, the formulations presented here may differ from those found in the geotechnical literature.
 \section{Drucker--Prager Model}
 The Drucker--Prager model is a simple model that resembles the J2 model and can be used in simple preliminary stability/capacity analysis.
 \subsection{Theory}
@@ -11,7 +11,7 @@ f=\sqrt{J_2}+\eta{}p-\xi{}c,
 \end{gather}
 where $J_2=\dfrac{1}{2}\bs:\bs$ is the J2 invariant of the deviatoric stress tensor $\bs$, $p=\dfrac{1}{3}\tr{\bsigma}$ is the hydrostatic stress, $\eta$ and $\xi$ are two model parameters which can be adjusted to match different shapes, $c$ is the cohesion.
 \subsubsection{Flow Rule}
-The plastic potential possesses a form that resembles the yield function.
+The plastic potential has a form that resembles the yield function.
 \begin{gather}
 g=\sqrt{J_2}+\bar{\eta}p.
 \end{gather}
@@ -29,7 +29,7 @@ Then the cohesion can be defined as a function of $\alpha$.
 c=c\left(\alpha\right).
 \end{gather}
 
-More complex laws to allow $\eta$ and $\xi$ to evolve with the development of plasticity are also possible. Here for simplicity, it is assumed that $\eta$ and $\xi$ are two constants.
+More complex laws that allow $\eta$ and $\xi$ to evolve with the development of plasticity are also possible. For simplicity, however, $\eta$ and $\xi$ are assumed to be constants.
 \subsection{Formulation}
 As the cohesion $c$ is not explicitly defined in this model, it can be customised to produce various hardening responses.
 
@@ -64,7 +64,7 @@ f=\dfrac{p_e^2}{b^2}+\dfrac{q^2}{M^2}-a^2,
 \end{gather}
 where $p_t\geqslant0$ is the tensile yield strength, $b=1$ if $p_e\geqslant0$ and $b=\beta$ if $p_e<0$ with $p_e=p-p_t+a$ denotes relative stress to the centre of ellipse, $\beta$ is a constant that controls the shape of negative-wards half of yielding ellipse, $M$ is the ratio between two radii of yielding ellipse.
 
-The above yield function essentially possesses the form of an ellipse, for example,
+The above yield function essentially has the form of an ellipse, for example,
 \begin{gather*}
 \dfrac{x^2}{r_x^2}+\dfrac{y^2}{r_y^2}=1.
 \end{gather*}
@@ -100,7 +100,7 @@ The hardening rule is then defined as a function of $\alpha$,
 a=a\left(\alpha\right)\geqslant0.
 \end{gather}
 
-Note here we simple take $\alpha=\varepsilon^p_v$ instead of $\alpha=-\varepsilon^p_v$ in the original literature \cite{SouzaNeto2008}.
+Note that here we simply take $\alpha=\varepsilon^p_v$ instead of $\alpha=-\varepsilon^p_v$ as in the original literature \cite{SouzaNeto2008}.
 \subsection{Formulation}
 \subsubsection{Local Residual}
 By using the elastic relationship,
@@ -176,19 +176,14 @@ The above derivation also takes advantage of the expression
 NonlinearCamClay::update_trial_status
 \end{cppcode}
 \section{Simple Sand Model}
-This sand model is a hybrid of several existing models with significant simplifications. Readers should not expect this model to give accurate results. Instead, this model only captures the characteristics of sand material. It is presented to craft a basic framework from which more complex sand models can be developed.
+This sand model is a hybrid of several existing models with significant simplifications. Readers should not expect it to give accurate results. Instead, it is intended only to capture the main characteristics of sand. It is presented as a basic framework from which more complex sand models can be developed.
 
-Compared to other models for sand, this model is more like a preliminary model just like the bilinear hardening von Mises model compared to other models for metals.
+Compared with other sand models, this one should be viewed as a preliminary model, much like the bilinear hardening von Mises model when compared with more advanced metal models.
 
-A distinctive feature of sand models is that, often a non-associative plastic flow is used and the hardening law is significantly more complex, involving heavy tensor operations, than aforementioned models.
-Often the hardening laws are tensor--valued functions, and cannot be simplified to scalar--valued functions.
-The numerical complexity is higher.
+A distinctive feature of sand models is that non-associative plastic flow is often used, and the hardening law is significantly more complex than in the aforementioned models, often involving heavy tensor operations. The hardening laws are frequently tensor-valued and cannot be simplified to scalar-valued functions. As a result, the numerical complexity is higher.
 \subsection{Theory}
 \subsubsection{Elastic Constitutive Relation}
-Often for sand, the elastic response is nonlinear (to be specific, hyper-elastic).
-The shear and bulk moduli often are functions of hydrostatic pressure.
-In this model, for simplicity, a linear elastic relation is assumed.
-Readers shall be warned this does not reflect the real behaviour of sand.
+For sand, the elastic response is often nonlinear, or more specifically, hyperelastic. The shear and bulk moduli are often functions of hydrostatic pressure. In this model, however, a linear elastic relation is assumed for simplicity. Readers should be aware that this does not reflect the real behaviour of sand.
 
 The decomposition of total strain into elastic/plastic strain components is still valid. Thus the trial elastic state can be computed via the same expression.
 \begin{gather}\label{eq:ss_tsigma}
@@ -203,7 +198,7 @@ A wedge--like function is chosen to be the yield surface.
 \begin{gather*}
 f=\norm{\bs+p\balpha}+mp=\norm{\mb{\eta}}+mp,
 \end{gather*}
-where $\bs=\dev{\bsigma}$ is the deviatoric stress, $p=\dfrac{1}{3}\tr{\bsigma}$ is the hydrostatic stress, $\balpha$ is the so called back stress and $m$ characterises the size of the wedge. For simplicity, $m$ is assumed to be a constant in this model.
+where $\bs=\dev{\bsigma}$ is the deviatoric stress, $p=\dfrac{1}{3}\tr{\bsigma}$ is the hydrostatic stress, $\balpha$ is the so-called back stress, and $m$ characterises the size of the wedge. For simplicity, $m$ is assumed to be constant in this model.
 \subsubsection{Flow Rule}
 A non-associated plastic flow is used, the corresponding flow rule is defined as follows.
 \begin{gather*}
@@ -217,11 +212,11 @@ Since the linear elasticity is applied, the following expressions hold.
 p=p^\text{trial}-KA\gamma\left(\alpha^d-m-\balpha:\bn\right).
 \end{gather*}
 \subsubsection{Hardening Law}
-The evolution rate of the back stress $\balpha$ is defined in terms of a proper distance measure from the bounding surface, Here, such a distance measure is chosen to be $h\left(\left(\alpha^b-m\right)\bn-\balpha\right)$, where $h$ is a model constant. Thus,
+The evolution rate of the back stress $\balpha$ is defined in terms of a proper distance measure from the bounding surface. Here, that distance measure is chosen as $h\left(\left(\alpha^b-m\right)\bn-\balpha\right)$, where $h$ is a model constant. Thus,
 \begin{gather*}
 \dot{\balpha}=\gamma{}h\left(\left(\alpha^b-m\right)\bn-\balpha\right).
 \end{gather*}
-Essentially, this is similar to the Armstrong--Frederick type kinematic hardening rule. It shall be noted that $\bn$ is a deviatoric stress, and $\balpha$ stays deviatoric but may not be coaxial with $\bn$. Thus in tensor notation,
+Essentially, this is similar to the Armstrong--Frederick type kinematic hardening rule. It should be noted that $\bn$ is a deviatoric stress, and $\balpha$ remains deviatoric but may not be coaxial with $\bn$. Thus, in tensor notation,
 \begin{gather}
 \bn=\mathbb{I}:\bn=\mathbb{I}^\text{dev}:\bn,\qquad
 \balpha=\mathbb{I}:\balpha=\mathbb{I}^\text{dev}:\balpha.
@@ -313,7 +308,7 @@ p_{n+1}-p^\text{trial}+KA\gamma\left(\alpha^d_{n+1}-m-\balpha_{n+1}:\bn_{n+1}\ri
 \end{array}\right.
 \end{gather}
 
-To avoid complex computation of derivatives, the above four result equations are not further combined. By defined $\mb{x}=\begin{bmatrix}\gamma&p_{n+1}&\bs_{n+1}&\balpha_{n+1}\end{bmatrix}^\mT$, the local Jacobian can be derived and expressed in the compressed matrix form. It shall be noted for simplicity the subscript $\left(\cdot\right)_{n+1}$ is dropped.
+To avoid complex derivative calculations, the above four residual equations are not combined further. By defining $\mb{x}=\begin{bmatrix}\gamma&p_{n+1}&\bs_{n+1}&\balpha_{n+1}\end{bmatrix}^\mT$, the local Jacobian can be derived and expressed in compressed matrix form. It should be noted that, for simplicity, the subscript $\left(\cdot\right)_{n+1}$ is dropped.
 \begin{gather}\label{eq:ss_df}
 \pdfrac{\mb{R}}{\mb{x}}=\begin{bmatrix}
 \pdfrac{\mb{R}}{\gamma}&\pdfrac{\mb{R}}{p}&\pdfrac{\mb{R}}{\bs}&\pdfrac{\mb{R}}{\balpha}
@@ -353,7 +348,7 @@ KA\gamma\left(\left(1+\dfrac{p}{\norm{\beeta}}\left(\balpha:\bn\right)\right)\bn
 \end{bmatrix}.
 \end{gather}
 
-For simplicity, the double contraction is not explicitly expressed, one shall always use $\mb{A}^\mT\diag{\mb{c}}\mb{B}$ (in compressed matrix representation) for $\mb{A}:\mb{B}$. The Jacobian has a size of $1+1+6+6=14$.
+For simplicity, the double contraction is not expressed explicitly; one should always use $\mb{A}^\mT\diag{\mb{c}}\mb{B}$ (in compressed matrix representation) for $\mb{A}:\mb{B}$. The Jacobian has size $1+1+6+6=14$.
 \subsubsection{Consistent Tangent Stiffness}
 The consistent tangent stiffness can be derived from the decomposition
 \begin{gather}
@@ -493,7 +488,7 @@ A wedge-like function is chosen to be the yield surface.
 \begin{gather}
 F=\norm{\bs+p\balpha}+mp=\norm{\beeta}+mp,
 \end{gather}
-where $\balpha$ is the so called back stress and $m$ characterises the size of the wedge. For simplicity, $m$ is assumed to be a constant in this model.
+where $\balpha$ is the so-called back stress and $m$ characterises the size of the wedge. For simplicity, $m$ is assumed to be constant in this model.
 
 By denoting $\beeta=\bs+p\balpha$, the directional unit tensor is defined as
 \begin{gather}
@@ -576,7 +571,7 @@ Critical State&$\psi=e-e_0+\lambda_c\left(\dfrac{p}{p_{at}}\right)^\xi$\\
 \end{tabular}
 \end{table}
 \subsubsection{Elastic Residual}
-The new state shall be computed assuming there is no plasticity. In which case,
+The new state should be computed assuming that there is no plasticity. In that case,
 \begin{gather}
 p_{n+1}=p_n+K\dot{\varepsilon^v},\\
 \bs_{n+1}=\bs_n+2G\dot{\bvarepsilon^d}.
@@ -775,7 +770,7 @@ where $\bvarepsilon=\begin{bmatrix}\varepsilon_{x}&\varepsilon_{y}&\gamma_{xy}\e
 As the original model is non-linear elastic, it can be fully defined by the stress state.
 Thus, the elastic modulus $E$ and the bulk modulus $K$ can be determined solely by the stress vector $\bsigma$.
 
-Before proceeding, one shall note that the stress vector $\bsigma$ can be converted into principal stresses via either Mohr's circle or eigenanalysis.
+Before proceeding, note that the stress vector $\bsigma$ can be converted into principal stresses via either Mohr's circle or eigenanalysis.
 \begin{gather}
 \begin{array}{rr}
 \sigma_1\\
@@ -863,7 +858,7 @@ The consistent tangent stiffness is thus
 \begin{gather}
 \ddfrac{\bsigma}{\bvarepsilon}=\mb{C}=\mb{J}^{-1}\mb{D}.
 \end{gather}
-One shall note the following two points.
+The following two points should be noted.
 \begin{enumerate}
 \item The derivative $\ddfrac{\mb{D}}{\bsigma}$ is a cube, since $\mb{D}$ is a matrix.
 \item Although \eqsref{eq:duncan_incremental} is symmetric and resembles the elastic Hooke's law, the consistent tangent is not symmetric.
@@ -893,8 +888,8 @@ f\left(\bsigma\right)=\sigma_d-\sigma_d^\text{max}.
 \end{gather}
 Similar to conventional plasticity theory based models, a return mapping style algorithm can be applied.
 
-The maximum $\sigma_d^\text{max}$ shall be recorded, and it is only updated when local iteration converges and the converged stress yields a larger $\sigma_d$.
-Then, whenever $\sigma_d>\sigma_d^\text{max}$, $f>0$ indicating the development of plasticity, the elastic modulus shall be computed according to \eqsref{eq:duncan_reduction}.
+The maximum $\sigma_d^\text{max}$ should be recorded, and it should be updated only when the local iteration converges and the converged stress yields a larger $\sigma_d$.
+Then, whenever $\sigma_d>\sigma_d^\text{max}$, $f>0$ indicates the development of plasticity, and the elastic modulus should be computed according to \eqsref{eq:duncan_reduction}.
 For $\sigma_d\leqslant\sigma_d^\text{max}$, $f<0$ indicating elastic loading/unloading, then the reduction in $E$ is not considered, viz., $E=E_i$.
 
 Based on the above discussion, one can rewrite \eqsref{eq:duncan_reduction} as

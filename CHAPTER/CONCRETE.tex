@@ -1,8 +1,8 @@
 \chapter{Concrete}
 \section{Concrete Damage Plasticity (CDP) Model}
-In this section, the concrete damage plasticity model proposed by \cite{Lee1998} is presented.
-It can be seen as a continuation and further extension of the Barcelona model \cite{Lubliner1989}, in which a unified uniaxial backbone curve that possess some interesting features is proposed.
-A slightly different version (with Lode angle dependency and other minor changes) is implemented in ABAQUS.
+In this section, we present the concrete damage plasticity model proposed by \cite{Lee1998}.
+It can be seen as a continuation and further extension of the Barcelona model \cite{Lubliner1989}, which proposes a unified uniaxial backbone curve with several interesting features.
+ABAQUS implements a slightly different version, with Lode angle dependency and other minor changes.
 
 The CDP model follows Lemaitre's damage theory \cite{Lemaitre1985} and is developed under the assumption of isotropic damage.
 Accordingly, the final stress $\bsigma$ can be expressed as the product of the effective stress $\bbsigma$ and some function of damage measure.
@@ -25,14 +25,14 @@ with $\bar{I}_1=\tr{\bbsigma}$ is the first invariant of effective stress tensor
 The effective backbone stresses (both positive) $\bar{f}_c$ and $\bar{f}_t$ will be defined later.
 It is assumed that $\hat{\sigma}_1\geqslant\hat{\sigma}_2\geqslant\hat{\sigma}_3$.
 
-It shall be noted that, for the given $\bbsigma$, one can perform the eigen decomposition to obtain the principal stress $\hat{\bsigma}$, with which, the following holds
+It should be noted that, for a given $\bbsigma$, one can perform the eigendecomposition to obtain the principal stress $\hat{\bsigma}$, for which the following holds
 \begin{gather}
 \hat{I}_1=\tr{\hat{\bsigma}}=\bar{I}_1,\qquad
 \norm{\hat{\bs}}=\norm{\bar{\bs}},
 \end{gather}
-because they are effectively invariants of the given tensor.
-In the following, we do not distinguish between those two forms of invariants.
-One shall realise that the same quantity can be computed using different tensors and depending on the context, one form may be more convenient than the other.
+because these quantities are invariants of the given tensor.
+In the following, we do not distinguish between these two forms of invariants.
+The same quantity can be computed using different tensors and, depending on the context, one form may be more convenient than the other.
 \subsubsection{Flow Rule}
 The flow potential $g$ is chosen to be
 \begin{gather}
@@ -80,11 +80,11 @@ Both compression and tension backbones are described by functions of the same fo
 Since concrete shows different behaviour under compression and tension, different material parameters are used accordingly.
 The subscript $\left(\cdot\right)_\aleph$ may denote either tension $\left(\cdot\right)_t$ or compression $\left(\cdot\right)_c$ in the following expressions.
 
-Internal hardening parameters $\kappa_\aleph$ is governed by the following evolution rule,
+The internal hardening parameters $\kappa_\aleph$ are governed by the following evolution rule,
 \begin{gather}
 \dot{\kappa_\aleph}=\gamma{}H_\aleph,
 \end{gather}
-where $H_\aleph$ defines the hardening law. Different $H_\aleph$ shall be used for compression/tension.
+where $H_\aleph$ defines the hardening law. Different $H_\aleph$ are used for compression and tension.
 \begin{gather}
 H_t=r\dfrac{f_t}{g_t}\left(\hat{n}_1+\alpha_p\right),\\
 H_c=\left(1-r\right)\dfrac{f_c}{g_c}\left(\hat{n}_3+\alpha_p\right).
@@ -123,7 +123,7 @@ When $d_\aleph=1$, the material has completely failed, then $f_\aleph=0$.
 We do not discuss those functions in detail here.
 One can refer to the Barcelona model \cite{Lubliner1989} for an extensive discussion.
 
-In general, the backbone curve can be customised. The main algorithm has no interest in how the backbone curve is computed, only $f_\aleph$, $\bar{f}_\aleph$ and $d_\aleph$ and their derivatives with regard to $\kappa_\aleph$ need to be provided. The exponential form adopted in the original model may encounter some numerical difficulties, which in the author's opinion is not ideal. One can always choose other forms, such as providing those quantities in a tabulated fashion. This is also what ABAQUS offers.
+In general, the backbone curve can be customised. The main algorithm is not concerned with how the backbone curve is computed; it only requires $f_\aleph$, $\bar{f}_\aleph$, and $d_\aleph$, together with their derivatives with respect to $\kappa_\aleph$. The exponential form adopted in the original model may encounter numerical difficulties, which, in the author's opinion, is not ideal. Other forms can always be chosen, such as providing these quantities in tabulated form. This is also what ABAQUS offers.
 \subsection{Damage Theory}
 The damage measure takes the form
 \begin{gather}
@@ -303,15 +303,15 @@ s\left(d_c-1\right)\ddfrac{d_t}{\kappa_t}&
 
 The CDP model has no kinematic hardening, the effective part resembles the bounding surface concept. Due to the coaxiality, the model can be constructed in the eigen space, which brings some convenience in terms of implementation.
 \subsection{Implementation}
-The state determination of the CDP model is shown in \algoref{algo:cdp_model}. Compared with the original implementation, the presented one is much more concise and is able to avoid lengthy computation of consistent tangent stiffness.
+The state determination of the CDP model is shown in \algoref{algo:cdp_model}. Compared with the original implementation, the one presented here is much more concise and avoids lengthy computation of the consistent tangent stiffness.
 
-It is worth noting some quantities remain constant in the local iteration, for example,
+It is worth noting that some quantities remain constant during the local iteration, for example,
 \begin{gather}
 2G\hat{n}_1+3K\alpha_p,\qquad
 \dfrac{\hat{n}_1+\alpha_p}{g_t},\qquad
 \dfrac{\hat{n}_3+\alpha_p}{g_c}.
 \end{gather}
-They can be computed as stored before entering local iteration.
+They can be computed and stored before entering the local iteration.
 \begin{breakablealgorithm}
 \caption{state determination of the CDP model}\label{algo:cdp_model}
 \begin{algorithmic}
@@ -350,12 +350,12 @@ They can be computed as stored before entering local iteration.
 \end{algorithmic}
 \end{breakablealgorithm}
 
-The CPP implementation of state determination can be found as follows.
+The C++ implementation of the state determination is given below.
 \begin{cppcode}
 NonlinearCDP::update_trial_status
 \end{cppcode}
 \section{CDPM2 Model}
-The CDP adopts an isotropic damage, which leads to, for example, degradation of compressive/tensile strength due to tensile/compressive damage. In cyclic loading cases, it may not be ideal. The CDPM2 model uses a different approach that applies tensile damage to tensile part of stress and compressive damage to compressive part of stress.
+The CDP model adopts isotropic damage, which leads, for example, to degradation of compressive/tensile strength due to tensile/compressive damage. In cyclic loading cases, this may not be ideal. The CDPM2 model uses a different approach that applies tensile damage to the tensile part of the stress and compressive damage to the compressive part.
 
 Compared to the original formulation \cite{Grassl2013}, here the dependency of the Lode angle is removed for brevity.
 \subsection{Plasticity}
@@ -369,7 +369,7 @@ where the friction parameter $m_0$
 \begin{gather}
 m_0=\dfrac{3f_c^2-3f_t^2}{f_cf_t}\dfrac{e}{1+e}
 \end{gather}
-depends on material strengths $f_c$ and $f_t$, $e$ is the eccentricity constant which depends on the previous two strengths and equibiaxial compression strength $f_{bc}$. The hardening functions $q_{h1}$ and $q_{h2}$ will be introduced later. The helper functions $g_1$ and $g_3$ are also used to define the plastic potential $G$. If the Lode angle shall be considered, $g_3$ needs to be replaced by $g_4$ which is defined as
+depends on the material strengths $f_c$ and $f_t$. Here, $e$ is the eccentricity constant, which depends on those two strengths and the equibiaxial compression strength $f_{bc}$. The hardening functions $q_{h1}$ and $q_{h2}$ are introduced later. The helper functions $g_1$ and $g_3$ are also used to define the plastic potential $G$. If the Lode angle is considered, $g_3$ should be replaced by $g_4$, which is defined as
 \begin{gather}
 g_4=\dfrac{s}{\sqrt{6}f_c}r+\dfrac{p}{f_c},
 \end{gather}

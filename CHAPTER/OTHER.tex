@@ -6,7 +6,7 @@ It is (almost) identical to the one implemented in ABAQUS (see, for example, \S~
 
 As suggested \cite{ABAQUS2011}, it is `\textit{intended for use with mildly voided metals}'.
 In principle, it is suitable for porous materials in which damage is mainly driven by the development of voids.
-However, since a von Mise like yield criterion is used, modelling materials that do not follow the von Mises rule may not be appropriate.
+However, since a von Mises-like yield criterion is used, modelling materials that do not follow the von Mises rule may not be appropriate.
 \subsection{Theory}
 \subsubsection{Yield Function}
 The yield function is chosen to be
@@ -120,14 +120,9 @@ NonlinearGurson::update_trial_status
 \section{The \texorpdfstring{$N$-$M$}{N-M} Frame Element}
 In this section, we present a frame element that supports customisation of the $N$-$M$ interaction with the generalised plasticity theory. The core model is taken mainly from the literature, further discussions can be seen elsewhere \cite{Chang2023}.
 
-This element fuses the concepts of element, section and material altogether, thus, it can be deemed as a material model as well.
+This element fuses the concepts of element, section, and material, and can therefore also be regarded as a material model.
 
-However, due to the exact same reason, calibration can only be made per beam element.
-In this regard, one may argue that conventional fibre/material based elements are inherently superior.
-This is typically valid.
-But fibre based elements cannot capture section level effects easily, which largely depend on the formulation of the specific beam element used.
-On the other hand, the element introduced in this section allows flexible customisation of response, which may not necessarily be strictly tied to the underlying material response.
-This is beneficial for engineering design, as often standards adopt much more conservative $N$-$M$ envelopes, which are quite different from the `actual' envelope derived from material models.
+However, for the same reason, calibration can only be carried out at the beam-element level. In this regard, one may argue that conventional fibre/material-based elements are inherently superior, and this is often true. However, fibre-based elements cannot easily capture section-level effects, which largely depend on the formulation of the specific beam element used. On the other hand, the element introduced in this section allows flexible customisation of response, which may not necessarily be strictly tied to the underlying material response. This is beneficial for engineering design, because design standards often adopt much more conservative $N$-$M$ envelopes, which can differ substantially from the `actual' envelope derived from material models.
 \subsection{Preliminaries}
 \subsubsection{Definitions and Kinematics}
 Consider a two--node beam\footnote{The word `beam' is used interchangeably with `frame' and/or `beam--column'.} element connecting nodes $i$ and $j$ with its rigid body motions removed, the resulting degrees of freedom are axial deformation $u$, rotational deformation $\theta_{z,i}$ of end $i$ and rotational deformation $\theta_{z,j}$ of end $j$, and additional two end rotations, $\theta_{y,i}$ and $\theta_{y,j}$ about weak axis in the case of a 3D beam.
@@ -228,7 +223,7 @@ or concisely,
 where subscript $\left(\cdot\right)_\aleph$ denotes either $\left(\cdot\right)_i$ or $\left(\cdot\right)_j$.
 In this work, the presence of subscript $\left(\cdot\right)_\aleph$ implies that it is a nodal quantity, the same symbol without subscript $\left(\cdot\right)_\aleph$ denotes its elemental counterpart.
 We define $\mb{T}_i$ and $\mb{T}_j$ to be transformation/selection matrices.
-The main purpose of adopting $\be$ in the formulation is two--fold: 1) to decouple nodal response so that plasticity (on rotational DoFs) can be developed \textbf{independently} at each end, and 2) to obtain a better implication of the corresponding plastic deformation.
+The main purpose of adopting $\be$ in the formulation is twofold: 1) to decouple nodal response so that plasticity (on rotational DoFs) can be developed \textbf{independently} at each end, and 2) to obtain a better implication of the corresponding plastic deformation.
 
 The nodal elasto-plastic constitutive relationship can now be conveniently expressed as
 \begin{gather}
@@ -257,12 +252,12 @@ P^y&\cdot&\cdot\\\cdot&M_z^y&\cdot\\\cdot&\cdot&M_y^y
 The elemental version with subscript $\left(\cdot\right)_\aleph$ omitted in \eqsref{eq:new_kin} holds due to the fact that DoFs are now decoupled.
 \subsection{Generalised Plasticity Framework}
 The generalised plasticity concept \cite{Auricchio1994} is followed loosely in this work.
-However, the two--surface (yield surface and bounding surface) concept is not adopted as the presence of which makes the quantification of hardening behaviour difficult.
+However, the two--surface concept (yield surface and bounding surface) is not adopted, because its presence makes the quantification of hardening behaviour difficult.
 
 The main challenge comes from the fact that $N$-$M$ interaction should be considered at each node, the activation of plasticity (of moment) at either end should be relatively independent from the other end.
 However, as there is only one axial force which is shared between two ends, its plasticity history affects both ends.
 Simply adopting a conventional multisurface formulation \cite{Simo1998} leads to potential local bifurcation issues, as under certain conditions, one surface would become \textbf{redundant}.
-In the following, a special formulation that allows independent activation of plasticity at each end while enables proper hardening behaviour is presented.
+In the following, we present a special formulation that allows independent activation of plasticity at each end while enabling proper hardening behaviour.
 \subsubsection{Yield Function}
 \paragraph{Nodal Yield Function}
 For each end, the nodal resistance $\mb{q}_\aleph$ should be bounded by the corresponding nodal yield surface $f_\aleph$, then, the admissible region is defined by $f_\aleph\leqslant0$ while the inadmissible region is equivalent to $f_\aleph>0$.
@@ -271,7 +266,7 @@ For each node, $f_\aleph$ can be simply chosen as
 f_\aleph=\Phi_\aleph,
 \end{gather}
 where $\Phi_\aleph=\Phi_\aleph\left(\mb{s}_\aleph,\alpha_\aleph\right)$ is the $N$-$M$ interaction surface based on the shifted resistance $\mb{s}_\aleph=\mb{q}_\aleph-\bbeta_\aleph$ and the equivalent plastic strain $\alpha_\aleph$, $\bbeta_\aleph$ is similar to the concept of back stress in conventional plasticity models, here back resistance that defines the centre of interaction surface.
-The $N$-$M$ interaction surface can not only change its location (governed by $\bbeta_\aleph$) but also grow its size (governed by $\alpha_\aleph$) accordingly.
+The $N$-$M$ interaction surface can not only change its location, governed by $\bbeta_\aleph$, but also grow in size, governed by $\alpha_\aleph$.
 \paragraph{Elemental Yield Function}
 The elemental yield surface $f$ should be able to capture yielding of any ends, a possible option is
 \begin{gather}\label{eq:nm_yield}
@@ -320,7 +315,7 @@ We further express the interaction surface in its general form as
 \end{gather}
 where $n$ is the number of terms, $a_i$ is the constant coefficient of each product, $b_{i,r}$ is the order of each bracket and $r$ represents the specific force component $r\in\left(P,~M_z,~M_y\right)$. \eqsref{eq:nm_interaction} serves as the formal definition of the nodal $N$-$M$ interaction surface with hardening.
 
-It is worthing noting that $h_P\left(\overline{\alpha}_\aleph\right)$ does not need to be the same as $h_{M_z}\left(\overline{\alpha}_\aleph\right)$.
+It is worth noting that $h_P\left(\overline{\alpha}_\aleph\right)$ does not need to be the same as $h_{M_z}\left(\overline{\alpha}_\aleph\right)$.
 Different functions can be assigned to different components so that the interaction surface can change its shape during evolution (to mimic anisotropic hardening).
 An example is shown in \figref{fig:nm_anisotropic}.
 \begin{figure}[htb]
@@ -329,7 +324,7 @@ An example is shown in \figref{fig:nm_anisotropic}.
 \caption{mixed evolution of an example $N$-$M$ interaction surface}\label{fig:nm_anisotropic}
 \end{figure}
 \subsubsection{Flow Rule}
-The evolution of plastic deformation $\overline{\be}^p$ shall be linked to the gradient $\mb{g}$ of plastic potential, which is simply taken as $f$, leading to $\mb{g}=\pdfrac{f}{\mb{\overline{q}}}$.
+The evolution of plastic deformation $\overline{\be}^p$ should be linked to the gradient $\mb{g}$ of the plastic potential, which is simply taken as $f$, leading to $\mb{g}=\pdfrac{f}{\mb{\overline{q}}}$.
 By denoting $\mb{\zeta}=\Gamma\left(\mb{g}\right)$, one can obtain
 \begin{gather}\label{eq:nm_flow}
 \dot{\overline{\be}^p}=\gamma\mb{\zeta},
@@ -348,7 +343,7 @@ Other options of $\mb{\zeta}$ include
 \end{gather}
 which has a fixed size (unity) that is beneficial in terms of alleviating potential numerical instability issues when computing the derivative of $\mb{\zeta}$.
 \subsubsection{Isotropic Hardening}
-For isotropic hardening, $\dot{\overline{\alpha}_\aleph}$ shall be related to some scalar measure of plastic deformation $\dot{\overline{\be}^p}$.
+For isotropic hardening, $\dot{\overline{\alpha}_\aleph}$ should be related to some scalar measure of the plastic deformation $\dot{\overline{\be}^p}$.
 The simplest one would be
 \begin{gather}\label{eq:nm_alpha}
 \dot{\overline{\alpha}_\aleph}=\norm{\dot{\overline{\be}^p_\aleph}}=\norm{\mb{T}_\aleph\dot{\overline{\be}^p}}=\gamma\norm{\mb{T}_\aleph\mb{\zeta}}.
@@ -474,11 +469,11 @@ The resulting plastic deformation $\overline{\be}^p$ is an elemental quantity.
 Furthermore, in general, $\overline{\alpha}\neq\overline{\alpha}_i+\overline{\alpha}_j$.
 \item The back resistance $\overline{\bbeta}$ is based on elemental plastic deformation $\overline{\be}^p$.
 No matter which end yields, the same evolution rule applies to both elemental and nodal quantities.
-\item The conventional fibre based beam elements have symmetric tangent stiffness matrix.
-Depending on the specific plastic flow and hardening rules used, such a symmetry is, in general, not guaranteed for generalised plasticity based beam elements.
+\item Conventional fibre-based beam elements have symmetric tangent stiffness matrices.
+Depending on the specific plastic flow and hardening rules used, such symmetry is, in general, not guaranteed for generalised-plasticity-based beam elements.
 \end{enumerate}
 \subsection{Discrete System}
-The discrete local system in vectorial form is derived in this section for 3D beam elements accounting for five elemental deformation/force components, that is equivalent to three nodal components.
+The discrete local system in vector form is derived in this section for 3D beam elements, accounting for five elemental deformation/force components, which are equivalent to three nodal components.
 In the case of 2D elements, it reduces to three elemental components and two nodal components.
 The formulation is almost identical for both 2D and 3D elements, thus, only the 3D version is presented.
 %The conventional return mapping algorithm is adopted.
@@ -494,14 +489,14 @@ P^y&\cdot&\cdot\\\cdot&M_z^y&\cdot\\\cdot&\cdot&M_y^y
 \end{bmatrix}\mb{\overline{q}}_\aleph^\text{trial}.
 \end{gather}
 
-Then trial yield function can be evaluated for each node.
+The trial yield function can then be evaluated for each node.
 \begin{gather}\label{eq:nm_f_trial}
 f_\aleph^\text{trial}=\Phi_\aleph^\text{trial},
 \end{gather}
 with $\Phi_\aleph^\text{trial}=\Phi\left(\mb{\overline{s}}_\aleph^\text{trial},\overline{\alpha}_{\aleph,n}\right)$ in which $\mb{\overline{s}}_\aleph^\text{trial}=\mb{\overline{q}}_\aleph^\text{trial}-\mb{\overline{\beta}}_{\aleph,n}$.
 
-If $f^\text{trial}=\sum{}\langle{}f_\aleph^\text{trial}\rangle=0$, implying both $\Phi_\aleph^\text{trial}$ are non-positive, indicating both ends are undergoing elastic loading/unloading.
-Otherwise $f^\text{trial}>0$ and local return mapping is required to determine the plastic state to meet conditions $\gamma>0$ and $f=0$.
+If $f^\text{trial}=\sum{}\langle{}f_\aleph^\text{trial}\rangle=0$, then both $\Phi_\aleph^\text{trial}$ are non-positive, indicating that both ends undergo elastic loading/unloading.
+Otherwise, $f^\text{trial}>0$, and local return mapping is required to determine the plastic state so that the conditions $\gamma>0$ and $f=0$ are satisfied.
 \subsubsection{Plasticity Evolution}
 For resistance and back resistance, one can obtain the following by using the implicit (backward Euler) integration.
 \begin{gather}\label{eq:nm_qc}
@@ -533,7 +528,7 @@ as the local variable with subscript $\left(\cdot\right)_{n+1}$ omitted for brev
 \right.
 \end{gather}
 Physically, plasticity evolution can be activated when either end yields, or both yield.
-Thus, each end shall be considered separately (but not strictly independently due to the shared axial force).
+Thus, each end should be considered separately, though not strictly independently because of the shared axial force.
 The (plastic) deformation defined in this work can be transformed into the conventional sense via the $\mb{S}$ matrix, see \eqsref{nm:kinematics}.
 \subsubsection{Jacobian}
 By treating $\mb{\zeta}$ as an intermediate variable, the Jacobian $\mb{J}$ can be analytically expressed as

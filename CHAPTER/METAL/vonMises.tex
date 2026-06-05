@@ -1,17 +1,17 @@
 \section{von Mises Framework}
-Here the uniaxial combined isotropic/kinematic model introduced in \secref{sec:isotropic/kinematic} is reformulated in 3D space. Some difference will be observed, but the final local residual is a scalar equation.
+Here, the uniaxial combined isotropic/kinematic model introduced in \secref{sec:isotropic/kinematic} is reformulated in 3D space. Some differences will appear, but the final local residual remains a scalar equation.
 \subsection{Theory}
 \subsubsection{Yield Function}
 The von Mises yield criterion is adopted,
 \begin{gather}
     f=\norm{\beeta}-\sqrt{\dfrac{2}{3}}\sigma^y,
 \end{gather}
-with $\beeta=\bs-\balpha$ is the shifted stress with $\balpha$ denoting the back stress and $\bs=\dev{\bsigma}$ denoting the deviatoric stress.
-By definition, the back stress $\balpha$ is also a deviatoric stress, thus $\tr{\balpha}=0$.
-It shifts the centre of yield surface in the deviatoric stress space.
+where $\beeta=\bs-\balpha$ is the shifted stress, $\balpha$ denotes the back stress, and $\bs=\dev{\bsigma}$ denotes the deviatoric stress.
+By definition, the back stress $\balpha$ is also deviatoric, thus $\tr{\balpha}=0$.
+It shifts the centre of the yield surface in the deviatoric stress space.
 
-The only purpose of the constant $\sqrt{\dfrac{2}{3}}$ is to produce consistent response under uniaxial loading with the same set of model parameters.
-To see this point, consider the uniaxial loading case, which can be represented by the following stress tensor
+The only purpose of the constant $\sqrt{\dfrac{2}{3}}$ is to produce a consistent response under uniaxial loading with the same set of model parameters.
+To see this, consider the uniaxial loading case, which can be represented by the following stress tensor
 \begin{gather}
     \bsigma=\begin{bmatrix}
         \sigma & 0 & 0 \\
@@ -19,7 +19,7 @@ To see this point, consider the uniaxial loading case, which can be represented 
         0      & 0 & 0
     \end{bmatrix},
 \end{gather}
-in absence of $\balpha$, the shifted stress $\beeta$ is
+In the absence of $\balpha$, the shifted stress $\beeta$ is
 \begin{gather}
     \beeta=\begin{bmatrix}
         \dfrac{2}{3}\sigma & 0                   & 0                   \\
@@ -44,12 +44,12 @@ One may find all those forms (and maybe more) in the literature.
 In principle, one can choose any of those forms if the yield function is the only factor considered.
 However, accounting for the associated numerical implementation, which involves computing the derivative of $f$, some forms are more convenient than the others.
 \subsubsection{Flow Rule}
-Assuming associative rule, the flow rule is
+Assuming an associative rule, the flow rule is
 \begin{gather}\label{eq:j2_flow}
     \dot{\bvarepsilon^p}=\gamma\pdfrac{f}{\bsigma}=\gamma\pdfrac{\norm{\beeta}}{\bsigma}=\gamma\dfrac{1}{2}\dfrac{2\mathbb{I}^\text{dev}:\beeta}{\norm{\beeta}}=\gamma\dfrac{\beeta}{\norm{\beeta}}=\gamma\bn.
 \end{gather}
-All analytical formulations are based on tensor notation.
-If the above expression is expressed explicitly in tensor components, one could obtain
+All analytical formulations below are based on tensor notation.
+Expressed explicitly in tensor components, the above relation becomes
 \begin{gather}
     \underbrace{\begin{bmatrix}
             \dot{\varepsilon^p}_{11} & \dot{\varepsilon^p}_{12} & \dot{\varepsilon^p}_{31} \\
@@ -96,20 +96,20 @@ We define the scaling vector $\mb{c}=\begin{bmatrix}
         \end{bmatrix}}_{\bn}=\gamma~\mb{c}\circ\bn,\qquad\text{in the Voigt notation.}
 \end{gather}
 This agrees with \eqsref{eq:norm_derivative2}.
-Such a difference has practical implications.
-Due to symmetry of both strain and stress tensors, it is often more performant to just use vectors and matrices to represent second--order and fourth--order tensors in implementation.
-This means tensor quantities are expressed in compressed vector/matrix form.
-For a given expression, one shall always question what operation it implies and how it would be eventually computed for operands expressed in different forms.
-For example, if $\dot{\bvarepsilon^p}$ is used in intermediate computation, is can simply be replaced by $\gamma\bn$ --- the mathematics would be correct as long as we are using the consistent tensor notation.
-However, if $\bvarepsilon^p$ needs to be stored in the Voigt notation, one shall carefully scale the shear components by a factor of $2$ when committing new $\bvarepsilon^p$.
+This difference has practical implications.
+Because both strain and stress tensors are symmetric, it is often more efficient in implementation to use vectors and matrices to represent second--order and fourth--order tensors.
+In other words, tensor quantities are expressed in compressed vector/matrix form.
+For a given expression, one should always ask what operation it implies and how it will eventually be computed when the operands are expressed in different forms.
+For example, if $\dot{\bvarepsilon^p}$ is used in an intermediate computation, it can simply be replaced by $\gamma\bn$ --- the mathematics remains correct as long as we use consistent tensor notation.
+However, if $\bvarepsilon^p$ needs to be stored in Voigt notation, the shear components should be scaled carefully by a factor of $2$ when committing the new $\bvarepsilon^p$.
 
-It can be observed that $\dot{\bvarepsilon^p}$ has a magnitude of $\gamma$ while $\bn$ is a unit tensor in $\mathbb{R}^3\times\mathbb{R}^3$ hyper space. Thus $\bn$ serves as a direction indicator, $\bvarepsilon^p$ evolves towards $\bn$ by the amount of $\gamma$. Since $\bn$ is deviatoric, $\dot{\bvarepsilon^p}$ is also deviatoric (so as $\bvarepsilon^p$).
+It can be observed that $\dot{\bvarepsilon^p}$ has magnitude $\gamma$, while $\bn$ is a unit tensor in the $\mathbb{R}^3\times\mathbb{R}^3$ hyperspace. Thus, $\bn$ serves as a direction indicator, and $\bvarepsilon^p$ evolves towards $\bn$ by the amount $\gamma$. Since $\bn$ is deviatoric, $\dot{\bvarepsilon^p}$ is also deviatoric (and so is $\bvarepsilon^p$).
 Furthermore, since $\bn$ is a unit tensor,
 \begin{gather}
     \norm{\dot{\bvarepsilon^p}}=\gamma.
 \end{gather}
 \subsubsection{Hardening Law}
-For internal variable $q$, the hardening law takes the accumulated magnitude of $\bvarepsilon^p$.
+For the internal variable $q$, the hardening law uses the accumulated magnitude of $\bvarepsilon^p$.
 \begin{gather}
     \dot{q}=\sqrt{\dfrac{2}{3}}\norm{\dot{\bvarepsilon^p}}=\sqrt{\dfrac{2}{3}}\gamma.
 \end{gather}
@@ -135,9 +135,9 @@ For kinematic hardening, the evolution law of back stress $\balpha$ is defined t
 \begin{gather}
     \dot{\balpha}=\sqrt{\dfrac{2}{3}}\dot{H}\bn.
 \end{gather}
-in which $H=H\left(q\right)$ is now a scalar--valued function of $q$ that controls the development of $\norm{\balpha}$, $\balpha$ always evolves towards $\bn$ by the amount $\dot{H}=H\left(q_{n+1}\right)-H\left(q_n\right)$ characterising the increment of $H$. The fraction $\sqrt{\dfrac{2}{3}}$ is introduced for consistent response as stated earlier. Since $\dot{\balpha}$ and $\bn$ are coaxial, $\balpha$ stays deviatoric but may not be coaxial with all $\bn$ through the loading process.
+Here, $H=H\left(q\right)$ is now a scalar--valued function of $q$ that controls the development of $\norm{\balpha}$. The tensor $\balpha$ always evolves towards $\bn$ by the amount $\dot{H}=H\left(q_{n+1}\right)-H\left(q_n\right)$, which characterises the increment of $H$. The factor $\sqrt{\dfrac{2}{3}}$ is introduced for a consistent response, as stated earlier. Since $\dot{\balpha}$ and $\bn$ are coaxial, $\balpha$ stays deviatoric but may not remain coaxial with all $\bn$ throughout the loading process.
 \subsection{Formulation}
-The summation of the von Mises model is listed as follows.
+A summary of the von Mises model is listed below.
 \begin{table}[ht]
     \centering
     \begin{tabular}{rl}
@@ -150,7 +150,7 @@ The summation of the von Mises model is listed as follows.
     \end{tabular}
 \end{table}
 \subsubsection{Elastic Loading/Unloading}
-The trial stress can be computed such as
+The trial stress can be computed as
 \begin{gather}\label{eq:j2_tsigma}
     \bsigma^\text{trial}=\mb{D}:\left(\bvarepsilon_{n+1}-\bvarepsilon^p_n\right)=\bsigma_n+\mb{D}:\left(\bvarepsilon_{n+1}-\bvarepsilon_n\right).
 \end{gather}
@@ -229,7 +229,7 @@ Using engineering strains, the above must be adjusted to
         \right).}_{\bvarepsilon_{n+1}-\bvarepsilon^p_n}
 \end{gather}
 
-Then $\beeta^\text{trial}=\dev{\bsigma^\text{trial}}-\balpha_n$, which gives trial yield function
+Then $\beeta^\text{trial}=\dev{\bsigma^\text{trial}}-\balpha_n$, which gives the trial yield function
 \begin{gather}\label{eq:j2_tf}
     f^\text{trial}=\norm{\beeta^\text{trial}}-\sqrt{\dfrac{2}{3}}\sigma^y_n
 \end{gather}
@@ -264,10 +264,10 @@ Noting that, by definition, $\bn=\dfrac{\beeta_{n+1}}{\norm{\beeta_{n+1}}}$, thu
 \begin{gather}
     \underbrace{\left(1+\dfrac{2G\gamma+\sqrt{\dfrac{2}{3}}\dot{H}}{\norm{\beeta_{n+1}}}\right)}_{\text{scalar}}\beeta_{n+1}=\beeta^\text{trial}.
 \end{gather}
-The above expression implies that $\beeta_{n+1}$ and $\beeta^\text{trial}$ are \textbf{coaxial}. Thus, $\beeta_{n+1}$ always points to the direction of $\beeta^\text{trial}$, which is a constant in each time step within that time step.
-Only its magnitude would be adjusted in local iterations.
-Thus, $\bn=\dfrac{\beeta_{n+1}}{\norm{\beeta_{n+1}}}=\dfrac{\beeta^\text{trial}}{\norm{\beeta^\text{trial}}}$ is also a constant during the local iteration.
-This is a quite convenient property, although it may not exist in other complex models.
+The above expression implies that $\beeta_{n+1}$ and $\beeta^\text{trial}$ are \textbf{coaxial}. Thus, $\beeta_{n+1}$ always points in the direction of $\beeta^\text{trial}$, which remains constant within each time step.
+Only its magnitude is adjusted during local iterations.
+Thus, $\bn=\dfrac{\beeta_{n+1}}{\norm{\beeta_{n+1}}}=\dfrac{\beeta^\text{trial}}{\norm{\beeta^\text{trial}}}$ is also constant during the local iteration.
+This is a convenient property, although it may not exist in more complex models.
 However, when it is available, it can be exploited to simplify the formulation.
 One can further derive
 \begin{gather}
@@ -300,10 +300,10 @@ In which, according to \eqsref{eq:unit_derivative},
                                          & =\dfrac{2G}{\norm{\beeta^\text{trial}}}\left(\mathbb{I}^\text{dev}-\bn\otimes\bn\right).
     \end{split}
 \end{gather}
-Here, $\bn$ is expressed as $\bn=\dfrac{\beeta^\text{trial}}{\norm{\beeta^\text{trial}}}$ due to coaxiality between $\beeta_{n+1}$ and $\beeta^\text{trial}$.
+Here, $\bn$ is expressed as $\bn=\dfrac{\beeta^\text{trial}}{\norm{\beeta^\text{trial}}}$ because of the coaxiality between $\beeta_{n+1}$ and $\beeta^\text{trial}$.
 This simplifies the computation.
 
-From converged local residual (yield function),
+From the converged local residual (yield function),
 \begin{gather}
     \begin{split}
         \pdfrac{\gamma}{\bvarepsilon_{n+1}} & =-\left(\pdfrac{f}{\gamma}\right)^{-1}\pdfrac{f}{\bvarepsilon_{n+1}}=-\left(\pdfrac{f}{\gamma}\right)^{-1}2G\bn.
@@ -320,15 +320,15 @@ Thus the final expression for consistent tangent stiffness can be assembled as
     \end{split}
 \end{gather}
 It is a symmetric tensor/matrix.
-It shall be noted that $\mathbb{I}^\text{dev}$ takes the form as presented in \eqsref{eq:dev_tensor_se}.
-Readers are strongly suggested to derive it via both tensor notation and compressed matrix representation as a practice.
-Both shall lead to identical results.
+Note that $\mathbb{I}^\text{dev}$ takes the form presented in \eqsref{eq:dev_tensor_se}.
+Readers are strongly encouraged to derive it in both tensor notation and compressed matrix representation as practice.
+Both should lead to identical results.
 
-Since the local iteration is a scalar function, the closed--form of consistent tangent stiffness is relatively easy to compute. It will be seen in more complex models that closed--forms do not always possess simple forms.
+Since the local iteration is a scalar function, the closed--form consistent tangent stiffness is relatively easy to compute. In more complex models, closed forms are not always so simple.
 
 As a general framework, the above formulation does not require explicit forms of $H\left(q\right)$ and $\sigma^y\left(q\right)$. Thus, various types of scalar--valued functions can be adopted.
 \subsection{Implementation}
-The state determination algorithm of this general model incorporating von Mises criterion is given in \algoref{algo:j2_model}.
+The state determination algorithm for this general model with the von Mises criterion is given in \algoref{algo:j2_model}.
 \begin{breakablealgorithm}
     \caption{state determination of general von Mises model}\label{algo:j2_model}
     \begin{algorithmic}
@@ -362,13 +362,13 @@ The state determination algorithm of this general model incorporating von Mises 
         \EndIf
     \end{algorithmic}
 \end{breakablealgorithm}
-It shall be noted that the algorithm does not implement $H\left(q\right)$ and $\sigma^y\left(q\right)$. It is assumed those two functions are defined somewhere else and are able to provide derivatives.
+Note that the algorithm does not implement $H\left(q\right)$ and $\sigma^y\left(q\right)$. It assumes that these two functions are defined elsewhere and can provide derivatives.
 
-Depending on the choice of updating stress as in \eqsref{eq:j2_tsigma}, the history of $\bvarepsilon^p$ is \textbf{not} compulsory in this model if the latter expression is used instead of the former.
+Depending on the stress update used in \eqsref{eq:j2_tsigma}, the history of $\bvarepsilon^p$ is \textbf{not} compulsory in this model if the latter expression is used instead of the former.
 \subsection{Closing Remarks}
-As the first 3D material model introduced, the von Mises framework allows beginners to get familiar with multiaxial constitutive modelling with a relatively smooth learning curve. The formulation is expressed in tensor notation. Readers are strongly encouraged to derive the formulation from three governing equations independently in both tensor and compressed matrix notions separately. It is a good practice to get each tiny detail correct.
+As the first 3D material model introduced, the von Mises framework allows beginners to become familiar with multiaxial constitutive modelling with a relatively smooth learning curve. The formulation is expressed in tensor notation. Readers are strongly encouraged to derive the formulation independently from the three governing equations in both tensor and compressed matrix notations. It is good practice to get every small detail correct.
 \begin{cppcode}
-    NonlinearJ2::update_trial_status
+NonlinearJ2::update_trial_status
 \end{cppcode}
 
 Finally, in \eqsref{eq:j2_flow}, we have discussed that the same expression
@@ -377,7 +377,7 @@ Finally, in \eqsref{eq:j2_flow}, we have discussed that the same expression
 \end{gather}
 may have different explicit forms, depending on how those quantities are represented.
 
-The $\dot{\bvarepsilon^p}$ is further used in
+This $\dot{\bvarepsilon^p}$ is further used in
 \begin{gather}\label{eq:j2_two_form}
     \bs^\text{trial}-\bs_{n+1}=2G\dot{\bvarepsilon^p}.
 \end{gather}
@@ -416,4 +416,4 @@ No matter which notation is used, the same expression holds.
 This is based on the fact that $\dot{\bvarepsilon^p}$ is used as an intermediate variable.
 The intermediate scaling matrices cancel out and eventually the same expression is obtained.
 
-This is a beautiful attribute, though could be confusing for beginners.
+This is a useful attribute, although it can be confusing for beginners.

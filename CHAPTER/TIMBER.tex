@@ -1,6 +1,6 @@
 \chapter{Timber}
 \section{TimberPD}
-Here we present a 3D model based on the Hoffman yielding criterion and damage mechanics. It is suitable for modelling timber. The model is based on the split of the effective stress $\bbsigma$ such that
+Here we present a 3D model based on the Hoffman yielding criterion and damage mechanics, suitable for modelling timber. The model is based on the split of the effective stress $\bbsigma$ such that
 \begin{gather}
 \bbsigma=\bbsigma_t+\bbsigma_c,
 \end{gather}
@@ -9,18 +9,18 @@ with
 \bbsigma_t=\sum_{i=1}^{3}\left\langle\hat{\sigma}_i\right\rangle\bp_i\otimes\bp_i,\qquad
 \bbsigma_c=\sum_{i=1}^{3}\left(\hat{\sigma}_i-\left\langle\hat{\sigma}_i\right\rangle\right)\bp_i\otimes\bp_i,
 \end{gather}
-where $\bp_i$ and $\hat{\sigma}_i$ are eigenvectors and eigenvalues of the second order tensor $\bbsigma$. The above expression shall be interpreted with the tensor notation.
+where $\bp_i$ and $\hat{\sigma}_i$ are the eigenvectors and eigenvalues of the second order tensor $\bbsigma$. The above expression should be interpreted with tensor notation.
 
-The effective stress $\bbsigma$ obeys the conventional hardening model using the Hoffman yielding criterion, see \secref{sec:hoffman} for details. The final stress can be obtained after applying damage factors to the tensile and compressive parts of $\bbsigma$.
+The effective stress $\bbsigma$ obeys the conventional hardening model using the Hoffman yielding criterion; see \secref{sec:hoffman} for details. The final stress is obtained by applying damage factors to the tensile and compressive parts of $\bbsigma$.
 \begin{gather}
 \bsigma=\left(1-\omega_t\right)\bbsigma_t+\left(1-\omega_c\right)\bbsigma_c.
 \end{gather}
 \subsection{Damage}
-The damage part follows the one proposed in \cite{SirumbalZapata2018}. The damage evolution is governed by the equivalent stress $\bar{\tau}_{\aleph}$.
+The damage part follows the one proposed in \cite{SirumbalZapata2018}. The damage evolution is governed by the equivalent stress $\bar{\tau}_{\aleph}$,
 \begin{gather}\label{eq:timber_damage}
 \bar{\tau}_{\aleph}=\sqrt{\dfrac{1}{2}\bbsigma_\aleph^\mT\mb{H}_\aleph\bbsigma_\aleph},
 \end{gather}
-that covers both tensile and compressive cases. The matrix $\mb{H}_\aleph$ is the projection matrix of the Hill criterion, which is a special case of \eqsref{eq:hoffman_criterion}. For $\aleph=t$, set $f_{ii}^c=f_{ii}^t$. For $\aleph=c$, set $f_{ii}^t=f_{ii}^c$. It should be noted that in either case, $\mb{q}=\mb{0}$, thus, \eqsref{eq:timber_damage} does not contain a second term.
+which covers both tensile and compressive cases. The matrix $\mb{H}_\aleph$ is the projection matrix of the Hill criterion, which is a special case of \eqsref{eq:hoffman_criterion}. For $\aleph=t$, set $f_{ii}^c=f_{ii}^t$. For $\aleph=c$, set $f_{ii}^t=f_{ii}^c$. Note that in either case, $\mb{q}=\mb{0}$; thus, \eqsref{eq:timber_damage} does not contain a second term.
 
 The damage variables are updated based on the maximum history of $\bar{\tau}_{\aleph}$, that is
 \begin{gather}
@@ -32,12 +32,8 @@ and
 \omega_c=\beta\left(1-\dfrac{r_{c,0}}{r_c}\right)^m.
 \end{gather}
 
-The final stress is
-\begin{gather}
-\bsigma=\left(1-\omega_t\right)\bbsigma_t+\left(1-\omega_c\right)\bbsigma_c.
-\end{gather}
 \subsection{Consistent Tangent Stiffness}
-In the case of activation of damage evolution,
+When damage evolution is activated,
 \begin{gather}
 \pdfrac{\bsigma}{\bvarepsilon}=\left(\left(\left(1-\omega_t\right)\mb{I}-\bbsigma_t\ddfrac{\omega_t}{r_t}\ddfrac{r_t}{\bbsigma_t}\right)\ddfrac{\bbsigma_t}{\bbsigma}
 +\left(\left(1-\omega_c\right)\mb{I}-\bbsigma_c\ddfrac{\omega_c}{r_c}\ddfrac{r_c}{\bbsigma_c}\right)\ddfrac{\bbsigma_c}{\bbsigma}\right)\pdfrac{\bbsigma}{\bvarepsilon}.

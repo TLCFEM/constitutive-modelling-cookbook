@@ -1,20 +1,20 @@
 \chapter{Miscellaneous Topics}
-In this chapter, we discuss some miscellaneous topics that are relevant to numerical implementations of constitutive models.
+In this chapter, we discuss several miscellaneous topics that are relevant to the numerical implementation of constitutive models.
 \section{Equivalent But Preferred?}
-Some (yield) functions are mathematically equivalent, is there a preferred one?
-Or any form can be used?
-Consider for example, we want to define a yield function that enforces the magnitude of stress $\sigma$ to be less than a yield stress $\sigma_y\geqslant0$, one can write
+Some (yield) functions are mathematically equivalent, but is there a preferred one?
+Or can any form be used?
+Consider, for example, that we want to define a yield function that enforces the magnitude of stress $\sigma$ to be less than a yield stress $\sigma_y\geqslant0$. One can write
 \begin{gather}
     f=\abs{\sigma}-\sigma_y,
 \end{gather}
-or alternatively, one can write
+or alternatively,
 \begin{gather}
     f=\sigma^2-\sigma_y^2.
 \end{gather}
-They are indeed mathematically equivalent as we have defined the yield stress to be non-negative.
-However, they may have different implications in terms of numerical implementation.
+They are indeed mathematically equivalent, as we have defined the yield stress to be non-negative.
+However, they may have different implications for numerical implementation.
 First, the involvement of squares is discouraged.
-It easily leads to precision issues, especially when the local nonlinear system also contains some nondimensional history variables.
+It can easily lead to precision issues, especially when the local nonlinear system also contains some nondimensional history variables.
 Second, if associative flow is used, the above two yield functions lead to
 \begin{gather}
     \dot{\varepsilon^p}=\gamma\pdfrac{f}{\sigma}=\left\{\begin{array}{ll}
@@ -22,20 +22,20 @@ Second, if associative flow is used, the above two yield functions lead to
         \gamma2\sigma,       & \text{for~}f=\sigma^2-\sigma_y^2.
     \end{array}\right.
 \end{gather}
-It is easy to see that in the first case, $\abs{\dot{\varepsilon^p}}=\gamma$, meaning that $\gamma<\abs{\dot{\varepsilon}}$ is bounded as the increment of plastic strain can never exceed the increment of total strain.
+It is easy to see that in the first case, $\abs{\dot{\varepsilon^p}}=\gamma$, meaning that $\gamma<\abs{\dot{\varepsilon}}$ provides an explicit bound, as the increment of plastic strain can never exceed the increment of total strain.
 However, in the second case, it is not easy to determine the upper bound of $\gamma$.
-Since the whole plasticity development is driven by the plastic multiplier $\gamma$, it is possible to use root finding algorithms to solve for $\gamma$ when an explicit bound can be found.
+Since the whole plasticity evolution is driven by the plastic multiplier $\gamma$, it is possible to use root-finding algorithms to solve for $\gamma$ when an explicit bound can be found.
 This is particularly useful when the local Newton--Raphson iteration fails to converge.
 
-For numerical robustness, it is preferred to use the first form of yield function in this case.
-Similar arguments can be made for other more complex formulations.
+For numerical robustness, the first form of yield function is preferred in this case.
+Similar arguments can be made for other, more complex formulations.
 
 Can you analyze the pros and cons of the third option shown below?
 \begin{gather}
     f=\dfrac{\abs{\sigma}}{\sigma_y}-1.
 \end{gather}
 \section{First Order or Second Order?}
-Let's consider the following ODE,
+Let us consider the following ODE,
 \begin{gather}
     \dot{y}=a-by,
 \end{gather}
@@ -45,7 +45,7 @@ The analytical solution can be easily obtained as
     y(t)=\dfrac{a}{b}\left(1-e^{-bt}\right).
 \end{gather}
 
-Now, let's consider integrating this ODE using the first--order backward Euler method and the second--order Trapezoidal method.
+Now let us consider integrating this ODE using the first--order backward Euler method and the second--order Trapezoidal method.
 \begin{figure}[ht]
     \centering
     \includegraphics{PIC/convergence.integration.pdf}
@@ -54,29 +54,29 @@ Now, let's consider integrating this ODE using the first--order backward Euler m
 \end{figure}
 \figref{fig:convergence} presents the error of the numerical solutions for $a=1$ and $b=20$.
 The system is integrated to $t=10$.
-As expected, when $\Delta{}t$ decreases, the Trapezoidal method shows a second--order convergence, while the backward Euler method shows a first--order convergence.
-This is well understood via the truncation error analysis.
+As expected, when $\Delta{}t$ decreases, the Trapezoidal method shows second--order convergence, while the backward Euler method shows first--order convergence.
+This is well understood from truncation error analysis.
 
 However, when $\Delta{}t$ is large, the absolute error of the Euler method is smaller in the above example.
-Even if both methods show perfect first--order and second--order convergence for arbitrary $\Delta{}t$, there would exist a threshold such that when $\Delta{}t$ is larger than the threshold, the first--order method would yield a smaller absolute error than the second--order method.
-After all, the term `second--order' only tells us that the error is $\mathcal{O}\left(\Delta{}t^2\right)$, it does not imply that for a given $\Delta{}t$, second--order methods will always yield a smaller absolute error than first--order methods.
+Even if both methods show perfect first--order and second--order convergence for arbitrary $\Delta{}t$, there exists a threshold such that, when $\Delta{}t$ is larger than the threshold, the first--order method yields a smaller absolute error than the second--order method.
+After all, the term `second--order' only tells us that the error is $\mathcal{O}\left(\Delta{}t^2\right)$; it does not imply that, for a given $\Delta{}t$, second--order methods will always yield a smaller absolute error than first--order methods.
 The constant factor dropped in the big-$\mathcal{O}$ notation can be large enough to make the second--order method worse than the first--order method for a given $\Delta{}t$.
 
-This is not surprising --- two straight lines with different slopes will eventually cross each other.
-The question is, is this `threshold' practically relevant?
-There does not exist a universal answer to this question.
-One shall thus be aware of this subtle implication.
+This is not surprising --- two straight lines with different slopes eventually cross each other.
+The question is whether this `threshold' is practically relevant.
+There is no universal answer to this question.
+One should thus be aware of this subtle implication.
 When designing a numerical implementation, a second--order method is not necessarily universally better than a first--order method.
 \section{Algorithmic Tangent Stiffness}
 In numerical implementations with implicit schemes, the algorithmic tangent stiffness is often required to ensure the quadratic convergence of the global Newton--Raphson iteration.
 It is also called the consistent tangent operator in some literature.
 
 But what is it exactly?
-Let's consider the following ODE as an example,
+Let us consider the following ODE as an example,
 \begin{gather}
     \ddfrac{y}{x}=y.
 \end{gather}
-For a function whose derivative is the function itself, we know the solution is the exponential function,
+For a function whose derivative is the function itself, we know that the solution is the exponential function,
 \begin{gather}
     y=e^x+C
 \end{gather}
@@ -87,12 +87,12 @@ We have
 \begin{gather}
     y_{n+1}-y_n=y\Delta{}x,
 \end{gather}
-rearranging the equation gives
+and rearranging the equation gives
 \begin{gather}
     y_{n+1}=\dfrac{y_n}{1-\Delta{}x}.
 \end{gather}
-This shall be our recursion formula.
-Omit the subscript $\left(\cdot\right)_{n+1}$ for simplicity and compute the derivative of $y$ with respect to $\Delta{}x$, one has
+This is our recursion formula.
+If we omit the subscript $\left(\cdot\right)_{n+1}$ for simplicity and compute the derivative of $y$ with respect to $\Delta{}x$, one has
 \begin{gather}
     \ddfrac{y}{\Delta{}x}=\dfrac{y_n}{\left(1-\Delta{}x\right)^2}=\dfrac{y}{1-\Delta{}x}.
 \end{gather}
@@ -100,12 +100,12 @@ On the other hand, because $x=x_n+\Delta{}x$, we have
 \begin{gather}
     \md{x}=\md{x_n+\Delta{}x}=\md{\Delta{}x},
 \end{gather}
-the above derivative is thus
+thus the above derivative is
 \begin{gather}
     \ddfrac{y}{x}=\dfrac{y}{1-\Delta{}x}.
 \end{gather}
 It is clear that this is not the same as the original ODE $\ddfrac{y}{x}=y$.
-However, when $\Delta{}x\to0$, the derivative obtained from discretized equation converges to the original analytical one.
+However, when $\Delta{}x\to0$, the derivative obtained from the discretized equation converges to the original analytical one.
 
 This is the essence of the algorithmic tangent stiffness.
 It is the derivative obtained from the discretized equation, which is \textit{consistent} with the numerical scheme used.
@@ -117,12 +117,12 @@ Fundamentally, both approaches represent alternative numerical strategies for in
 
 Specifically, for the local system of ordinary differential equations given in \eqref{eq:local_system}, the closest-point projection method corresponds to an \textbf{implicit} time integration scheme, whereas the cutting-plane method is based on \textbf{explicit} integration.
 From this perspective, the distinction between the two approaches is primarily algorithmic rather than conceptual.
-It is all about how to discretize the time derivatives in the local evolution equations to find a solution to satisfy the yield condition.
+It is all about how to discretize the time derivatives in the local evolution equations to find a solution that satisfies the yield condition.
 
 As expected, the cutting-plane method inherits the well-known limitations of explicit time integration schemes, including conditional stability, restrictions on admissible time-step sizes, and the accumulation of numerical errors.
 For this reason, no cutting-plane-based implementation is presented in this book, as its applicability is limited in general-purpose computational settings.
 
-More generally, hybrid strategies can be constructed in which different subsets of the constitutive evolution equations are integrated using different numerical schemes, for example combining implicit and explicit updates within the same local problem.
+More generally, hybrid strategies can be constructed in which different subsets of the constitutive evolution equations are integrated using different numerical schemes, for example by combining implicit and explicit updates within the same local problem.
 
 Finally, it should be noted that some studies have suggested that a consistent algorithmic tangent operator cannot be derived when explicit integration schemes are employed \cite[e.g.,]{Simo1998}.
 This claim is not correct \cite{Starman2014}.

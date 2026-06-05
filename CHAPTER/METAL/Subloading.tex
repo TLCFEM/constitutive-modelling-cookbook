@@ -6,16 +6,16 @@ For example,
 \begin{gather}
     f=\norm{\beeta}-F,
 \end{gather}
-in which $\beeta=\beeta\left(\bsigma,\cdots\right)$ is known as the shifted stress that shall be a function of the stress tensor $\bsigma$ and other internal variables, $F=F\left(q\right)$ characterises the size of this surface and could evolve with the development of plasticity driven by some internal variable $q$.
-Within the yield surface $f$, the material is elastic, while plasticity would develop once the stress state reaches and exceeds $f$, in which case, the surface itself would also expand to enclose the current stress state accordingly.
-Thus, any admissible state shall satisfy the inequality $f\leqslant0$.
+in which $\beeta=\beeta\left(\bsigma,\cdots\right)$ is known as the shifted stress, a function of the stress tensor $\bsigma$ and other internal variables. Here, $F=F\left(q\right)$ characterises the size of this surface and could evolve with the development of plasticity driven by some internal variable $q$.
+Within the yield surface $f$, the material is elastic, while plasticity develops once the stress state reaches and exceeds $f$. In that case, the surface itself expands to enclose the current stress state accordingly.
+Thus, any admissible state should satisfy the inequality $f\leqslant0$.
 
-The original proposal of the subloading surface model introduces a new internal variable, called the normal yield ratio, denoted by $z$ in this work, which effectively scales the yield surface $f$ down by a factor $z$, the new surface is called the subloading surface $f_s$ and it is concentric with the yield surface $f$.
+The original proposal of the subloading surface model introduces a new internal variable called the normal yield ratio, denoted by $z$ in this work. It effectively scales the yield surface $f$ down by a factor $z$; the new surface is called the subloading surface $f_s$ and is concentric with the yield surface $f$.
 \begin{gather}
     f_s=\norm{\beeta}-zF.
 \end{gather}
-The normal yield ratio $0\leqslant{}z\leqslant{}1$ shall be updated in a manner such that $f_s=0$ is enforced not only for plastic loading but also for elastic unloading.
-With such a construct, any given stress state would always lie on the subloading surface, meaning that $f_s=0$ is always satisfied.
+The normal yield ratio $0\leqslant{}z\leqslant{}1$ should be updated so that $f_s=0$ is enforced not only for plastic loading but also for elastic unloading.
+With such a construct, any given stress state always lies on the subloading surface, meaning that $f_s=0$ is always satisfied.
 
 The main shortcoming of the original subloading surface model is that it exhibits excessive strain accumulation under cyclic loading.
 To address this issue, an additional internal field, denoted by $\bc$, is adopted to define the elastic core surface in the extended subloading surface model, which is concentric with the yield surface (centred at the back stress $\bbeta$).
@@ -55,37 +55,37 @@ A graphical illustration is shown in \figref{fig:surfaces}.
 By definition, $\bc$ denotes the homothetic centre between $f$ and $f_s$.
 Then, according to similarity, the new centre of the subloading surface is $\bbeta+\left(1-z\right)\left(\bc-\bbeta\right)$, that is $z\bbeta+\left(1-z\right)\bc$.
 \subsection{Original Evolution Rules}
-The evolution rule for the elastic core has undergone several iterations, see, for example, the initial version \cite{Hashiguchi1989}, one of the variations \cite{Hashiguchi2015}, the most recent version \cite{Anjiki2019}.
-The original formulation further imposes the requirement that the size of the elastic core shall be limited to a certain fraction of that of the yield surface.
+The evolution rule for the elastic core has undergone several iterations; see, for example, the initial version \cite{Hashiguchi1989}, one variation \cite{Hashiguchi2015}, and the most recent version \cite{Anjiki2019}.
+The original formulation further imposes the requirement that the size of the elastic core should be limited to a certain fraction of that of the yield surface.
 This is achieved by the following evolution rule for $\bc$ \cite{Anjiki2019,Hashiguchi2023},
 \begin{gather}\label{eq:original_core}
     \dot{\bc}=c_e\norm{\dot{\bvarepsilon^p}}\left(z_eF\bn-\left(\bc-\bbeta\right)\right)+\dot{\bbeta}+\dfrac{\dot{F}}{F}\left(\bc-\bbeta\right).
 \end{gather}
-In which, $0\leqslant{}c_e$ is a constant that controls the evolution rate, $0\leqslant{}z_e\leqslant1$ is a constant that controls the limit size of the elastic core and $\bn=\pdfrac{f_s}{\bsigma}/\norm{\pdfrac{f_s}{\bsigma}}=\dfrac{\beeta}{\norm{\beeta}}$ is unit gradient of the subloading surface.
-It shall be pointed out that the term $z_eF\bn$ is expressed as $z_e\dfrac{\beeta}{z}$ in the original formulation.
-They are identical due to the fact that $\norm{\beeta}=zF$ since $f_s\equiv0$ while $F\bn$ has clear numerical advantages over $\dfrac{\beeta}{z}$.
+Here, $0\leqslant{}c_e$ is a constant that controls the evolution rate, $0\leqslant{}z_e\leqslant1$ is a constant that controls the limit size of the elastic core, and $\bn=\pdfrac{f_s}{\bsigma}/\norm{\pdfrac{f_s}{\bsigma}}=\dfrac{\beeta}{\norm{\beeta}}$ is the unit gradient of the subloading surface.
+It should be pointed out that the term $z_eF\bn$ is expressed as $z_e\dfrac{\beeta}{z}$ in the original formulation.
+They are identical because $\norm{\beeta}=zF$ since $f_s\equiv0$, while $F\bn$ has clear numerical advantages over $\dfrac{\beeta}{z}$.
 
 The evolution rule for the normal yield ratio $z$ is given by
 \begin{gather}\label{eq:original_z}
     \dot{z}=U\dot{q},
 \end{gather}
-where $U=U\left(z\right)$ is a function that shall satisfy certain conditions, and $q$ is the accumulated plastic strain.
+where $U=U\left(z\right)$ is a function that should satisfy certain conditions, and $q$ is the accumulated plastic strain.
 
 Both of the above evolution rules will be discussed and refined in the following sections.
 Here, we only present them in their original forms for completeness.
 \subsection{Revisions}\label{sec:revised}
 \subsubsection{Preliminary Remarks}
-In the scalar form, the Armstrong--Frederick evolution rule \cite{Frederick2007} is equivalent to the following ordinary differential equation (ODE),
+In scalar form, the Armstrong--Frederick evolution rule \cite{Frederick2007} is equivalent to the following ordinary differential equation (ODE),
 \begin{gather}\label{eq:af_ode}
     y'=b\left(a-y\right),
 \end{gather}
-it can be explicitly integrated to give the solution for the initial condition $y(0)=0$,
+which can be explicitly integrated to give the solution for the initial condition $y(0)=0$,
 \begin{gather}
     y(x)=a\left(1-\exp\left(-bx\right)\right),
 \end{gather}
 which defines a curve that asymptotically approaches the constant bound $a$.
 
-To employ a non-constant bound, it is possible to simply replace the constant $a$ by a function $a(x)$ in the ODE \eqsref{eq:af_ode} such that $y'=b\left(a\left(x\right)-y\right)$.
+To employ a non-constant bound, one may simply replace the constant $a$ by a function $a(x)$ in the ODE \eqsref{eq:af_ode}, such that $y'=b\left(a\left(x\right)-y\right)$.
 However, as noted in the literature, the corresponding solution is not strictly bounded by $a(x)$.
 \figref{fig:examples} presents both hardening and softening examples to illustrate this point.
 \begin{figure}[htb]
@@ -128,12 +128,12 @@ That is, the following condition does not hold for arbitrarily small $\epsilon$,
 \begin{gather}
     \lim\limits_{x\to\infty}\abs{y-a(x)}<\epsilon.
 \end{gather}
-It is worth noting that the following form
+It is also worth noting that the following form
 \begin{gather}
     y'=b\left(1-\dfrac{1}{a\left(x\right)}y\right)=\dfrac{b}{a\left(x\right)}\left(a\left(x\right)-y\right)
 \end{gather}
 has a similar solution to that of $y'=b\left(a\left(x\right)-y\right)$.
-The $y'$ is governed by the difference $a\left(x\right)-y$, while the approaching rate changes from $b$ to $b/a\left(x\right)$.
+Here, $y'$ is governed by the difference $a\left(x\right)-y$, while the approaching rate changes from $b$ to $b/a\left(x\right)$.
 They are equivalent in terms of the asymptotic behaviour and share the same shortcoming.
 This form has been used in defining the evolution rule for the back stress in the subloading surface model \cite{Anjiki2019,Hashiguchi2023,Hashiguchi2024}.
 
@@ -148,17 +148,17 @@ On the other hand, the corresponding ODE can be derived as follows,
 \end{gather}
 After careful comparison, one could observe that \eqsref{eq:strict_bound} is in fact the scalar unidirectional version of the evolution rule presented in \eqsref{eq:original_core}.
 They bear the same format.
-Thus, one can conclude that \eqsref{eq:strict_bound_core} is mathematically equivalent to \eqsref{eq:strict_bound} as it is the solution to the latter with the initial condition $y(0)=0$, however, the latter is much more cumbersome.
+Thus, one can conclude that \eqsref{eq:strict_bound_core} is mathematically equivalent to \eqsref{eq:strict_bound}, as it is the solution to the latter with the initial condition $y(0)=0$. However, the latter is much more cumbersome.
 
 On the other hand, consider the function
 \begin{gather}\label{eq:polar_decomposition}
     \bc-\bbeta=F\bd,
 \end{gather}
-in which $\bd$ is some quantity, its derivative can be expressed as
+in which $\bd$ is some quantity. Its derivative can be expressed as
 \begin{gather}
     \dot{\bc}-\dot{\bbeta}=F\dot{\bd}+\dot{F}\bd=F\dot{\bd}+\dfrac{\dot{F}}{F}\left(\bc-\bbeta\right).
 \end{gather}
-By comparing with \eqsref{eq:original_core}, one could conclude that \eqsref{eq:polar_decomposition} must be mathematically equivalent to \eqsref{eq:original_core} if $\bd$ is governed by the following evolution rule,
+By comparing with \eqsref{eq:original_core}, one can conclude that \eqsref{eq:polar_decomposition} must be mathematically equivalent to \eqsref{eq:original_core} if $\bd$ is governed by the following evolution rule,
 \begin{gather}
     \dot{\bd}=c_e\norm{\dot{\bvarepsilon^p}}\left(z_e\bn-\bd\right).
 \end{gather}
@@ -168,27 +168,27 @@ If the associative flow rule is adopted, the above expression can be further exp
 \end{gather}
 This is effectively an Armstrong--Frederick type evolution rule for $\bd$.
 \subsubsection{Revised Evolution Rule (Elastic Core)}
-The evolution rule for $\bc$ shown in \eqsref{eq:original_core} is derived at the limit state where the subloading surface coincides with the limit surface --- which would not occur due to its asymptotic nature.
+The evolution rule for $\bc$ shown in \eqsref{eq:original_core} is derived at the limit state where the subloading surface coincides with the limit surface --- a state that would not occur because of its asymptotic nature.
 It possesses a cumbersome form that involves both $F$ and its derivative.
 As a result, it is not straightforward to implement numerically.
 Instead, based on the above observations, one can apply the following decomposition,
 \begin{gather}\label{eq:decomposition_core}
     \boxed{\bc-\bbeta=F\bd\qquad\rightarrow\qquad\bc=\bbeta+F\bd,}
 \end{gather}
-then the evolution of $\bc$, which characterises a point on the elastic core surface, can be equivalently described by the evolution of $\bd$, which could take a very simple form as the contribution of $F$ is separated,
+Then the evolution of $\bc$, which characterises a point on the elastic core surface, can be equivalently described by the evolution of $\bd$, which can take a very simple form once the contribution of $F$ is separated,
 \begin{gather}\label{eq:revised_core}
     \boxed{\dot{\bd}=c_e\left(z_e\dot{\bvarepsilon^p}-\norm{\dot{\bvarepsilon^p}}\bd\right).}
 \end{gather}
 Since the magnitude of $\bd$ defined in this manner is bounded by the constant $z_e$, it is then guaranteed that $\norm{\bc-\bbeta}=F\norm{\bd}<z_eF$.
 Based on the above discussion, it can be asserted that \eqsref{eq:decomposition_core} with \eqsref{eq:revised_core} is mathematically equivalent to \eqsref{eq:original_core}.
-However, such a decomposition separates the directional vector from the scalar magnitude, which allows much simpler evolution rules for both parts, although the vector here is not a unit vector thus does not possess a fixed unit length.
+However, such a decomposition separates the directional vector from the scalar magnitude, which allows much simpler evolution rules for both parts, although the vector here is not a unit vector and thus does not possess a fixed unit length.
 \eqsref{eq:decomposition_core} may be called the `\textit{pseudo-polar coordinate}' representation while $\bd$ may be called the `\textit{similarity vector}' as it points to the similarity centre $\bc$.
 \subsubsection{Revised Evolution Rule (Back Stress)}
 Now since \eqsref{eq:decomposition_core} is adopted, a similar strategy can also be applied to $\bbeta$ to allow its bound to evolve with the development of plasticity, that is,
 \begin{gather}\label{eq:decomposition_back}
     \boxed{\bbeta=H\balpha,}
 \end{gather}
-with $H=H\left(q\right)$ being the bound and $\balpha$ being the normalised back stress (normalised by $H$) which could have the following evolution rule.
+with $H=H\left(q\right)$ being the bound and $\balpha$ being the normalised back stress (normalised by $H$), which can follow the following evolution rule.
 \begin{gather}\label{eq:revised_back}
     \boxed{\dot{\balpha}=b\left(\dot{\bvarepsilon^p}-\norm{\dot{\bvarepsilon^p}}\balpha\right),}
 \end{gather}
@@ -198,14 +198,14 @@ Similar to $\norm{\bc-\bbeta}$, here it is guaranteed that $\norm{\bbeta}=H\norm
 It is possible to set $H$ to a fraction of $F$.
 Here, to allow more flexibility, $H$ is defined as an independent quantity.
 Nevertheless, if one wishes, it is possible to associate $H$ with $F$ as done in other work \cite{Anjiki2019}.
-However, one shall note that the specific form $\bbeta=b\left(\dot{\bvarepsilon^p}-\norm{\dot{\bvarepsilon^p}}\dfrac{\bbeta}{H}\right)$, which is used by \cite{Anjiki2019,Anjiki2021}, shall not be used as the back stress may go beyond the intended bound ($\norm{\bbeta}>H$) for softening materials, see the discussion around \figref{fig:examples}.
+However, note that the specific form $\bbeta=b\left(\dot{\bvarepsilon^p}-\norm{\dot{\bvarepsilon^p}}\dfrac{\bbeta}{H}\right)$, which is used by \cite{Anjiki2019,Anjiki2021}, should not be used, as the back stress may go beyond the intended bound ($\norm{\bbeta}>H$) for softening materials; see the discussion around \figref{fig:examples}.
 \subsubsection{Shifted Stress}
 Since now the new centre of the subloading surface is shifted to $\bbeta+\left(1-z\right)\left(\bc-\bbeta\right)$, the original formulation uses the following expression to compute the shifted stress $\beeta$,
 \begin{gather}
     \beeta=\bs-\left(\bbeta+\left(1-z\right)\left(\bc-\bbeta\right)\right),
 \end{gather}
 where $\bs=\bs\left(\bsigma\right)$ is some function of the stress tensor $\bsigma$.
-Account for the proposed decompositions \eqsref{eq:decomposition_core} and \eqsref{eq:decomposition_back}, the above expression can be rewritten as
+Accounting for the proposed decompositions \eqsref{eq:decomposition_core} and \eqsref{eq:decomposition_back}, the above expression can be rewritten as
 \begin{gather}
     \boxed{\beeta=\bs-H\balpha+\left(z-1\right)F\bd,}
 \end{gather}
@@ -241,11 +241,11 @@ Account for the proposed decompositions \eqsref{eq:decomposition_core} and \eqsr
     \end{tikzpicture}
     \caption{graphical representation of the surfaces using proposed definitions}\label{fig:revised_surfaces}
 \end{figure}
-It could also be noted that, since $\norm{\bd}<1$, then $\norm{zF\bd}<zF$, the homothetic centre is always inside the subloading surface $f_s$, which itself is inside the yield surface $f$.
+It can also be noted that, since $\norm{\bd}<1$, then $\norm{zF\bd}<zF$. Therefore, the homothetic centre is always inside the subloading surface $f_s$, which itself is inside the yield surface $f$.
 \subsection{Loading/Unloading Criterion}\label{sec:correct_loading_criterion}
-The conventional Kuhn--Tucker condition cannot be applied in the subloading surface model since, even for elastic unloading, the history variable $z$ shall be updated for every load increment/step.
-For arbitrary loading directions and magnitudes, there exists possibilities that the normal yield ratio $z$ may decrease first --- the subloading surface shrinks, then increase --- the subloading surface expands.
-When it expands, the plasticity can only be correctly computed with the correct initial value of $z$.
+The conventional Kuhn--Tucker condition cannot be applied in the subloading surface model since, even for elastic unloading, the history variable $z$ must be updated for every load increment/step.
+For arbitrary loading directions and magnitudes, it is possible for the normal yield ratio $z$ to decrease first --- the subloading surface shrinks --- and then increase --- the subloading surface expands.
+When it expands, plasticity can only be computed correctly with the correct initial value of $z$.
 An inward load increment resulting in $f_s^\text{trial}<0$ does not necessarily imply that it is a pure elastic unloading step.
 A graphical representation is shown in \figref{fig:loading_criterion}.
 \begin{figure}[htb]
@@ -299,13 +299,13 @@ A graphical representation is shown in \figref{fig:loading_criterion}.
     \caption{arbitrary loading direction with frozen plasticity}\label{fig:loading_criterion}
 \end{figure}
 
-In the trial state, by freezing plasticity, viz., $H$, $F$, $\balpha$ and $\bd$ are all kept constant, it can be concluded that the centre of the subloading surface must lie on the line defined by centre of the yield surface $\bbeta$ and the similarity centre $\bc=\bbeta+F\bd$.
-Then, for a given load increment $\Delta\bs=\bs_{n+1}-\bs_n$, assuming proportional loading, there exists a scalar $r$ such that the corresponding stress state $\bs_n+r\Delta\bs$ would minimise $z$, we denote this $z$ as $z^\text{trial}$ since it is computed in the trial state.
+In the trial state, by freezing plasticity, viz., keeping $H$, $F$, $\balpha$, and $\bd$ constant, one can conclude that the centre of the subloading surface must lie on the line defined by the centre of the yield surface $\bbeta$ and the similarity centre $\bc=\bbeta+F\bd$.
+Then, for a given load increment $\Delta\bs=\bs_{n+1}-\bs_n$, assuming proportional loading, there exists a scalar $r$ such that the corresponding stress state $\bs_n+r\Delta\bs$ minimises $z$. We denote this value by $z^\text{trial}$ since it is computed in the trial state.
 In mathematical terms, it can be expressed as
 \begin{gather}
     \boxed{\min\limits_{r\in\mathbb{R}}z^\text{trial}\qquad\text{s.t.}\qquad{}f_s^\text{trial}\left(z^\text{trial},r\right)=0,}
 \end{gather}
-where $z^\text{trial}$ shall be computed by enforcing the corresponding $f_s^\text{trial}=0$.
+where $z^\text{trial}$ should be computed by enforcing the corresponding $f_s^\text{trial}=0$.
 % \begin{gather}\label{eq:trial_criterion}
 %     \begin{split}
 %         f_s^\text{trial} & =\norm{\beeta^\text{trial}}-z^\text{trial}F_n                                                 \\
@@ -317,22 +317,22 @@ where $z^\text{trial}$ shall be computed by enforcing the corresponding $f_s^\te
 % in which $\bar{\beeta}=\bar{\beeta}\left(r\right)=\bs_n-H_n\balpha_n-F_n\bd_n+r\Delta\bs$.
 % The subscript $\left(\cdot\right)_n$ denotes the converged state at the beginning of the current loading step.
 Since no extra constraints are imposed on $r$ for the moment, a solution is guaranteed to exist.
-However, there are three distinctive cases.
+However, three distinctive cases arise.
 \begin{enumerate}
     \item If $0<r<1$, the given load increment $\Delta\bs$ contains both elastic unloading and plastic loading.
-          Since the elastic unloading portion ($0\to{}r$) reduces $z$ to a value smaller than the converged $z_n$, the plastic loading portion ($r\to{}1$) shall use this minimum $z$ (smaller than $z_n$, not necessarily zero in 3D models), instead of $z_n$, as the starting value to correctly compute plasticity development.
+          Since the elastic unloading portion ($0\to{}r$) reduces $z$ to a value smaller than the converged $z_n$, the plastic loading portion ($r\to{}1$) should use this minimum $z$ (smaller than $z_n$, not necessarily zero in 3D models), instead of $z_n$, as the starting value to correctly compute plasticity development.
     \item If $r\geqslant1$, the given load increment $\Delta\bs$ involves only elastic unloading.
     \item If $r\geqslant0$, it is a pure loading case. Nothing additional needs to be done. $z_n$ is the correct starting value for return mapping.
 \end{enumerate}
-Thus, for any given load increment, one could 1) find the corresponding scalar $r$ that minimises $z^\text{trial}$, 2) use the above criteria to determine whether plasticity occurs, if so, also correct the starting value of $z$ if necessary.
+Thus, for any given load increment, one can 1) find the corresponding scalar $r$ that minimises $z^\text{trial}$, and 2) use the above criteria to determine whether plasticity occurs and, if so, correct the starting value of $z$ if necessary.
 We defer the presentation of explicit expressions for the above procedure after introducing the von Mises framework.
 \subsection{A von Mises Model for Metals}
 \subsubsection{Subloading Surface}
-For the von Mises criterion, $\bs$ shall take the deviatoric part of the stress tensor $\bs=\dev{\bsigma}$, then
+For the von Mises criterion, $\bs$ takes the deviatoric part of the stress tensor, $\bs=\dev{\bsigma}$, then
 \begin{gather}
     \beeta=\dev{\bsigma}-H\balpha+\left(z-1\right)F\bd.
 \end{gather}
-The subloading surface shall be expressed as follows by replacing $F$ with $\sqrt{\dfrac{2}{3}}\sigma^y$.
+The subloading surface can then be expressed as follows by replacing $F$ with $\sqrt{\dfrac{2}{3}}\sigma^y$.
 \begin{gather}\label{eq:mises_subloading_surface}
     f_s=\norm{\beeta}-z\sqrt{\dfrac{2}{3}}\sigma^y.
 \end{gather}
@@ -349,7 +349,7 @@ The accumulated plastic strain $q$ simply takes the accumulated magnitude of $\b
     \dot{q}=\sqrt{\dfrac{2}{3}}\norm{\dot{\bvarepsilon^p}}=\sqrt{\dfrac{2}{3}}\gamma.
 \end{gather}
 \paragraph{Isotropic Hardening}
-The evolution of $\sigma^y$ depends on $q$, here we adopt general form that combines linear hardening and nonlinear saturation.
+The evolution of $\sigma^y$ depends on $q$. Here, we adopt a general form that combines linear hardening and nonlinear saturation.
 \begin{gather}\label{eq:iso_bone}
     \sigma^y=\sigma^i+k_\text{iso}q+\sigma^s_\text{iso}\left(1-e^{-m^s_\text{iso}q}\right),
 \end{gather}
@@ -362,11 +362,11 @@ The kinematic hardening bound $H$ is replaced with a discrete function $a^y$ tha
 where $a^i$ is the initial stress, $k_\text{kin}$ is the kinematic hardening modulus, $a^s_\text{kin}$ is the saturation stress, and $m^s_\text{kin}$ is the saturation rate.
 
 The normalised back stress $\balpha$ adopts an Armstrong--Frederick type \cite{Frederick2007} evolution rule as shown in \eqsref{eq:revised_back}.
-In this particular case, it shall be written as
+In this particular case, it can be written as
 \begin{gather}\label{eq:normalised_back_rule}
     \dot{\balpha}=b\left(\sqrt{\dfrac{2}{3}}\bn-\balpha\right)\gamma.
 \end{gather}
-It must be pointed out that, strictly speaking, \eqsref{eq:normalised_back_rule} shall be expressed as \cite{Simo1998}
+It must be pointed out that, strictly speaking, \eqsref{eq:normalised_back_rule} should be expressed as \cite{Simo1998}
 \begin{gather}
     \dot{\balpha}=b\left(\dfrac{2}{3}\dot{\bvarepsilon^p}-\balpha\dot{q}\right)=b\sqrt{\dfrac{2}{3}}\left(\sqrt{\dfrac{2}{3}}\bn-\balpha\right)\gamma.
 \end{gather}
@@ -378,8 +378,8 @@ Similarly, the new field $\bd$ also adopts an Armstrong--Frederick type evolutio
 \end{gather}
 \subsubsection{Summary}
 The key expressions for both uniaxial and 3D models are summarised in \tabref{tab:summary}.
-Note the constant $\sqrt{\dfrac{2}{3}}$ is added to the evolution rules for $\alpha$ and $d$ in the uniaxial version to ensure the same set of parameters used for both models would yield the same results.
-They can be removed if such a consistency is not required.
+Note that the constant $\sqrt{\dfrac{2}{3}}$ is added to the evolution rules for $\alpha$ and $d$ in the uniaxial version to ensure that the same set of parameters used for both models yields the same results.
+They can be removed if such consistency is not required.
 \begin{table}[htb]
     \centering\footnotesize
     \caption{summary of the subloading surface model}\label{tab:summary}
@@ -405,14 +405,14 @@ For brevity, the Armstrong--Frederick evolution rule is used for $\balpha$ and $
 More complex definitions can be used if necessary.
 The main takeaway is the proposed decomposition, namely \eqref{eq:decomposition_core} and \eqsref{eq:decomposition_back}.
 It satisfies the enclosing/bounding condition as long as $\balpha$ and $\bd$ are bounded.
-It allows simple and concise formulation that is beneficial for both theoretical interpretation and numerical implementation.
+It allows a simple and concise formulation that is beneficial for both theoretical interpretation and numerical implementation.
 \subsection{Formulation}
 \subsubsection{Trial State}
-Similar to the conventional return mapping algorithm, the trial state is computed by assuming the given load increment is fully elastic, then one could compute the trial stress $\bsigma^\text{trial}$ via the constitutive law.
+Similar to the conventional return mapping algorithm, the trial state is computed by assuming that the given load increment is fully elastic. One can then compute the trial stress $\bsigma^\text{trial}$ via the constitutive law.
 \begin{gather}
     \bsigma^\text{trial}=\bsigma_n+\mb{D}_e:\left(\bvarepsilon_{n+1}-\bvarepsilon_n\right)=\bsigma_n+\mb{D}_e:\Delta\bvarepsilon.
 \end{gather}
-The incremental of the deviatoric part $\bs^\text{trial}=\dev{\bsigma^\text{trial}}$ can be computed accordingly.
+The increment of the deviatoric part, $\bs^\text{trial}=\dev{\bsigma^\text{trial}}$, can be computed accordingly.
 \begin{gather}
     \Delta\bs=\bs^\text{trial}-\bs_n=\dev{\bsigma^\text{trial}-\bsigma_n}=2G\cdot\dev{\Delta\bvarepsilon},
 \end{gather}
@@ -430,11 +430,11 @@ By the quadratic formula,
 \begin{gather}\label{eq:z_trial}
     z^\text{trial}\left(r\right)=\dfrac{\bar{\beeta}:\bd_n+\sqrt{\left(\bar{\beeta}:\bd_n\right)^2+\left(\bar{\beeta}:\bar{\beeta}\right)\left(\dfrac{2}{3}-\bd_n:\bd_n\right)}}{F_n\left(\dfrac{2}{3}-\bd_n:\bd_n\right)}.
 \end{gather}
-Noting that $\norm{\bd_n}<\sqrt{\dfrac{2}{3}}z_e\leqslant\sqrt{\dfrac{2}{3}}$, then, $\dfrac{2}{3}-\bd_n:\bd_n>0$, thus, the denominator is positive.
-Due to the same reason, $\sqrt{\left(\bar{\beeta}:\bd_n\right)^2+\left(\bar{\beeta}:\bar{\beeta}\right)\left(\dfrac{2}{3}-\bd_n:\bd_n\right)}>\abs{\bar{\beeta}:\bd_n}$.
+Noting that $\norm{\bd_n}<\sqrt{\dfrac{2}{3}}z_e\leqslant\sqrt{\dfrac{2}{3}}$, we have $\dfrac{2}{3}-\bd_n:\bd_n>0$; thus, the denominator is positive.
+For the same reason, $\sqrt{\left(\bar{\beeta}:\bd_n\right)^2+\left(\bar{\beeta}:\bar{\beeta}\right)\left(\dfrac{2}{3}-\bd_n:\bd_n\right)}>\abs{\bar{\beeta}:\bd_n}$.
 The other root is discarded since it may be negative.
 
-To minimise $z^\text{trial}$, which is a univariate function of $r$ in the trial state, one could derive
+To minimise $z^\text{trial}$, which is a univariate function of $r$ in the trial state, one can derive
 \begin{gather}
     \ddfrac{z^\text{trial}}{r}=0\quad\rightarrow\quad
     \ddfrac{}{r}\left(\bar{\beeta}:\bd_n+\sqrt{\left(\bar{\beeta}:\bd_n\right)^2+\left(\bar{\beeta}:\bar{\beeta}\right)\left(\dfrac{2}{3}-\bd_n:\bd_n\right)}\right)=0.
@@ -443,7 +443,7 @@ Its explicit form can be further expressed as follows,
 \begin{gather}
     \bd_n:\Delta\bs+\dfrac{\left(\bd_n:\bar{\beeta}\right)\left(\bd_n:\Delta\bs\right)+\left(\dfrac{2}{3}-\bd_n:\bd_n\right)\left(\bar{\beeta}:\Delta\bs\right)}{\sqrt{\left(\bd_n:\bar{\beeta}\right)^2+\left(\dfrac{2}{3}-\bd_n:\bd_n\right)\left(\bar{\beeta}:\bar{\beeta}\right)}}=0,
 \end{gather}
-which, in a general context, can be solved by the Newton--Raphson method.
+which, in the general case, can be solved by the Newton--Raphson method.
 
 Let $R_r$ denote the residual
 \begin{multline}\label{eq:z_residual}
@@ -456,7 +456,7 @@ Its derivative with regard to $r$ is
     +\left(\bd_n:\Delta\bs\right)^2+\left(\dfrac{2}{3}-\bd_n:\bd_n\right)\left(\Delta\bs:\Delta\bs\right).
 \end{multline}
 
-Compared to the recent work \cite{Hashiguchi2018,Anjiki2019}, here we have presented an equivalent but simpler approach to compute the starting normal yield ratio for arbitrary loading increments.
+Compared to recent work \cite{Hashiguchi2018,Anjiki2019}, we present here an equivalent but simpler approach to compute the starting normal yield ratio for arbitrary loading increments.
 \algoref{algo:loading_criterion} presents a general algorithm to detect partial elastic unloading and correct the starting value of the normal yield ratio if necessary.
 \begin{breakablealgorithm}
     \caption{correct starting value of normal yield ratio $z$}\label{algo:loading_criterion}
@@ -480,7 +480,7 @@ Compared to the recent work \cite{Hashiguchi2018,Anjiki2019}, here we have prese
     \end{algorithmic}
 \end{breakablealgorithm}
 \subsubsection{Some Simplifications}
-Noting that $\dot{\balpha}$ is a linear function of $\balpha$, taking advantage of the implicit Euler method, one could express $\balpha$ in its explicit form.
+Noting that $\dot{\balpha}$ is a linear function of $\balpha$, one can take advantage of the implicit Euler method to express $\balpha$ in explicit form.
 \begin{gather}\label{eq:explicit_alpha}
     \balpha_n+b\left(\sqrt{\dfrac{2}{3}}\bn-\balpha\right)\gamma=\balpha\qquad\rightarrow\qquad
     \balpha=\dfrac{\gamma\sqrt{\dfrac{2}{3}}b\bn+\balpha_n}{1+\gamma{}b}.
@@ -489,7 +489,7 @@ Similarly, $\bd$ can be expressed as
 \begin{gather}\label{eq:explicit_d}
     \bd_n+c_e\left(\sqrt{\dfrac{2}{3}}z_e\bn-\bd\right)\gamma=\bd\qquad\rightarrow\qquad\bd=\dfrac{\gamma{}\sqrt{\dfrac{2}{3}}c_ez_e\bn+\bd_n}{1+\gamma{}c_e}.
 \end{gather}
-On the other hand, the deviatoric stress $\bs$ shall be computed via the trial stress $\bsigma^\text{trial}$,
+On the other hand, the deviatoric stress $\bs$ is computed from the trial stress $\bsigma^\text{trial}$,
 \begin{gather}
     \bs=\dev{\bsigma}=\dev{\bsigma^\text{trial}-\gamma2G\bn}=\dev{\bsigma^\text{trial}}-\gamma2G\bn=\bs^\text{trial}-\gamma2G\bn.
 \end{gather}
@@ -522,7 +522,7 @@ and
     \bn=\dfrac{\beeta}{\norm{\beeta}}=\dfrac{\bzeta}{\norm{\bzeta}}.
 \end{gather}
 The above simplifications are valid under the assumption of associative plasticity flow.
-Although it is not possible to simplify more, one shall realise that $\bzeta$ is a function of $\bvarepsilon$, $\gamma$ and $z$ only.
+Although it is not possible to simplify further, one should note that $\bzeta$ is a function of $\bvarepsilon$, $\gamma$, and $z$ only.
 Its derivatives can be computed as follows.
 \begin{gather}\label{eq:zeta_d1}
     \pdfrac{\bzeta}{\gamma}=-\dfrac{\ddfrac{a^y}{\gamma}\left(1+\gamma{}b\right)-ba^y}{\left(1+\gamma{}b\right)^2}\balpha_n+\left(z-1\right)\dfrac{\ddfrac{\sigma^y}{\gamma}\left(1+\gamma{}c_e\right)-c_e\sigma^y}{\left(1+\gamma{}c_e\right)^2}\bd_n,\\\label{eq:zeta_d2}
@@ -541,7 +541,7 @@ The local system consists of two residuals, $f_s$ and $z$.
 \end{gather}
 Taking the local variable as $\mb{x}=\begin{bmatrix}
         \gamma & z
-    \end{bmatrix}^\mT$, the Jacobian $\mb{J}$ shall be written as
+    \end{bmatrix}^\mT$, the Jacobian $\mb{J}$ can be written as
 \begin{gather}
     \mb{J}=\begin{bmatrix}
         \pdfrac{\norm{\beeta}}{\gamma}-\sqrt{\dfrac{2}{3}}z\ddfrac{\sigma^y}{\gamma} & \pdfrac{\norm{\beeta}}{z}-\sqrt{\dfrac{2}{3}}\sigma^y \\[4mm]
@@ -577,7 +577,7 @@ then in the matrix form,
         \bn^\mT \\\mb{0}
     \end{bmatrix}.
 \end{gather}
-By solving \eqsref{eq:local_equilibrium}, one could obtain $\ddfrac{\mb{x}}{\bvarepsilon}$, we are interested in the first row, which can be explicitly written as
+By solving \eqsref{eq:local_equilibrium}, one can obtain $\ddfrac{\mb{x}}{\bvarepsilon}$. We are interested in the first row, which can be written explicitly as
 \begin{gather}
     \ddfrac{\gamma}{\bvarepsilon}=-2G\dfrac{1-\sqrt{\dfrac{2}{3}}\gamma{}\ddfrac{U}{z}}{\det\mb{J}}\bn^\mT.
 \end{gather}
@@ -598,7 +598,7 @@ It is a symmetric tensor/matrix.
 One can also observe some resemblance between \eqsref{eq:j2_stiffness} and \eqsref{eq:consistent_tangent}.
 \subsection{Implementation}
 The complete algorithm is presented in \algoref{algo:subloading_steel}.
-It adopts a standard Newton--Raphson scheme (implicit, closest point projection) to solve the local equilibrium.
+It adopts a standard Newton--Raphson scheme (implicit closest-point projection) to solve the local equilibrium.
 Noting that the local iteration does not involve complex tensor algebra, the algorithm can be implemented in a very efficient and concise manner.
 \begin{breakablealgorithm}
     \caption{state determination of the subloading surface model}\label{algo:subloading_steel}
@@ -635,22 +635,22 @@ Noting that the local iteration does not involve complex tensor algebra, the alg
     \end{algorithmic}
 \end{breakablealgorithm}
 
-The following is a reference implementation in CPP.
-One shall note the alternative formulation presented in \tabref{tab:summary_alternative} is implemented.
+The following is a reference implementation in C++.
+Note that the alternative formulation presented in \tabref{tab:summary_alternative} is implemented.
 \begin{cppcode}
-    Subloading::update_trial_status
+Subloading::update_trial_status
 \end{cppcode}
 \subsubsection{Remarks}
-Compared to the previous implementation \cite{Fincato2017,Anjiki2019}, the formulation proposed in this work dramatically reduces the size of the local system from \num{20} to \num{2}.
+Compared to previous implementations \cite{Fincato2017,Anjiki2019}, the formulation proposed in this work dramatically reduces the size of the local system from \num{20} to \num{2}.
 We also present the explicit expression of the consistent tangent operator, which is not available in the previous works.
 If \eqsref{eq:original_z} can be explicitly integrated by choosing a specific function $U$ (such as the cotangent function used in the original proposal), the local system can be further reduced to a scalar residual.
 \subsection{Further Discussions}
 One may have observed that the subtle difference between the uniaxial and multiaxial formulations lies in the scaling factor $\sqrt{\dfrac{2}{3}}$.
-Accounting for this factor scattered here and there would be cumbersome and error-prone thus requires excessive attention.
+Accounting for this factor scattered here and there would be cumbersome and error-prone, and thus requires excessive attention.
 Is there an alternative approach that may avoid this issue?
 In this section, we explore a possible solution that may better align the uniaxial and multiaxial formulations.
 
-Now since we have introduced the split (e.g., \eqsref{eq:decomposition_back}) that accounts for magnitude and direction separately, we shall further consider additional tweaks.
+Now that we have introduced the split (e.g., \eqsref{eq:decomposition_back}) that accounts for magnitude and direction separately, we can consider additional tweaks.
 Again, let's revisit the ODE \eqsref{eq:af_ode} with both $a$ and $b$ being constants,
 \begin{gather}
     y'=b(a-y).
@@ -667,9 +667,9 @@ One can easily arrive at the conclusion that such a function can be equivalently
 What does it mean?
 It means that for any non-unit bound $a$, one can extract it from the governing ODE, making the saturation part always have a unit bound.
 
-Now consider both \eqsref{eq:decomposition_back} and \eqsref{eq:normalised_back_rule}, what we have at hand is essentially a tensor $\bbeta$ being expressed as a product of a scalar $H$ and a tensor $\balpha$.
-This tensor $\balpha$, however, is not a unit tensor, its saturated value is $\sqrt{\dfrac{2}{3}}$ in the 3D formulation.
-Since we already have the scalar $H$, applying the above idea, we can formulate the evolution rule for $\bbeta$ as follows for 3D case,
+Now consider both \eqsref{eq:decomposition_back} and \eqsref{eq:normalised_back_rule}. What we have at hand is essentially a tensor $\bbeta$ expressed as the product of a scalar $H$ and a tensor $\balpha$.
+However, this tensor $\balpha$ is not a unit tensor; its saturated value is $\sqrt{\dfrac{2}{3}}$ in the 3D formulation.
+Since we already have the scalar $H$, applying the above idea, we can formulate the evolution rule for $\bbeta$ as follows for the 3D case,
 \begin{gather}
     \boxed{\bbeta=\sqrt{\dfrac{2}{3}}H\balpha,}
 \end{gather}
@@ -681,7 +681,7 @@ Effectively, instead of scaling $\balpha$, we scale $H$.
 It is much simpler to do so as the only change is to premultiply $H$ by the constant $\sqrt{\dfrac{2}{3}}$.
 
 The previous formulation can now be equivalently rewritten as shown in \tabref{tab:summary_alternative}.
-It is believed that this alternative formulation better unify the uniaxial and multiaxial cases with the minimum changes.
+It is believed that this alternative formulation better unifies the uniaxial and multiaxial cases with minimal changes.
 \begin{table}[htb]
     \centering\footnotesize\renewcommand{\arraystretch}{1.6}
     \caption{alternative formulation of the subloading surface model}\label{tab:summary_alternative}
@@ -700,6 +700,6 @@ It is believed that this alternative formulation better unify the uniaxial and m
                            & $a^y=a^i+k_\text{kin}q+a^s_\text{kin}\left(1-e^{-m^s_\text{kin}q}\right)$                & $a^y\leftarrow\sqrt{\dfrac{2}{3}}a^y$                         &              \\                           & \multicolumn{2}{l}{$\dot{z}=U\dot{q}$}                                                   &                                                                              \\ \bottomrule
     \end{tabular}
 \end{table}
-This alternative formulation makes it trivial to convert an existing implementation for uniaxial/multiaxial to the other case.
-One only need to scale the scalar bounds and $\dot{q}$ by $\sqrt{\dfrac{2}{3}}$, this factor can be abstracted into a constant variable that takes value \num{1} for uniaxial and $\sqrt{\dfrac{2}{3}}$ for multiaxial cases.
+This alternative formulation makes it trivial to convert an existing implementation from the uniaxial case to the multiaxial case, or vice versa.
+One only needs to scale the scalar bounds and $\dot{q}$ by $\sqrt{\dfrac{2}{3}}$. This factor can be abstracted into a constant variable that takes the value \num{1} for uniaxial cases and $\sqrt{\dfrac{2}{3}}$ for multiaxial cases.
 The remaining parts of the implementation can largely remain unchanged.

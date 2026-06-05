@@ -56,15 +56,15 @@ Hyperelastic material models are often defined in terms of the reduced invariant
 \bar{J_2}=I_2I_3^{-2/3},\quad
 \bar{J_3}=I_3^{1/2}.
 \end{gather}
-In which, $I_1$, $I_2$, and $I_3$ are the invariants of $\mb{C}$.
+Here, $I_1$, $I_2$, and $I_3$ are the invariants of $\mb{C}$.
 \section{Mooney--Rivlin Model}
 \subsection{Theory}
-The Mooney--Rivlin model for compressible material uses the following strain energy density function
+The Mooney--Rivlin model for a compressible material uses the following strain energy density function
 \begin{gather}
 W=A_{10}\left(\bar{J_1}-3\right)+A_{01}\left(\bar{J_2}-3\right)+\dfrac{K}{2}\left(\bar{J_3}-1\right)^2,
 \end{gather}
 where $A_{10}$, $A_{01}$ and $K$ are material parameters.
-As one may observe, $\bar{J_3}$ is involved, the bulk modulus $K$ can be set to a large value such that it approaches so called near incompressible behaviour.
+As one may observe, since $\bar{J_3}$ is involved, the bulk modulus $K$ can be set to a large value so that the model approaches so-called near-incompressible behaviour.
 
 To compute the second Piola--Kirchhoff stress tensor $\mb{S}$, the derivatives are required.
 From \eqsref{eq:tensor_invariant_derivative}, using the Voigt notation, one can derive, for example,
@@ -94,7 +94,7 @@ From \eqsref{eq:tensor_invariant_derivative}, using the Voigt notation, one can 
     \end{bmatrix}^\mT\\&=2\left(I_1\mb{1}-\mb{C}\right).
 \end{split}
 \end{gather}
-One shall realize the above result agrees with the expression derived using tensor algebra.
+One should realise that the above result agrees with the expression derived using tensor algebra.
 Here is one more example.
 \begin{gather}
 \begin{split}
@@ -153,7 +153,7 @@ This involves the second order derivatives of invariants $I_1$, $I_2$ and $I_3$.
 \end{gather}
 \subsection{Implementation}
 The implementation is straightforward.
-One shall faithfully calculate the derivatives and then assemble the stress and stiffness tensors.
+One should compute the derivatives faithfully and then assemble the stress and stiffness tensors.
 \begin{cppcode}
 MooneyRivlin::update_trial_status
 \end{cppcode}
@@ -166,7 +166,7 @@ BlatzKo::update_trial_status
 \end{cppcode}
 \section{Yeoh Model}
 \subsection{Theory}
-The Yeoh's model for compressible materials is given by
+The Yeoh model for compressible materials is given by
 \begin{gather}
     W=\sum_{i=1}^nA_{0,i}\left(J_1-3\right)^i+\sum_{i=1}^nA_{1,i}\left(J_3-1\right)^{2i},
 \end{gather}
