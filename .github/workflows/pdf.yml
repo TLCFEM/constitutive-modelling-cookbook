@@ -1,5 +1,3 @@
-name: PDF
-on: [ push, pull_request ]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,12 +16,16 @@ jobs:
             python3 ./CONVERT/code.py
             python3 ./CONVERT/convergence.py
             latexmk -shell-escape -pdf COOKBOOK.tex
-      - name: Release
-        if: github.event_name == 'push'
+      - if: github.event_name == 'push'
+        name: Release
         uses: svenstaro/upload-release-action@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: COOKBOOK.pdf
           asset_name: COOKBOOK.pdf
-          tag: latest
+          file: COOKBOOK.pdf
           overwrite: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: latest
+name: PDF
+'on':
+  - push
+  - pull_request
