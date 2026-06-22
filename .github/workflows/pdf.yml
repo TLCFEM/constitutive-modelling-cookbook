@@ -27,5 +27,5 @@ jobs:
           tag: latest
 name: PDF
 'on':
-  - push
-  - pull_request
+  pull_request: null
+  push: null
