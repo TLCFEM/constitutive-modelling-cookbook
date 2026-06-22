@@ -26,5 +26,7 @@ jobs:
           timeout_minutes: 5
 name: Sync to GitLab
 'on':
-  push: null
+  push:
+    branches:
+      - master
   workflow_dispatch: null
