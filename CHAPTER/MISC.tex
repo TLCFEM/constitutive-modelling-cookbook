@@ -127,3 +127,19 @@ More generally, hybrid strategies can be constructed in which different subsets 
 Finally, it should be noted that some studies have suggested that a consistent algorithmic tangent operator cannot be derived when explicit integration schemes are employed \cite[e.g.,]{Simo1998}.
 This claim is not correct \cite{Starman2014}.
 The general procedure described in \S~\ref{sec:consistent_tangent_general} remains applicable irrespective of the specific time-integration method used for the constitutive equations.
+\section{The Real Safeguard}
+Regardless of the integration scheme, the Newton--Raphson method remains the standard for solving the local nonlinear system due to its quadratic convergence and the availability of the consistent tangent operator via the existing Jacobian.
+However, its convergence is strictly local, requiring an initial guess sufficiently close to the solution.
+
+To address potential convergence failures, a robust algorithm must be developed to guarantee successful constitutive integration.
+Noting that the yield function is solely a function of plasticity multiplier, viz., $f=f\left(\gamma\right)$, in some particular cases, it is possible to use root-finding algorithms to solve for $\gamma$ directly.
+For example, the Ridders' method is a simple robust root-finding algorithm that does not evaluate derivatives, ensures convergence, and can achieve a convergence rate of $\mathcal{O}\left(\sqrt{2}\right)$ for well-behaved functions.
+
+Consequently, a preferred root-finding algorithm can solve for $\gamma$ within a specified tolerance.
+If a strict tolerance is satisfied, this estimate serves as the final solution.
+Alternatively, a moderate tolerance provides a sufficiently accurate initial guess for the Newton--Raphson method, ensuring rapid quadratic convergence.
+Once the system is solved, the consistent tangent operator is computed via standard procedures.
+
+In the following, we outline the primary prerequisites required to successfully implement this strategy.
+\subsection{A Bounded Multiplier}
+\subsection{Explicit State Dependency}
