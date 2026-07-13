@@ -142,4 +142,15 @@ Once the system is solved, the consistent tangent operator is computed via stand
 
 In the following, we outline the primary prerequisites required to successfully implement this strategy.
 \subsection{A Bounded Multiplier}
+Most root-finding algorithms require an initial pair of guesses that bracket the root, denoting those two guesses as $\gamma_1$ and $\gamma_2$ with $\gamma_1<\gamma_2$, it is $f\left(\gamma_1\right)\cdot{}f\left(\gamma_2\right)<0$.
+
+For plasticity return--mapping, the solution is guaranteed to exist by construction, and one can always choose $\gamma_1=0$ since it is known that $f\left(0\right)>0$.
+The remaining task is to find a suitable $\gamma_2$ such that $f\left(\gamma_2\right)<0$.
+Starting from an initial nonzero value of $\gamma_2$, repeatedly double $\gamma_2$ and evaluate $f(\gamma_2)$ until the condition $f(\gamma_2)<0$ is satisfied.
+
+To avoid unnecessary evaluations of the yield function, a good guess could be obtained from the flow rule \eqsref{eq:general_flow_rule}.
+If the formulation carefully designs the flow rule such that $\norm{\mb{r}}\equiv1$, then $\gamma_2=\norm{\dot{\varepsilon}}$ may be selected as the initial guess.
 \subsection{Explicit State Dependency}
+The formulation shall also ensure that the yield function is explicitly dependent on the plasticity multiplier $\gamma$, that is, as long as $\gamma$ is known, the yield function can be evaluated without solving any additional nonlinear system.
+
+If this cannot be achieved, a composite implementation that combines global root-finding and local Newton--Raphson methods may be necessary.
