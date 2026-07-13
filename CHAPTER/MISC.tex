@@ -140,6 +140,9 @@ If a strict tolerance is satisfied, this estimate serves as the final solution.
 Alternatively, a moderate tolerance provides a sufficiently accurate initial guess for the Newton--Raphson method, ensuring rapid quadratic convergence.
 Once the system is solved, the consistent tangent operator is computed via standard procedures.
 
+More aggressive implementations may even default to a gradient (Jacobian) free root-finding approach, only evaluate the Jacobian when the consistent tangent operator is required after obtaining a sufficiently accurate solution.
+This is computationally extremely cheap.
+
 In the following, we outline the primary prerequisites required to successfully implement this strategy.
 \subsection{A Bounded Multiplier}
 Most root-finding algorithms require an initial pair of guesses that bracket the root, denoting those two guesses as $\gamma_1$ and $\gamma_2$ with $\gamma_1<\gamma_2$, it is $f\left(\gamma_1\right)\cdot{}f\left(\gamma_2\right)<0$.
@@ -157,3 +160,7 @@ Thus, $\gamma_2=\abs{\dot{\varepsilon}}$ can be chosen to ensure the true soluti
 The formulation shall also ensure that the yield function is explicitly dependent on the plasticity multiplier $\gamma$, that is, as long as $\gamma$ is known, the yield function can be evaluated without solving any additional nonlinear system.
 
 If this cannot be achieved, a composite implementation that combines global root-finding and local Newton--Raphson methods may be necessary.
+
+In constitutive modeling, analytical formulations must be balanced with numerical considerations that govern implementation robustness and efficiency.
+Specifically, employing explicit rather than implicit evolution laws for internal variables eliminates the auxiliary nonlinear solving steps typically required to evaluate the yield function.
+Furthermore, explicit rules decouple the internal variables, thereby simplifying the local system and streamlining the formulation of the Jacobian matrix.
