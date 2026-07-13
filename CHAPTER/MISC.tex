@@ -150,6 +150,9 @@ Starting from an initial nonzero value of $\gamma_2$, repeatedly double $\gamma_
 
 To avoid unnecessary evaluations of the yield function, a good guess could be obtained from the flow rule \eqsref{eq:general_flow_rule}.
 If the formulation carefully designs the flow rule such that $\norm{\mb{r}}\equiv1$, then $\gamma_2=\norm{\dot{\varepsilon}}$ may be selected as the initial guess.
+
+For uniaxial models, if $\dot{\varepsilon}_p=\pm\gamma$, it can be further shown that $\gamma\leqslant\abs{\dot{\varepsilon}}$.
+Thus, $\gamma_2=\abs{\dot{\varepsilon}}$ can be chosen to ensure the true solution is bracketed.
 \subsection{Explicit State Dependency}
 The formulation shall also ensure that the yield function is explicitly dependent on the plasticity multiplier $\gamma$, that is, as long as $\gamma$ is known, the yield function can be evaluated without solving any additional nonlinear system.
 
