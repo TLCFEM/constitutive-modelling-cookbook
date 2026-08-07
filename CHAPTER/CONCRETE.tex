@@ -432,29 +432,6 @@ Here the dependency on the Lode angle $\theta$ is removed such that
 x_h\dot{\kappa_p}=\norm{\dot{\varepsilon_{p}}}=\gamma{}G_\kappa,
 \end{gather}
 with $G_\kappa=\sqrt{G_s^2+G_p^2/3}$. This effectively means $\theta=2\pi/3$ is a constant.
-\subsubsection{Plasticity Residual}
-Collecting the yield function, evolutions of $s$, $p$ and $\kappa_p$, the local residual of the plasticity part can be expressed as
-\begin{gather}
-\mb{R}=\left\{
-\begin{array}{l}
-g_1^2+m_0q^2_{h1}q_{h2}g_3-q^2_{h1}q^2_{h2},\\[4mm]
-s+2G\gamma{}G_s-s^\text{trial},\\[4mm]
-p+K\gamma{}G_p-p^\text{trial},\\[4mm]
-x_h\kappa_p^n+\gamma{}G_\kappa-x_h\kappa_p.
-\end{array}
-\right.
-\end{gather}
-The local system consists of four scalar equations.
-
-The Jacobian thus has a size of \num{4} and reads
-\begin{gather}
-\mb{J}=\begin{bmatrix}
-\cdot&\pdfrac{F}{s}&\pdfrac{F}{p}&\pdfrac{F}{\kappa_p}\\[6mm]
-2GG_s&1+2G\gamma\pdfrac{G_s}{s}&2G\gamma\pdfrac{G_s}{p}&2G\gamma\pdfrac{G_s}{\kappa_p}\\[6mm]
-KG_p&K\gamma\pdfrac{G_p}{s}&1+K\gamma\pdfrac{G_p}{p}&K\gamma\pdfrac{G_p}{\kappa_p}\\[6mm]
-G_\kappa&\gamma\pdfrac{G_\kappa}{s}&\left(\kappa_p^n-\kappa_p\right)\ddfrac{x_h}{p}+\gamma\pdfrac{G_\kappa}{p}&\gamma\pdfrac{G_\kappa}{\kappa_p}-x_h
-\end{bmatrix}.
-\end{gather}
 \subsection{Damage}
 \subsubsection{Equivalent Strain}
 The equivalent strain is defined as
@@ -489,7 +466,7 @@ Assume an exponential degradation curve,
 \end{gather}
 
 The local residual is
-\begin{gather}
+\begin{gather}\label{eq:cdpm2_dt_r}
 R=f_t\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{ft}}\right)-\left(1-\omega_t\right)E\kappa_{dt}.
 \end{gather}
 For a given set of $\kappa_{dt}$, $\kappa_{dt1}$ and $\kappa_{dt2}$, the above residual is a function of unknown $\omega_t$. It can be solved by, for example, Newton's method.
@@ -510,9 +487,38 @@ The uniaxial response is
 \sigma=\left(1-\omega_c\right)E\kappa_{dc}.
 \end{gather}
 With the exponential backbone, the local residual is
-\begin{gather}
+\begin{gather}\label{eq:cdpm2_dc_r}
 R=f_t\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{fc}}\right)-\left(1-\omega_c\right)E\kappa_{dc}.
 \end{gather}
+\subsection{Formulation}
+The CDPM2 model employs a single internal variable, $\kappa_p$.
+A key feature of the model is the complete decoupling of plasticity and damage, such that the evolution of either component does not affect the other.
+\subsubsection{Plasticity Residual}
+Collecting the yield function, evolutions of $s$, $p$ and $\kappa_p$, the local residual of the plasticity part can be expressed as
+\begin{gather}
+\mb{R}=\left\{
+\begin{array}{l}
+g_1^2+m_0q^2_{h1}q_{h2}g_3-q^2_{h1}q^2_{h2},\\[4mm]
+s+2G\gamma{}G_s-s^\text{trial},\\[4mm]
+p+K\gamma{}G_p-p^\text{trial},\\[4mm]
+x_h\kappa_p^n+\gamma{}G_\kappa-x_h\kappa_p.
+\end{array}
+\right.
+\end{gather}
+The local system consists of four scalar equations.
+
+The Jacobian thus has a size of \num{4} and reads
+\begin{gather}
+\mb{J}=\begin{bmatrix}
+\cdot&\pdfrac{F}{s}&\pdfrac{F}{p}&\pdfrac{F}{\kappa_p}\\[6mm]
+2GG_s&1+2G\gamma\pdfrac{G_s}{s}&2G\gamma\pdfrac{G_s}{p}&2G\gamma\pdfrac{G_s}{\kappa_p}\\[6mm]
+KG_p&K\gamma\pdfrac{G_p}{s}&1+K\gamma\pdfrac{G_p}{p}&K\gamma\pdfrac{G_p}{\kappa_p}\\[6mm]
+G_\kappa&\gamma\pdfrac{G_\kappa}{s}&\left(\kappa_p^n-\kappa_p\right)\ddfrac{x_h}{p}+\gamma\pdfrac{G_\kappa}{p}&\gamma\pdfrac{G_\kappa}{\kappa_p}-x_h
+\end{bmatrix}.
+\end{gather}
+\subsubsection{Damage Residual}
+The damage residuals are shown in \eqsref{eq:cdpm2_dt_r} and \eqsref{eq:cdpm2_dc_r}.
+A conventional Newton--Raphson iteration can be used to solve for $\omega_t$ and $\omega_c$.
 \subsubsection{Stress}
 The final stress can be expressed as
 \begin{gather}
@@ -540,7 +546,6 @@ With the above expression, the tangent stiffness can be expressed as
 \begin{gather}
 \ddfrac{\bsigma}{\bvarepsilon}=\left(1-\omega_c\right)\ddfrac{\bbsigma}{\bvarepsilon}+\left(\omega_c-\omega_t\right)\ddfrac{\bbsigma_t}{\bbsigma}\ddfrac{\bbsigma}{\bvarepsilon}-\bbsigma\otimes\ddfrac{\omega_c}{\bvarepsilon}+\bbsigma_t\otimes\left(\ddfrac{\omega_c}{\bvarepsilon}-\ddfrac{\omega_t}{\bvarepsilon}\right).
 \end{gather}
-\subsection{Formulation}
 \subsection{Implementation}
 The main body of state determination consists of two main tasks: 1) compute the plasticity part and 2) compute the damage part. The implementation can be found as follows.
 \begin{cppcode}
