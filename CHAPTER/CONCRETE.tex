@@ -39,6 +39,9 @@ The flow potential $g$ is chosen to be
 g=\sqrt{2\bar{J}_2}+\alpha_p\bar{I}_1=\norm{\bar{\bs}}+\tr{\alpha_p\bbsigma},
 \end{gather}
 in which $\alpha_p$ is a material constant that controls dilatation.
+This is a Drucker--Prager function as later seen in \secref{sec:drucker_prager}.
+Some implementations add an extra term to the square root to get rid of the apex such that the surface is well-defined.
+It is not considered here for two reasons: a) the apex return is practically not reachable, and b) the extra term breaks coaxiality thus further complicates the implementation.
 The flow rule is accordingly defined as
 \begin{gather}
 \dot{\bvarepsilon^p}=\gamma\pdfrac{g}{\bbsigma}=\gamma\left(\dfrac{\bar{\bs}}{\norm{\bar{\bs}}}+\alpha_p\mb{1}\right)=\gamma\left(\bn+\alpha_p\mb{1}\right).
