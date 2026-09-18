@@ -117,14 +117,23 @@ The effective counterpart $\bar{f}_\aleph$ is defined as
 \bar{f}_\aleph=\dfrac{f_\aleph}{1-d_\aleph}=f_{\aleph,0}\sqrt{\phi_\aleph}\Phi_\aleph^{1-c_\aleph/b_\aleph},
 \end{gather*}
 with the damage variable $d_\aleph$,
-\begin{gather*}
+\begin{gather}\label{eq:cdp_d_backbone}
 d_\aleph=1-\Phi_\aleph^{c_\aleph/b_\aleph}.
-\end{gather*}
+\end{gather}
 One can observe that $f_\aleph=\left(1-d_\aleph\right)\bar{f}_\aleph$ also follows the damage theory.
 When $d_\aleph=0$, there is no damage, then $f_\aleph=\bar{f}_\aleph$.
 When $d_\aleph=1$, the material has completely failed, then $f_\aleph=0$.
 We do not discuss those functions in detail here.
 One can refer to the Barcelona model \cite{Lubliner1989} for an extensive discussion.
+
+However, this issue warrants explicit consideration.
+In \eqsref{eq:cdp_d_backbone}, when $c_\aleph/b_\aleph<1$, which may occur for certain combinations of input parameters, the derivative (slope) of $d_\aleph$ diverges as $\kappa_\aleph\rightarrow1$.
+This can lead to severe local convergence difficulties that are neither physically meaningful nor relevant, but instead introduce unnecessary numerical complications, particularly because the corresponding strength becomes negligible as $\kappa_\aleph\rightarrow1$.
+A simple remedy is to impose an upper bound on the slope, for example,
+\begin{gather}
+    \ddfrac{d_\aleph}{\kappa_\aleph}\leqslant100.
+\end{gather}
+Whenever this constraint is violated, the original curve is replaced by a linear segment with a slope of \num{100}.
 
 In general, the backbone curve can be customised. The main algorithm is not concerned with how the backbone curve is computed; it only requires $f_\aleph$, $\bar{f}_\aleph$, and $d_\aleph$, together with their derivatives with respect to $\kappa_\aleph$. The exponential form adopted in the original model may encounter numerical difficulties, which, in the author's opinion, is not ideal. Other forms can always be chosen, such as providing these quantities in tabulated form. This is also what ABAQUS offers.
 \subsection{Damage Theory}
@@ -356,6 +365,11 @@ They can be computed and stored before entering the local iteration.
 The C++ implementation of the state determination is given below.
 \begin{cppcode}
 NonlinearCDP::update_trial_status
+\end{cppcode}
+
+A typical backbone computation can be seen as follows.
+\begin{cppcode}
+CDP::compute_backbone
 \end{cppcode}
 \section{CDPM2 Model}
 The CDP model adopts isotropic damage, which leads, for example, to degradation of compressive/tensile strength due to tensile/compressive damage. In cyclic loading cases, this may not be ideal. The CDPM2 model uses a different approach that applies tensile damage to the tensile part of the stress and compressive damage to the compressive part.
