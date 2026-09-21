@@ -16,7 +16,7 @@ jobs:
             python3 ./CONVERT/code.py
             python3 ./CONVERT/convergence.py
             latexmk -shell-escape -pdf COOKBOOK.tex
-      - if: github.event_name == 'push'
+      - if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         name: Release
         uses: svenstaro/upload-release-action@v2
         with:
