@@ -19,11 +19,29 @@ Thus $h\left(d_t,d_c\right)$ and $\bbsigma$ can be handled in a relatively indep
 \subsubsection{Yield Function}
 The yield function is defined as
 \begin{gather}
-f=\alpha\bar{I}_1+\sqrt{\dfrac{3}{2}}\norm{\bar{\bs}}+\beta\left\langle\hat{\sigma}_1\right\rangle-\left(1-\alpha\right)c_c,
+f=\alpha\bar{I}_1+\sqrt{\dfrac{3}{2}}\norm{\bar{\bs}}+\beta\left\langle\hat{\sigma}_1\right\rangle-\zeta\left\langle-\hat{\sigma}_1\right\rangle-\left(1-\alpha\right)c_c,
 \end{gather}
 with $\bar{I}_1=\tr{\bbsigma}$ is the first invariant of effective stress tensor $\bbsigma$, $\hat{\sigma}_1$ is the major effective principal stress, $c_c=-\bar{f}_c$ denotes cohesion and $\beta=\dfrac{\bar{f}_c}{\bar{f}_t}(\alpha-1)-(\alpha+1)$ where $\alpha$ is a material constant.
 The effective backbone stresses (both positive) $\bar{f}_c$ and $\bar{f}_t$ will be defined later.
 It is assumed that $\hat{\sigma}_1\geqslant\hat{\sigma}_2\geqslant\hat{\sigma}_3$.
+The parameter $\zeta$ \cite{Lubliner1989} is determined by the ratio between the tensile and compressive meridian stresses $K_c$ such that
+\begin{gather}
+\zeta=\dfrac{3\left(1-K_c\right)}{2K_c-1}.
+\end{gather}
+A typical value $K_c=\dfrac{2}{3}$ yields $\zeta=3$.
+One can further rewrite the yield function into the following concise form.
+\begin{gather}
+f=\alpha\bar{I}_1+\sqrt{\dfrac{3}{2}}\norm{\bar{\bs}}+\psi\hat{\sigma}_1-\left(1-\alpha\right)c_c,
+\end{gather}
+with
+\begin{gather}
+\psi=\left\{
+\begin{array}{ll}
+    \beta&\hat{\sigma}_1>0,\\
+    \zeta&\text{otherwise}.
+\end{array}
+\right.
+\end{gather}
 
 It should be noted that, for a given $\bbsigma$, one can perform the eigendecomposition to obtain the principal stress $\hat{\bsigma}$, for which the following holds
 \begin{gather}
@@ -153,7 +171,7 @@ The CDP model is driven by three quantities $\kappa_t$, $\kappa_c$ and $\bvareps
 \centering
 \begin{tabular}{rl}
 \toprule
-Yield Function&$f=\alpha\bar{I}_1+\sqrt{\dfrac{3}{2}}\norm{\bar{\bs}}+\beta\left\langle\hat{\sigma}_1\right\rangle-\left(1-\alpha\right)c_c$\\
+Yield Function&$f=\alpha\bar{I}_1+\sqrt{\dfrac{3}{2}}\norm{\bar{\bs}}+\psi\hat{\sigma}_1-\left(1-\alpha\right)c_c$\\
 Flow Rule&$\dot{\bvarepsilon^p}=\gamma\left(\dfrac{\bar{\bs}}{\norm{\bar{\bs}}}+\alpha_p\mb{1}\right)$\\
 Hardening Law&$\dot{\kappa_\aleph}=\gamma{}H_\aleph$\\
 \bottomrule
@@ -166,7 +184,7 @@ Assuming elastic loading/unloading, the trial state of the effective part can be
 \end{gather}
 Then by performing eigenanalysis, $\hat{\bsigma}^\text{trial}$ can be computed. The trial yield function is
 \begin{gather}\label{eq:cdp_tf}
-f^\text{trial}=\alpha\bar{I}_1^\text{trial}+\sqrt{\dfrac{3}{2}}\norm{\bar{\bs}^\text{trial}}+\beta\left\langle\hat{\sigma}_1^\text{trial}\right\rangle-\left(1-\alpha\right)c_c,
+f^\text{trial}=\alpha\bar{I}_1^\text{trial}+\sqrt{\dfrac{3}{2}}\norm{\bar{\bs}^\text{trial}}+\psi\hat{\sigma}_1^\text{trial}-\left(1-\alpha\right)c_c,
 \end{gather}
 with $\beta$ and $c_c$ computed by using $\kappa_{t,n}$ and $\kappa_{c,n}$. If $f^\text{trial}<0$, indicating elastic loading/unloading, then $\bbsigma_{n+1}=\bbsigma^\text{trial}$, the final stress is simply
 \begin{gather}
@@ -187,7 +205,7 @@ The local system consists of three residuals.
 \begin{gather}\label{eq:cdp_r}
 \mb{R}=\left\{
 \begin{array}{l}
-\alpha\bar{I}_1+\sqrt{\dfrac{3}{2}}\norm{\bar{\bs}^\text{trial}}-\gamma\sqrt{6}G+\beta\left\langle\hat{\sigma}_1^\text{trial}-\gamma\left(2G\hat{n}_1+3K\alpha_p\right)\right\rangle+\left(1-\alpha\right)\bar{f}_c,\\[4mm]
+\alpha\bar{I}_1+\sqrt{\dfrac{3}{2}}\norm{\bar{\bs}^\text{trial}}-\gamma\sqrt{6}G+\psi\left(\hat{\sigma}_1^\text{trial}-\gamma\left(2G\hat{n}_1+3K\alpha_p\right)\right)+\left(1-\alpha\right)\bar{f}_c,\\[4mm]
 \kappa_{t,n}+\gamma{}r\dfrac{f_t}{g_t}\left(\hat{n}_1+\alpha_p\right)-\kappa_t,\\[4mm]
 \kappa_{c,n}+\gamma\left(1-r\right)\dfrac{f_c}{g_c}\left(\hat{n}_3+\alpha_p\right)-\kappa_c.
 \end{array}
@@ -200,15 +218,15 @@ By choosing $\mb{x}=\begin{bmatrix}
 \begin{footnotesize}
 \begin{gather}\label{eq:cdp_dr}
 \mb{J}=\begin{bmatrix}
--9K\alpha\alpha_p-\sqrt{6}G-\beta\left(2G\hat{n}_1+3K\alpha_p\right)H\left(\hat{\sigma}_1\right)&\left\langle\hat{\sigma}_1\right\rangle\pdfrac{\beta}{\kappa_t}&\left(1-\alpha\right)\bar{f}_c'+\left\langle\hat{\sigma}_1\right\rangle\pdfrac{\beta}{\kappa_c}\\[4mm]
+-9K\alpha\alpha_p-\sqrt{6}G-\psi\left(2G\hat{n}_1+3K\alpha_p\right)&\hat{\sigma}_1\pdfrac{\psi}{\kappa_t}&\left(1-\alpha\right)\bar{f}_c'+\hat{\sigma}_1\pdfrac{\psi}{\kappa_c}\\[4mm]
 f_t\dfrac{\hat{n}_1+\alpha_p}{g_t}\left(r+\gamma\pdfrac{r}{\gamma}\right)&\gamma{}r\dfrac{\hat{n}_1+\alpha_p}{g_t}f_t'-1&\cdot\\[4mm]
 f_c\dfrac{\hat{n}_3+\alpha_p}{g_c}\left(1-r-\gamma\pdfrac{r}{\gamma}\right)&\cdot&\gamma\left(1-r\right)\dfrac{\hat{n}_3+\alpha_p}{g_c}f_c'-1
-\end{bmatrix},
+\end{bmatrix}
 \end{gather}
 \end{footnotesize}
-where $H\left(\cdot\right)$ is the heaviside function and
+with
 \begin{gather*}
-\pdfrac{\beta}{\kappa_t}=\left(1-\alpha\right)\dfrac{\bar{f}_c}{\bar{f}_t^2}\bar{f}_t',\\
+\pdfrac{\beta}{\kappa_t}=\left(1-\alpha\right)\dfrac{\bar{f}_c}{\bar{f}_t^2}\bar{f}_t',\qquad
 \pdfrac{\beta}{\kappa_c}=\left(\alpha-1\right)\dfrac{1}{\bar{f}_t}\bar{f}_c'.
 \end{gather*}
 In the explicit form, if $\hat{\sigma}_1>0$,
@@ -225,7 +243,7 @@ otherwise,
 \begin{footnotesize}
 \begin{gather}
 \mb{J}=\begin{bmatrix}
--9K\alpha\alpha_p-\sqrt{6}G&\cdot&\left(1-\alpha\right)\bar{f}_c'\\[4mm]
+-9K\alpha\alpha_p-\sqrt{6}G-\zeta\left(2G\hat{n}_1+3K\alpha_p\right)&\cdot&\left(1-\alpha\right)\bar{f}_c'\\[4mm]
 f_t\dfrac{\hat{n}_1+\alpha_p}{g_t}\left(r+\gamma\pdfrac{r}{\gamma}\right)&r\gamma\dfrac{\hat{n}_1+\alpha_p}{g_t}f_t'-1&\cdot\\[4mm]
 f_c\dfrac{\hat{n}_3+\alpha_p}{g_c}\left(1-r-\gamma\pdfrac{r}{\gamma}\right)&\cdot&\left(1-r\right)\gamma\dfrac{\hat{n}_3+\alpha_p}{g_c}f_c'-1
 \end{bmatrix}.
@@ -238,7 +256,7 @@ In order to take derivatives with regard to the trial strain $\bvarepsilon_{n+1}
 \begin{gather}
 \pdfrac{\mb{R}}{\bvarepsilon_{n+1}}=\left\{
 \begin{array}{l}
-3K\alpha{}\mb{1}+\sqrt{6}G\bn+H\left(\hat{\sigma}_1\right)\beta\ddfrac{\hat\sigma_1}{\bbsigma}:\pdfrac{\bbsigma}{\bvarepsilon_{n+1}},\\[4mm]
+3K\alpha{}\mb{1}+\sqrt{6}G\bn+\psi\ddfrac{\hat\sigma_1}{\bbsigma}:\pdfrac{\bbsigma}{\bvarepsilon_{n+1}},\\[4mm]
 \gamma\dfrac{f_t}{g_t}\left(r\pdfrac{\hat{n}_1}{\bvarepsilon_{n+1}}+\left(\hat{n}_1+\alpha_p\right)\ddfrac{r}{\bbsigma}:\pdfrac{\bbsigma}{\bvarepsilon_{n+1}}\right),\\[4mm]
 \gamma\dfrac{f_c}{g_c}\left(\left(1-r\right)\pdfrac{\hat{n}_3}{\bvarepsilon_{n+1}}-\left(\hat{n}_3+\alpha_p\right)\ddfrac{r}{\bbsigma}:\pdfrac{\bbsigma}{\bvarepsilon_{n+1}}\right).
 \end{array}
