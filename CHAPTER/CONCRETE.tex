@@ -103,7 +103,7 @@ The subscript $\left(\cdot\right)_\aleph$ may denote either tension $\left(\cdot
 
 The internal hardening parameters $\kappa_\aleph$ are governed by the following evolution rule,
 \begin{gather}
-\dot{\kappa_\aleph}=\gamma{}H_\aleph,
+\dot{\kappa}_\aleph=\gamma{}H_\aleph,
 \end{gather}
 where $H_\aleph$ defines the hardening law. Different $H_\aleph$ are used for compression and tension.
 \begin{gather}
@@ -119,6 +119,16 @@ Other forms can also be used, for example,
 \begin{gather}
 r\left(\hat{\bsigma}\right)=\dfrac{\norm{\left\langle\hat{\bsigma}\right\rangle}}{\norm{\hat{\bsigma}}}.
 \end{gather}
+
+It must be noted that since $\hat{\bn}$ is the normalised principal deviatoric stress tensor, it is guaranteed that $\hat{n}_1>0>\hat{n}_3$.
+However, due to the presence of $\alpha_p$, $\hat{n}_3+\alpha_p$ may not be strictly negative.
+On the other hand, as a plasticity history, $\kappa_c$ should be non-decreasing, implying $\dot{\kappa}_c\geqslant0$, forcing $\hat{n}_3+\alpha_p\leqslant0$.
+A more rigorous definition shall then be
+\begin{gather}
+    \dot{\kappa}_\aleph=\gamma{}\left\langle{}H_\aleph\right\rangle.
+\end{gather}
+This is only relevant to the compression case, the tension case is always valid.
+Here we simply use a unified expression for brevity.
 \subsubsection{Backbone Curve}
 The backbone curve $f_\aleph$ is related to the internal parameter $\kappa_\aleph$.
 \begin{gather*}
@@ -173,7 +183,7 @@ The CDP model is driven by three quantities $\kappa_t$, $\kappa_c$ and $\bvareps
 \toprule
 Yield Function&$f=\alpha\bar{I}_1+\sqrt{\dfrac{3}{2}}\norm{\bar{\bs}}+\psi\hat{\sigma}_1-\left(1-\alpha\right)c_c$\\
 Flow Rule&$\dot{\bvarepsilon^p}=\gamma\left(\dfrac{\bar{\bs}}{\norm{\bar{\bs}}}+\alpha_p\mb{1}\right)$\\
-Hardening Law&$\dot{\kappa_\aleph}=\gamma{}H_\aleph$\\
+Hardening Law&$\dot{\kappa}_\aleph=\gamma{}\left\langle{}H_\aleph\right\rangle$\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -206,8 +216,8 @@ The local system consists of three residuals.
 \mb{R}=\left\{
 \begin{array}{l}
 \alpha\bar{I}_1+\sqrt{\dfrac{3}{2}}\norm{\bar{\bs}^\text{trial}}-\gamma\sqrt{6}G+\psi\left(\hat{\sigma}_1^\text{trial}-\gamma\left(2G\hat{n}_1+3K\alpha_p\right)\right)+\left(1-\alpha\right)\bar{f}_c,\\[4mm]
-\kappa_{t,n}+\gamma{}r\dfrac{f_t}{g_t}\left(\hat{n}_1+\alpha_p\right)-\kappa_t,\\[4mm]
-\kappa_{c,n}+\gamma\left(1-r\right)\dfrac{f_c}{g_c}\left(\hat{n}_3+\alpha_p\right)-\kappa_c.
+\kappa_{t,n}+\gamma{}r\left\langle\dfrac{f_t}{g_t}\left(\hat{n}_1+\alpha_p\right)\right\rangle-\kappa_t,\\[4mm]
+\kappa_{c,n}+\gamma\left(1-r\right)\left\langle\dfrac{f_c}{g_c}\left(\hat{n}_3+\alpha_p\right)\right\rangle-\kappa_c.
 \end{array}
 \right.
 \end{gather}
@@ -219,8 +229,8 @@ By choosing $\mb{x}=\begin{bmatrix}
 \begin{gather}\label{eq:cdp_dr}
 \mb{J}=\begin{bmatrix}
 -9K\alpha\alpha_p-\sqrt{6}G-\psi\left(2G\hat{n}_1+3K\alpha_p\right)&\hat{\sigma}_1\pdfrac{\psi}{\kappa_t}&\left(1-\alpha\right)\bar{f}_c'+\hat{\sigma}_1\pdfrac{\psi}{\kappa_c}\\[4mm]
-f_t\dfrac{\hat{n}_1+\alpha_p}{g_t}\left(r+\gamma\pdfrac{r}{\gamma}\right)&\gamma{}r\dfrac{\hat{n}_1+\alpha_p}{g_t}f_t'-1&\cdot\\[4mm]
-f_c\dfrac{\hat{n}_3+\alpha_p}{g_c}\left(1-r-\gamma\pdfrac{r}{\gamma}\right)&\cdot&\gamma\left(1-r\right)\dfrac{\hat{n}_3+\alpha_p}{g_c}f_c'-1
+f_t\left\langle\dfrac{\hat{n}_1+\alpha_p}{g_t}\right\rangle\left(r+\gamma\pdfrac{r}{\gamma}\right)&\gamma{}r\left\langle\dfrac{\hat{n}_1+\alpha_p}{g_t}\right\rangle{}f_t'-1&\cdot\\[4mm]
+f_c\left\langle\dfrac{\hat{n}_3+\alpha_p}{g_c}\right\rangle_-\left(1-r-\gamma\pdfrac{r}{\gamma}\right)&\cdot&\gamma\left(1-r\right)\left\langle\dfrac{\hat{n}_3+\alpha_p}{g_c}\right\rangle_-f_c'-1
 \end{bmatrix}
 \end{gather}
 \end{footnotesize}
@@ -234,8 +244,8 @@ In the explicit form, if $\hat{\sigma}_1>0$,
 \begin{gather}
 \mb{J}=\begin{bmatrix}
 -9K\alpha\alpha_p-\sqrt{6}G-\beta\left(2G\hat{n}_1+3K\alpha_p\right)&(1-\alpha)\dfrac{\bar{f}_c\hat{\sigma}_1}{\bar{f}_t^2}\bar{f}_t'&\left(1-\alpha\right)\left(1-\dfrac{\hat{\sigma}_1}{\bar{f}_t}\right)\bar{f}_c'\\[4mm]
-f_t\dfrac{\hat{n}_1+\alpha_p}{g_t}\left(r+\gamma\pdfrac{r}{\gamma}\right)&r\gamma\dfrac{\hat{n}_1+\alpha_p}{g_t}f_t'-1&\cdot\\[4mm]
-f_c\dfrac{\hat{n}_3+\alpha_p}{g_c}\left(1-r-\gamma\pdfrac{r}{\gamma}\right)&\cdot&\left(1-r\right)\gamma\dfrac{\hat{n}_3+\alpha_p}{g_c}f_c'-1
+f_t\left\langle\dfrac{\hat{n}_1+\alpha_p}{g_t}\right\rangle\left(r+\gamma\pdfrac{r}{\gamma}\right)&r\gamma\left\langle\dfrac{\hat{n}_1+\alpha_p}{g_t}\right\rangle{}f_t'-1&\cdot\\[4mm]
+f_c\left\langle\dfrac{\hat{n}_3+\alpha_p}{g_c}\right\rangle_-\left(1-r-\gamma\pdfrac{r}{\gamma}\right)&\cdot&\left(1-r\right)\gamma\left\langle\dfrac{\hat{n}_3+\alpha_p}{g_c}\right\rangle_-f_c'-1
 \end{bmatrix},
 \end{gather}
 \end{footnotesize}
@@ -244,11 +254,12 @@ otherwise,
 \begin{gather}
 \mb{J}=\begin{bmatrix}
 -9K\alpha\alpha_p-\sqrt{6}G-\zeta\left(2G\hat{n}_1+3K\alpha_p\right)&\cdot&\left(1-\alpha\right)\bar{f}_c'\\[4mm]
-f_t\dfrac{\hat{n}_1+\alpha_p}{g_t}\left(r+\gamma\pdfrac{r}{\gamma}\right)&r\gamma\dfrac{\hat{n}_1+\alpha_p}{g_t}f_t'-1&\cdot\\[4mm]
-f_c\dfrac{\hat{n}_3+\alpha_p}{g_c}\left(1-r-\gamma\pdfrac{r}{\gamma}\right)&\cdot&\left(1-r\right)\gamma\dfrac{\hat{n}_3+\alpha_p}{g_c}f_c'-1
+f_t\left\langle\dfrac{\hat{n}_1+\alpha_p}{g_t}\right\rangle\left(r+\gamma\pdfrac{r}{\gamma}\right)&r\gamma\left\langle\dfrac{\hat{n}_1+\alpha_p}{g_t}\right\rangle{}f_t'-1&\cdot\\[4mm]
+f_c\left\langle\dfrac{\hat{n}_3+\alpha_p}{g_c}\right\rangle_-\left(1-r-\gamma\pdfrac{r}{\gamma}\right)&\cdot&\left(1-r\right)\gamma\left\langle\dfrac{\hat{n}_3+\alpha_p}{g_c}\right\rangle_-f_c'-1
 \end{bmatrix}.
 \end{gather}
 \end{footnotesize}
+In the above, $\left\langle\cdot\right\rangle_-$ denotes the negative--part operator, corresponding to the Macaulay brackets $\left\langle\cdot\right\rangle$.
 \subsection{Damage Formulation}
 There is no local iteration required in the damage part. Once $\kappa_t$ and $\kappa_c$ are determined, the effective part $\bar\bsigma$ can be determined. Damage measures $d_t$ and $d_c$ can be computed accordingly.
 \subsection{Consistent Tangent Stiffness}
@@ -258,11 +269,12 @@ In order to take derivatives with regard to the trial strain $\bvarepsilon_{n+1}
 \begin{array}{l}
 3K\alpha{}\mb{1}+\sqrt{6}G\bn+\psi\ddfrac{\hat\sigma_1}{\bbsigma}:\pdfrac{\bbsigma}{\bvarepsilon_{n+1}},\\[4mm]
 \gamma\dfrac{f_t}{g_t}\left(r\pdfrac{\hat{n}_1}{\bvarepsilon_{n+1}}+\left(\hat{n}_1+\alpha_p\right)\ddfrac{r}{\bbsigma}:\pdfrac{\bbsigma}{\bvarepsilon_{n+1}}\right),\\[4mm]
-\gamma\dfrac{f_c}{g_c}\left(\left(1-r\right)\pdfrac{\hat{n}_3}{\bvarepsilon_{n+1}}-\left(\hat{n}_3+\alpha_p\right)\ddfrac{r}{\bbsigma}:\pdfrac{\bbsigma}{\bvarepsilon_{n+1}}\right).
+H\left(H_c\right)\gamma\dfrac{f_c}{g_c}\left(\left(1-r\right)\pdfrac{\hat{n}_3}{\bvarepsilon_{n+1}}-\left(\hat{n}_3+\alpha_p\right)\ddfrac{r}{\bbsigma}:\pdfrac{\bbsigma}{\bvarepsilon_{n+1}}\right).
 \end{array}
 \right.
 \end{gather}
-so that
+Note the last row is only active when $H\left(H_c\right)=1$ with $H\left(\cdot\right)$ denotes the Heaviside step function, that is $H_c>0$.
+Hence
 \begin{gather}
 \ddfrac{\mb{x}}{\bvarepsilon_{n+1}}=\begin{bmatrix}
 \ddfrac{\gamma}{\bvarepsilon_{n+1}}\\[3mm]
@@ -460,11 +472,11 @@ q_{h2}=\left\{
 
 The evolution of $\kappa_p$ is defined as
 \begin{gather}
-\dot{\kappa_p}=\dfrac{\norm{\dot{\varepsilon_{p}}}}{x_h}4\cos^2\left(\theta\right).
+\dot{\kappa}_p=\dfrac{\norm{\dot{\varepsilon_{p}}}}{x_h}4\cos^2\left(\theta\right).
 \end{gather}
 Here the dependency on the Lode angle $\theta$ is removed such that
 \begin{gather}
-x_h\dot{\kappa_p}=\norm{\dot{\varepsilon_{p}}}=\gamma{}G_\kappa,
+x_h\dot{\kappa}_p=\norm{\dot{\varepsilon_{p}}}=\gamma{}G_\kappa,
 \end{gather}
 with $G_\kappa=\sqrt{G_s^2+G_p^2/3}$. This effectively means $\theta=2\pi/3$ is a constant.
 \subsection{Damage}
