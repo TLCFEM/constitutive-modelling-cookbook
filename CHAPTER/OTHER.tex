@@ -137,8 +137,8 @@ It is assumed that the beam is rigid against torsion (no torsion deformation).
 \draw[dashed](0,0)--(4,0);
 \node[ultra thick]at(0,0)[circle,draw,inner sep=0,minimum size=2mm,fill=white]{};
 \node[ultra thick]at(4,0)[circle,draw,inner sep=0,minimum size=2mm,fill=white]{};
-\NodalForce{0,0}[N][N][\theta_{z,i}(M_{z,i})][1.4];
-\NodalForce{4,0}[-u(P)][N][\theta_{z,j}(M_{z,j})]{180}[1.4];
+\NodalForce{0,0}[N][N][\theta_{z,i}(M_{z,i})][1.4]
+\NodalForce{4,0}[-u(P)][N][\theta_{z,j}(M_{z,j})]{180}[1.4]
 \end{scope}
 \end{tikzpicture}
 \caption{deformation and resistance of a 2D beam}
