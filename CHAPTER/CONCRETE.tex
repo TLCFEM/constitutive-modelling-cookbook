@@ -401,6 +401,23 @@ A typical backbone computation can be seen as follows.
 \begin{cppcode}
 CDP::compute_backbone
 \end{cppcode}
+\section{Anisotropic CDP for Masonry}
+Masonry and concrete bear similarities in terms of mechanics.
+Concrete is often considered isotropic at the macro level.
+Masonry is inherently anisotropic (orthotropic) due to horizontal mortar bed joints and vertical head joints creating preferential failure planes along mortar lines.
+This implies that a constitutive model designed for concrete can be repurposed to model masonry with some minor modifications.
+\subsection{Theory}
+\subsubsection{Transformation}
+Borrowing the idea of \secref{sec:ylp0418p}, the effective stress can be obtained via transformation.
+\begin{gather}
+    \bar\bsigma^*=\mb{A}^+\bar\bsigma^++\mb{A}^-\bar\bsigma^-,
+\end{gather}
+where $\mb{A}^+$ and $\mb{A}^-$ are two constant transformation matrices applied to the tension and compression parts.
+It can also be expressed as
+\begin{gather}
+    \bar\bsigma^*=\mb{A}\bar\bsigma,
+\end{gather}
+where now $\mb{A}=\mb{A}\left(\bar\bsigma\right)$ is a function of $\bar\bsigma$.
 \section{CDPM2 Model}
 The CDP model adopts isotropic damage, which leads, for example, to degradation of compressive/tensile strength due to tensile/compressive damage. In cyclic loading cases, this may not be ideal. The CDPM2 model uses a different approach that applies tensile damage to the tensile part of the stress and compressive damage to the compressive part.
 
