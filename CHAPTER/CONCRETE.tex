@@ -410,14 +410,44 @@ This implies that a constitutive model designed for concrete can be repurposed t
 \subsubsection{Transformation}
 Borrowing the idea of \secref{sec:ylp0418p}, the effective stress can be obtained via transformation.
 \begin{gather}
-    \bar\bsigma^*=\mb{A}^+\bar\bsigma^++\mb{A}^-\bar\bsigma^-,
+    \bsigma^*=\mb{A}^+\bar\bsigma^++\mb{A}^-\bar\bsigma^-,
 \end{gather}
 where $\mb{A}^+$ and $\mb{A}^-$ are two constant transformation matrices applied to the tension and compression parts.
 It can also be expressed as
 \begin{gather}
-    \bar\bsigma^*=\mb{A}\bar\bsigma,
+    \bsigma^*=\mb{A}\bar\bsigma,
 \end{gather}
 where now $\mb{A}=\mb{A}\left(\bar\bsigma\right)$ is a function of $\bar\bsigma$.
+Depending on the specific form of $\mb{A}$, a proper anisotropic (here orthotropic) yield surface can be constructed from the isotropic one.
+
+A popular choice is to use the eigendecomposition of $\bar\bsigma$.
+Let $\bar\bsigma=\underbrace{\mb{P}}_\text{\numproduct{6x3}}\hat{\bar\bsigma}$ where $\hat{\bsigma}$ is the principal stress, then
+\begin{gather}
+    \bar\bsigma^+=\mb{P}\left\langle\hat{\bsigma}\right\rangle,
+\end{gather}
+thus,
+\begin{gather}
+    \begin{split}
+    \bsigma^*&=\mb{A}^+\mb{P}\left\langle\hat{\bsigma}\right\rangle+\mb{A}^-\mb{P}\left(\hat{\bsigma}-\left\langle\hat{\bsigma}\right\rangle\right)\\
+    &=\left(\mb{A}^+-\mb{A}^-\right)\mb{P}\left\langle\hat{\bsigma}\right\rangle+\mb{A}^-\mb{P}\hat{\bsigma}.
+    \end{split}
+\end{gather}
+\subsubsection{Yield Surface}
+Hence, the same yield surface is used, but with the effective stress replaced by the transformed one.
+\begin{gather}
+f=\alpha{}I^*_1+\sqrt{\dfrac{3}{2}}\norm{\bs^*}+\psi\hat{\sigma}^*_1-\left(1-\alpha\right)c_c.
+\end{gather}
+In this case, the invariants are computed from the transformed stress $\bsigma^*$.
+\begin{gather}
+I^*_1=\tr{\bsigma^*},\qquad
+\bs^*=\dev{\bsigma^*}.
+\end{gather}
+\subsubsection{Flow Rule}
+Similarly, the same flow potential is chosen such that the flow rule can be expressed as
+\begin{gather}
+\dot{\bvarepsilon^p}=\gamma\pdfrac{g}{\bbsigma}=\gamma\left(\dfrac{\bs^*}{\norm{\bs^*}}+\alpha_p\mb{1}\right):\ddfrac{\bsigma^*}{\bar\bsigma}=\gamma\left(\bn+\alpha_p\mb{1}\right):\ddfrac{\bsigma^*}{\bar\bsigma}.
+\end{gather}
+Because of the transformation, the coaxiality no longer exists.
 \section{CDPM2 Model}
 The CDP model adopts isotropic damage, which leads, for example, to degradation of compressive/tensile strength due to tensile/compressive damage. In cyclic loading cases, this may not be ideal. The CDPM2 model uses a different approach that applies tensile damage to the tensile part of the stress and compressive damage to the compressive part.
 
