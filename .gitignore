@@ -1,4 +1,5 @@
 _minted*
+.agents
 .devcontainer
 .idea
 .venv
@@ -16,5 +17,7 @@ _minted*
 *.synctex.gz
 *.thm
 *.toc
+AGENTS.md
 COOKBOOK.pdf
 opencode.json
+skills-lock.json
