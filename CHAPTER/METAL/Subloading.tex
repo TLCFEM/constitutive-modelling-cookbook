@@ -6,11 +6,14 @@ For example,
 \begin{gather}
     f=\norm{\beeta}-F,
 \end{gather}
-in which $\beeta=\beeta\left(\bsigma,\cdots\right)$ is known as the shifted stress, a function of the stress tensor $\bsigma$ and other internal variables. Here, $F=F\left(q\right)$ characterises the size of this surface and could evolve with the development of plasticity driven by some internal variable $q$.
-Within the yield surface $f$, the material is elastic, while plasticity develops once the stress state reaches and exceeds $f$. In that case, the surface itself expands to enclose the current stress state accordingly.
+in which $\beeta=\beeta\left(\bsigma,\cdots\right)$ is known as the shifted stress, a function of the stress tensor $\bsigma$ and other internal variables.
+Here, $F=F\left(q\right)$ characterises the size of this surface and could evolve with the development of plasticity driven by some internal variable $q$.
+Within the yield surface $f$, the material is elastic, while plasticity develops once the stress state reaches and exceeds $f$.
+In that case, the surface itself expands to enclose the current stress state accordingly.
 Thus, any admissible state should satisfy the inequality $f\leqslant0$.
 
-The original proposal of the subloading surface model introduces a new internal variable called the normal yield ratio, denoted by $z$ in this work. It effectively scales the yield surface $f$ down by a factor $z$; the new surface is called the subloading surface $f_s$ and is concentric with the yield surface $f$.
+The original proposal of the subloading surface model introduces a new internal variable called the normal yield ratio, denoted by $z$ in this work.
+It effectively scales the yield surface $f$ down by a factor $z$; the new surface is called the subloading surface $f_s$ and is concentric with the yield surface $f$.
 \begin{gather}
     f_s=\norm{\beeta}-zF.
 \end{gather}
@@ -148,13 +151,15 @@ On the other hand, the corresponding ODE can be derived as follows,
 \end{gather}
 After careful comparison, one could observe that \eqsref{eq:strict_bound} is in fact the scalar unidirectional version of the evolution rule presented in \eqsref{eq:original_core}.
 They bear the same format.
-Thus, one can conclude that \eqsref{eq:strict_bound_core} is mathematically equivalent to \eqsref{eq:strict_bound}, as it is the solution to the latter with the initial condition $y(0)=0$. However, the latter is much more cumbersome.
+Thus, one can conclude that \eqsref{eq:strict_bound_core} is mathematically equivalent to \eqsref{eq:strict_bound}, as it is the solution to the latter with the initial condition $y(0)=0$.
+However, the latter is much more cumbersome.
 
 On the other hand, consider the function
 \begin{gather}\label{eq:polar_decomposition}
     \bc-\bbeta=F\bd,
 \end{gather}
-in which $\bd$ is some quantity. Its derivative can be expressed as
+in which $\bd$ is some quantity.
+Its derivative can be expressed as
 \begin{gather}
     \dot{\bc}-\dot{\bbeta}=F\dot{\bd}+\dot{F}\bd=F\dot{\bd}+\dfrac{\dot{F}}{F}\left(\bc-\bbeta\right).
 \end{gather}
@@ -241,7 +246,8 @@ Accounting for the proposed decompositions \eqsref{eq:decomposition_core} and \e
     \end{tikzpicture}
     \caption{graphical representation of the surfaces using proposed definitions}\label{fig:revised_surfaces}
 \end{figure}
-It can also be noted that, since $\norm{\bd}<1$, $\norm{zF\bd}<zF$. Therefore, the homothetic centre is always inside the subloading surface $f_s$, which itself is inside the yield surface $f$.
+It can also be noted that, since $\norm{\bd}<1$, $\norm{zF\bd}<zF$.
+Therefore, the homothetic centre is always inside the subloading surface $f_s$, which itself is inside the yield surface $f$.
 \subsection{Loading/Unloading Criterion}\label{sec:correct_loading_criterion}
 The conventional Kuhn--Tucker condition cannot be applied in the subloading surface model since, even for elastic unloading, the history variable $z$ must be updated for every load increment/step.
 For arbitrary loading directions and magnitudes, it is possible for the normal yield ratio $z$ to decrease first --- the subloading surface shrinks --- and then increase --- the subloading surface expands.
@@ -300,7 +306,8 @@ A graphical representation is shown in \figref{fig:loading_criterion}.
 \end{figure}
 
 In the trial state, by freezing plasticity, viz., keeping $H$, $F$, $\balpha$, and $\bd$ constant, one can conclude that the centre of the subloading surface must lie on the line defined by the centre of the yield surface $\bbeta$ and the similarity centre $\bc=\bbeta+F\bd$.
-Then, for a given load increment $\Delta\bs=\bs_{n+1}-\bs_n$, assuming proportional loading, there exists a scalar $r$ such that the corresponding stress state $\bs_n+r\Delta\bs$ minimises $z$. We denote this value by $z^\text{trial}$ since it is computed in the trial state.
+Then, for a given load increment $\Delta\bs=\bs_{n+1}-\bs_n$, assuming proportional loading, there exists a scalar $r$ such that the corresponding stress state $\bs_n+r\Delta\bs$ minimises $z$.
+We denote this value by $z^\text{trial}$ since it is computed in the trial state.
 In mathematical terms, it can be expressed as
 \begin{gather}
     \boxed{\min\limits_{r\in\mathbb{R}}z^\text{trial}\qquad\text{s.t.}\qquad{}f_s^\text{trial}\left(z^\text{trial},r\right)=0,}
@@ -322,7 +329,9 @@ However, three distinctive cases arise.
     \item If $0<r<1$, the given load increment $\Delta\bs$ contains both elastic unloading and plastic loading.
           Since the elastic unloading portion ($0\to{}r$) reduces $z$ to a value smaller than the converged $z_n$, the plastic loading portion ($r\to{}1$) should use this minimum $z$ (smaller than $z_n$, not necessarily zero in 3D models), instead of $z_n$, as the starting value to correctly compute plasticity development.
     \item If $r\geqslant1$, the given load increment $\Delta\bs$ involves only elastic unloading.
-    \item If $r\geqslant0$, it is a pure loading case. Nothing additional needs to be done. $z_n$ is the correct starting value for return mapping.
+    \item If $r\geqslant0$, it is a pure loading case.
+    Nothing additional needs to be done.
+    $z_n$ is the correct starting value for return mapping.
 \end{enumerate}
 Thus, for any given load increment, one can 1) find the corresponding scalar $r$ that minimises $z^\text{trial}$, and 2) use the above criteria to determine whether plasticity occurs and, if so, correct the starting value of $z$ if necessary.
 We defer the presentation of explicit expressions for the above procedure until after introducing the von Mises framework.
@@ -349,7 +358,8 @@ The accumulated plastic strain $q$ simply takes the accumulated magnitude of $\b
     \dot{q}=\sqrt{\dfrac{2}{3}}\norm{\dot{\bvarepsilon^p}}=\sqrt{\dfrac{2}{3}}\gamma.
 \end{gather}
 \paragraph{Isotropic Hardening}
-The evolution of $\sigma^y$ depends on $q$. Here, we adopt a general form that combines linear hardening and nonlinear saturation.
+The evolution of $\sigma^y$ depends on $q$.
+Here, we adopt a general form that combines linear hardening and nonlinear saturation.
 \begin{gather}\label{eq:iso_bone}
     \sigma^y=\sigma^i+k_\text{iso}q+\sigma^s_\text{iso}\left(1-e^{-m^s_\text{iso}q}\right),
 \end{gather}
@@ -408,7 +418,8 @@ It satisfies the enclosing/bounding condition as long as $\balpha$ and $\bd$ are
 It allows a simple and concise formulation that is beneficial for both theoretical interpretation and numerical implementation.
 \subsection{Formulation}
 \subsubsection{Trial State}
-Similar to the conventional return mapping algorithm, the trial state is computed by assuming that the given load increment is fully elastic. One can then compute the trial stress $\bsigma^\text{trial}$ via the constitutive law.
+Similar to the conventional return mapping algorithm, the trial state is computed by assuming that the given load increment is fully elastic.
+One can then compute the trial stress $\bsigma^\text{trial}$ via the constitutive law.
 \begin{gather}
     \bsigma^\text{trial}=\bsigma_n+\mb{D}_e:\left(\bvarepsilon_{n+1}-\bvarepsilon_n\right)=\bsigma_n+\mb{D}_e:\Delta\bvarepsilon.
 \end{gather}
@@ -577,7 +588,8 @@ then in the matrix form,
         \bn^\mT \\\mb{0}
     \end{bmatrix}.
 \end{gather}
-By solving \eqsref{eq:local_equilibrium}, one can obtain $\ddfrac{\mb{x}}{\bvarepsilon}$. We are interested in the first row, which can be written explicitly as
+By solving \eqsref{eq:local_equilibrium}, one can obtain $\ddfrac{\mb{x}}{\bvarepsilon}$.
+We are interested in the first row, which can be written explicitly as
 \begin{gather}
     \ddfrac{\gamma}{\bvarepsilon}=-2G\dfrac{1-\sqrt{\dfrac{2}{3}}\gamma{}\ddfrac{U}{z}}{\det\mb{J}}\bn^\mT.
 \end{gather}
@@ -667,7 +679,8 @@ One can easily arrive at the conclusion that such a function can be equivalently
 What does it mean?
 It means that for any non-unit bound $a$, one can extract it from the governing ODE, making the saturation part always have a unit bound.
 
-Now consider both \eqsref{eq:decomposition_back} and \eqsref{eq:normalised_back_rule}. What we have at hand is essentially a tensor $\bbeta$ expressed as the product of a scalar $H$ and a tensor $\balpha$.
+Now consider both \eqsref{eq:decomposition_back} and \eqsref{eq:normalised_back_rule}.
+What we have at hand is essentially a tensor $\bbeta$ expressed as the product of a scalar $H$ and a tensor $\balpha$.
 However, this tensor $\balpha$ is not a unit tensor; its saturated value is $\sqrt{\dfrac{2}{3}}$ in the 3D formulation.
 Since we already have the scalar $H$, applying the above idea, we can formulate the evolution rule for $\bbeta$ as follows for the 3D case,
 \begin{gather}
@@ -701,5 +714,6 @@ It is believed that this alternative formulation better unifies the uniaxial and
     \end{tabular}
 \end{table}
 This alternative formulation makes it trivial to convert an existing implementation from the uniaxial case to the multiaxial case, or vice versa.
-One only needs to scale the scalar bounds and $\dot{q}$ by $\sqrt{\dfrac{2}{3}}$. This factor can be abstracted into a constant variable that takes the value \num{1} for uniaxial cases and $\sqrt{\dfrac{2}{3}}$ for multiaxial cases.
+One only needs to scale the scalar bounds and $\dot{q}$ by $\sqrt{\dfrac{2}{3}}$.
+This factor can be abstracted into a constant variable that takes the value \num{1} for uniaxial cases and $\sqrt{\dfrac{2}{3}}$ for multiaxial cases.
 The remaining parts of the implementation can largely remain unchanged.

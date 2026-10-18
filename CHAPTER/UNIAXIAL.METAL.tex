@@ -1,5 +1,6 @@
 \chapter{Uniaxial Metal Models}
-In this chapter, several models suitable for modelling metals are presented. We start with simple von Mises criterion based models and then move to more advanced uniaxial models suitable for modelling the Bauschinger effect, ratcheting, and buckling restrained bracing members.
+In this chapter, several models suitable for modelling metals are presented.
+We start with simple von Mises criterion based models and then move to more advanced uniaxial models suitable for modelling the Bauschinger effect, ratcheting, and buckling restrained bracing members.
 \section{Linear Isotropic Hardening Model}
 \subsection{Theory}
 For uniaxial models, the constitutive equation \eqsref{eq:strain_decomposition} simplifies to
@@ -26,7 +27,8 @@ It is reasonable to define the direction of plastic flow to coincide with the di
 \begin{gather}\label{eq:isotropic_flow_rule}
 \dot{\varepsilon^p}=\gamma~\sign{\sigma}.
 \end{gather}
-Physically, this states that plastic strain evolves in the direction of stress. If stress is positive, plastic strain increases, and vice versa.
+Physically, this states that plastic strain evolves in the direction of stress.
+If stress is positive, plastic strain increases, and vice versa.
 
 Noting that according to \eqsref{eq:isotropic_yield_function}, $\pdfrac{f}{\sigma}=\sign{\sigma}$, the flow rule can also be expressed as
 \begin{gather}
@@ -40,13 +42,16 @@ For the internal hardening variable $q$, the simplest case is
 \begin{gather}\label{eq:isotropic_hardening_law}
 \dot{q}=\abs{\dot{\varepsilon^p}}=\gamma.
 \end{gather}
-Thus, $q$ characterises the accumulated magnitude of plastic strain. Given that $\gamma\geqslant0$, it is clear that $q$ is a non-decreasing function.
+Thus, $q$ characterises the accumulated magnitude of plastic strain.
+Given that $\gamma\geqslant0$, it is clear that $q$ is a non-decreasing function.
 
 We are ready to formulate and implement our first plastic model.
 \subsection{Formulation}
-In this book, subscript $\left(\cdot\right)_n$ is adopted to indicate initial conditions (current state or converged state) and subscript $\left(\cdot\right)_{n+1}$ is adopted to indicate solution (new state or trial state). Sometimes $\left(\cdot\right)_{n+1}$ is omitted for simplicity.
+In this book, subscript $\left(\cdot\right)_n$ is adopted to indicate initial conditions (current state or converged state) and subscript $\left(\cdot\right)_{n+1}$ is adopted to indicate solution (new state or trial state).
+Sometimes $\left(\cdot\right)_{n+1}$ is omitted for simplicity.
 
-For this example, the initial conditions are stress $\sigma_n$, total strain $\varepsilon_n$, plastic strain $\varepsilon_n^p$, and hardening variable $q_n$. For a given $\varepsilon_{n+1}$, the model computes new $\sigma_{n+1}$, $\varepsilon^p_{n+1}$, and $q_{n+1}$.
+For this example, the initial conditions are stress $\sigma_n$, total strain $\varepsilon_n$, plastic strain $\varepsilon_n^p$, and hardening variable $q_n$.
+For a given $\varepsilon_{n+1}$, the model computes new $\sigma_{n+1}$, $\varepsilon^p_{n+1}$, and $q_{n+1}$.
 
 The summary of this simple isotropic hardening model is listed as follows.
 \begin{table}[ht]
@@ -80,7 +85,8 @@ f^\text{trial}=\abs{\sigma^\text{trial}}-\sigma^y=\abs{\sigma_n+E\left(\varepsil
 Here, we simply assume that the current step is elastic (regardless of the actual state) and apply the increment $\Delta\varepsilon$ to obtain the trial state.
 If $f^\text{trial}<0$, meaning the trial state is still in the elastic region and thus corresponds to elastic loading/unloading, the new state is simply $\varepsilon^p_{n+1}=\varepsilon^p_n$, $q_{n+1}=q_n$, and $\sigma_{n+1}=\sigma_{n+1}^\text{trial}$.
 \subsubsection{Plastic Evolution}
-Otherwise, the new state involves plastic evolution. In this case,
+Otherwise, the new state involves plastic evolution.
+In this case,
 \begin{gather}
 \sigma_{n+1}=E\left(\varepsilon_{n+1}-\varepsilon^p_{n+1}\right).
 \end{gather}
@@ -124,7 +130,8 @@ It is then easy to compute
 \pdfrac{\gamma}{\varepsilon_{n+1}}=\dfrac{1}{E+K}\pdfrac{f^\text{trial}}{\varepsilon_{n+1}}=\dfrac{E}{E+K}.
 \end{gather}
 \subsection{Implementation}
-The implementation is quite straightforward for such a simple model. \algoref{algo:isotropic} summarises the state determination algorithm for the above isotropic hardening model.
+The implementation is quite straightforward for such a simple model.
+\algoref{algo:isotropic} summarises the state determination algorithm for the above isotropic hardening model.
 \begin{breakablealgorithm}
 \caption{state determination of uniaxial isotropic hardening model}\label{algo:isotropic}
 \begin{algorithmic}[1]
@@ -150,25 +157,30 @@ The implementation is quite straightforward for such a simple model. \algoref{al
 It is clear that no local iteration is required, since simple linear functions are used as an introductory example.
 Typical plasticity models often adopt nonlinear functions, so local iterations are usually required to compute the new state.
 \section{Combined Isotropic/Kinematic Hardening Model}\label{sec:isotropic/kinematic}
-Isotropic hardening controls the size of the yield surface without changing its location. Kinematic hardening, on the contrary, changes the yield surface location without changing its size. Combining isotropic and kinematic hardening allows more flexible responses to be modelled.
+Isotropic hardening controls the size of the yield surface without changing its location.
+Kinematic hardening, on the contrary, changes the yield surface location without changing its size.
+Combining isotropic and kinematic hardening allows more flexible responses to be modelled.
 \subsection{Theory}
 \subsubsection{Yield Function}
 Since $\sigma^y$ characterises the size of the yield surface, a natural way to allow the yield surface to move is to introduce the explicit location of its centre.
 \begin{gather}
 f=\abs{\eta}-\sigma^y,
 \end{gather}
-with $\eta=\sigma-\alpha$ defined as the shifted stress and $\alpha$ denoting the back stress. The additional stress quantity $\alpha$ characterises the centre of the yield surface.
+with $\eta=\sigma-\alpha$ defined as the shifted stress and $\alpha$ denoting the back stress.
+The additional stress quantity $\alpha$ characterises the centre of the yield surface.
 \subsubsection{Flow Rule}
 Assuming an associative rule, the flow rule becomes
 \begin{gather}
 \dot{\varepsilon^p}=\gamma\pdfrac{f}{\sigma}=\gamma~\sign{\eta}.
 \end{gather}
 \subsubsection{Hardening Law}
-The additional internal variable $\alpha$ also evolves. It can take a similar form as follows.
+The additional internal variable $\alpha$ also evolves.
+It can take a similar form as follows.
 \begin{gather}
 \dot{\alpha}=H\dot{\varepsilon^p}=\gamma{}H~\sign{\eta}.
 \end{gather}
-where $H$ denotes the kinematic hardening modulus. The existing hardening law for $q$ remains unchanged.
+where $H$ denotes the kinematic hardening modulus.
+The existing hardening law for $q$ remains unchanged.
 \begin{gather}
 \dot{q}=\abs{\dot{\varepsilon^p}}=\gamma.
 \end{gather}
@@ -188,13 +200,15 @@ Hardening Law&$\dot{q}=\gamma$\\
 
 The algorithm aims to compute new $\sigma_{n+1}$, $\varepsilon^p_{n+1}$, $\alpha_{n+1}$, and $q_{n+1}$ based on current $\sigma_n$, $\varepsilon_n$, $\varepsilon_n^p$, $\alpha_n$, $q_n$, and the new $\varepsilon_{n+1}$.
 \subsubsection{Elastic Loading/Unloading}
-The trial stress can be computed following \eqsref{eq:uniaxial_trial_stress}. Then by denoting $\eta^\text{trial}=\sigma^\text{trial}-\alpha_n$, the yield function becomes
+The trial stress can be computed following \eqsref{eq:uniaxial_trial_stress}.
+Then by denoting $\eta^\text{trial}=\sigma^\text{trial}-\alpha_n$, the yield function becomes
 \begin{gather}
 f^\text{trial}=\abs{\eta^\text{trial}}-\left(\sigma^i+Kq_n\right).
 \end{gather}
 Again, if $f^\text{trial}\leqslant0$, the step is elastic loading/unloading; if $f^\text{trial}>0$, the new state requires plastic evolution.
 \subsubsection{Plastic Evolution}
-With the new state variables, let $\eta_{n+1}=\sigma_{n+1}-\alpha_{n+1}$. The yield function is computed as follows.
+With the new state variables, let $\eta_{n+1}=\sigma_{n+1}-\alpha_{n+1}$.
+The yield function is computed as follows.
 \begin{gather}
 \begin{split}
 f&=\abs{\sigma_{n+1}-\alpha_{n+1}}-\left(\sigma^i+Kq_{n+1}\right)\\
@@ -241,9 +255,12 @@ The state determination algorithm resembles the previous one for the isotropic h
 \end{algorithmic}
 \end{breakablealgorithm}
 \section{Armstrong--Frederick Hardening Model}
-So far, two simple models have been introduced. They adopt linear isotropic/kinematic hardening laws, so the local residual is a linear function that can be solved in one step. However, linear hardening has limited applications.
+So far, two simple models have been introduced.
+They adopt linear isotropic/kinematic hardening laws, so the local residual is a linear function that can be solved in one step.
+However, linear hardening has limited applications.
 
-To allow more versatile applications, in this section, a metal model incorporating Armstrong--Frederick type kinematic hardening \cite{Frederick2007} and Voce type isotropic hardening \cite{Voce1955} is introduced. Both hardening types are nonlinear.
+To allow more versatile applications, in this section, a metal model incorporating Armstrong--Frederick type kinematic hardening \cite{Frederick2007} and Voce type isotropic hardening \cite{Voce1955} is introduced.
+Both hardening types are nonlinear.
 \subsection{Theory}
 \subsubsection{Yield Function and Flow Rule}
 The same yield function and flow rule used in the previous combined isotropic/kinematic hardening model are adopted.
@@ -273,7 +290,8 @@ Also,
 \begin{gather}
 \dot{\sigma^y}=m^s\sigma^se^{-m^sq}=m^s\left(\sigma^i+\sigma^s-\sigma^y\right).
 \end{gather}
-This rate form is often presented in the literature. Note that it can be explicitly integrated.
+This rate form is often presented in the literature.
+Note that it can be explicitly integrated.
 Furthermore, one could propose the following
 \begin{gather}
 \sigma^y=\sigma^i+Kq+\sigma^s\dfrac{\sum_{j=1}^{n}s_j\left(1-e^{-m^s_jq}\right)}{\sum_{j=1}^{n}s_j}.
@@ -285,7 +303,9 @@ An equivalent form would be
 \sigma^y=\sigma^i+Kq+\sum_{j=1}^{n}\sigma^s_j\left(1-e^{-m^s_jq}\right).
 \end{gather}
 \paragraph{Kinematic Hardening}
-A multiplicative formulation \cite{Chaboche1989} for the back stress is adopted together with the Armstrong--Frederick type hardening rule. The back stress is defined as the summation of several back stresses that evolve independently at different rates. That is,
+A multiplicative formulation \cite{Chaboche1989} for the back stress is adopted together with the Armstrong--Frederick type hardening rule.
+The back stress is defined as the summation of several back stresses that evolve independently at different rates.
+That is,
 \begin{gather}
 \alpha=\sum_{i=1}^n\alpha_i
 \end{gather}
@@ -293,7 +313,8 @@ with
 \begin{gather}\label{eq:af_kinematic}
 \dot{\alpha_i}=a_i\dot{\varepsilon^p}-b_i\alpha_i\dot{q}
 \end{gather}
-where $a_i$ and $b_i$ are two sets of model parameters. In terms of $\gamma$, it is
+where $a_i$ and $b_i$ are two sets of model parameters.
+In terms of $\gamma$, it is
 \begin{gather}
 \dot{\alpha_i}=a_i\gamma{}n-b_i\alpha_i\gamma.
 \end{gather}
@@ -312,12 +333,15 @@ Hardening Law&$\dot{q}=\gamma$\\
 \end{tabular}
 \end{table}
 \subsubsection{Elastic Loading/Unloading}
-The trial stress can be computed following \eqsref{eq:uniaxial_trial_stress}. Then by denoting $\eta^\text{trial}=\sigma^\text{trial}-\alpha_n$, the yield function becomes
+The trial stress can be computed following \eqsref{eq:uniaxial_trial_stress}.
+Then by denoting $\eta^\text{trial}=\sigma^\text{trial}-\alpha_n$, the yield function becomes
 \begin{gather}
 f^\text{trial}=\abs{\eta^\text{trial}}-\left(\sigma^i+Kq_n+\sigma^s\left(1-e^{-m^sq_n}\right)\right).
 \end{gather}
 \subsubsection{Plastic Evolution}
-Nonlinearity is now introduced because $\dot{\alpha_i}=g\left(\alpha_i,\cdots\right)$ is a function of $\alpha_i$ and other variables. Various first-order numerical methods can be applied. For example,
+Nonlinearity is now introduced because $\dot{\alpha_i}=g\left(\alpha_i,\cdots\right)$ is a function of $\alpha_i$ and other variables.
+Various first-order numerical methods can be applied.
+For example,
 \begin{itemize}
 \item explicit/forward Euler method
 \begin{gather}
@@ -387,7 +411,8 @@ f\left(\gamma\right)&=\abs{\eta_{n+1}}-\left(\sigma^i+Kq_{n+1}+\sigma^s\left(1-e
 \end{split}
 \end{gather}
 
-The Newton--Raphson method is used to solve this nonlinear equation. The Jacobian reads
+The Newton--Raphson method is used to solve this nonlinear equation.
+The Jacobian reads
 \begin{gather}\label{eq:af_pfpg}
 \pdfrac{f}{\gamma}=\sum\dfrac{b_i\alpha_{i,n}n-a_i}{\left(1+b_i\gamma\right)^2}-E-K-m^s\sigma^se^{-m^s\left(q_n+\gamma\right)}.
 \end{gather}
@@ -448,14 +473,17 @@ The state determination algorithm of this AF model is given in \algoref{algo:af_
 \end{algorithmic}
 \end{breakablealgorithm}
 
-So far, it is clear that for both simple and complex models, the structure of the state determination algorithm remains more or less the same. The core formulation differs only because of the yield function, flow rule, and hardening law. Nevertheless, some simplifications are often possible.
+So far, it is clear that for both simple and complex models, the structure of the state determination algorithm remains more or less the same.
+The core formulation differs only because of the yield function, flow rule, and hardening law.
+Nevertheless, some simplifications are often possible.
 
 We present the C++ implementation after the enhancement introduced in the next section.
 \section{Armstrong--Frederick with Strain Memory}
 The discussed Armstrong--Frederick model allows versatile modelling of kinematic hardening.
 However, many experiments show that the magnitude of isotropic hardening gradually decreases as the number of cycles increases---even for cycles with a fixed strain range.
 To better model such behaviour, \cite{Ohno1982} introduced the concept of a non-hardening strain region.
-It is a region that characterises a finite neighbourhood around the current plastic strain. Just like isotropic hardening in stress space, the size of this region grows with the development of plastic strain.
+It is a region that characterises a finite neighbourhood around the current plastic strain.
+Just like isotropic hardening in stress space, the size of this region grows with the development of plastic strain.
 \subsection{Theory}
 Instead of using $q$ alone to drive the evolution of isotropic hardening, a new internal variable $r$ is introduced to characterise the size of the non-hardening strain region.
 \begin{gather}\label{eq:afco}
@@ -482,7 +510,8 @@ An additional surface is adopted to define the non-hardening strain region.
 \begin{gather}
 	h=\abs{\varepsilon^p-\theta}-r,
 \end{gather}
-where $\theta$ is similar to $\alpha$ and, in this case, points to the centre of the non-hardening strain region. It may be called the back plastic strain.
+where $\theta$ is similar to $\alpha$ and, in this case, points to the centre of the non-hardening strain region.
+It may be called the back plastic strain.
 
 If one chooses a linear evolution law, denoting $n_h=\pdfrac{h}{\varepsilon^p}=\sign{\varepsilon^p-\theta}$, then
 \begin{gather}
@@ -576,7 +605,8 @@ Instead, we keep the notation used so far for better consistency.
 The history variable $0\leqslant{}z\leqslant{}1$ is a ratio that adjusts the size of this subloading surface.
 It provides a smooth transition from the elastic interior (in the conventional sense) to the yield surface $f$.
 For loading only, this effectively defines a surface that grows with strain increments, and there is no initial elastic region, because when $z=0$, any non-zero $\sigma$ results in $f_s>0$ and thus triggers the evolution of plasticity.
-For unloading, if one enforces $f_s=0$, one eventually ends up with $\gamma<0$. In this case, $z$ is updated by
+For unloading, if one enforces $f_s=0$, one eventually ends up with $\gamma<0$.
+In this case, $z$ is updated by
 \begin{gather}
 z=\dfrac{\abs{\eta}}{\sigma^y}.
 \end{gather}
@@ -593,11 +623,18 @@ A reference implementation can be shown as follows.
 Subloading1D::update_trial_status
 \end{cppcode}
 \section{Uniaxial Model for BRB Steel}\label{sec:uniaxial_brb}
-The previous models show symmetric behaviour under both tension and compression. For some applications, such as buckling restrained braces, buckling under compression results in lower strength. In this section, a model \cite{Zona2012} suitable for BRB steel is presented with a neat implementation.
+The previous models show symmetric behaviour under both tension and compression.
+For some applications, such as buckling restrained braces, buckling under compression results in lower strength.
+In this section, a model \cite{Zona2012} suitable for BRB steel is presented with a neat implementation.
 \subsection{Theory}
-To distinguish the different responses in tension and compression, one set of flow rule and hardening law is not sufficient. Instead, tension and compression should be treated separately. Here superscripts $\left(\cdot\right)^+$ and $\left(\cdot\right)^-$ are used to denote the governing equations for tension and compression.
+To distinguish the different responses in tension and compression, one set of flow rule and hardening law is not sufficient.
+Instead, tension and compression should be treated separately.
+Here superscripts $\left(\cdot\right)^+$ and $\left(\cdot\right)^-$ are used to denote the governing equations for tension and compression.
 \subsubsection{Plasticity Activation}
-The model adopts a different approach. Plasticity activation is determined based on the product $\sigma\dot{\varepsilon}$. When loading towards tension (compression), as long as $\sigma$ is in tension (compression), plasticity evolves. In mathematical terms,
+The model adopts a different approach.
+Plasticity activation is determined based on the product $\sigma\dot{\varepsilon}$.
+When loading towards tension (compression), as long as $\sigma$ is in tension (compression), plasticity evolves.
+In mathematical terms,
 \begin{gather}
 \begin{array}{ll}
 \dot{\varepsilon}\sigma>0,&\text{plasticity develops}\\
@@ -613,7 +650,8 @@ The increment of plastic strain is defined to be a portion of the increment of t
 \abs{\dfrac{\sigma-K\varepsilon^p}{\sigma_y^-}}^{\alpha^-}\dot{\varepsilon}.&\text{compression evolution}
 \end{array}\right.
 \end{gather}
-The term $K\varepsilon^p$ defines the linear hardening, which serves as a baseline. Since the yield stress $\sigma_y^+$ ($\sigma_y^-$) defines the boundary, the fraction is always smaller than unity.
+The term $K\varepsilon^p$ defines the linear hardening, which serves as a baseline.
+Since the yield stress $\sigma_y^+$ ($\sigma_y^-$) defines the boundary, the fraction is always smaller than unity.
 \subsubsection{Hardening Law}
 The yield stress follows a Voce type rule.
 \begin{gather}
@@ -626,7 +664,8 @@ The yield stress follows a Voce type rule.
 &=\sigma_s^--\left(\sigma_s^--\sigma_0\right)\exp\left(-\dfrac{q}{n^-}\right).
 \end{split}
 \end{gather}
-Here, $n^+$ and $n^-$ are two factors controlling the rate of evolution of the yield stress, while $\sigma_s^+$ and $\sigma_s^-$ are two saturated stresses. By setting different values, the tension response can differ from the compression response.
+Here, $n^+$ and $n^-$ are two factors controlling the rate of evolution of the yield stress, while $\sigma_s^+$ and $\sigma_s^-$ are two saturated stresses.
+By setting different values, the tension response can differ from the compression response.
 \subsection{Formulation}
 The governing equations are summarised as follows.
 \begin{table}[ht]
@@ -644,7 +683,8 @@ Hardening Law&$\dot{q}=\abs{\dot{\varepsilon^p}}$\\
 \end{tabular}
 \end{table}
 
-The state determination is based on the flow rule. Rearranging it gives
+The state determination is based on the flow rule.
+Rearranging it gives
 \begin{gather}
 R=\dot{\varepsilon^p}-\abs{\dfrac{\sigma-K\varepsilon^p}{\sigma_y^\pm}}^{\alpha^\pm}\dot{\varepsilon}
 \end{gather}
@@ -675,7 +715,8 @@ For tangent stiffness, the following expression will be used.
 \pdfrac{R}{\varepsilon_{n+1}}=-\abs{\dfrac{\sigma^\text{trial}-E\dot{\varepsilon^p}-K\dot{\varepsilon^p}}{\sigma_y^\pm}}^{\alpha^\pm}\left(1+\dfrac{\alpha^\pm\dot\varepsilon{}E}{\sigma^\text{trial}-E\dot{\varepsilon^p}-K\dot{\varepsilon^p}}\right).
 \end{gather}
 \subsection{Implementation}
-A clear and concise implementation is presented as follows. Compared with other existing bloated implementations, this one is significantly simpler.
+A clear and concise implementation is presented as follows.
+Compared with other existing bloated implementations, this one is significantly simpler.
 \begin{breakablealgorithm}
 \caption{state determination of uniaxial BRB steel model}\label{algo:brb}
 \begin{algorithmic}[1]
@@ -708,14 +749,17 @@ A clear and concise implementation is presented as follows. Compared with other 
 \end{algorithmic}
 \end{breakablealgorithm}
 
-The idea of the above steel BRB model is fairly straightforward. Since the target is to generate different responses under tension/compression, the model can simply adopt two sets of flow rules and hardening laws. For each case, the overall structure of the algorithm remains the same, and one can switch between the two sets of model parameters.
+The idea of the above steel BRB model is fairly straightforward.
+Since the target is to generate different responses under tension/compression, the model can simply adopt two sets of flow rules and hardening laws.
+For each case, the overall structure of the algorithm remains the same, and one can switch between the two sets of model parameters.
 
 The C++ implementation of the state determination algorithm is shown as follows.
 \begin{cppcode}
 SteelBRB::update_trial_status
 \end{cppcode}
 \section{VAFCRP1D}
-Finally, an extension of the Armstrong--Frederick model is presented to close this chapter. A 3D version will be introduced later.
+Finally, an extension of the Armstrong--Frederick model is presented to close this chapter.
+A 3D version will be introduced later.
 \subsection{Theory}
 \subsubsection{Yield Function}
 A von Mises yield function is used.
@@ -724,11 +768,13 @@ f=\norm{\eta}-k,
 \end{gather}
 in which $\eta=\sigma-\beta$ is the shifted stress, $\beta$ is the back stress and $k=k\left(q\right)$ is the isotropic hardening stress.
 \subsubsection{Flow Rule}
-Associated plastic flow is adopted. The plastic strain rate is then
+Associated plastic flow is adopted.
+The plastic strain rate is then
 \begin{gather}
 \dot{\varepsilon^p}=\gamma\pdfrac{f}{\sigma}=\gamma{}n=\gamma~\sign{\eta},
 \end{gather}
-where $n=\dfrac{\eta}{\norm{\eta}}=\sign{\eta}$. The corresponding accumulated plastic strain rate is
+where $n=\dfrac{\eta}{\norm{\eta}}=\sign{\eta}$.
+The corresponding accumulated plastic strain rate is
 \begin{gather}
 \dot{p}=\norm{\dot{\varepsilon^p}}=\gamma.
 \end{gather}
@@ -745,7 +791,8 @@ The rate form of the back stress $\displaystyle\beta=\sum\beta^i$ is defined as
 \begin{gather*}
 \dot{\beta^i}=a^i\dot{\varepsilon^p}-b^i\beta^i\dot{p}.
 \end{gather*}
-In terms of $\gamma$, it is $\dot{\beta^i}=a^i\gamma{}n-b^i\beta^i\gamma$. The incremental form is thus
+In terms of $\gamma$, it is $\dot{\beta^i}=a^i\gamma{}n-b^i\beta^i\gamma$.
+The incremental form is thus
 \begin{gather}
 \beta^i=\beta_n^i+a^i\gamma{}n-b^i\beta^i\gamma,\qquad
 \beta^i=\dfrac{\beta_n^i+a^i\gamma{}n}{1+b^i\gamma}.
@@ -755,7 +802,8 @@ The rate of the plastic multiplier is defined as
 \begin{gather}
 \dfrac{\gamma}{\Delta{}t}=\dot{\gamma}=\dfrac{1}{\mu}\left(\left(\dfrac{\norm{\eta}}{k}\right)^{\dfrac{1}{\epsilon}}-1\right),
 \end{gather}
-in which $\mu$ and $\epsilon$ are two material constants. Equivalently, it is
+in which $\mu$ and $\epsilon$ are two material constants.
+Equivalently, it is
 \begin{gather}
 \norm{\eta}\left(\dfrac{\Delta{}t}{\Delta{}t+\mu\gamma}\right)^\epsilon-k=0.
 \end{gather}
@@ -765,16 +813,19 @@ The shifted stress can be computed as
 \begin{gather}
 \eta=\sigma-\beta=E\left(\varepsilon^\text{trial}-\varepsilon^p_n-\gamma{}n\right)-\beta=\sigma^\text{trial}-nE\gamma-\sum\dfrac{\beta_n^i+na^i\gamma}{1+b^i\gamma}
 \end{gather}
-with $\sigma^\text{trial}=E\left(\varepsilon^\text{trial}-\varepsilon^p_n\right)$. Knowing that $\gamma$ is positive, the following can be obtained by splitting the summation into two parts,
+with $\sigma^\text{trial}=E\left(\varepsilon^\text{trial}-\varepsilon^p_n\right)$.
+Knowing that $\gamma$ is positive, the following can be obtained by splitting the summation into two parts,
 \begin{gather*}
 \left(\norm{\eta}+E\gamma+\sum\dfrac{a^i\gamma}{1+b^i\gamma}\right)n=\norm{\sigma^\text{trial}-\sum\dfrac{\beta_n^i}{1+b^i\gamma}}u,
 \end{gather*}
-where $\displaystyle{}u=\dfrac{\sigma^\text{trial}-\sum\dfrac{\beta_n^i}{1+b^i\gamma}}{\norm{\sigma^\text{trial}-\sum\dfrac{\beta_n^i}{1+b^i\gamma}}}$. This expression is equivalent to $n=u$ and
+where $\displaystyle{}u=\dfrac{\sigma^\text{trial}-\sum\dfrac{\beta_n^i}{1+b^i\gamma}}{\norm{\sigma^\text{trial}-\sum\dfrac{\beta_n^i}{1+b^i\gamma}}}$.
+This expression is equivalent to $n=u$ and
 \begin{gather}
 \eta=\left(\norm{\sigma^\text{trial}-\sum\dfrac{\beta_n^i}{1+b^i\gamma}}-E\gamma-\sum\dfrac{a^i\gamma}{1+b^i\gamma}\right)u.
 \end{gather}
 
-The reason for finding such an identity is that $u$ is only a function of $\gamma$, and its derivative can be computed easily. Similar derivations can also be seen in the 3D version, leading to the conclusion that the direction of the back stress is aligned with a corresponding direction.
+The reason for finding such an identity is that $u$ is only a function of $\gamma$, and its derivative can be computed easily.
+Similar derivations can also be seen in the 3D version, leading to the conclusion that the direction of the back stress is aligned with a corresponding direction.
 
 The corresponding derivatives are
 \begin{gather*}

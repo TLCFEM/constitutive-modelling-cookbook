@@ -35,7 +35,8 @@ Both rules are effectively identical to the ones introduced previously in \S~\re
 However, since we focus only on the yield criterion in this section, we are not going to explore various alternatives.
 Nevertheless, based on the framework presented here, it is relatively easy to employ more complex hardening rules.
 \subsection{Derivatives of Eigenvalues and Eigenvectors}\label{sec:derivative_eigen}
-Now let $\lambda_i$ be the eigenvalues of the stress tensor $\mb{\aleph}$ and $\bv_i$ the corresponding normalised eigenvectors. Then,
+Now let $\lambda_i$ be the eigenvalues of the stress tensor $\mb{\aleph}$ and $\bv_i$ the corresponding normalised eigenvectors.
+Then,
 \begin{gather}\label{eq:eigenvalue_def}
     \lambda_i=\underbrace{\bv_i^\mT\mb{\aleph}\bv_i}_{\text{vector/matrix}}=\underbrace{\bv_i\cdot\mb{\aleph}\cdot\bv_i}_{\text{tensor contraction}}=\underbrace{\left(\bv_i\otimes\bv_i\right):\mb{\aleph}}_{\text{tensor contraction}},\qquad
     \mb{\aleph}=\sum_{i}\lambda_i\bv_i\otimes\bv_i.
@@ -137,7 +138,8 @@ One can spot a few interesting features of \eqsref{eq:yld0418p_yield_function}.
     \item The shape is controlled by principal stresses.
     \item The summation involves nine terms in total.
     \item Depending on the parameters used to define the transformation matrices, the transformed stresses $\balpha$ and $\bbeta$ may or may not share the same principal directions.
-    \item Note that $\bs$ is a deviatoric stress tensor; thus, the yield function is hydrostatic pressure independent. However, $\balpha$ and $\bbeta$ may or may not be deviatoric --- depending on the transformation matrices.
+    \item Note that $\bs$ is a deviatoric stress tensor; thus, the yield function is hydrostatic pressure independent.
+    However, $\balpha$ and $\bbeta$ may or may not be deviatoric --- depending on the transformation matrices.
 \end{enumerate}
 
 It is also important to note that $f$ has the same unit as stress.
@@ -352,7 +354,8 @@ then
 \end{gather}
 The above expression is in pure matrix form.
 \subsection{Kinematic Hardening Extension}
-Common orthotropic materials such as timber and bone do not exhibit kinematic hardening. This is why kinematic hardening was not introduced in the previous sections.
+Common orthotropic materials such as timber and bone do not exhibit kinematic hardening.
+This is why kinematic hardening was not introduced in the previous sections.
 However, as the YLD0418P yield criterion is widely used in the context of sheet metals, extending the model to include kinematic hardening is meaningful.
 
 With the introduction of the back stress $\ba$, the corresponding shifted stress is defined as the difference between $\bs$ and $\ba$ as

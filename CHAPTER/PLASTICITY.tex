@@ -1,9 +1,11 @@
 \chapter{Plasticity Basics}
 This chapter presents a general framework for plasticity.
 
-A typical elasto-plastic model can be idealised by the frictional device shown in \figref{fig:idealisation}. The device consists of an elastic spring element, whose deformation is fully recoverable when the applied external force becomes zero, and a friction element, which deforms once the deformation exceeds a certain limit and whose deformation cannot be recovered even when the applied external force becomes zero.
+A typical elasto-plastic model can be idealised by the frictional device shown in \figref{fig:idealisation}.
+The device consists of an elastic spring element, whose deformation is fully recoverable when the applied external force becomes zero, and a friction element, which deforms once the deformation exceeds a certain limit and whose deformation cannot be recovered even when the applied external force becomes zero.
 
-Most plastic models are formulated in \textbf{stress space} or, equivalently, are \textbf{strain driven}. The task is to determine the stress response from the strain input.
+Most plastic models are formulated in \textbf{stress space} or, equivalently, are \textbf{strain driven}.
+The task is to determine the stress response from the strain input.
 \begin{figure}[ht]
 \centering
 \begin{tikzpicture}[scale=1.4]
@@ -24,11 +26,16 @@ The elastic part obeys Hooke's law,
 \end{gather}
 where $\mb{D}$ denotes the elastic stiffness moduli.
 \section{Yield Function}
-To determine whether a given stress state is admissible, the yield function is introduced as the criterion. It is often a scalar-valued function of stress $\bsigma$ and some additional internal variables $\bq$, viz.,
+To determine whether a given stress state is admissible, the yield function is introduced as the criterion.
+It is often a scalar-valued function of stress $\bsigma$ and some additional internal variables $\bq$, viz.,
 \begin{gather}
 f=f\left(\bsigma,~\bq\right).
 \end{gather}
-By convention, it is defined so that all admissible stress states satisfy $f\leqslant0$, while $f>0$ is not allowed. If $f$ is viewed as a surface in stress space, all admissible stress states should lie within the volume bounded by $f$. Thus, the yield function is also called the yield surface in some literature. It may further evolve (change of size, location, etc.) with the development of plasticity. It is sometimes classified into two types: the initial yield surface (when plasticity has not occurred) and the subsequent yield surface (when plasticity has developed and is developing).
+By convention, it is defined so that all admissible stress states satisfy $f\leqslant0$, while $f>0$ is not allowed.
+If $f$ is viewed as a surface in stress space, all admissible stress states should lie within the volume bounded by $f$.
+Thus, the yield function is also called the yield surface in some literature.
+It may further evolve (change of size, location, etc.) with the development of plasticity.
+It is sometimes classified into two types: the initial yield surface (when plasticity has not occurred) and the subsequent yield surface (when plasticity has developed and is developing).
 
 The internal variables $\bq$ are called history variables.
 \section{Flow Rule}
@@ -78,7 +85,9 @@ For a given strain input $\Delta\varepsilon$ and initial conditions, a general a
 \end{algorithmic}
 \end{breakablealgorithm}
 \subsection{Local Iteration}
-If plasticity must develop, note that $f=0$. With the aid of \eqsref{eq:strain_decomposition}, $\bsigma$ can be equivalently represented by $\bvarepsilon^p$. There are three unknown variables $\gamma$, $\bvarepsilon^p$ and $\bq$ to be solved, subject to the following three equations.
+If plasticity must develop, note that $f=0$.
+With the aid of \eqsref{eq:strain_decomposition}, $\bsigma$ can be equivalently represented by $\bvarepsilon^p$.
+There are three unknown variables $\gamma$, $\bvarepsilon^p$ and $\bq$ to be solved, subject to the following three equations.
 \begin{gather}
 \left\{
 \begin{array}{l}
@@ -99,14 +108,18 @@ f\left(\bvarepsilon^p,~\bq\right),\\
 \dot{\bq}-\gamma\mb{h}\left(\bvarepsilon^p,~\bq\right).
 \end{array}\right.
 \end{gather}
-The goal is to find the solution $\mb{x}$ to $\mb{R}=\mb{0}$ for a prescribed total strain $\bvarepsilon$. The Newton--Raphson method can be adopted with the help of the Jacobian $\pdfrac{\mb{R}}{\mb{x}}$. Note that partial derivatives are used here because, fundamentally, $\bvarepsilon$ enters the system. It is a variable that is held constant only at the local iteration level.
+The goal is to find the solution $\mb{x}$ to $\mb{R}=\mb{0}$ for a prescribed total strain $\bvarepsilon$.
+The Newton--Raphson method can be adopted with the help of the Jacobian $\pdfrac{\mb{R}}{\mb{x}}$.
+Note that partial derivatives are used here because, fundamentally, $\bvarepsilon$ enters the system.
+It is a variable that is held constant only at the local iteration level.
 \subsection{Consistent Tangent Stiffness}\label{sec:consistent_tangent_general}
 To compute the consistent tangent stiffness, one can start from \eqsref{eq:strain_decomposition},
 \begin{gather}
 \pdfrac{\bsigma}{\bvarepsilon}=\mb{D}-\mb{D}:\pdfrac{\bvarepsilon^p}{\bvarepsilon}.
 \end{gather}
 
-Note that at equilibrium, the local residual is zero, viz., $\mb{R}=\mb{0}$. Taking the full differentiation leads to
+Note that at equilibrium, the local residual is zero, viz., $\mb{R}=\mb{0}$.
+Taking the full differentiation leads to
 \begin{gather}\label{eq:consistent_stiffness}
 \pdfrac{\mb{R}}{\bvarepsilon}+\pdfrac{\mb{R}}{\mb{x}}\pdfrac{\mb{x}}{\bvarepsilon}\equiv\mb{0},
 \end{gather}
@@ -309,7 +322,8 @@ I_2=\varepsilon_1\varepsilon_2+\varepsilon_2\varepsilon_3+\varepsilon_1\varepsil
 I_3=\varepsilon_1\varepsilon_2\varepsilon_3+\dfrac{\gamma_{12}\gamma_{23}\gamma_{31}}{4}-\dfrac{\varepsilon_1\gamma_{23}^2+\varepsilon_2\gamma_{31}^2+\varepsilon_3\gamma_{12}^2}{4}.
 \end{gather}
 \subsection{Hooke's Law}
-The spherical part and the deviatoric part are governed by two material parameters, the bulk modulus $K$ and the shear modulus $G$. In tensor notation,
+The spherical part and the deviatoric part are governed by two material parameters, the bulk modulus $K$ and the shear modulus $G$.
+In tensor notation,
 \begin{gather}
 p=K\varepsilon^v,\qquad\mb{s}=2G\bvarepsilon^d.
 \end{gather}
@@ -420,7 +434,9 @@ Using Lam\'{e}'s constant $\lambda=K-\dfrac{2}{3}G$, $\mb{D}$ can be alternative
 \end{gather}
 This form is widely seen in elementary elasticity.
 \subsection{Lode Angle}
-For some material models, the Haigh--Westergaard stress space may be used. The Lode angle is often used to define a parameter that alters the yield surface, which may have a special shape on the $\pi$-plane. The Lode angle $\theta$ can be defined as
+For some material models, the Haigh--Westergaard stress space may be used.
+The Lode angle is often used to define a parameter that alters the yield surface, which may have a special shape on the $\pi$-plane.
+The Lode angle $\theta$ can be defined as
 \begin{gather}\label{eq:lode}
 \cos\left(3\theta\right)=\dfrac{J_3}{2}\left(\dfrac{3}{J_2}\right)^{1.5},
 \end{gather}

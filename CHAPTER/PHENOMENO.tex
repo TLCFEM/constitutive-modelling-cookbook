@@ -1,12 +1,14 @@
 \chapter{Uniaxial Phenomenological Models}
-In this chapter, we present a number of uniaxial phenomenological models. Due to their phenomenological nature, some models may violate Ilyushin's postulate.
+In this chapter, we present a number of uniaxial phenomenological models.
+Due to their phenomenological nature, some models may violate Ilyushin's postulate.
 \section{Ramberg--Osgood Model}
 \subsection{Theory}
 The Ramberg--Osgood relation is a nonlinear function that defines
 \begin{gather}
 \bar\varepsilon=\dfrac{\bar\sigma}{E}+\alpha\dfrac{\bar\sigma}{E}\left(\dfrac{\bar\sigma}{\bar\sigma^y}\right)^{n-1},
 \end{gather}
-where $\alpha$ and $n$ are two model constants. To account for cyclic response, the strain and stress are not directly used in the above expression.
+where $\alpha$ and $n$ are two model constants.
+To account for cyclic response, the strain and stress are not directly used in the above expression.
 \begin{figure}[ht]
 \centering
 \begin{tikzpicture}
@@ -32,7 +34,8 @@ its derivative with respect to $\bar\sigma$ is
 \end{gather}
 Once $\bar\varepsilon$ and $\bar\sigma^y$ are determined, $\bar\sigma$ can be iteratively computed.
 
-For cyclic loads, it is necessary to record the location of the reversing point, denoted by $\varepsilon^r$ and $\sigma^r$. Then,
+For cyclic loads, it is necessary to record the location of the reversing point, denoted by $\varepsilon^r$ and $\sigma^r$.
+Then,
 \begin{gather}
 \bar\varepsilon=\abs{\varepsilon-\varepsilon^r},\qquad
 \bar\sigma=\abs{\sigma-\sigma^r}.
@@ -43,7 +46,11 @@ The yield stress is taken as
 \begin{gather}
 \bar\sigma^y=\sigma^y+\abs{\sigma^r}.
 \end{gather}
-where $\sigma^y$ is the initial yield stress. This definition is suitable for large-cycle loads, but it is not sufficient for small-cycle loads. In such cases, use the previous reversing point. Let $\varepsilon^{pr}$ and $\sigma^{pr}$ denote its strain and stress. Then, for small cycles, $\abs{\sigma^{pr}}>\abs{\sigma^{r}}$,
+where $\sigma^y$ is the initial yield stress.
+This definition is suitable for large-cycle loads, but it is not sufficient for small-cycle loads.
+In such cases, use the previous reversing point.
+Let $\varepsilon^{pr}$ and $\sigma^{pr}$ denote its strain and stress.
+Then, for small cycles, $\abs{\sigma^{pr}}>\abs{\sigma^{r}}$,
 \begin{gather}
 \bar\sigma^y=\abs{\sigma^{pr}-\sigma^{r}}.
 \end{gather}
@@ -112,7 +119,8 @@ By varying them, we can plot a series of curves.
 	\end{subfigure}
 \end{figure}
 \eqsref{eq:mpf} passes through the origin and bends around the point $(1,1)$ (or $(-1,-1)$).
-Furthermore, parameter $b$ controls the hardening ratio, while $r$ controls the transition from pre-yielding to post-yielding. A sufficiently large $r$ approximates a bilinear model.
+Furthermore, parameter $b$ controls the hardening ratio, while $r$ controls the transition from pre-yielding to post-yielding.
+A sufficiently large $r$ approximates a bilinear model.
 
 This equation can thus be used to construct a constitutive model.
 To match the actual Young's modulus, we can define
@@ -197,8 +205,10 @@ Denoting $P=\left(\gamma+\sign{z\Delta{}u}\beta\right)\abs{z}^n$, the tangent st
 \end{split}
 \end{gather}
 
-The Bouc--Wen model \cite{Wen1976} is mainly driven by the ODE \eqsref{eq:bouc-wen}, which makes the formulation extremely simple. To implement such a model, one only needs to solve the ODE using a proper method.
-Here we have presented the formulation using the implicit Euler method. Other methods, such as the trapezoidal method, or even multi-step methods, can also be used.
+The Bouc--Wen model \cite{Wen1976} is mainly driven by the ODE \eqsref{eq:bouc-wen}, which makes the formulation extremely simple.
+To implement such a model, one only needs to solve the ODE using a proper method.
+Here we have presented the formulation using the implicit Euler method.
+Other methods, such as the trapezoidal method, or even multi-step methods, can also be used.
 Adopting different solution methods does not affect the computation of tangent stiffness.
 Once convergence is achieved, \eqsref{eq:bouc-wen-stiffness} can be used to compute the stiffness.
 
@@ -245,7 +255,9 @@ The general framework consists of three main elements:
 \end{enumerate}
 Each of these three curves can be linear/nonlinear or piecewise linear/nonlinear and may depend on other internal variables.
 
-Accordingly, at least four points are essential for controlling the response of the model: the tension unloading point, the tension residual point, the compression unloading point, and the compression residual point. A schematic illustration is given in \figref{fig:general_hysteresis}. Some complex models may involve more control points, such as reloading points that connect reloading curves with backbones.
+Accordingly, at least four points are essential for controlling the response of the model: the tension unloading point, the tension residual point, the compression unloading point, and the compression residual point.
+A schematic illustration is given in \figref{fig:general_hysteresis}.
+Some complex models may involve more control points, such as reloading points that connect reloading curves with backbones.
 \begin{figure}[ht]
 \centering\footnotesize
 \begin{tikzpicture}
@@ -271,9 +283,12 @@ Accordingly, at least four points are essential for controlling the response of 
 \caption{schematic illustration of a generalised hysteresis model}\label{fig:general_hysteresis}
 \end{figure}
 
-With the above definition, any current state $(\varepsilon_n,\sigma_n)$ lies on one of the three curves. For a prescribed strain increment $\Delta\varepsilon$, determining the stress $\sigma_{n+1}$ is equivalent to computing the new point on one of these curves. Since the current state $(\varepsilon_n,\sigma_n)$ must lie on one of them, we can determine whether $\varepsilon_{n+1}=\varepsilon_n+\Delta\varepsilon$ is on the unloading, reloading, or backbone curve by comparing the magnitude of $\varepsilon_{n+1}$ with the stored unloading and residual strains.
+With the above definition, any current state $(\varepsilon_n,\sigma_n)$ lies on one of the three curves.
+For a prescribed strain increment $\Delta\varepsilon$, determining the stress $\sigma_{n+1}$ is equivalent to computing the new point on one of these curves.
+Since the current state $(\varepsilon_n,\sigma_n)$ must lie on one of them, we can determine whether $\varepsilon_{n+1}=\varepsilon_n+\Delta\varepsilon$ is on the unloading, reloading, or backbone curve by comparing the magnitude of $\varepsilon_{n+1}$ with the stored unloading and residual strains.
 
-The state determination algorithm can be cast in a branching structure. In the following procedure, $\varepsilon_{cr}$ is the compression residual strain, $\varepsilon_{cu}$ is the compression unloading strain, $\varepsilon_{tr}$ is the tension residual strain, $\varepsilon_{tu}$ is the tension unloading strain.
+The state determination algorithm can be cast in a branching structure.
+In the following procedure, $\varepsilon_{cr}$ is the compression residual strain, $\varepsilon_{cu}$ is the compression unloading strain, $\varepsilon_{tr}$ is the tension residual strain, $\varepsilon_{tu}$ is the tension unloading strain.
 \begin{breakablealgorithm}
 \caption{state determination of general hysteresis model}\label{algo:gen_hys}
 \begin{algorithmic}[1]
@@ -295,9 +310,11 @@ Using two flags, it is easy to track which curve each point lies on.
 	Status trial_flag = Status::NONE, current_flag = Status::NONE;
 \end{cppcode}
 
-The implementation presented uses a nested structure to simplify the procedure. The top level determines whether the new state is on the backbone; if not, the second level determines whether the new state is on the corresponding unloading curve or reloading curve and computes the response accordingly.
+The implementation presented uses a nested structure to simplify the procedure.
+The top level determines whether the new state is on the backbone; if not, the second level determines whether the new state is on the corresponding unloading curve or reloading curve and computes the response accordingly.
 
-For each curve, a universal interface can be provided. Each function takes $\varepsilon_{n+1}$ as input and returns $\sigma_{n+1}$ and $E_{n+1}$ in an array.
+For each curve, a universal interface can be provided.
+Each function takes $\varepsilon_{n+1}$ as input and returns $\sigma_{n+1}$ and $E_{n+1}$ in an array.
 \begin{cppcode}
 	[[nodiscard]] virtual podarray<double> compute_compression_backbone(double) const = 0;
 	[[nodiscard]] virtual podarray<double> compute_tension_backbone(double) const = 0;
@@ -317,9 +334,14 @@ The following C++ code snippet shows a working implementation of such a state de
 SimpleHysteresis::update_trial_status
 \end{cppcode}
 \subsubsection{Remarks}
-Many hysteresis models can be reformulated within the above framework. For example, by fixing residual points at the origin, all unloading paths (either linear or nonlinear) converge to the origin, which corresponds to a class of models that are often called origin--oriented. Alternatively, the reloading curve can be defined so that it always loads back to the peak point on the backbone curve on the opposite side. This is often known as a peak--oriented model.
+Many hysteresis models can be reformulated within the above framework.
+For example, by fixing residual points at the origin, all unloading paths (either linear or nonlinear) converge to the origin, which corresponds to a class of models that are often called origin--oriented.
+Alternatively, the reloading curve can be defined so that it always loads back to the peak point on the backbone curve on the opposite side.
+This is often known as a peak--oriented model.
 
-Some complex models for concrete can be formulated accordingly, with nonlinear curves that also depend on other internal variables. Given that the tension and compression responses are independent of each other, some asymmetric models can also be defined.
+Some complex models for concrete can be formulated accordingly, with nonlinear curves that also depend on other internal variables.
+Given that the tension and compression responses are independent of each other, some asymmetric models can also be defined.
 
-Since the top-level branching does not depend on the history variables, their updating is handled solely in the corresponding methods. The presented framework provides a flexible container in which a wide range of models can be defined.
+Since the top-level branching does not depend on the history variables, their updating is handled solely in the corresponding methods.
+The presented framework provides a flexible container in which a wide range of models can be defined.
 

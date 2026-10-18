@@ -84,12 +84,17 @@ Furthermore, $\bs$ and $\bs^\text{trial}$ are coaxial, thus,
 \begin{gather}
 \dfrac{\bar{\bs}}{\norm{\bar{\bs}}}=\dfrac{\bar{\bs}^\text{trial}}{\norm{\bar{\bs}^\text{trial}}}\equiv{}\bn.
 \end{gather}
-It simply means the flow direction is fixed for all iterations in each sub-step. And due to the coaxiality, $\bar{\bs}$ and $\bar{\bs}^\text{trial}$ share the same eigen space. More importantly, the eigenvectors remain constant for each iteration. Thus,
+It simply means the flow direction is fixed for all iterations in each sub-step.
+And due to the coaxiality, $\bar{\bs}$ and $\bar{\bs}^\text{trial}$ share the same eigen space.
+More importantly, the eigenvectors remain constant for each iteration.
+Thus,
 \begin{gather}
 \bn=\dfrac{\bar{\bs}}{\norm{\bar{\bs}}}=\dfrac{\bar{\bs}^\text{trial}}{\norm{\bar{\bs}^\text{trial}}},\qquad
 \hat{\bn}=\dfrac{\hat{\bs}}{\norm{\hat{\bs}}}=\dfrac{\hat{\bs}^\text{trial}}{\norm{\hat{\bs}^\text{trial}}},
 \end{gather}
-where $\hat{\bs}$ denotes the principal stress tensor of the deviatoric stress tensor $\bar{\bs}$. As the yield function $f$ can be equivalently expressed with the principal stresses, in the following derivation, $\hat{\bn}$ is used to represent the unit principal deviatoric stress which has three components. The transformation matrix $\mb{T}$ is defined as
+where $\hat{\bs}$ denotes the principal stress tensor of the deviatoric stress tensor $\bar{\bs}$.
+As the yield function $f$ can be equivalently expressed with the principal stresses, in the following derivation, $\hat{\bn}$ is used to represent the unit principal deviatoric stress which has three components.
+The transformation matrix $\mb{T}$ is defined as
 \begin{gather}
 \underbrace{\hat{\bsigma}}_\text{\numproduct{3x1}}=\underbrace{\mb{T}}_\text{\numproduct{3x6}}\underbrace{\bbsigma}_\text{\numproduct{6x1}},\qquad
 \underbrace{\hat{\bs}}_\text{\numproduct{3x1}}=\underbrace{\mb{T}}_\text{\numproduct{3x6}}\underbrace{\bar{\bs}}_\text{\numproduct{6x1}},
@@ -105,12 +110,14 @@ The internal hardening parameters $\kappa_\aleph$ are governed by the following 
 \begin{gather}
 \dot{\kappa}_\aleph=\gamma{}H_\aleph,
 \end{gather}
-where $H_\aleph$ defines the hardening law. Different $H_\aleph$ are used for compression and tension.
+where $H_\aleph$ defines the hardening law.
+Different $H_\aleph$ are used for compression and tension.
 \begin{gather}
 H_t=r\dfrac{f_t}{g_t}\left(\hat{n}_1+\alpha_p\right),\\
 H_c=\left(1-r\right)\dfrac{f_c}{g_c}\left(\hat{n}_3+\alpha_p\right).
 \end{gather}
-Here, $\hat{n}_1\geqslant\hat{n}_3$ denote the maximum and minimum in $\hat{\bn}$ and $r$ is a scalar--valued function of the effective principal stress. In the original model, it is defined as
+Here, $\hat{n}_1\geqslant\hat{n}_3$ denote the maximum and minimum in $\hat{\bn}$ and $r$ is a scalar--valued function of the effective principal stress.
+In the original model, it is defined as
 \begin{gather}
 r\left(\hat{\bsigma}\right)=\dfrac{\left\langle\hat{\sigma}_1\right\rangle+\left\langle\hat{\sigma}_2\right\rangle+\left\langle\hat{\sigma}_3\right\rangle}{\abs{\hat{\sigma}_1}+\abs{\hat{\sigma}_2}+\abs{\hat{\sigma}_3}}.
 \end{gather}
@@ -163,7 +170,11 @@ A simple remedy is to impose an upper bound on the slope, for example,
 \end{gather}
 Whenever this constraint is violated, the original curve is replaced by a linear segment with a slope of \num{100}.
 
-In general, the backbone curve can be customised. The main algorithm is not concerned with how the backbone curve is computed; it only requires $f_\aleph$, $\bar{f}_\aleph$, and $d_\aleph$, together with their derivatives with respect to $\kappa_\aleph$. The exponential form adopted in the original model may encounter numerical difficulties, which, in the author's opinion, is not ideal. Other forms can always be chosen, such as providing these quantities in tabulated form. This is also what ABAQUS offers.
+In general, the backbone curve can be customised.
+The main algorithm is not concerned with how the backbone curve is computed; it only requires $f_\aleph$, $\bar{f}_\aleph$, and $d_\aleph$, together with their derivatives with respect to $\kappa_\aleph$.
+The exponential form adopted in the original model may encounter numerical difficulties, which, in the author's opinion, is not ideal.
+Other forms can always be chosen, such as providing these quantities in tabulated form.
+This is also what ABAQUS offers.
 \subsection{Damage Theory}
 The damage measure takes the form
 \begin{gather}
@@ -176,7 +187,8 @@ This is a convenient approach to simulate the strength recovery when the materia
 No similar counterpart is considered for compression damage, as typically once the material is crushed, further tension is not possible.
 The alternative to achieve a similar effect is to use an anisotropic damage measure.
 \subsection{Plasticity Formulation}
-The CDP model is driven by three quantities $\kappa_t$, $\kappa_c$ and $\bvarepsilon^p$. The governing equations are listed as follows.
+The CDP model is driven by three quantities $\kappa_t$, $\kappa_c$ and $\bvarepsilon^p$.
+The governing equations are listed as follows.
 \begin{table}[ht]
 \centering
 \begin{tabular}{rl}
@@ -192,11 +204,13 @@ Assuming elastic loading/unloading, the trial state of the effective part can be
 \begin{gather}
 \bbsigma^\text{trial}=\mb{D}:\left(\bvarepsilon_{n+1}-\bvarepsilon^p_n\right).
 \end{gather}
-Then by performing eigenanalysis, $\hat{\bsigma}^\text{trial}$ can be computed. The trial yield function is
+Then by performing eigenanalysis, $\hat{\bsigma}^\text{trial}$ can be computed.
+The trial yield function is
 \begin{gather}\label{eq:cdp_tf}
 f^\text{trial}=\alpha\bar{I}_1^\text{trial}+\sqrt{\dfrac{3}{2}}\norm{\bar{\bs}^\text{trial}}+\psi\hat{\sigma}_1^\text{trial}-\left(1-\alpha\right)c_c,
 \end{gather}
-with $\beta$ and $c_c$ computed by using $\kappa_{t,n}$ and $\kappa_{c,n}$. If $f^\text{trial}<0$, indicating elastic loading/unloading, then $\bbsigma_{n+1}=\bbsigma^\text{trial}$, the final stress is simply
+with $\beta$ and $c_c$ computed by using $\kappa_{t,n}$ and $\kappa_{c,n}$.
+If $f^\text{trial}<0$, indicating elastic loading/unloading, then $\bbsigma_{n+1}=\bbsigma^\text{trial}$, the final stress is simply
 \begin{gather}
 \bsigma_{n+1}=\left(1-d_{c,n}\right)\left(1-sd_{t,n}\right)\bbsigma^\text{trial}.
 \end{gather}
@@ -261,7 +275,9 @@ f_c\left\langle\dfrac{\hat{n}_3+\alpha_p}{g_c}\right\rangle_-\left(1-r-\gamma\pd
 \end{footnotesize}
 In the above, $\left\langle\cdot\right\rangle_-$ denotes the negative--part operator, corresponding to the Macaulay brackets $\left\langle\cdot\right\rangle$.
 \subsection{Damage Formulation}
-There is no local iteration required in the damage part. Once $\kappa_t$ and $\kappa_c$ are determined, the effective part $\bar\bsigma$ can be determined. Damage measures $d_t$ and $d_c$ can be computed accordingly.
+There is no local iteration required in the damage part.
+Once $\kappa_t$ and $\kappa_c$ are determined, the effective part $\bar\bsigma$ can be determined.
+Damage measures $d_t$ and $d_c$ can be computed accordingly.
 \subsection{Consistent Tangent Stiffness}
 In order to take derivatives with regard to the trial strain $\bvarepsilon_{n+1}$, one can replace $\norm{\hat{\bs}^\text{trial}}$ and $\norm{\bar{\bs}^\text{trial}}$, which yields
 \begin{gather}
@@ -283,7 +299,8 @@ Hence
 \end{bmatrix}=-\left(\pdfrac{\mb{R}}{\mb{x}}\right)^{-1}\pdfrac{\mb{R}}{\bvarepsilon_{n+1}}.
 \end{gather}
 
-The effective stress $\bbsigma_{n+1}$ only depends on $\bvarepsilon_{n+1}$ and $\gamma$. The partial derivative is
+The effective stress $\bbsigma_{n+1}$ only depends on $\bvarepsilon_{n+1}$ and $\gamma$.
+The partial derivative is
 \begin{gather}
 \begin{split}
 \pdfrac{\bbsigma_{n+1}}{\bvarepsilon_{n+1}}&=\pdfrac{}{\bvarepsilon_{n+1}}\left(\bs^\text{trial}-2G\gamma\dfrac{\bs^\text{trial}}{\norm{\bs^\text{trial}}}+\left(p^\text{trial}-3K\alpha_p\gamma\right)\mb{1}\right)\\
@@ -343,9 +360,11 @@ s\left(d_c-1\right)\ddfrac{d_t}{\kappa_t}&
 \end{bmatrix}\right)}_\text{dot product in vector representation}\\+\left(d_t\left(d_c-1\right)\left(1-s_0\right)\bbsigma_{n+1}\otimes\ddfrac{r}{\bbsigma_{n+1}}+h\mathbb{I}\right)\ddfrac{\bbsigma_{n+1}}{\bvarepsilon_{n+1}}.
 \end{multline}
 
-The CDP model has no kinematic hardening; the effective part resembles the bounding surface concept. Due to the coaxiality, the model can be constructed in the eigen space, which brings some convenience in terms of implementation.
+The CDP model has no kinematic hardening; the effective part resembles the bounding surface concept.
+Due to the coaxiality, the model can be constructed in the eigen space, which brings some convenience in terms of implementation.
 \subsection{Implementation}
-The state determination of the CDP model is shown in \algoref{algo:cdp_model}. Compared with the original implementation, the one presented here is much more concise and avoids lengthy computation of the consistent tangent stiffness.
+The state determination of the CDP model is shown in \algoref{algo:cdp_model}.
+Compared with the original implementation, the one presented here is much more concise and avoids lengthy computation of the consistent tangent stiffness.
 
 It is worth noting that some quantities remain constant during the local iteration, for example,
 \begin{gather}
@@ -455,7 +474,9 @@ Similarly, the same flow potential is chosen such that the flow rule can be expr
 \end{gather}
 Because of the transformation, the coaxiality no longer exists.
 \section{CDPM2 Model}
-The CDP model adopts isotropic damage, which leads, for example, to degradation of compressive/tensile strength due to tensile/compressive damage. In cyclic loading cases, this may not be ideal. The CDPM2 model uses a different approach that applies tensile damage to the tensile part of the stress and compressive damage to the compressive part.
+The CDP model adopts isotropic damage, which leads, for example, to degradation of compressive/tensile strength due to tensile/compressive damage.
+In cyclic loading cases, this may not be ideal.
+The CDPM2 model uses a different approach that applies tensile damage to the tensile part of the stress and compressive damage to the compressive part.
 
 Compared to the original formulation \cite{Grassl2013}, here the dependency on the Lode angle is removed for brevity.
 \subsection{Plasticity}
@@ -469,7 +490,11 @@ where the friction parameter $m_0$
 \begin{gather}
 m_0=\dfrac{3f_c^2-3f_t^2}{f_cf_t}\dfrac{e}{1+e}
 \end{gather}
-depends on the material strengths $f_c$ and $f_t$. Here, $e$ is the eccentricity constant, which depends on those two strengths and the equibiaxial compression strength $f_{bc}$. The hardening functions $q_{h1}$ and $q_{h2}$ are introduced later. The helper functions $g_1$ and $g_3$ are also used to define the plastic potential $G$. If the Lode angle is considered, $g_3$ should be replaced by $g_4$, which is defined as
+depends on the material strengths $f_c$ and $f_t$.
+Here, $e$ is the eccentricity constant, which depends on those two strengths and the equibiaxial compression strength $f_{bc}$.
+The hardening functions $q_{h1}$ and $q_{h2}$ are introduced later.
+The helper functions $g_1$ and $g_3$ are also used to define the plastic potential $G$.
+If the Lode angle is considered, $g_3$ should be replaced by $g_4$, which is defined as
 \begin{gather}
 g_4=\dfrac{s}{\sqrt{6}f_c}r+\dfrac{p}{f_c},
 \end{gather}
@@ -531,7 +556,8 @@ Here the dependency on the Lode angle $\theta$ is removed such that
 \begin{gather}
 x_h\dot{\kappa}_p=\norm{\dot{\varepsilon_{p}}}=\gamma{}G_\kappa,
 \end{gather}
-with $G_\kappa=\sqrt{G_s^2+G_p^2/3}$. This effectively means $\theta=2\pi/3$ is a constant.
+with $G_\kappa=\sqrt{G_s^2+G_p^2/3}$.
+This effectively means $\theta=2\pi/3$ is a constant.
 \subsection{Damage}
 \subsubsection{Equivalent Strain}
 The equivalent strain is defined as
@@ -543,7 +569,8 @@ with
 g_5=\dfrac{\varepsilon_0m_0}{2}g_3,\qquad
 g_6=\sqrt{\dfrac{3}{2}}\dfrac{s}{f_c}.
 \end{gather}
-Again, if the Lode angle needs to be considered, replace $g_3$ with $g_4$. The equivalent strain is further split into tensile and compressive parts.
+Again, if the Lode angle needs to be considered, replace $g_3$ with $g_4$.
+The equivalent strain is further split into tensile and compressive parts.
 \begin{gather}
 \tilde{\varepsilon}_t=\alpha_t\tilde{\varepsilon},\qquad
 \tilde{\varepsilon}_c=\alpha_c\tilde{\varepsilon},
@@ -569,7 +596,8 @@ The local residual is
 \begin{gather}\label{eq:cdpm2_dt_r}
 R=f_t\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{ft}}\right)-\left(1-\omega_t\right)E\kappa_{dt}.
 \end{gather}
-For a given set of $\kappa_{dt}$, $\kappa_{dt1}$ and $\kappa_{dt2}$, the above residual is a function of the unknown $\omega_t$. It can be solved by, for example, Newton's method.
+For a given set of $\kappa_{dt}$, $\kappa_{dt1}$ and $\kappa_{dt2}$, the above residual is a function of the unknown $\omega_t$.
+It can be solved by, for example, Newton's method.
 The corresponding derivatives are
 \begin{gather}
 \pdfrac{R}{\omega_t}=E\kappa_{dt}-\dfrac{\kappa_{dt2}}{\varepsilon_{fc}}f_t\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{ft}}\right),\\
@@ -578,7 +606,8 @@ The corresponding derivatives are
 \pdfrac{R}{\kappa_{dt2}}=-\dfrac{\omega_t}{\varepsilon_{ft}}f_t\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{ft}}\right).
 \end{gather}
 \subsubsection{Compression}
-For compression, the definition fully resembles its tensile counterpart. The inelastic strain is driven by two internal parameters $\kappa_{dc1}$ and $\kappa_{dc2}$,
+For compression, the definition fully resembles its tensile counterpart.
+The inelastic strain is driven by two internal parameters $\kappa_{dc1}$ and $\kappa_{dc2}$,
 \begin{gather}
 \varepsilon_i=\kappa_{dc1}+\omega_c\kappa_{dc2}.
 \end{gather}
@@ -624,12 +653,14 @@ The final stress can be expressed as
 \begin{gather}
 \bsigma=\left(1-\omega_t\right)\left(1-\omega_c\right)\bbsigma.
 \end{gather}
-This form is identical to the one used in the CDP model. It represents isotropic damage.
+This form is identical to the one used in the CDP model.
+It represents isotropic damage.
 Alternatively, it can also be expressed as
 \begin{gather}\label{eq:aniso_damage}
 \bsigma=\left(1-\omega_t\right)\bbsigma_t+\left(1-\omega_c\right)\bbsigma_c,
 \end{gather}
-which stands for anisotropic damage. The tensile and compressive parts of the stress tensor $\bbsigma_t$ and $\bbsigma_c$ are obtained by performing an eigenanalysis such that
+which stands for anisotropic damage.
+The tensile and compressive parts of the stress tensor $\bbsigma_t$ and $\bbsigma_c$ are obtained by performing an eigenanalysis such that
 \begin{gather}
 \bbsigma_t=\sum_{i=1}^3\left\langle\hat{\sigma}_i\right\rangle\mb{p}_i\otimes\mb{p}_i,\qquad\bbsigma_c=\bbsigma-\bbsigma_t,
 \end{gather}
@@ -647,17 +678,21 @@ With the above expression, the tangent stiffness can be expressed as
 \ddfrac{\bsigma}{\bvarepsilon}=\left(1-\omega_c\right)\ddfrac{\bbsigma}{\bvarepsilon}+\left(\omega_c-\omega_t\right)\ddfrac{\bbsigma_t}{\bbsigma}\ddfrac{\bbsigma}{\bvarepsilon}-\bbsigma\otimes\ddfrac{\omega_c}{\bvarepsilon}+\bbsigma_t\otimes\left(\ddfrac{\omega_c}{\bvarepsilon}-\ddfrac{\omega_t}{\bvarepsilon}\right).
 \end{gather}
 \subsection{Implementation}
-The main body of state determination consists of two tasks: 1) compute the plasticity part and 2) compute the damage part. The implementation can be found as follows.
+The main body of state determination consists of two tasks: 1) compute the plasticity part and 2) compute the damage part.
+The implementation can be found as follows.
 \begin{cppcode}
 CDPM2::update_trial_status
 \end{cppcode}
 
-Here, all relevant quantities (mainly derivatives) are stored in the array \texttt{data} that is passed to the corresponding functions. For example, in order to compute plasticity, the following method is used. It is lengthy and tedious, mainly computing derivatives via the chain rule.
+Here, all relevant quantities (mainly derivatives) are stored in the array \texttt{data} that is passed to the corresponding functions.
+For example, in order to compute plasticity, the following method is used.
+It is lengthy and tedious, mainly computing derivatives via the chain rule.
 \begin{cppcode}
 CDPM2::compute_plasticity
 \end{cppcode}
 
-The converged \texttt{data} is then passed to the method to compute damage factors. It is similar to the plasticity part.
+The converged \texttt{data} is then passed to the method to compute damage factors.
+It is similar to the plasticity part.
 \begin{cppcode}
 CDPM2::compute_damage
 \end{cppcode}

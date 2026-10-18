@@ -3,14 +3,16 @@ In engineering, tensors are often defined in Euclidean spaces and thus belong to
 The transformation between covariant and contravariant bases, and thus the raising/lowering of indices, is often not emphasised (but implied).
 
 The most likely reason is that orthonormal bases are often used, so covariant and contravariant bases lead to the same coordinates.
-For this reason, in this book, only subscripts ($i$, $j$, $k$, $l$, etc.) are used to represent tensor indices, implying that contravariant bases are used. Furthermore, scalars are denoted by normal symbols such as $A$ while vectors and tensors are not distinguished, all denoted by boldface symbols such as $\mb{A}$.
+For this reason, in this book, only subscripts ($i$, $j$, $k$, $l$, etc.) are used to represent tensor indices, implying that contravariant bases are used.
+Furthermore, scalars are denoted by normal symbols such as $A$ while vectors and tensors are not distinguished, all denoted by boldface symbols such as $\mb{A}$.
 
 In this chapter, we briefly summarise the main concepts of tensors and tensor algebra.
 These concepts are practically useful in 3D constitutive models.
 The contents presented here are not complete, but they are sufficient for the purpose of this book.
 Readers are referred to monographs on this topic if a systematic introduction is desired.
 \section{Notations}
-Let $\mb{A}\in\mathbb{R}^2\times\mathbb{R}^2$ denote a second order tensor with contravariant bases $\mb{e}^1$ and $\mb{e}^2$. Then $\mb{A}$ has four components that can be arranged in the following matrix.
+Let $\mb{A}\in\mathbb{R}^2\times\mathbb{R}^2$ denote a second order tensor with contravariant bases $\mb{e}^1$ and $\mb{e}^2$.
+Then $\mb{A}$ has four components that can be arranged in the following matrix.
 \begin{gather}\label{eq:matrix_tensor}
 \mb{A}=A_{ij}\mb{e}^i\otimes\mb{e}^j=\begin{bmatrix}
 A_{11}&A_{12}\\
@@ -105,7 +107,9 @@ We will further discuss similarities and differences when we run into concrete e
 \section{Tensor Operations}
 \subsection{Tensor Product}
 \subsubsection{Definition}
-The tensor (tensorial) product is also called the dyadic product. It constructs a higher-order tensor from two lower-order tensors. Let $\mb{A}=A_i\mb{e}^i\in\mathbb{R}^2$ and $\mb{B}=B_i\mb{e}^i\in\mathbb{R}^2$ be two first order tensors (vectors), then the tensor product of $\mb{A}$ and $\mb{B}$ gives a second order tensor $\mb{C}\in\mathbb{R}^2\times\mathbb{R}^2$
+The tensor (tensorial) product is also called the dyadic product.
+It constructs a higher-order tensor from two lower-order tensors.
+Let $\mb{A}=A_i\mb{e}^i\in\mathbb{R}^2$ and $\mb{B}=B_i\mb{e}^i\in\mathbb{R}^2$ be two first order tensors (vectors), then the tensor product of $\mb{A}$ and $\mb{B}$ gives a second order tensor $\mb{C}\in\mathbb{R}^2\times\mathbb{R}^2$
 \begin{gather}
 \mb{C}=\mb{A}\otimes\mb{B}=A_i\mb{e}^i\otimes{}B_j\mb{e}^j=A_iB_j\mb{e}^i\otimes{}\mb{e}^j=C_{ij}\mb{e}^i\otimes{}\mb{e}^j.
 \end{gather}
@@ -122,7 +126,8 @@ If $\mb{A}=A_{ij}\mb{e}^i\mb{e}^j$ and $\mb{B}=B_{ij}\mb{e}^i\mb{e}^j$ are two s
 \begin{gather}\label{eq:2nd_tensor_product}
 \mb{C}=\mb{A}\otimes\mb{B}=A_{ij}\mb{e}^i\mb{e}^jB_{kl}\mb{e}^k\mb{e}^l=A_{ij}B_{kl}\mb{e}^i\mb{e}^j\mb{e}^k\mb{e}^l=C_{ijkl}\mb{e}^i\mb{e}^j\mb{e}^k\mb{e}^l
 \end{gather}
-with components $C_{ijkl}=A_{ij}B_{kl}$. If both $\mb{A}$ and $\mb{B}$ are symmetric tensors, then $\mb{C}$ has major symmetry
+with components $C_{ijkl}=A_{ij}B_{kl}$.
+If both $\mb{A}$ and $\mb{B}$ are symmetric tensors, then $\mb{C}$ has major symmetry
 \begin{gather}
 C_{ijkl}=C_{klij}
 \end{gather}
@@ -152,12 +157,14 @@ A_1B_1&A_1B_2\\
 A_2B_1&A_2B_2
 \end{bmatrix}.
 \end{gather}
-If tensor $\mb{C}$ is treated as a matrix while tensors $\mb{A}$ and $\mb{B}$ are treated as column vectors, then the tensor product is exactly the outer product between $\mb{A}$ and $\mb{B}$. That is,
+If tensor $\mb{C}$ is treated as a matrix while tensors $\mb{A}$ and $\mb{B}$ are treated as column vectors, then the tensor product is exactly the outer product between $\mb{A}$ and $\mb{B}$.
+That is,
 \begin{gather}\label{eq:tensor_product}
 \underbrace{\mb{C}=\mb{A}\otimes\mb{B}=\mb{A}\mb{B}}_\text{tensor product between tensors}\qquad\longleftrightarrow\qquad\underbrace{\mb{C}=\mb{A}\mb{B}^\mT.}_\text{{vector/matrix representation}}
 \end{gather}
 
-Now let $\mb{A}=A_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ and $\mb{B}=B_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ be two symmetric second order \textbf{stress} tensors. Adopting the Voigt notation, their column vector representations can be written as
+Now let $\mb{A}=A_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ and $\mb{B}=B_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ be two symmetric second order \textbf{stress} tensors.
+Adopting the Voigt notation, their column vector representations can be written as
 \begin{gather}
 \mb{A}=A_{ij}\mb{e}^i\mb{e}^j=\begin{bmatrix}
 A_{11}&A_{22}&A_{33}&A_{12}&A_{23}&A_{31}
@@ -177,7 +184,8 @@ C_{2311}&C_{2322}&C_{2333}&C_{2312}&C_{2323}&C_{2331}\\
 C_{3111}&C_{3122}&C_{3133}&C_{3112}&C_{3123}&C_{3131}
 \end{bmatrix}.
 \end{gather}
-It can be seen that \eqsref{eq:tensor_product} still applies, since $C_{ijkl}=A_{ij}B_{kl}$. It is thus convenient to adopt the Voigt notation to perform the tensor product between stress tensors.
+It can be seen that \eqsref{eq:tensor_product} still applies, since $C_{ijkl}=A_{ij}B_{kl}$.
+It is thus convenient to adopt the Voigt notation to perform the tensor product between stress tensors.
 
 However, if $\mb{A}$ and $\mb{B}$ are \textbf{strain} tensors, the Voigt notation leads to the following result of the outer product
 \begin{gather}
@@ -199,7 +207,8 @@ This affects how the corresponding implementation is carried out.
 Given that most constitutive models are formulated in the stress space, we will rarely encounter tensor products between strain tensors.
 \subsection{Double Contraction}
 \subsubsection{Definition}
-We are familiar with the concept of the dot product. Let $\mb{A}=A_i\mb{e}^i$ and $\mb{B}=B_i\mb{e}^i$ be two first order tensors (vectors), then the dot product of $\mb{A}$ and $\mb{B}$ gives a zeroth order tensor (scalar) $C$ as
+We are familiar with the concept of the dot product.
+Let $\mb{A}=A_i\mb{e}^i$ and $\mb{B}=B_i\mb{e}^i$ be two first order tensors (vectors), then the dot product of $\mb{A}$ and $\mb{B}$ gives a zeroth order tensor (scalar) $C$ as
 \begin{gather}
 C=\mb{A}\cdot\mb{B}=A_i\mb{e}^i\cdot{}B_j\mb{e}^j=A_iB_j\mb{e}^i\cdot\mb{e}^j=\delta_{ij}A_iB_j=A_iB_i,
 \end{gather}
@@ -232,7 +241,8 @@ There are different conventions for performing double contraction between tensor
 In the above example, the last two indices of $\mb{A}$ are contracted with the two indices of $\mb{B}$.
 One can, in theory, pick any two indices of $\mb{A}$ to be contracted with $\mb{B}$, although not all choices embody physical meanings.
 \subsubsection{Vector/Matrix Representation}
-Let $\mb{A}=A_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ and $\mb{B}=B_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ be two symmetric second order \textbf{stress} tensors. According to \eqsref{eq:tensor_stress} and \eqsref{eq:double_contraction}, their double contraction gives
+Let $\mb{A}=A_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ and $\mb{B}=B_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ be two symmetric second order \textbf{stress} tensors.
+According to \eqsref{eq:tensor_stress} and \eqsref{eq:double_contraction}, their double contraction gives
 \begin{multline}
 C=\mb{A}:\mb{B}=A_{ij}B_{ij}=A_{11}B_{11}+A_{22}B_{22}+A_{33}B_{33}\\+A_{12}B_{12}+A_{13}B_{13}+A_{21}B_{21}+A_{23}B_{23}+A_{31}B_{31}+A_{32}B_{32}.
 \end{multline}
@@ -303,7 +313,8 @@ It can be fully circumvented if, instead of compact vector/matrix representation
 The good news is that the vast majority of the existing constitutive models are formulated in the stress space --- the classic plasticity theory is formulated in the stress space after all.
 In practice, we rarely need to apply different scaling matrices in a single constitutive model.
 \section{Stress Tensor Norm}
-The double contraction between a second order tensor $\mb{A}$ and itself results in a scalar that can be used to characterise the norm of $\mb{A}$. In this sense, the double contraction of second order tensors can be regarded as an equivalent version of the dot product of vectors.
+The double contraction between a second order tensor $\mb{A}$ and itself results in a scalar that can be used to characterise the norm of $\mb{A}$.
+In this sense, the double contraction of second order tensors can be regarded as an equivalent version of the dot product of vectors.
 
 Let $\bsigma\in\mathbb{R}^3\times\mathbb{R}^3$ denote a symmetric stress tensor, and define its Euclidean norm as
 \begin{gather}
@@ -427,7 +438,9 @@ It is essentially
 
 From the above example, we point out that although we typically use tensor notation in analytical expressions and compressed matrix representations in implementations, the two forms may resemble each other while still requiring additional scaling matrices to ensure correctness.
 \section{Tensor Function of Stress Tensors}
-Some tensor-valued functions of stress tensors are frequently used in the analysis of plasticity. Let $\mb{\beta}=f\left(\bsigma,\mb{\alpha}\right)$ denote a tensor-valued function of the stress tensor $\bsigma$ and other tensors denoted by $\mb{\alpha}$. Let the tensor-valued function $\mb{\gamma}=g\left(\mb{\beta}\right)$ be the normalised version of $\mb{\beta}$, that is
+Some tensor-valued functions of stress tensors are frequently used in the analysis of plasticity.
+Let $\mb{\beta}=f\left(\bsigma,\mb{\alpha}\right)$ denote a tensor-valued function of the stress tensor $\bsigma$ and other tensors denoted by $\mb{\alpha}$.
+Let the tensor-valued function $\mb{\gamma}=g\left(\mb{\beta}\right)$ be the normalised version of $\mb{\beta}$, that is
 \begin{gather}
 \mb{\gamma}=\dfrac{\mb{\beta}}{\norm{\mb{\beta}}}=\dfrac{\mb{\beta}}{\sqrt{\mb{\beta}:\mb{\beta}}}.
 \end{gather}
@@ -436,4 +449,5 @@ The partial derivative can be expressed as
 \pdfrac{\mb{\gamma}}{}=\pdfrac{\mb{\gamma}}{\mb{\beta}}:\pdfrac{\mb{\beta}}{}=\dfrac{1}{\norm{\mb{\beta}}}\left(\mathbb{I}-\bgamma\otimes\bgamma\right):\pdfrac{\mb{\beta}}{}\qquad\text{in tensor notation}.
 \end{gather}
 
-Depending on the form of $\mb{\beta}$, the compressed vector/matrix representation will differ. This will be discussed in the relevant context.
+Depending on the form of $\mb{\beta}$, the compressed vector/matrix representation will differ.
+This will be discussed in the relevant context.

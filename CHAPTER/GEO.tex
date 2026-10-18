@@ -1,7 +1,9 @@
 \chapter{Geomaterial}
-In geotechnical engineering, the existing literature commonly uses the compression-positive convention. This is convenient for geotechnical-specific applications, but it conflicts with the convention commonly adopted in continuum mechanics, where tension is positive.
+In geotechnical engineering, the existing literature commonly uses the compression-positive convention.
+This is convenient for geotechnical-specific applications, but it conflicts with the convention commonly adopted in continuum mechanics, where tension is positive.
 
-To remain consistent with the other models in this book, this chapter adopts the continuum-mechanics convention. As a result, the formulations presented here may differ from those found in the geotechnical literature.
+To remain consistent with the other models in this book, this chapter adopts the continuum-mechanics convention.
+As a result, the formulations presented here may differ from those found in the geotechnical literature.
 \section{Drucker--Prager Model}\label{sec:drucker_prager}
 The Drucker--Prager model is a simple model that resembles the J2 model and can be used in simple preliminary stability/capacity analysis.
 \subsection{Theory}
@@ -15,7 +17,8 @@ The plastic potential has a form that resembles the yield function.
 \begin{gather}
 g=\sqrt{J_2}+\bar{\eta}p.
 \end{gather}
-When $\bar{\eta}=\eta$, an associative flow rule is implied. The corresponding rate form of plastic strain is then
+When $\bar{\eta}=\eta$, an associative flow rule is implied.
+The corresponding rate form of plastic strain is then
 \begin{gather}
 \dot{\bvarepsilon^p}=\gamma\pdfrac{g}{\bsigma}=\gamma\left(\dfrac{\sqrt{2}}{2}\bn+\dfrac{\bar{\eta}}{3}\mb{1}\right).
 \end{gather}
@@ -29,7 +32,8 @@ Then the cohesion can be defined as a function of $\alpha$.
 c=c\left(\alpha\right).
 \end{gather}
 
-More complex laws that allow $\eta$ and $\xi$ to evolve with the development of plasticity are also possible. For simplicity, however, $\eta$ and $\xi$ are assumed to be constants.
+More complex laws that allow $\eta$ and $\xi$ to evolve with the development of plasticity are also possible.
+For simplicity, however, $\eta$ and $\xi$ are assumed to be constants.
 \subsection{Formulation}
 As the cohesion $c$ is not explicitly defined in this model, it can be customised to produce various hardening responses.
 
@@ -49,7 +53,8 @@ p^\text{trial}=\dfrac{1}{3}\tr{\bsigma^\text{trial}}.
 NonlinearDruckerPrager::update_trial_status
 \end{cppcode}
 \section{Modified Cam Clay Model}
-This model is identical to the one documented in \cite[see \S~10.1]{SouzaNeto2008} apart from the definition of the hardening variable. In this section, we present an equivalent formulation.
+This model is identical to the one documented in \cite[see \S~10.1]{SouzaNeto2008} apart from the definition of the hardening variable.
+In this section, we present an equivalent formulation.
 \subsection{Theory}
 \subsubsection{Basics}
 The model adopts a two-scalar formulation that depends on hydrostatic stress $p$ and von Mises equivalent stress $q$, which are defined as
@@ -133,7 +138,9 @@ The Jacobian can be formed accordingly.
 \end{bmatrix}.
 \end{gather}
 \subsubsection{Tangent Stiffness}
-At local iteration, $\bvarepsilon^\text{trial}$ (or $\bvarepsilon^{n+1}$, or just $\bvarepsilon$ for brevity) is fixed and $\mb{R}$ is iterated out. Note that in the global iteration, $\bvarepsilon^\text{trial}$ is also a variable that changes. If local iteration is converged, then $\mb{R}=\mb{0}$, so
+At local iteration, $\bvarepsilon^\text{trial}$ (or $\bvarepsilon^{n+1}$, or just $\bvarepsilon$ for brevity) is fixed and $\mb{R}$ is iterated out.
+Note that in the global iteration, $\bvarepsilon^\text{trial}$ is also a variable that changes.
+If local iteration is converged, then $\mb{R}=\mb{0}$, so
 \begin{gather}
 \ddfrac{\mb{R}}{\bvarepsilon}=\pdfrac{\mb{R}}{\bvarepsilon}+\pdfrac{\mb{R}}{\mb{x}}\ddfrac{\mb{x}}{\bvarepsilon}=\mb{0},
 \end{gather}
@@ -176,16 +183,25 @@ The above derivation also takes advantage of the expression
 NonlinearCamClay::update_trial_status
 \end{cppcode}
 \section{Simple Sand Model}
-This sand model is a hybrid of several existing models with significant simplifications. Readers should not expect it to give accurate results. Instead, it is intended only to capture the main characteristics of sand. It is presented as a basic framework from which more complex sand models can be developed.
+This sand model is a hybrid of several existing models with significant simplifications.
+Readers should not expect it to give accurate results.
+Instead, it is intended only to capture the main characteristics of sand.
+It is presented as a basic framework from which more complex sand models can be developed.
 
 Compared with other sand models, this one should be viewed as a preliminary model, much like the bilinear hardening von Mises model when compared with more advanced metal models.
 
-A distinctive feature of sand models is that non-associative plastic flow is often used, and the hardening law is significantly more complex than in the aforementioned models, often involving heavy tensor operations. The hardening laws are frequently tensor-valued and cannot be simplified to scalar-valued functions. As a result, the numerical complexity is higher.
+A distinctive feature of sand models is that non-associative plastic flow is often used, and the hardening law is significantly more complex than in the aforementioned models, often involving heavy tensor operations.
+The hardening laws are frequently tensor-valued and cannot be simplified to scalar-valued functions.
+As a result, the numerical complexity is higher.
 \subsection{Theory}
 \subsubsection{Elastic Constitutive Relation}
-For sand, the elastic response is often nonlinear, or more specifically, hyperelastic. The shear and bulk moduli are often functions of hydrostatic pressure. In this model, however, a linear elastic relation is assumed for simplicity. Readers should be aware that this does not reflect the real behaviour of sand.
+For sand, the elastic response is often nonlinear, or more specifically, hyperelastic.
+The shear and bulk moduli are often functions of hydrostatic pressure.
+In this model, however, a linear elastic relation is assumed for simplicity.
+Readers should be aware that this does not reflect the real behaviour of sand.
 
-The decomposition of total strain into elastic/plastic strain components is still valid. Thus the trial elastic state can be computed via the same expression.
+The decomposition of total strain into elastic/plastic strain components is still valid.
+Thus the trial elastic state can be computed via the same expression.
 \begin{gather}\label{eq:ss_tsigma}
 \bsigma^\text{trial}=\mb{D}:\left(\bvarepsilon_{n+1}-\bvarepsilon^p_n\right)=\bsigma_n+\mb{D}:\left(\bvarepsilon_{n+1}-\bvarepsilon_n\right).
 \end{gather}
@@ -198,13 +214,15 @@ A wedge--like function is chosen to be the yield surface.
 \begin{gather*}
 f=\norm{\bs+p\balpha}+mp=\norm{\mb{\eta}}+mp,
 \end{gather*}
-where $\bs=\dev{\bsigma}$ is the deviatoric stress, $p=\dfrac{1}{3}\tr{\bsigma}$ is the hydrostatic stress, $\balpha$ is the so-called back stress, and $m$ characterises the size of the wedge. For simplicity, $m$ is assumed to be constant in this model.
+where $\bs=\dev{\bsigma}$ is the deviatoric stress, $p=\dfrac{1}{3}\tr{\bsigma}$ is the hydrostatic stress, $\balpha$ is the so-called back stress, and $m$ characterises the size of the wedge.
+For simplicity, $m$ is assumed to be constant in this model.
 \subsubsection{Flow Rule}
 A non-associated plastic flow is used, and the corresponding flow rule is defined as follows.
 \begin{gather*}
 \dot{\mb{\varepsilon}^p}=\gamma\left(\bn+\dfrac{1}{3}A\left(\alpha^d-m-\balpha:\bn\right)\mb{1}\right),
 \end{gather*}
-where $D=A\left(\alpha^d-m-\balpha:\bn\right)$ is the dilatancy parameter, $\bn=\dfrac{\beeta}{\norm{\beeta}}$ is the unit directional tensor, $A$ is a model constant; it can also be defined as a function of the current state. Note that since the sign convention is changed, a positive $A$ leads to dilatant behaviour.
+where $D=A\left(\alpha^d-m-\balpha:\bn\right)$ is the dilatancy parameter, $\bn=\dfrac{\beeta}{\norm{\beeta}}$ is the unit directional tensor, $A$ is a model constant; it can also be defined as a function of the current state.
+Note that since the sign convention is changed, a positive $A$ leads to dilatant behaviour.
 
 Since the linear elasticity is applied, the following expressions hold.
 \begin{gather*}
@@ -212,11 +230,15 @@ Since the linear elasticity is applied, the following expressions hold.
 p=p^\text{trial}-KA\gamma\left(\alpha^d-m-\balpha:\bn\right).
 \end{gather*}
 \subsubsection{Hardening Law}
-The evolution rate of the back stress $\balpha$ is defined in terms of a proper distance measure from the bounding surface. Here, that distance measure is chosen as $h\left(\left(\alpha^b-m\right)\bn-\balpha\right)$, where $h$ is a model constant. Thus,
+The evolution rate of the back stress $\balpha$ is defined in terms of a proper distance measure from the bounding surface.
+Here, that distance measure is chosen as $h\left(\left(\alpha^b-m\right)\bn-\balpha\right)$, where $h$ is a model constant.
+Thus,
 \begin{gather*}
 \dot{\balpha}=\gamma{}h\left(\left(\alpha^b-m\right)\bn-\balpha\right).
 \end{gather*}
-Essentially, this is similar to the Armstrong--Frederick type kinematic hardening rule. It should be noted that $\bn$ is a deviatoric stress, and $\balpha$ remains deviatoric but may not be coaxial with $\bn$. Thus, in tensor notation,
+Essentially, this is similar to the Armstrong--Frederick type kinematic hardening rule.
+It should be noted that $\bn$ is a deviatoric stress, and $\balpha$ remains deviatoric but may not be coaxial with $\bn$.
+Thus, in tensor notation,
 \begin{gather}
 \bn=\mathbb{I}:\bn=\mathbb{I}^\text{dev}:\bn,\qquad
 \balpha=\mathbb{I}:\balpha=\mathbb{I}^\text{dev}:\balpha.
@@ -228,7 +250,8 @@ The state parameter is defined to be
 \end{gather*}
 where $v_0$ is the initial specific volume, $v_c$ is the corresponding specific volume on the critical line at $p_c$ and $\lambda_c$ is the absolute value of the slope of the critical line in $v$--$\ln(-p)$ space.
 
-The Lode angle dependence is not considered for simple derivations of the corresponding terms. Hence both the dilatancy surface and the bounding surface will be circular cones in the principal stress space.
+The Lode angle dependence is not considered for simple derivations of the corresponding terms.
+Hence both the dilatancy surface and the bounding surface will be circular cones in the principal stress space.
 
 The dilatancy surface is defined as
 \begin{gather*}
@@ -254,7 +277,9 @@ The symbol $\mb{1}$ denotes the unit second order tensor. In explicit compressed
 1&1&1&0&0&0
 \end{bmatrix}^\mT$.
 \subsection{Formulation}
-Some tensorial derivatives are presented first. They will be used in both the formulation and the implementation. According to \eqsref{eq:unit_derivative}, the following expressions can be derived.
+Some tensorial derivatives are presented first.
+They will be used in both the formulation and the implementation.
+According to \eqsref{eq:unit_derivative}, the following expressions can be derived.
 \begin{gather*}
 \pdfrac{\norm{\beeta}}{}=\bn:\pdfrac{\mb{\eta}}{},\qquad
 \pdfrac{\bn}{}=\dfrac{1}{\norm{\beeta}}\left(\mathbb{I}-\bn\otimes\bn\right):\pdfrac{\mb{\eta}}{}.
@@ -348,7 +373,8 @@ KA\gamma\left(\left(1+\dfrac{p}{\norm{\beeta}}\left(\balpha:\bn\right)\right)\bn
 \end{bmatrix}.
 \end{gather}
 
-For simplicity, the double contraction is not expressed explicitly; one should always use $\mb{A}^\mT\diag{\mb{c}}\mb{B}$ (in compressed matrix representation) for $\mb{A}:\mb{B}$. The Jacobian has size $1+1+6+6=14$.
+For simplicity, the double contraction is not expressed explicitly; one should always use $\mb{A}^\mT\diag{\mb{c}}\mb{B}$ (in compressed matrix representation) for $\mb{A}:\mb{B}$.
+The Jacobian has size $1+1+6+6=14$.
 \subsubsection{Consistent Tangent Stiffness}
 The consistent tangent stiffness can be derived from the decomposition
 \begin{gather}
@@ -372,7 +398,8 @@ then
 \end{bmatrix}=-\left(\pdfrac{\mb{R}}{\mb{x}}\right)^{-1}\pdfrac{\mb{R}}{\bvarepsilon_{n+1}}.
 \end{gather}
 
-From the above equation, $\pdfrac{\bs_{n+1}}{\bvarepsilon_{n+1}}$ and $\pdfrac{p_{n+1}}{\bvarepsilon_{n+1}}$ can be extracted. The term $\pdfrac{\mb{R}}{\bvarepsilon_{n+1}}$ can be computed as
+From the above equation, $\pdfrac{\bs_{n+1}}{\bvarepsilon_{n+1}}$ and $\pdfrac{p_{n+1}}{\bvarepsilon_{n+1}}$ can be extracted.
+The term $\pdfrac{\mb{R}}{\bvarepsilon_{n+1}}$ can be computed as
 \begin{gather}
 \pdfrac{\mb{R}}{\bvarepsilon_{n+1}}=\begin{bmatrix}
 0\\[4mm]
@@ -382,7 +409,9 @@ From the above equation, $\pdfrac{\bs_{n+1}}{\bvarepsilon_{n+1}}$ and $\pdfrac{p
 \end{bmatrix}
 \end{gather}
 \subsection{Implementation}
-The implementation of this simple sand model is presented in \algoref{algo:ss_model}. Please note that since the local iteration uses $\bs$ and $p$ as independent variables, the plastic strain history does not need to be explicitly stored. It can always be recovered via $\bvarepsilon^p=\bvarepsilon-\mb{D}^{-1}:\sigma$.
+The implementation of this simple sand model is presented in \algoref{algo:ss_model}.
+Please note that since the local iteration uses $\bs$ and $p$ as independent variables, the plastic strain history does not need to be explicitly stored.
+It can always be recovered via $\bvarepsilon^p=\bvarepsilon-\mb{D}^{-1}:\sigma$.
 \begin{breakablealgorithm}
 \caption{state determination of simple sand model}\label{algo:ss_model}
 \begin{algorithmic}
@@ -488,7 +517,8 @@ A wedge-like function is chosen to be the yield surface.
 \begin{gather}
 F=\norm{\bs+p\balpha}+mp=\norm{\beeta}+mp,
 \end{gather}
-where $\balpha$ is the so-called back stress and $m$ characterises the size of the wedge. For simplicity, $m$ is assumed to be constant in this model.
+where $\balpha$ is the so-called back stress and $m$ characterises the size of the wedge.
+For simplicity, $m$ is assumed to be constant in this model.
 
 By denoting $\beeta=\bs+p\balpha$, the directional unit tensor is defined as
 \begin{gather}
@@ -520,7 +550,9 @@ For $\mb{z}:\bn<0$,
 \pdfrac{D}{\mb{z}}&=\mb{0}.
 \end{align}
 
-In the above expressions, $n_p$, $n_s$ and $n_\alpha$ are partial derivatives of $\bn$ against $p$, $\bs$ and $\balpha$. Note that due to the change of sign convention, a negative $D$ leads to a contractive response. Thus, $A_0$ often needs to be negative.
+In the above expressions, $n_p$, $n_s$ and $n_\alpha$ are partial derivatives of $\bn$ against $p$, $\bs$ and $\balpha$.
+Note that due to the change of sign convention, a negative $D$ leads to a contractive response.
+Thus, $A_0$ often needs to be negative.
 \subsubsection{Hardening Law}
 The evolution rate of the back stress $\balpha$ is defined in terms of a proper distance measure from the bounding surface,
 \begin{gather}
@@ -571,7 +603,8 @@ Critical State&$\psi=e-e_0+\lambda_c\left(\dfrac{p}{p_{at}}\right)^\xi$\\
 \end{tabular}
 \end{table}
 \subsubsection{Elastic Residual}
-The new state should be computed assuming that there is no plasticity. In that case,
+The new state should be computed assuming that there is no plasticity.
+In that case,
 \begin{gather}
 p_{n+1}=p_n+K\dot{\varepsilon^v},\\
 \bs_{n+1}=\bs_n+2G\dot{\bvarepsilon^d}.
@@ -747,7 +780,8 @@ The corresponding quantities can be extracted and used to formulate the consiste
 \end{algorithmic}
 \end{breakablealgorithm}
 
-The Dafalias--Manzari sand model is probably the most complex model so far as it involves heavy computation of tensor quantities. Here is an example implementation of state determination.
+The Dafalias--Manzari sand model is probably the most complex model so far as it involves heavy computation of tensor quantities.
+Here is an example implementation of state determination.
 \begin{cppcode}
 DafaliasManzari::update_trial_status
 \end{cppcode}
@@ -831,7 +865,8 @@ It can be solved graphically using the following trigonometry.
 \end{figure}
 The ratio $r_f<1$ is introduced to fine--tune the behaviour.
 \subsubsection{Bulk Modulus}
-The bulk modulus $B$ takes a similar approach. However, it only monotonically increases with an increasing $\sigma_3$.
+The bulk modulus $B$ takes a similar approach.
+However, it only monotonically increases with an increasing $\sigma_3$.
 \begin{gather}
 B=B_i=B_r\abs{\dfrac{\sigma_3}{p_a}}^m,
 \end{gather}
@@ -864,7 +899,8 @@ The following two points should be noted.
 \item Although \eqsref{eq:duncan_incremental} is symmetric and resembles the elastic Hooke's law, the consistent tangent is not symmetric.
 \end{enumerate}
 
-Here, we present an example computation of the Jacobian. The first row of the residual vector $\mb{R}$ can be explicitly written as
+Here, we present an example computation of the Jacobian.
+The first row of the residual vector $\mb{R}$ can be explicitly written as
 \begin{gather}
 \mb{R}^{\left\langle1\right\rangle}=\sigma_x-\sigma_{x,n}-\dfrac{3B}{9B-E}\left(\left(3B+E\right)\Delta\varepsilon_x+\left(3B-E\right)\Delta\varepsilon_y\right).
 \end{gather}
@@ -882,7 +918,8 @@ The derivative can then be derived as
 Similar procedures can be applied to the other two components of $\mb{R}$.
 \subsubsection{Plasticity}
 The original model is a non-linear elastic model, implying no plasticity whatsoever.
-Similar to the concept discussed in \cite{Katona2015}, to enable plasticity--like behaviour, one could introduce the concept of a yield surface. Since the Mohr--Coulomb failure criterion is used in \eqsref{eq:duncan_reduction}, the yield function $f\left(\bsigma\right)$ can be simply chosen as
+Similar to the concept discussed in \cite{Katona2015}, to enable plasticity--like behaviour, one could introduce the concept of a yield surface.
+Since the Mohr--Coulomb failure criterion is used in \eqsref{eq:duncan_reduction}, the yield function $f\left(\bsigma\right)$ can be simply chosen as
 \begin{gather}
 f\left(\bsigma\right)=\sigma_d-\sigma_d^\text{max}.
 \end{gather}
@@ -903,7 +940,8 @@ with
 1&\sigma_d>\sigma_d^\text{max}.
 \end{array}\right.
 \end{gather}
-The factor $\beta$ is defined as a function of $\Delta\bsigma$ in \cite{Katona2015}. In that case, the computation of derivatives is more cumbersome.
+The factor $\beta$ is defined as a function of $\Delta\bsigma$ in \cite{Katona2015}.
+In that case, the computation of derivatives is more cumbersome.
 \subsection{Implementation}
 The state determination algorithm is shown in \algoref{algo:duncan_model}.
 One must note the fact that, since the model is stress-driven, it is not as straightforward to obtain plastic-strain-like quantities as in conventional strain-driven models.
@@ -936,9 +974,12 @@ However, due to its non-linear nature, it is not guaranteed that the development
 \end{algorithmic}
 \end{breakablealgorithm}
 \subsubsection{Numerical Robustness}
-The above algorithm combines both elastic and plastic branches. For a given time step, if the stress state stays within the elastic/plastic domain, the above algorithm would not typically fail. However, if it crosses the boundary, for example, from elastic to plastic, since the tangent stiffness matrix is discontinuous, the local Newton iteration may fail.
+The above algorithm combines both elastic and plastic branches.
+For a given time step, if the stress state stays within the elastic/plastic domain, the above algorithm would not typically fail.
+However, if it crosses the boundary, for example, from elastic to plastic, since the tangent stiffness matrix is discontinuous, the local Newton iteration may fail.
 
-To address this issue, the state determination can be divided into two stages. In the first stage, assume proportional loading and find the elastic portion that projects the stress state onto the yield surface, specifically, find the scalar parameter $\gamma$ such that
+To address this issue, the state determination can be divided into two stages.
+In the first stage, assume proportional loading and find the elastic portion that projects the stress state onto the yield surface, specifically, find the scalar parameter $\gamma$ such that
 \begin{gather}\label{eq:ds_1st_stage_a}
 \dev{\bsigma_r}-\sigma_d^\text{max}=0,
 \end{gather}
@@ -946,7 +987,8 @@ with
 \begin{gather}\label{eq:ds_1st_stage_b}
 \bsigma_r=\bsigma_n+\mb{D}\dot{\bvarepsilon}\gamma.
 \end{gather}
-After obtaining $\gamma$, for the second stage, assume plastic response, consume the remaining $\left(1-\gamma\right)\dot{\bvarepsilon}$. The residual becomes
+After obtaining $\gamma$, for the second stage, assume plastic response, consume the remaining $\left(1-\gamma\right)\dot{\bvarepsilon}$.
+The residual becomes
 \begin{gather}\label{eq:ds_two_stage}
 \mb{R}=\bsigma-\bsigma_r-\mb{D}\dot{\bvarepsilon}\left(1-\gamma\right).
 \end{gather}
@@ -974,7 +1016,8 @@ DuncanSelig::local_update
 \end{cppcode}
 
 The computation of the two moduli follows the formulation with extra cumbersome computation of derivatives.
-To improve numerical robustness, additional limits are applied. Stress components are bounded to the atmospheric pressure.
+To improve numerical robustness, additional limits are applied.
+Stress components are bounded to the atmospheric pressure.
 \begin{cppcode}
 DuncanSelig::compute_elastic
 \end{cppcode}

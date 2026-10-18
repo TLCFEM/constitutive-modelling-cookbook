@@ -49,7 +49,8 @@ where
 \dot{f_g}=\left(1-f\right)\dot{\varepsilon^p_v},\qquad
 \dot{f_n}=A_N\dot{\varepsilon^p_m},
 \end{gather}
-with $A_N=\dfrac{f_N}{s_N\sqrt{2\pi}}\exp\left(-\dfrac{1}{2}\left(\dfrac{\varepsilon^p_m-\varepsilon_N}{s_N}\right)^2\right)$. The corresponding derivative is
+with $A_N=\dfrac{f_N}{s_N\sqrt{2\pi}}\exp\left(-\dfrac{1}{2}\left(\dfrac{\varepsilon^p_m-\varepsilon_N}{s_N}\right)^2\right)$.
+The corresponding derivative is
 \begin{gather}
 \ddfrac{A_N}{\varepsilon^p_m}=A_N\dfrac{\varepsilon_N-\varepsilon^p_m}{s_N^2}.
 \end{gather}
@@ -118,14 +119,20 @@ then
 NonlinearGurson::update_trial_status
 \end{cppcode}
 \section{The \texorpdfstring{$N$-$M$}{N-M} Frame Element}
-In this section, we present a frame element that supports customisation of the $N$-$M$ interaction with the generalised plasticity theory. The core model is taken mainly from the literature; further discussions can be seen elsewhere \cite{Chang2023}.
+In this section, we present a frame element that supports customisation of the $N$-$M$ interaction with the generalised plasticity theory.
+The core model is taken mainly from the literature; further discussions can be seen elsewhere \cite{Chang2023}.
 
 This element fuses the concepts of element, section, and material, and can therefore also be regarded as a material model.
 
-However, for the same reason, calibration can only be carried out at the beam-element level. In this regard, one may argue that conventional fibre/material-based elements are inherently superior, and this is often true. However, fibre-based elements cannot easily capture section-level effects, which largely depend on the formulation of the specific beam element used. On the other hand, the element introduced in this section allows flexible customisation of response, which may not necessarily be strictly tied to the underlying material response. This is beneficial for engineering design, because design standards often adopt much more conservative $N$-$M$ envelopes, which can differ substantially from the `actual' envelope derived from material models.
+However, for the same reason, calibration can only be carried out at the beam-element level.
+In this regard, one may argue that conventional fibre/material-based elements are inherently superior, and this is often true.
+However, fibre-based elements cannot easily capture section-level effects, which largely depend on the formulation of the specific beam element used.
+On the other hand, the element introduced in this section allows flexible customisation of response, which may not necessarily be strictly tied to the underlying material response.
+This is beneficial for engineering design, because design standards often adopt much more conservative $N$-$M$ envelopes, which can differ substantially from the `actual' envelope derived from material models.
 \subsection{Preliminaries}
 \subsubsection{Definitions and Kinematics}
-Consider a two--node beam\footnote{The word `beam' is used interchangeably with `frame' and/or `beam--column'.} element connecting nodes $i$ and $j$ with its rigid body motions removed. The resulting degrees of freedom are axial deformation $u$, rotational deformation $\theta_{z,i}$ of end $i$ and rotational deformation $\theta_{z,j}$ of end $j$, and two additional end rotations, $\theta_{y,i}$ and $\theta_{y,j}$ about the weak axis in the case of a 3D beam.
+Consider a two--node beam\footnote{The word `beam' is used interchangeably with `frame' and/or `beam--column'.} element connecting nodes $i$ and $j$ with its rigid body motions removed.
+The resulting degrees of freedom are axial deformation $u$, rotational deformation $\theta_{z,i}$ of end $i$ and rotational deformation $\theta_{z,j}$ of end $j$, and two additional end rotations, $\theta_{y,i}$ and $\theta_{y,j}$ about the weak axis in the case of a 3D beam.
 It is assumed that the beam is rigid against torsion (no torsion deformation).
 \begin{figure}[H]
 \centering
@@ -175,7 +182,8 @@ The elastic constitutive relationship, denoted by the superscript $\left(\cdot\r
 where $L$ is the initial length of the beam element, $EA$ is the axial rigidity and $EI$ denotes the flexural rigidity.
 \subsubsection{Basic Quantities}
 The above definition is widely adopted as the basic quantities of beam elements.
-However, it complicates plasticity formulation due to the coupling of (rotational) DoFs. For example, consider the moment $M_{z,i}$ at end $i$, which can be explicitly written as
+However, it complicates plasticity formulation due to the coupling of (rotational) DoFs.
+For example, consider the moment $M_{z,i}$ at end $i$, which can be explicitly written as
 \begin{gather}\label{eq:redefine}
 M_{z,i}=\dfrac{EI_z}{L}\left(4\theta_{z,i}+2\theta_{z,j}\right),
 \end{gather}
@@ -194,9 +202,11 @@ Instead of $\bv$, the proposed formulation is developed based on the following q
 \cdot&\cdot&\cdot&2&4
 \end{bmatrix}.
 \end{gather}
-As a result, the coupling of rotational degrees of freedom is removed. The stiffness matrix becomes a diagonal matrix.
+As a result, the coupling of rotational degrees of freedom is removed.
+The stiffness matrix becomes a diagonal matrix.
 One may observe that the magnitudes of $\chi_i$ and $\chi_j$ correspond to those of the sectional curvatures at the two ends (using displacement interpolation as in the conventional displacement based Euler--Bernoulli beam element).
-By using this, it is possible to find a yield curvature $\chi^y$ that corresponds to $M^y$ for each DoF. It is worth noting that the element length $L$ is optionally moved from the elasticity matrix $\mb{E}$ to $\be$, hence $\be$ is a strain--like quantity, rather than deformation in the conventional sense.
+By using this, it is possible to find a yield curvature $\chi^y$ that corresponds to $M^y$ for each DoF.
+It is worth noting that the element length $L$ is optionally moved from the elasticity matrix $\mb{E}$ to $\be$, hence $\be$ is a strain--like quantity, rather than deformation in the conventional sense.
 However, we do not distinguish between those two terminologies and use elemental `deformation' to refer to $\be$ as defined in \eqsref{nm:kinematics}.
 
 For each end, the nodal deformation can be extracted as
@@ -273,7 +283,8 @@ The elemental yield surface $f$ should be able to capture yielding of any ends; 
 f=\sum{}\langle{}f_\aleph\rangle=\sum\langle\Phi_\aleph\rangle=\langle\Phi_i\rangle+\langle\Phi_j\rangle,
 \end{gather}
 The $\langle\cdot\rangle$ symbol denotes the Macaulay bracket.
-By \eqsref{eq:nm_yield}, as long as one end yields (or both yield), $f>0$. \eqsref{eq:nm_yield} is closely related to the multisurface plasticity theory \cite{Simo1998} but not identical.
+By \eqsref{eq:nm_yield}, as long as one end yields (or both yield), $f>0$.
+\eqsref{eq:nm_yield} is closely related to the multisurface plasticity theory \cite{Simo1998} but not identical.
 The exact multisurface plasticity based formulation \cite{Kostic2013} would cause local bifurcation as one of $\Phi_\aleph$ becomes redundant under pure axial loading.
 In this way, a single elemental yield function $f$ can be used to properly capture yielding of any ends.
 
@@ -293,7 +304,8 @@ P^y&\cdot&\cdot\\\cdot&M_z^y&\cdot\\\cdot&\cdot&M_y^y
 \end{bmatrix}\overline{\bbeta}_\aleph.
 \end{gather}
 \subsubsection{\texorpdfstring{$N$-$M$}{N-M} Interaction Surface}
-The \textbf{initial} $N$-$M$ interaction surface is often defined as a non-homogeneous polynomial. For example, for a 2D element, a common option is
+The \textbf{initial} $N$-$M$ interaction surface is often defined as a non-homogeneous polynomial.
+For example, for a 2D element, a common option is
 \begin{gather}
 \Phi_\aleph=1.15\left(\overline{P}-\overline{\beta}_P\right)^2+\left(\overline{M}_z-\overline{\beta}_{M_z}\right)^2+3.67\left(\overline{P}-\overline{\beta}_P\right)^2\left(\overline{M}_z-\overline{\beta}_{M_z}\right)^2-c,
 \end{gather}
@@ -313,7 +325,8 @@ We further express the interaction surface in its general form as
 \begin{gather}\label{eq:nm_interaction}
 \Phi_\aleph=\sum_{i=1}^{n}\left(a_i\prod_{r}\left(\dfrac{\overline{r}-\overline{\beta}_r}{h_r\left(\overline{\alpha}_\aleph\right)}\right)^{b_{i,r}}\right)-c,
 \end{gather}
-where $n$ is the number of terms, $a_i$ is the constant coefficient of each product, $b_{i,r}$ is the order of each bracket and $r$ represents the specific force component $r\in\left(P,~M_z,~M_y\right)$. \eqsref{eq:nm_interaction} serves as the formal definition of the nodal $N$-$M$ interaction surface with hardening.
+where $n$ is the number of terms, $a_i$ is the constant coefficient of each product, $b_{i,r}$ is the order of each bracket and $r$ represents the specific force component $r\in\left(P,~M_z,~M_y\right)$.
+\eqsref{eq:nm_interaction} serves as the formal definition of the nodal $N$-$M$ interaction surface with hardening.
 
 It is worth noting that $h_P\left(\overline{\alpha}_\aleph\right)$ does not need to be the same as $h_{M_z}\left(\overline{\alpha}_\aleph\right)$.
 Different functions can be assigned to different components so that the interaction surface can change its shape during evolution (to mimic anisotropic hardening).
@@ -594,7 +607,8 @@ P^y&M^y_z&M^y_z&M^y_y&M^y_y
 \end{matrix}}\left(\mb{J}^{-1}\pdfrac{\mb{R}}{\be_{n+1}}\right)^{\langle1-5\rangle},
 \end{split}
 \end{gather}
-in which $\left(\cdot\right)^{\langle1-5\rangle}$ denotes the first five rows of the target quantity $\left(\cdot\right)$. By further appending a $\mb{S}$ matrix, the consistent tangent operator against $\bv_{n+1}$ can be expressed as
+in which $\left(\cdot\right)^{\langle1-5\rangle}$ denotes the first five rows of the target quantity $\left(\cdot\right)$.
+By further appending a $\mb{S}$ matrix, the consistent tangent operator against $\bv_{n+1}$ can be expressed as
 \begin{gather}
 \ddfrac{\mb{q}_{n+1}}{\bv_{n+1}}=\ddfrac{\mb{q}_{n+1}}{\be_{n+1}}\ddfrac{\be_{n+1}}{\bv_{n+1}}=\ddfrac{\mb{q}_{n+1}}{\be_{n+1}}\mb{S}.
 \end{gather}
@@ -655,14 +669,16 @@ Additional stabilisation considerations, such as line search \cite{Dutko1993}, c
 \end{algorithmic}
 \end{breakablealgorithm}
 \subsection{Implementation}
-The $N$-$M$ element introduced in this section can be implemented as an element, or a section, or a material model. A more refined implementation can split the element into two parts: 1) an element model that handles converting global nodal quantities to local quantities \eqsref{nm:kinematics} and 2) a section model that handles the integration at the two end nodes.
+The $N$-$M$ element introduced in this section can be implemented as an element, or a section, or a material model.
+A more refined implementation can split the element into two parts: 1) an element model that handles converting global nodal quantities to local quantities \eqsref{nm:kinematics} and 2) a section model that handles the integration at the two end nodes.
 \subsubsection{Element Skeleton}
 The following skeleton handles elemental quantities and sends them to the section model to compute the corresponding response.
 \begin{cppcode}
 NMB21::update_status
 \end{cppcode}
 \subsubsection{Section Integration}
-The section integration can be implemented as follows. Various hardening rules can be applied, the forms of which are not explicitly required.
+The section integration can be implemented as follows.
+Various hardening rules can be applied, the forms of which are not explicitly required.
 \begin{cppcode}
 NonlinearNM::update_trial_status
 \end{cppcode}
