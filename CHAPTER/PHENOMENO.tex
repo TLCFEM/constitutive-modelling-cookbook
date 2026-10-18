@@ -48,7 +48,7 @@ where $\sigma^y$ is the initial yield stress. This definition is suitable for la
 \bar\sigma^y=\abs{\sigma^{pr}-\sigma^{r}}.
 \end{gather}
 
-To wrap up,
+In summary,
 \begin{gather}
 \bar\sigma^y=\left\{
 \begin{array}{ll}
@@ -135,7 +135,7 @@ The MPF model is very similar to the Ramberg--Osgood model.
 They adopt the same approach to describe the cyclic response, but with different backbone curves.
 
 Furthermore, $\varepsilon^y$, $\sigma^y$, $r$ and $b$ do not need to be constants.
-They can evolve with the loading process, characterized by some measure of plasticity.
+They can evolve with the loading process, characterised by some measure of plasticity.
 Specifically, the following can be used.
 \begin{itemize}
 	\item $\sigma^y$ --- isotropic hardening
@@ -149,7 +149,7 @@ In Filippou's modification,
 	r=r_0-\dfrac{a_1\zeta}{a_2+\zeta},\qquad
 	\dfrac{\sigma^y-\sigma^y_0}{\sigma^y_0}=a_3\left(\dfrac{\varepsilon_{max}}{\varepsilon^y}-a_4\right)\geqslant1,
 \end{gather}
-where $\zeta$ is the difference between the previous two reversed points, and $\varepsilon_{max}$ is the maximum absolute strain over the whole loading process.
+where $\zeta$ is the difference between the previous two reversing points, and $\varepsilon_{max}$ is the maximum absolute strain over the whole loading process.
 \subsection{Formulation}
 \subsection{Implementation}
 The C++ implementation is as follows.
@@ -207,7 +207,7 @@ The major difference between this model and the previous phenomenological models
 They are fundamentally similar to each other, but they differ from conventional plasticity models, which acknowledge the existence of some sort of `potential'.
 
 The Bouc--Wen model has received many criticisms.
-Since it is a phenomenological model in which the internal field $z$ has no physical implication, it may violate thermodynamics.
+Since it is a phenomenological model in which the internal field $z$ has no physical meaning, it may violate thermodynamics.
 To alleviate the potential problems, the following constraints are imposed \cite{Ma2004}.
 \begin{gather}
 A=1,\qquad\gamma+\beta=1.
@@ -273,7 +273,7 @@ Accordingly, at least four points are essential for controlling the response of 
 
 With the above definition, any current state $(\varepsilon_n,\sigma_n)$ lies on one of the three curves. For a prescribed strain increment $\Delta\varepsilon$, determining the stress $\sigma_{n+1}$ is equivalent to computing the new point on one of these curves. Since the current state $(\varepsilon_n,\sigma_n)$ must lie on one of them, we can determine whether $\varepsilon_{n+1}=\varepsilon_n+\Delta\varepsilon$ is on the unloading, reloading, or backbone curve by comparing the magnitude of $\varepsilon_{n+1}$ with the stored unloading and residual strains.
 
-The state determination algorithm can be cast in a branching structure. In the following procedure, $\varepsilon_{cr}$ is compression residual strain, $\varepsilon_{cu}$ is compression unloading strain, $\varepsilon_{tr}$ is tension residual strain, $\varepsilon_{tu}$ is tension unloading strain.
+The state determination algorithm can be cast in a branching structure. In the following procedure, $\varepsilon_{cr}$ is the compression residual strain, $\varepsilon_{cu}$ is the compression unloading strain, $\varepsilon_{tr}$ is the tension residual strain, $\varepsilon_{tu}$ is the tension unloading strain.
 \begin{breakablealgorithm}
 \caption{state determination of general hysteresis model}\label{algo:gen_hys}
 \begin{algorithmic}[1]
@@ -295,7 +295,7 @@ Using two flags, it is easy to track which curve each point lies on.
 	Status trial_flag = Status::NONE, current_flag = Status::NONE;
 \end{cppcode}
 
-The implementation presented uses a nested structure to simplify the procedure. The top level determines whether the new state is on the backbone, if not, the second level determines whether the new state is on the corresponding unloading curve or reloading curve and computes the response accordingly.
+The implementation presented uses a nested structure to simplify the procedure. The top level determines whether the new state is on the backbone; if not, the second level determines whether the new state is on the corresponding unloading curve or reloading curve and computes the response accordingly.
 
 For each curve, a universal interface can be provided. Each function takes $\varepsilon_{n+1}$ as input and returns $\sigma_{n+1}$ and $E_{n+1}$ in an array.
 \begin{cppcode}
@@ -312,7 +312,7 @@ The control points can be updated on demand with some auxiliary methods.
 	[[nodiscard]] virtual double compute_tension_residual(double, double) const = 0;
 \end{cppcode}
 
-The following CPP code snippet shows a working implementation of such a state determination procedure.
+The following C++ code snippet shows a working implementation of such a state determination procedure.
 \begin{cppcode}
 SimpleHysteresis::update_trial_status
 \end{cppcode}

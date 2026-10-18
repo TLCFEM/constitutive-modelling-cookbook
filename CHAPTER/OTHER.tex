@@ -27,7 +27,7 @@ The associated flow rule is used.
 \dot{\bvarepsilon^p}=\gamma\pdfrac{F}{\bsigma}&=\gamma\left(\pdfrac{F}{q^2}\ddfrac{q^2}{\bsigma}+\pdfrac{F}{p}\ddfrac{p}{\bsigma}\right)\\&=\gamma\left(\pdfrac{F}{q^2}3\bs+\pdfrac{F}{p}\dfrac{1}{3}\mb{1}\right)=\gamma\left(3\bs+q_1q_2f\sigma_y\sinh{}\mb{1}\right).
 \end{split}
 \end{gather}
-Note we have used $\sinh{}$ to denote $\sinh\left(\dfrac{3}{2}\dfrac{q_2p}{\sigma_y}\right)$ for brevity.
+Note that we have used $\sinh{}$ to denote $\sinh\left(\dfrac{3}{2}\dfrac{q_2p}{\sigma_y}\right)$ for brevity.
 In the following, we'll also use $\cosh{}$ to denote $\cosh\left(\dfrac{3}{2}\dfrac{q_2p}{\sigma_y}\right)$.
 
 It is clear that
@@ -65,7 +65,7 @@ Since $q$ can be explicitly expressed as a function of $\gamma$, one could obtai
 \begin{gather}
     \ddfrac{q}{\gamma}=\dfrac{-6G}{\left(1+6G\gamma\right)^2}q^\text{trial}=\dfrac{-6G}{1+6G\gamma}q.
 \end{gather}
-However, $p$ is implicitly related to other variables, it can be treated as an independent variable.
+However, $p$ is implicitly related to other variables; it can be treated as an independent variable.
 \subsubsection{Local System}
 With $\mb{x}=\begin{bmatrix}\gamma&\varepsilon^p_m&f&p\end{bmatrix}^\mT$, the residual equations are
 \begin{gather}
@@ -97,7 +97,7 @@ The Jacobian can be computed via the partial derivatives with $T=3Kq_1q_2$,
 \pdfrac{P}{f}=T\gamma{}\sigma_y\sinh,\qquad
 \pdfrac{P}{p}=1+\dfrac{3}{2}Tq_2\gamma{}f\cosh.
 \end{gather}
-The corresponding derivatives about the trial strain $\varepsilon^\text{trial}$ are
+The corresponding derivatives with respect to the trial strain $\varepsilon^\text{trial}$ are
 \begin{gather}
 \pdfrac{F}{\bvarepsilon^\text{trial}}=\dfrac{6G}{1+6G\gamma}\bs,\qquad
 \pdfrac{E}{\bvarepsilon^\text{trial}}=-2\gamma\dfrac{6G}{1+6G\gamma}\bs-p\mb{1},\\
@@ -118,14 +118,14 @@ then
 NonlinearGurson::update_trial_status
 \end{cppcode}
 \section{The \texorpdfstring{$N$-$M$}{N-M} Frame Element}
-In this section, we present a frame element that supports customisation of the $N$-$M$ interaction with the generalised plasticity theory. The core model is taken mainly from the literature, further discussions can be seen elsewhere \cite{Chang2023}.
+In this section, we present a frame element that supports customisation of the $N$-$M$ interaction with the generalised plasticity theory. The core model is taken mainly from the literature; further discussions can be seen elsewhere \cite{Chang2023}.
 
 This element fuses the concepts of element, section, and material, and can therefore also be regarded as a material model.
 
 However, for the same reason, calibration can only be carried out at the beam-element level. In this regard, one may argue that conventional fibre/material-based elements are inherently superior, and this is often true. However, fibre-based elements cannot easily capture section-level effects, which largely depend on the formulation of the specific beam element used. On the other hand, the element introduced in this section allows flexible customisation of response, which may not necessarily be strictly tied to the underlying material response. This is beneficial for engineering design, because design standards often adopt much more conservative $N$-$M$ envelopes, which can differ substantially from the `actual' envelope derived from material models.
 \subsection{Preliminaries}
 \subsubsection{Definitions and Kinematics}
-Consider a two--node beam\footnote{The word `beam' is used interchangeably with `frame' and/or `beam--column'.} element connecting nodes $i$ and $j$ with its rigid body motions removed, the resulting degrees of freedom are axial deformation $u$, rotational deformation $\theta_{z,i}$ of end $i$ and rotational deformation $\theta_{z,j}$ of end $j$, and additional two end rotations, $\theta_{y,i}$ and $\theta_{y,j}$ about weak axis in the case of a 3D beam.
+Consider a two--node beam\footnote{The word `beam' is used interchangeably with `frame' and/or `beam--column'.} element connecting nodes $i$ and $j$ with its rigid body motions removed. The resulting degrees of freedom are axial deformation $u$, rotational deformation $\theta_{z,i}$ of end $i$ and rotational deformation $\theta_{z,j}$ of end $j$, and two additional end rotations, $\theta_{y,i}$ and $\theta_{y,j}$ about the weak axis in the case of a 3D beam.
 It is assumed that the beam is rigid against torsion (no torsion deformation).
 \begin{figure}[H]
 \centering
@@ -158,8 +158,8 @@ P&M_{z,i}&M_{z,j}&M_{y,i}&M_{y,j}
 \end{bmatrix}^\mT,
 \end{gather}
 where $P$ denotes axial force while $M$ denotes end moment.
-The corresponding yield forces are denoted as $P^y$, $M_z^y$ and $M_y^y$ and it is assumed both ends have the same yield forces.
-Such definitions of elemental deformation and resistance are independent from the transformation between global and local reference frames, and thus, can be combined with either linear or corotational transformation.
+The corresponding yield forces are denoted as $P^y$, $M_z^y$ and $M_y^y$ and it is assumed that both ends have the same yield forces.
+Such definitions of elemental deformation and resistance are independent from the transformation between global and local reference frames, and thus can be combined with either linear or corotational transformation.
 For this reason, the subsequent discussion is confined to the local reference frame only.
 
 The elastic constitutive relationship, denoted by the superscript $\left(\cdot\right)^e$, is conventionally known as
@@ -172,7 +172,7 @@ The elastic constitutive relationship, denoted by the superscript $\left(\cdot\r
 \cdot&\cdot&\cdot&\dfrac{2EI_y}{L}&\dfrac{4EI_y}{L}
 \end{bmatrix},
 \end{gather}
-where $L$ is the initial length of beam element, $EA$ is the axial rigidity and $EI$ denotes the flexural rigidity.
+where $L$ is the initial length of the beam element, $EA$ is the axial rigidity and $EI$ denotes the flexural rigidity.
 \subsubsection{Basic Quantities}
 The above definition is widely adopted as the basic quantities of beam elements.
 However, it complicates plasticity formulation due to the coupling of (rotational) DoFs. For example, consider the moment $M_{z,i}$ at end $i$, which can be explicitly written as
@@ -180,7 +180,7 @@ However, it complicates plasticity formulation due to the coupling of (rotationa
 M_{z,i}=\dfrac{EI_z}{L}\left(4\theta_{z,i}+2\theta_{z,j}\right),
 \end{gather}
 the above expression implies that both $\theta_{z,i}$ and $\theta_{z,j}$ contribute to $M_{z,i}$.
-Once node $j$ yields, the plasticity developed on far end DoF $\theta_{z,j}$ would also affect near end moment $M_{z,i}$, thus, it is difficult to find a yield rotation that corresponds to yield moment $M^y_{z,i}$ by solely using near end rotation $\theta_{z,i}$.
+Once node $j$ yields, the plasticity developed on the far end DoF $\theta_{z,j}$ would also affect the near end moment $M_{z,i}$; thus it is difficult to find a yield rotation that corresponds to the yield moment $M^y_{z,i}$ by solely using the near end rotation $\theta_{z,i}$.
 
 Instead of $\bv$, the proposed formulation is developed based on the following quantity
 \begin{gather}\label{nm:kinematics}
@@ -195,8 +195,8 @@ Instead of $\bv$, the proposed formulation is developed based on the following q
 \end{bmatrix}.
 \end{gather}
 As a result, the coupling of rotational degrees of freedom is removed. The stiffness matrix becomes a diagonal matrix.
-One may observe that the magnitudes of $\chi_i$ and $\chi_j$ correspond to that of sectional curvatures at two ends (using displacement interpolation as in the conventional displacement based Euler--Bernoulli beam element).
-By using which, it is possible to find a yield curvature $\chi^y$ that corresponds to $M^y$ for each DoF. It is worth noting that the element length $L$ is optionally moved from elasticity matrix $\mb{E}$ to $\be$, hence $\be$ is a strain--like quantity, rather than deformation in the conventional sense.
+One may observe that the magnitudes of $\chi_i$ and $\chi_j$ correspond to those of the sectional curvatures at the two ends (using displacement interpolation as in the conventional displacement based Euler--Bernoulli beam element).
+By using this, it is possible to find a yield curvature $\chi^y$ that corresponds to $M^y$ for each DoF. It is worth noting that the element length $L$ is optionally moved from the elasticity matrix $\mb{E}$ to $\be$, hence $\be$ is a strain--like quantity, rather than deformation in the conventional sense.
 However, we do not distinguish between those two terminologies and use elemental `deformation' to refer to $\be$ as defined in \eqsref{nm:kinematics}.
 
 For each end, the nodal deformation can be extracted as
@@ -221,7 +221,7 @@ or concisely,
 \be_\aleph=\mb{T}_\aleph\be,
 \end{gather}
 where subscript $\left(\cdot\right)_\aleph$ denotes either $\left(\cdot\right)_i$ or $\left(\cdot\right)_j$.
-In this work, the presence of subscript $\left(\cdot\right)_\aleph$ implies that it is a nodal quantity, the same symbol without subscript $\left(\cdot\right)_\aleph$ denotes its elemental counterpart.
+In this work, the presence of subscript $\left(\cdot\right)_\aleph$ implies that it is a nodal quantity; the same symbol without subscript $\left(\cdot\right)_\aleph$ denotes its elemental counterpart.
 We define $\mb{T}_i$ and $\mb{T}_j$ to be transformation/selection matrices.
 The main purpose of adopting $\be$ in the formulation is twofold: 1) to decouple nodal response so that plasticity (on rotational DoFs) can be developed \textbf{independently} at each end, and 2) to obtain a better implication of the corresponding plastic deformation.
 
@@ -254,39 +254,39 @@ The elemental version with subscript $\left(\cdot\right)_\aleph$ omitted in \eqs
 The generalised plasticity concept \cite{Auricchio1994} is followed loosely in this work.
 However, the two--surface concept (yield surface and bounding surface) is not adopted, because its presence makes the quantification of hardening behaviour difficult.
 
-The main challenge comes from the fact that $N$-$M$ interaction should be considered at each node, the activation of plasticity (of moment) at either end should be relatively independent from the other end.
-However, as there is only one axial force which is shared between two ends, its plasticity history affects both ends.
+The main challenge comes from the fact that $N$-$M$ interaction should be considered at each node; the activation of plasticity (of moment) at either end should be relatively independent from the other end.
+However, as there is only one axial force which is shared between the two ends, its plasticity history affects both ends.
 Simply adopting a conventional multisurface formulation \cite{Simo1998} leads to potential local bifurcation issues, as under certain conditions, one surface would become \textbf{redundant}.
 In the following, we present a special formulation that allows independent activation of plasticity at each end while enabling proper hardening behaviour.
 \subsubsection{Yield Function}
 \paragraph{Nodal Yield Function}
-For each end, the nodal resistance $\mb{q}_\aleph$ should be bounded by the corresponding nodal yield surface $f_\aleph$, then, the admissible region is defined by $f_\aleph\leqslant0$ while the inadmissible region is equivalent to $f_\aleph>0$.
+For each end, the nodal resistance $\mb{q}_\aleph$ should be bounded by the corresponding nodal yield surface $f_\aleph$; then the admissible region is defined by $f_\aleph\leqslant0$ while the inadmissible region is equivalent to $f_\aleph>0$.
 For each node, $f_\aleph$ can be simply chosen as
 \begin{gather}
 f_\aleph=\Phi_\aleph,
 \end{gather}
-where $\Phi_\aleph=\Phi_\aleph\left(\mb{s}_\aleph,\alpha_\aleph\right)$ is the $N$-$M$ interaction surface based on the shifted resistance $\mb{s}_\aleph=\mb{q}_\aleph-\bbeta_\aleph$ and the equivalent plastic strain $\alpha_\aleph$, $\bbeta_\aleph$ is similar to the concept of back stress in conventional plasticity models, here back resistance that defines the centre of interaction surface.
+where $\Phi_\aleph=\Phi_\aleph\left(\mb{s}_\aleph,\alpha_\aleph\right)$ is the $N$-$M$ interaction surface based on the shifted resistance $\mb{s}_\aleph=\mb{q}_\aleph-\bbeta_\aleph$ and the equivalent plastic strain $\alpha_\aleph$; $\bbeta_\aleph$ is similar to the concept of back stress in conventional plasticity models, here the back resistance that defines the centre of the interaction surface.
 The $N$-$M$ interaction surface can not only change its location, governed by $\bbeta_\aleph$, but also grow in size, governed by $\alpha_\aleph$.
 \paragraph{Elemental Yield Function}
-The elemental yield surface $f$ should be able to capture yielding of any ends, a possible option is
+The elemental yield surface $f$ should be able to capture yielding of any ends; a possible option is
 \begin{gather}\label{eq:nm_yield}
 f=\sum{}\langle{}f_\aleph\rangle=\sum\langle\Phi_\aleph\rangle=\langle\Phi_i\rangle+\langle\Phi_j\rangle,
 \end{gather}
 The $\langle\cdot\rangle$ symbol denotes the Macaulay bracket.
 By \eqsref{eq:nm_yield}, as long as one end yields (or both yield), $f>0$. \eqsref{eq:nm_yield} is closely related to the multisurface plasticity theory \cite{Simo1998} but not identical.
 The exact multisurface plasticity based formulation \cite{Kostic2013} would cause local bifurcation as one of $\Phi_\aleph$ becomes redundant under pure axial loading.
-By such, a single elemental yield function $f$ can be used to properly capture yielding of any ends.
+In this way, a single elemental yield function $f$ can be used to properly capture yielding of any ends.
 
 Alternatively, a bounding surface concept, which is frequently adopted in models of geomaterials \cite{Dafalias2004}, concrete and metals, can be used to simulate more complex evolution of plasticity.
 For simplicity, the above single surface formulation is adopted in this work.
-It is worth noting that the major discrepancy compared to conventional plasticity models is that plasticity can develop at either end in a \textbf{relatively} independent manner, in the meantime, two ends are linked with each other via the shared axial force.
+It is worth noting that the major discrepancy compared to conventional plasticity models is that plasticity can develop at either end in a \textbf{relatively} independent manner; in the meantime, the two ends are linked with each other via the shared axial force.
 
 Often, $f$ is a non-dimensional function of $\bs$ and $\alpha$.
-Dimensional analysis shows a plasticity framework based on normalised quantities can simplify both formulation and implementation, thus, in this work, the yield surface $f_\aleph$ is defined as follows instead.
+Dimensional analysis shows that a plasticity framework based on normalised quantities can simplify both formulation and implementation; thus, in this work, the yield surface $f_\aleph$ is defined as follows instead.
 \begin{gather}
 f_\aleph=\Phi_\aleph\left(\mb{\overline{s}}_\aleph,\overline{\alpha}_\aleph\right),
 \end{gather}
-where $\mb{\overline{s}}_\aleph=\mb{\overline{q}}_\aleph-\overline{\bbeta}_\aleph$ with $\mb{\overline{q}}_\aleph$ be the normalised nodal resistance \eqsref{eq:nm_normalisedq} and $\overline{\bbeta}_\aleph$ be the normalised nodal back resistance, viz.,
+where $\mb{\overline{s}}_\aleph=\mb{\overline{q}}_\aleph-\overline{\bbeta}_\aleph$ with $\mb{\overline{q}}_\aleph$ being the normalised nodal resistance \eqsref{eq:nm_normalisedq} and $\overline{\bbeta}_\aleph$ being the normalised nodal back resistance, viz.,
 \begin{gather}
 \bbeta_\aleph=\begin{bmatrix}
 P^y&\cdot&\cdot\\\cdot&M_z^y&\cdot\\\cdot&\cdot&M_y^y
@@ -366,7 +366,7 @@ A popular isotropic hardening rule that adopts a linear hardening base and a sat
 h\left(\overline{\alpha}_\aleph\right)=1+H\overline{\alpha}_\aleph+s-se^{-m\overline{\alpha}_\aleph},
 \end{gather}
 where $H$ is the linear isotropic hardening ratio, $s$ is the saturation level and $m$ controls hardening speed.
-In absence of $H$, it is easy to see that
+In the absence of $H$, it is easy to see that
 \begin{gather}
 \lim\limits_{\overline{\alpha}_\aleph\rightarrow\infty}h\left(\overline{\alpha}_\aleph\right)=1+s.
 \end{gather}
@@ -409,7 +409,7 @@ D=\dfrac{1}{2}-\dfrac{\overline{\bbeta}}{2B_s}\cdot\dfrac{\dot{\overline{\be}^p}
 which ranges from \num{0} to \num{1}.
 The $\cdot$ operator denotes inner product.
 
-Combing the direction and speed together, accounting for that $\dfrac{\dot{\overline{\be}^p}}{\norm{\dot{\overline{\be}^p}}}=\dfrac{\mb{\zeta}}{\norm{\mb{\zeta}}}$ holds for associative plastic flow, the rate form of $\overline{\bbeta}$ can be expressed as
+Combining the direction and speed together, accounting for the fact that $\dfrac{\dot{\overline{\be}^p}}{\norm{\dot{\overline{\be}^p}}}=\dfrac{\mb{\zeta}}{\norm{\mb{\zeta}}}$ holds for associative plastic flow, the rate form of $\overline{\bbeta}$ can be expressed as
 \begin{gather}\label{eq:nm_bounding_kin}
 \dot{\overline{\bbeta}}=\gamma{}D\left(B_s\dfrac{\mb{\zeta}}{\norm{\mb{\zeta}}}-\mb{\overline{\beta}}\right).
 \end{gather}
@@ -428,7 +428,7 @@ By choosing $D=K_a\norm{\mb{\zeta}}$, the above bounding type hardening rule fal
 In the above definition, $K_a$ and $K_b=K_aB_s$ are two kinematic hardening ratios.
 Setting $K_a=0$ with $K_b\neq0$ leads to pure linear kinematic hardening behaviour.
 Alternatively, a Chaboche type multiplicative model \cite{Chaboche1989} can also be used.
-Furthermore, similar to isotropic hardening, different kinematic hardening rules can be assigned to axial/moment components, see the example presented in the appendix.
+Furthermore, similar to isotropic hardening, different kinematic hardening rules can be assigned to axial/moment components; see the example presented in the appendix.
 In this work, \eqsref{eq:nm_kin} is adopted accounting for both generality and simplicity.
 \paragraph{Apparent Hardening Ratio}
 Assume a linear kinematic hardening is defined as
@@ -462,7 +462,7 @@ Following the conventional style, the Kuhn--Tucker complementarity condition and
 \subsubsection{Remarks}
 \begin{enumerate}
 \item There is only \textbf{one} elemental yield function $f$, which contains \textbf{two} nodal interaction surfaces $\Phi_\aleph$.
-\item The flow rule is derived from the unique elemental yield function $f$, thus the plastic flow defined in \eqsref{eq:nm_flow} is strictly associative.
+\item The flow rule is derived from the unique elemental yield function $f$; thus the plastic flow defined in \eqsref{eq:nm_flow} is strictly associative.
 This differs from the multisurface plasticity framework.
 The resulting plastic deformation $\overline{\be}^p$ is an elemental quantity.
 \item The equivalent plastic deformation $\overline{\alpha}_\aleph$ is computed based on part of elemental plastic deformation $\overline{\be}^p$ and may have different histories for two ends.
@@ -475,7 +475,7 @@ Depending on the specific plastic flow and hardening rules used, such symmetry i
 \subsection{Discrete System}
 The discrete local system in vector form is derived in this section for 3D beam elements, accounting for five elemental deformation/force components, which are equivalent to three nodal components.
 In the case of 2D elements, it reduces to three elemental components and two nodal components.
-The formulation is almost identical for both 2D and 3D elements, thus, only the 3D version is presented.
+The formulation is almost identical for both 2D and 3D elements; thus, only the 3D version is presented.
 %The conventional return mapping algorithm is adopted.
 \subsubsection{Elastic Loading/Unloading}
 By freezing plasticity, one can compute the elemental trial state as
@@ -515,7 +515,7 @@ For 3D beam elements with kinematic hardening, we take
 \underbrace{\gamma}_{1}
 \end{bmatrix}
 \end{gather}
-as the local variable with subscript $\left(\cdot\right)_{n+1}$ omitted for brevity, the local residual is
+as the local variable with subscript $\left(\cdot\right)_{n+1}$ omitted for brevity, and the local residual is
 \begin{gather}\label{eq:nm_residual}
 \mb{R}=\left\{
 \begin{array}{l}
@@ -529,7 +529,7 @@ as the local variable with subscript $\left(\cdot\right)_{n+1}$ omitted for brev
 \end{gather}
 Physically, plasticity evolution can be activated when either end yields, or both yield.
 Thus, each end should be considered separately, though not strictly independently because of the shared axial force.
-The (plastic) deformation defined in this work can be transformed into the conventional sense via the $\mb{S}$ matrix, see \eqsref{nm:kinematics}.
+The (plastic) deformation defined in this work can be transformed into the conventional sense via the $\mb{S}$ matrix; see \eqsref{nm:kinematics}.
 \subsubsection{Jacobian}
 By treating $\mb{\zeta}$ as an intermediate variable, the Jacobian $\mb{J}$ can be analytically expressed as
 \begin{gather}\label{eq:nm_jacobian}
@@ -558,16 +558,16 @@ and
 \pdfrac{\mb{g}}{\mb{\overline{q}}}&-\pdfrac{\mb{g}}{\mb{\overline{q}}}&\pdfrac{\mb{g}}{\overline{\alpha}_i}&\pdfrac{\mb{g}}{\overline{\alpha}_j}&\cdot
 \end{bmatrix},
 \end{gather}
-Note the above expression also takes advantage of the fact that $\pdfrac{}{\mb{\overline{q}}}=-\pdfrac{}{\mb{\overline{\beta}}}$.
+Note that the above expression also takes advantage of the fact that $\pdfrac{}{\mb{\overline{q}}}=-\pdfrac{}{\mb{\overline{\beta}}}$.
 
 The choice of local variable is not unique.
 Other options are available.
-However, with the above formulation, the Jacobian is greatly simplified at the cost of increasing the size of local system to \num{13}.
-In absence of back resistance $\mb{\overline{\beta}}$, the size reduces to \num{8}.
+However, with the above formulation, the Jacobian is greatly simplified at the cost of increasing the size of the local system to \num{13}.
+In the absence of back resistance $\mb{\overline{\beta}}$, the size reduces to \num{8}.
 For 2D beams, those two numbers are \num{9} and \num{6}.
 The chosen scheme is believed to be a good balance between analytical expressiveness (simplicity) and numerical performance.
 \subsubsection{Consistent Tangent Operator}
-Full differentiation the local residual $\mb{R}$ at equilibrium $\mb{R}=\mb{0}$ gives
+Full differentiation of the local residual $\mb{R}$ at equilibrium $\mb{R}=\mb{0}$ gives
 \begin{gather}
 \pdfrac{\mb{R}}{\be_{n+1}}\md{\be_{n+1}}+\pdfrac{\mb{R}}{\mb{x}}\md{\mb{x}}=\mb{0},
 \end{gather}
@@ -594,11 +594,11 @@ P^y&M^y_z&M^y_z&M^y_y&M^y_y
 \end{matrix}}\left(\mb{J}^{-1}\pdfrac{\mb{R}}{\be_{n+1}}\right)^{\langle1-5\rangle},
 \end{split}
 \end{gather}
-in which $\left(\cdot\right)^{\langle1-5\rangle}$ denotes the first five rows of target quantity $\left(\cdot\right)$. By further appending a $\mb{S}$ matrix, the consistent tangent operator against $\bv_{n+1}$ can be expressed as
+in which $\left(\cdot\right)^{\langle1-5\rangle}$ denotes the first five rows of the target quantity $\left(\cdot\right)$. By further appending a $\mb{S}$ matrix, the consistent tangent operator against $\bv_{n+1}$ can be expressed as
 \begin{gather}
 \ddfrac{\mb{q}_{n+1}}{\bv_{n+1}}=\ddfrac{\mb{q}_{n+1}}{\be_{n+1}}\ddfrac{\be_{n+1}}{\bv_{n+1}}=\ddfrac{\mb{q}_{n+1}}{\be_{n+1}}\mb{S}.
 \end{gather}
-\subsection{Summary of The Proposed Model}
+\subsection{Summary of the Proposed Model}
 The key expressions of the proposed model are listed in \tabref{tab:nm_key_eq}.
 \begin{table}[H]
 \centering\footnotesize\renewcommand{\arraystretch}{2}
@@ -655,19 +655,19 @@ Additional stabilisation considerations, such as line search \cite{Dutko1993}, c
 \end{algorithmic}
 \end{breakablealgorithm}
 \subsection{Implementation}
-The $N$-$M$ element introduced in this section can be implemented as an element, or a section, or a material model. A more refined implementation can split the element into two parts: 1) an element model that handles converting global nodal quantities to local quantities \eqsref{nm:kinematics} and 2) a section model that handled the integration at two end nodes.
+The $N$-$M$ element introduced in this section can be implemented as an element, or a section, or a material model. A more refined implementation can split the element into two parts: 1) an element model that handles converting global nodal quantities to local quantities \eqsref{nm:kinematics} and 2) a section model that handles the integration at the two end nodes.
 \subsubsection{Element Skeleton}
-The following skeleton handles elemental quantities and sends them to section model to compute the corresponding response.
+The following skeleton handles elemental quantities and sends them to the section model to compute the corresponding response.
 \begin{cppcode}
 NMB21::update_status
 \end{cppcode}
 \subsubsection{Section Integration}
-The section integration can be implemented as following. Various hardening rules can be applied, the forms of which are not explicitly required.
+The section integration can be implemented as follows. Various hardening rules can be applied, the forms of which are not explicitly required.
 \begin{cppcode}
 NonlinearNM::update_trial_status
 \end{cppcode}
 
-A typical implementation of computing Jacobian may look like this.
+A typical implementation of computing the Jacobian may look like this.
 \begin{cppcode}
 VAFNM::compute_local_integration
 \end{cppcode}

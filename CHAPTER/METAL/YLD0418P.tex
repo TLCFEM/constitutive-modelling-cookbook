@@ -16,7 +16,7 @@ Because both matrix and tensor notations are used below, the elasticity can also
     \bsigma=\mb{D}:\left(\bvarepsilon-\bvarepsilon^p\right).
 \end{gather}
 The convention is simple: when $\mb{D}$ is used, it represents a tensor, thus tensor operations are required, while when $\mb{E}$ is used, it represents a matrix, thus matrix operations are required.
-For the flow rule, we assume the associative plasticity such that the plastic potential is identical to the yield function.
+For the flow rule, we assume associative plasticity such that the plastic potential is identical to the yield function.
 \begin{gather}
     \dot{\bvarepsilon^p}=\gamma\bn=\gamma\pdfrac{f}{\bsigma}.
 \end{gather}
@@ -35,12 +35,12 @@ Both rules are effectively identical to the ones introduced previously in \S~\re
 However, since we focus only on the yield criterion in this section, we are not going to explore various alternatives.
 Nevertheless, based on the framework presented here, it is relatively easy to employ more complex hardening rules.
 \subsection{Derivatives of Eigenvalues and Eigenvectors}\label{sec:derivative_eigen}
-Now let $\lambda_i$ be the eigenvalues of the stress tensor $\mb{\aleph}$ and $\bv_i$ the corresponding normalized eigenvectors. Then,
+Now let $\lambda_i$ be the eigenvalues of the stress tensor $\mb{\aleph}$ and $\bv_i$ the corresponding normalised eigenvectors. Then,
 \begin{gather}\label{eq:eigenvalue_def}
     \lambda_i=\underbrace{\bv_i^\mT\mb{\aleph}\bv_i}_{\text{vector/matrix}}=\underbrace{\bv_i\cdot\mb{\aleph}\cdot\bv_i}_{\text{tensor contraction}}=\underbrace{\left(\bv_i\otimes\bv_i\right):\mb{\aleph}}_{\text{tensor contraction}},\qquad
     \mb{\aleph}=\sum_{i}\lambda_i\bv_i\otimes\bv_i.
 \end{gather}
-The first point to note is that since $\bv_i$ is normalized, viz., $\bv_i\cdot\bv_i=1$, then
+The first point to note is that since $\bv_i$ is normalised, viz., $\bv_i\cdot\bv_i=1$, then
 \begin{gather}
     \md{\left(\bv_i\cdot\bv_i\right)}=\md{\bv_i}\cdot\bv_i+\bv_i\cdot\md{\bv_i}=2\bv_i\cdot\md{\bv_i}=\md{1}=0\qquad\longrightarrow\qquad\bv_i\cdot\md{\bv_i}=0.
 \end{gather}
@@ -137,11 +137,11 @@ One can spot a few interesting features of \eqsref{eq:yld0418p_yield_function}.
     \item The shape is controlled by principal stresses.
     \item The summation involves nine terms in total.
     \item Depending on the parameters used to define the transformation matrices, the transformed stresses $\balpha$ and $\bbeta$ may or may not share the same principal directions.
-    \item Noting that $\bs$ is a deviatoric stress tensor, thus the yield function is hydrostatic pressure independent. However, $\balpha$ and $\bbeta$ may or may not be deviatoric --- depending on the transformation matrices.
+    \item Note that $\bs$ is a deviatoric stress tensor; thus, the yield function is hydrostatic pressure independent. However, $\balpha$ and $\bbeta$ may or may not be deviatoric --- depending on the transformation matrices.
 \end{enumerate}
 
 It is also important to note that $f$ has the same unit as stress.
-Considering that $m$ could be potentially (very) large, up to \num{40} or so, we use the following revision in this section to avoid numerical issues.
+Considering that $m$ could potentially be (very) large, up to \num{40} or so, we use the following revision in this section to avoid numerical issues.
 \begin{gather}\label{eq:yld0418p_yield_function_normalized}
     f=\sum_{i=1}^3\sum_{j=1}^3\abs{\dfrac{\alpha_i-\beta_j}{\sigma_\text{ref}}}^m-4\sigma_y^m,
 \end{gather}
@@ -246,7 +246,7 @@ If we further define $\mb{H}^{\mb{\aleph}}=\mb{P}^{\mb{\aleph}}:\mb{C}_{\mb{\ale
 \end{gather}
 in which for brevity the middle diagonal matrix is not repeated.
 
-Now let's study the degenerate case when $\alpha_i$ approaches $\alpha_j$.
+Now let us study the degenerate case when $\alpha_i$ approaches $\alpha_j$.
 By examining the expression,
 \begin{gather}
     \pdfrac{f}{\alpha_i}=\dfrac{m}{\sigma_\text{ref}}\sum_{j=1}^3\abs{\Delta_{ij}}^{m-2}\Delta_{ij},

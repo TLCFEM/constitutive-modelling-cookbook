@@ -66,7 +66,7 @@ Expressed explicitly in tensor components, the above relation becomes
 \end{gather}
 We define the scaling vector $\mb{c}=\begin{bmatrix}
         1 & 1 & 1 & 2 & 2 & 2
-    \end{bmatrix}^\mT$ and let $\circ$ be the Hadamard (element--wise) product operator, then the above expression is equivalent to
+    \end{bmatrix}^\mT$ and let $\circ$ be the Hadamard (element--wise) product operator; then the above expression is equivalent to
 \begin{gather}
     \underbrace{\begin{bmatrix}
             \dot{\varepsilon^p}_{11}  \\
@@ -114,7 +114,7 @@ For the internal variable $q$, the hardening law uses the accumulated magnitude 
     \dot{q}=\sqrt{\dfrac{2}{3}}\norm{\dot{\bvarepsilon^p}}=\sqrt{\dfrac{2}{3}}\gamma.
 \end{gather}
 Similar to the stress counterpart, here the constant $\sqrt{\dfrac{2}{3}}$ needs to be introduced to ensure a consistent and correct uniaxial response.
-To see this, consider the uniaxial loading case again, to have a unit plastic strain increment along the designated axis (say, the $x$-axis), also noting that $\dot{\bvarepsilon^p}$ is \textbf{deviatoric}, the full plastic strain increment tensor must be
+To see this, consider the uniaxial loading case again; to have a unit plastic strain increment along the designated axis (say, the $x$-axis), and noting that $\dot{\bvarepsilon^p}$ is \textbf{deviatoric}, the full plastic strain increment tensor must be
 \begin{gather}
     \dot{\bvarepsilon^p}=\dfrac{1}{2}\begin{bmatrix}
         2 & -1 & -1 & 0 & 0 & 0
@@ -123,7 +123,7 @@ To see this, consider the uniaxial loading case again, to have a unit plastic st
 Clearly, to have a unit first component, the other two normal components must be $-\dfrac{1}{2}$ each.
 This will lead to $\norm{\dot{\bvarepsilon^p}}=\sqrt{\dfrac{3}{2}}$.
 If we still accept the definition $\dot{q}=\norm{\dot{\bvarepsilon^p}}$, then the same unit plastic strain increment that yields $\dot{q}=1$ in the uniaxial formulation would now give $\dot{q}=\sqrt{\dfrac{3}{2}}$ in the 3D formulation.
-As a result, the same hardening function would produce different responses in two cases.
+As a result, the same hardening function would produce different responses in the two cases.
 To have the identical $\dot{q}$, we must scale down $\norm{\dot{\bvarepsilon^p}}$ by $\sqrt{\dfrac{2}{3}}$, thus the above expression is obtained.
 
 For isotropic hardening, $\sigma^y$ is defined as a general function of $q$,
@@ -234,7 +234,7 @@ Then $\beeta^\text{trial}=\dev{\bsigma^\text{trial}}-\balpha_n$, which gives the
     f^\text{trial}=\norm{\beeta^\text{trial}}-\sqrt{\dfrac{2}{3}}\sigma^y_n
 \end{gather}
 with $\sigma^y_n=\sigma^y\left(q_n\right)$ evaluated with current $q_n$.
-The above expression simply assumes the current loading increment $\Delta\bvarepsilon=\bvarepsilon_{n+1}-\bvarepsilon_n$ is purely elastic, thus all plasticity related variables remain unchanged.
+The above expression simply assumes the current loading increment $\Delta\bvarepsilon=\bvarepsilon_{n+1}-\bvarepsilon_n$ is purely elastic, thus all plasticity-related variables remain unchanged.
 The yield function evaluated in this way gives an upper bound of the actual yield function.
 If this value is negative, the actual state must be elastic, otherwise, plasticity evolution must occur.
 \subsubsection{Plastic Evolution}
@@ -310,7 +310,7 @@ From the converged local residual (yield function),
     \end{split}
 \end{gather}
 
-Thus the final expression for consistent tangent stiffness can be assembled as
+Thus the final expression for the consistent tangent stiffness can be assembled as
 \begin{gather}\label{eq:j2_stiffness}
     \begin{split}
         \pdfrac{\bsigma_{n+1}}{\bvarepsilon_{n+1}} & =\mb{D}-2G\left(-2G\left(\pdfrac{f}{\gamma}\right)^{-1}\bn\otimes\bn+\gamma\dfrac{2G}{\norm{\beeta^\text{trial}}}\left(\mathbb{I}^\text{dev}-\bn\otimes\bn\right)\right)                                                                               \\

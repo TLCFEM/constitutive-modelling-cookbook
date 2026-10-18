@@ -246,7 +246,7 @@ Rearranging the above gives
 The above can be inserted into \eqsref{eq:ortho_consistent_tangent} to obtain the consistent tangent stiffness.
 There is no tensor algebra involved; all expressions are in matrix form.
 \subsubsection{Line Search}
-Since it is an anisotropic model, the local iteration may have difficulties in convergence, especially when a high anisotropy is defined.
+Since it is an anisotropic model, the local iteration may have difficulties converging, especially when a high anisotropy is defined.
 Some implementations \cite{Krasnovskiy2004,SouzaNeto2008,Scherzinger2017} adopt line search, which effectively becomes a damped Newton--Raphson method.
 It indeed improves numerical stability in certain cases, but does not guarantee global convergence.
 The additional cost of searching is not necessarily negligible, as a desired step size is not guaranteed to be found in a fixed number of searches.

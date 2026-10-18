@@ -26,11 +26,11 @@ Readers should also be fairly familiar with elasticity theories, especially smal
 Furthermore, as can be seen later, plasticity theories can essentially be interpreted as differential equations; thus, a good grasp of numerical methods for differential equations (ODEs and PDEs) is also required.
 However, it should be pointed out that, in most cases, only low order (very basic) methods are needed.
 
-If 2D and 3D models are of interest, it is likely that a basic understanding of tensor algebra (literally I mean the first one or two chapters of any monographs on tensor algebra and nothing more) is also required.
+If 2D and 3D models are of interest, it is likely that a basic understanding of tensor algebra (literally I mean the first one or two chapters of any monograph on tensor algebra and nothing more) is also required.
 Chapter \ref{chap:tensor} provides a brief summary of all tensor algebra knowledge needed in this book.
 If one is able to understand the contents of Chapter \ref{chap:tensor}, that is sufficient.
 \section{Implementation}
-To get hands on with the actual implementation, one should then consider practical programming issues such as which programming language to use, which paradigm to follow, etc.
+To get hands-on with the actual implementation, one should then consider practical programming issues such as which programming language to use, which paradigm to follow, etc.
 \subsection{Which Programming Language?}
 In the early days, \texttt{C} and \texttt{Fortran} were the most popular languages for scientific computation.
 One can easily find a large number of libraries written in either \texttt{C} or \texttt{Fortran} that are quietly driving the whole scientific computation community.
@@ -38,7 +38,7 @@ One can easily find a large number of libraries written in either \texttt{C} or 
 However, procedural programming may not necessarily be the ideal paradigm for scientific computation.
 Consider, for example, that in those languages, vectors/matrices/tensors are represented by plain arrays.
 The corresponding metadata, such as dimensions, can at best be stored in \texttt{struct}s.
-Operating on arrays is cumbersome and error--prone.
+Operating on arrays is cumbersome and error-prone.
 As there is no operator overloading, all linear algebra operations have to be implemented as functions.
 The implementation quickly becomes lengthy and hard to read, especially for 2D/3D elements and material models.
 
@@ -49,7 +49,7 @@ Furthermore, the language itself does not have a rich feature set. Writing \text
 When choosing a proper language for scientific computation, the following three aspects are important.
 \begin{itemize}
 \item Operator Overloading\\
-Operator overloading is a mechanism that allows one to define custom behaviour for standard operators (e.g., $+$, $-$, $*$, $/$.) when applied to custom types.
+Operator overloading is a mechanism that allows one to define custom behaviour for standard operators (e.g., $+$, $-$, $*$, $/$) when applied to custom types.
 This is particularly useful in scientific computing, where mathematical operations on vectors, matrices, and tensors are common.
 With operator overloading, one can write code that more closely resembles mathematical notation, making it more readable and easier to understand.
 It may also offer performance optimisation.
@@ -69,7 +69,7 @@ For implementing standalone material models, whether there is a rich ecosystem m
 However, at higher levels, material models need to be integrated into larger analysis frameworks, and a rich ecosystem can significantly reduce reinvention and the overall workload.
 \item Multiparadigm Support\\
 Although not strictly necessary, multiparadigm support can be very useful in scientific computation.
-For finite element analysis, nodes/elements can be naturally modelled as objects, thus object--oriented programming (OOP) is a natural choice.
+For finite element analysis, nodes/elements can be naturally modelled as objects, thus object-oriented programming (OOP) is a natural choice.
 \end{itemize}
 
 In this book, \texttt{C++} is chosen as the implementation language.

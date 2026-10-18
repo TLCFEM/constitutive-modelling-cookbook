@@ -30,7 +30,7 @@ This is particularly useful when the local Newton--Raphson iteration fails to co
 For numerical robustness, the first form of yield function is preferred in this case.
 Similar arguments can be made for other, more complex formulations.
 
-Can you analyze the pros and cons of the third option shown below?
+Can you analyse the pros and cons of the third option shown below?
 \begin{gather}
     f=\dfrac{\abs{\sigma}}{\sigma_y}-1.
 \end{gather}
@@ -45,28 +45,28 @@ The analytical solution can be easily obtained as
     y(t)=\dfrac{a}{b}\left(1-e^{-bt}\right).
 \end{gather}
 
-Now let us consider integrating this ODE using the first--order backward Euler method and the second--order Trapezoidal method.
+Now let us consider integrating this ODE using the first-order backward Euler method and the second-order Trapezoidal method.
 \begin{figure}[ht]
     \centering
     \includegraphics{PIC/convergence.integration.pdf}
-    \caption{comparison of first--order backward Euler method and second--order Trapezoidal method for the ODE $\dot{y}=a-by$.}
+    \caption{Comparison of first-order backward Euler method and second-order Trapezoidal method for the ODE $\dot{y}=a-by$.}
     \label{fig:convergence}
 \end{figure}
 \figref{fig:convergence} presents the error of the numerical solutions for $a=1$ and $b=20$.
 The system is integrated to $t=10$.
-As expected, when $\Delta{}t$ decreases, the Trapezoidal method shows second--order convergence, while the backward Euler method shows first--order convergence.
+As expected, when $\Delta{}t$ decreases, the Trapezoidal method shows second-order convergence, while the backward Euler method shows first-order convergence.
 This is well understood from truncation error analysis.
 
 However, when $\Delta{}t$ is large, the absolute error of the Euler method is smaller in the above example.
-Even if both methods show perfect first--order and second--order convergence for arbitrary $\Delta{}t$, there exists a threshold such that, when $\Delta{}t$ is larger than the threshold, the first--order method yields a smaller absolute error than the second--order method.
-After all, the term `second--order' only tells us that the error is $\mathcal{O}\left(\Delta{}t^2\right)$; it does not imply that, for a given $\Delta{}t$, second--order methods will always yield a smaller absolute error than first--order methods.
-The constant factor dropped in the big-$\mathcal{O}$ notation can be large enough to make the second--order method worse than the first--order method for a given $\Delta{}t$.
+Even if both methods show perfect first-order and second-order convergence for arbitrary $\Delta{}t$, there exists a threshold such that, when $\Delta{}t$ is larger than the threshold, the first-order method yields a smaller absolute error than the second-order method.
+After all, the term `second-order' only tells us that the error is $\mathcal{O}\left(\Delta{}t^2\right)$; it does not imply that, for a given $\Delta{}t$, second-order methods will always yield a smaller absolute error than first-order methods.
+The constant factor dropped in the big-$\mathcal{O}$ notation can be large enough to make the second-order method worse than the first-order method for a given $\Delta{}t$.
 
 This is not surprising --- two straight lines with different slopes eventually cross each other.
 The question is whether this `threshold' is practically relevant.
 There is no universal answer to this question.
 One should thus be aware of this subtle implication.
-When designing a numerical implementation, a second--order method is not necessarily universally better than a first--order method.
+When designing a numerical implementation, a second-order method is not necessarily universally better than a first-order method.
 \section{Algorithmic Tangent Stiffness}
 In numerical implementations with implicit schemes, the algorithmic tangent stiffness is often required to ensure the quadratic convergence of the global Newton--Raphson iteration.
 It is also called the consistent tangent operator in some literature.
@@ -132,7 +132,7 @@ Regardless of the integration scheme, the Newton--Raphson method remains the sta
 However, its convergence is strictly local, requiring an initial guess sufficiently close to the solution.
 
 To address potential convergence failures, a robust algorithm must be developed to guarantee successful constitutive integration.
-Noting that the yield function is solely a function of plasticity multiplier, viz., $f=f\left(\gamma\right)$, in some particular cases, it is possible to use root-finding algorithms to solve for $\gamma$ directly.
+Noting that the yield function is solely a function of the plasticity multiplier, viz., $f=f\left(\gamma\right)$, in some particular cases, it is possible to use root-finding algorithms to solve for $\gamma$ directly.
 For example, the Ridders' method is a simple robust root-finding algorithm that does not evaluate derivatives, ensures convergence, and can achieve a convergence rate of $\mathcal{O}\left(\sqrt{2}\right)$ for well-behaved functions.
 
 Consequently, a preferred root-finding algorithm can solve for $\gamma$ within a specified tolerance.
@@ -140,14 +140,14 @@ If a strict tolerance is satisfied, this estimate serves as the final solution.
 Alternatively, a moderate tolerance provides a sufficiently accurate initial guess for the Newton--Raphson method, ensuring rapid quadratic convergence.
 Once the system is solved, the consistent tangent operator is computed via standard procedures.
 
-More aggressive implementations may even default to a gradient (Jacobian) free root-finding approach, only evaluate the Jacobian when the consistent tangent operator is required after obtaining a sufficiently accurate solution.
+More aggressive implementations may even default to a gradient (Jacobian) free root-finding approach, only evaluating the Jacobian when the consistent tangent operator is required after obtaining a sufficiently accurate solution.
 This is computationally extremely cheap.
 
 In the following, we outline the primary prerequisites required to successfully implement this strategy.
 \subsection{A Bounded Multiplier}
-Most root-finding algorithms require an initial pair of guesses that bracket the root, denoting those two guesses as $\gamma_1$ and $\gamma_2$ with $\gamma_1<\gamma_2$, it is $f\left(\gamma_1\right)\cdot{}f\left(\gamma_2\right)<0$.
+Most root-finding algorithms require an initial pair of guesses that bracket the root, denoting those two guesses as $\gamma_1$ and $\gamma_2$ with $\gamma_1<\gamma_2$, that is, $f\left(\gamma_1\right)\cdot{}f\left(\gamma_2\right)<0$.
 
-For plasticity return--mapping, the solution is guaranteed to exist by construction, and one can always choose $\gamma_1=0$ since it is known that $f\left(0\right)>0$.
+For plasticity return-mapping, the solution is guaranteed to exist by construction, and one can always choose $\gamma_1=0$ since it is known that $f\left(0\right)>0$.
 The remaining task is to find a suitable $\gamma_2$ such that $f\left(\gamma_2\right)<0$.
 Starting from an initial nonzero value of $\gamma_2$, repeatedly double $\gamma_2$ and evaluate $f(\gamma_2)$ until the condition $f(\gamma_2)<0$ is satisfied.
 
@@ -161,6 +161,6 @@ The formulation shall also ensure that the yield function is explicitly dependen
 
 If this cannot be achieved, a composite implementation that combines global root-finding and local Newton--Raphson methods may be necessary.
 
-In constitutive modeling, analytical formulations must be balanced with numerical considerations that govern implementation robustness and efficiency.
+In constitutive modelling, analytical formulations must be balanced with numerical considerations that govern implementation robustness and efficiency.
 Specifically, employing explicit rather than implicit evolution laws for internal variables eliminates the auxiliary nonlinear solving steps typically required to evaluate the yield function.
 Furthermore, explicit rules decouple the internal variables, thereby simplifying the local system and streamlining the formulation of the Jacobian matrix.

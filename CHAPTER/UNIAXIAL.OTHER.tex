@@ -1,6 +1,6 @@
 \chapter{Uniaxial Plasticity Models (Other Materials)}
 \section{K4 Concrete}
-In this section, we introduce a uniaxial model for concrete formulated within the classic plasticity framework. In this book, we call it the K4 model because the four authors' surnames all start with the letter `K'. However, the model presented in the original paper adopts linear degradation, which inevitably leads to zero stiffness once a certain strain limit is exceeded. Numerical models do not favor exact zeros, so we revise it to use an exponentially decaying function instead. Note also that the original formulation \cite{Kenawy2020} contains some mistakes. In the event of any discrepancy or inconsistency, we follow the formulation discussed in this section.
+In this section, we introduce a uniaxial model for concrete formulated within the classic plasticity framework. In this book, we call it the K4 model because the four authors' surnames all start with the letter `K'. However, the model presented in the original paper adopts linear degradation, which inevitably leads to zero stiffness once a certain strain limit is exceeded. Numerical models do not favour exact zeros, so we revise it to use an exponentially decaying function instead. Note also that the original formulation \cite{Kenawy2020} contains some mistakes. In the event of any discrepancy or inconsistency, we follow the formulation discussed in this section.
 
 There are quite a number of phenomenological models for concrete. Since they are phenomenological, different loading/unloading responses can be defined with relative flexibility. Such flexibility makes these models easier for engineers to understand and extrapolate. However, they may violate thermodynamic principles.
 \subsection{Theory}
@@ -17,7 +17,7 @@ Just like other plasticity models, the additive decomposition applies such that
 \bar{\sigma}=E\left(\varepsilon-\varepsilon^p\right).
 \end{gather}
 \subsubsection{Yield Function}
-Unlike metals, concrete does not require ratcheting to be modeled. As a result, only isotropic hardening is conventionally used, with no kinematic hardening. Thus, there is also no need to introduce back stress into the model. The yield function $F$ can be simply expressed as
+Unlike metals, concrete does not require ratcheting to be modelled. As a result, only isotropic hardening is conventionally used, with no kinematic hardening. Thus, there is also no need to introduce back stress into the model. The yield function $F$ can be simply expressed as
 \begin{gather}
 F=\abs{\bar{\sigma}}-\bar{\sigma}_y.
 \end{gather}
@@ -150,12 +150,12 @@ According to \eqsref{eq:k4_evolution}, $k_t$ is the accumulated tensile plastic 
 
 To account for this crack-closing mechanism, one more history variable $k_k$ is introduced to allow additional plasticity to develop. The variable $k_k$ tracks crack closing.
 
-For this inner plasticity model, we adopt a simple linear model such that a fixed fraction of strain increment contributes to plastic strain, that is
+For this inner plasticity model, we adopt a simple linear model such that a fixed fraction of the strain increment contributes to plastic strain, that is
 \begin{gather}
 \Delta\varepsilon^p=\Delta\varepsilon\dfrac{E}{E+h_k}.
 \end{gather}
 
-Knowing that this is only activated during compressive loading ($\bar\sigma<0$ and $\Delta\varepsilon<0$), then $\Delta\varepsilon^p<0$ and $\abs{\Delta\varepsilon^p}=-\Delta\varepsilon^p$.
+Knowing that this is only activated during compressive loading ($\bar\sigma<0$ and $\Delta\varepsilon<0$), $\Delta\varepsilon^p<0$ and $\abs{\Delta\varepsilon^p}=-\Delta\varepsilon^p$.
 \begin{gather}
 \Delta{}k_k=-\Delta\varepsilon^p,\\
 \Delta\bar{\sigma}=-E\Delta\varepsilon^p.

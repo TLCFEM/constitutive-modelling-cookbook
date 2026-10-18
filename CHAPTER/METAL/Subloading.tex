@@ -137,7 +137,7 @@ Here, $y'$ is governed by the difference $a\left(x\right)-y$, while the approach
 They are equivalent in terms of the asymptotic behaviour and share the same shortcoming.
 This form has been used in defining the evolution rule for the back stress in the subloading surface model \cite{Anjiki2019,Hashiguchi2023,Hashiguchi2024}.
 
-To ensure that the solution is bounded by $a(x)$, let's consider the following function,
+To ensure that the solution is bounded by $a(x)$, let us consider the following function,
 \begin{gather}\label{eq:strict_bound_core}
     y=a(x)\left(1-\exp\left(-bx\right)\right),
 \end{gather}
@@ -188,7 +188,7 @@ Now since \eqsref{eq:decomposition_core} is adopted, a similar strategy can also
 \begin{gather}\label{eq:decomposition_back}
     \boxed{\bbeta=H\balpha,}
 \end{gather}
-with $H=H\left(q\right)$ being the bound and $\balpha$ being the normalised back stress (normalised by $H$), which can follow the following evolution rule.
+with $H=H\left(q\right)$ being the bound and $\balpha$ being the normalised back stress (normalised by $H$), which can adopt the following evolution rule.
 \begin{gather}\label{eq:revised_back}
     \boxed{\dot{\balpha}=b\left(\dot{\bvarepsilon^p}-\norm{\dot{\bvarepsilon^p}}\balpha\right),}
 \end{gather}
@@ -200,7 +200,7 @@ Here, to allow more flexibility, $H$ is defined as an independent quantity.
 Nevertheless, if one wishes, it is possible to associate $H$ with $F$ as done in other work \cite{Anjiki2019}.
 However, note that the specific form $\bbeta=b\left(\dot{\bvarepsilon^p}-\norm{\dot{\bvarepsilon^p}}\dfrac{\bbeta}{H}\right)$, which is used by \cite{Anjiki2019,Anjiki2021}, should not be used, as the back stress may go beyond the intended bound ($\norm{\bbeta}>H$) for softening materials; see the discussion around \figref{fig:examples}.
 \subsubsection{Shifted Stress}
-Since now the new centre of the subloading surface is shifted to $\bbeta+\left(1-z\right)\left(\bc-\bbeta\right)$, the original formulation uses the following expression to compute the shifted stress $\beeta$,
+Since the new centre of the subloading surface is now shifted to $\bbeta+\left(1-z\right)\left(\bc-\bbeta\right)$, the original formulation uses the following expression to compute the shifted stress $\beeta$,
 \begin{gather}
     \beeta=\bs-\left(\bbeta+\left(1-z\right)\left(\bc-\bbeta\right)\right),
 \end{gather}
@@ -241,7 +241,7 @@ Accounting for the proposed decompositions \eqsref{eq:decomposition_core} and \e
     \end{tikzpicture}
     \caption{graphical representation of the surfaces using proposed definitions}\label{fig:revised_surfaces}
 \end{figure}
-It can also be noted that, since $\norm{\bd}<1$, then $\norm{zF\bd}<zF$. Therefore, the homothetic centre is always inside the subloading surface $f_s$, which itself is inside the yield surface $f$.
+It can also be noted that, since $\norm{\bd}<1$, $\norm{zF\bd}<zF$. Therefore, the homothetic centre is always inside the subloading surface $f_s$, which itself is inside the yield surface $f$.
 \subsection{Loading/Unloading Criterion}\label{sec:correct_loading_criterion}
 The conventional Kuhn--Tucker condition cannot be applied in the subloading surface model since, even for elastic unloading, the history variable $z$ must be updated for every load increment/step.
 For arbitrary loading directions and magnitudes, it is possible for the normal yield ratio $z$ to decrease first --- the subloading surface shrinks --- and then increase --- the subloading surface expands.
@@ -325,10 +325,10 @@ However, three distinctive cases arise.
     \item If $r\geqslant0$, it is a pure loading case. Nothing additional needs to be done. $z_n$ is the correct starting value for return mapping.
 \end{enumerate}
 Thus, for any given load increment, one can 1) find the corresponding scalar $r$ that minimises $z^\text{trial}$, and 2) use the above criteria to determine whether plasticity occurs and, if so, correct the starting value of $z$ if necessary.
-We defer the presentation of explicit expressions for the above procedure after introducing the von Mises framework.
+We defer the presentation of explicit expressions for the above procedure until after introducing the von Mises framework.
 \subsection{A von Mises Model for Metals}
 \subsubsection{Subloading Surface}
-For the von Mises criterion, $\bs$ takes the deviatoric part of the stress tensor, $\bs=\dev{\bsigma}$, then
+For the von Mises criterion, $\bs$ takes the deviatoric part of the stress tensor, $\bs=\dev{\bsigma}$; then
 \begin{gather}
     \beeta=\dev{\bsigma}-H\balpha+\left(z-1\right)F\bd.
 \end{gather}
@@ -344,7 +344,7 @@ Assuming associative plasticity, the flow rule is given by
 where $\gamma$ denotes the plastic multiplier.
 \subsubsection{Evolution Rules}
 \paragraph{Accumulated Plastic Strain}
-The accumulated plastic strain $q$ simply takes the accumulated magnitude of $\bvarepsilon^p$, thus, its rate form is
+The accumulated plastic strain $q$ simply takes the accumulated magnitude of $\bvarepsilon^p$; thus, its rate form is
 \begin{gather}\label{eq:eqv_strain}
     \dot{q}=\sqrt{\dfrac{2}{3}}\norm{\dot{\bvarepsilon^p}}=\sqrt{\dfrac{2}{3}}\gamma.
 \end{gather}
@@ -450,7 +450,7 @@ Let $R_r$ denote the residual
     R_r=\left(\bd_n:\Delta\bs\right)\sqrt{\left(\bd_n:\bar{\beeta}\right)^2+\left(\dfrac{2}{3}-\bd_n:\bd_n\right)\left(\bar{\beeta}:\bar{\beeta}\right)}\\
     +\left(\bd_n:\bar{\beeta}\right)\left(\bd_n:\Delta\bs\right)+\left(\dfrac{2}{3}-\bd_n:\bd_n\right)\left(\bar{\beeta}:\Delta\bs\right).
 \end{multline}
-Its derivative with regard to $r$ is
+Its derivative with respect to $r$ is
 \begin{multline}\label{eq:z_derivative}
     J_r=\ddfrac{R_r}{r}=\left(\bd_n:\Delta\bs\right)\dfrac{\left(\bd_n:\bar{\beeta}\right)\left(\bd_n:\Delta\bs\right)+\left(\dfrac{2}{3}-\bd_n:\bd_n\right)\left(\bar{\beeta}:\Delta\bs\right)}{\sqrt{\left(\bd_n:\bar{\beeta}\right)^2+\left(\dfrac{2}{3}-\bd_n:\bd_n\right)\left(\bar{\beeta}:\bar{\beeta}\right)}}\\
     +\left(\bd_n:\Delta\bs\right)^2+\left(\dfrac{2}{3}-\bd_n:\bd_n\right)\left(\Delta\bs:\Delta\bs\right).
@@ -513,7 +513,7 @@ such that
 \begin{gather}
     \left(\norm{\beeta}+\gamma2G+\sqrt{\dfrac{2}{3}}b\dfrac{\gamma{}a^y}{1+\gamma{}b}+\sqrt{\dfrac{2}{3}}c_ez_e\left(1-z\right)\dfrac{\gamma{}\sigma^y}{1+\gamma{}c_e}\right)\bn=\bzeta.
 \end{gather}
-It can be noted that each term in the bracket is non-negative by definition, thus it is correct to conclude that
+It can be noted that each term in the bracket is non-negative by definition; thus, it is correct to conclude that
 \begin{gather}\label{eq:zeta_norm}
     \norm{\beeta}+\gamma2G+\sqrt{\dfrac{2}{3}}b\dfrac{\gamma{}a^y}{1+\gamma{}b}+\sqrt{\dfrac{2}{3}}c_ez_e\left(1-z\right)\dfrac{\gamma{}\sigma^y}{1+\gamma{}c_e}=\norm{\bzeta},
 \end{gather}
@@ -548,8 +548,8 @@ Taking the local variable as $\mb{x}=\begin{bmatrix}
         -\sqrt{\dfrac{2}{3}}U                                                        & 1-\sqrt{\dfrac{2}{3}}\gamma{}\ddfrac{U}{z}
     \end{bmatrix}.
 \end{gather}
-It is possible to avoid cumbersome computation of derivatives of $\norm{\beeta}$ by taking advantage of \eqsref{eq:zeta_norm}.
-By noting that the derivatives of $\norm{\bzeta}$ can be further expanded as
+It is possible to avoid the cumbersome computation of derivatives of $\norm{\beeta}$ by taking advantage of \eqsref{eq:zeta_norm}.
+Noting that the derivatives of $\norm{\bzeta}$ can be further expanded as
 \begin{gather}
     \pdfrac{\norm{\bzeta}}{}=\bn:\pdfrac{\bzeta}{},
 \end{gather}
@@ -642,7 +642,7 @@ Subloading::update_trial_status
 \end{cppcode}
 \subsubsection{Remarks}
 Compared to previous implementations \cite{Fincato2017,Anjiki2019}, the formulation proposed in this work dramatically reduces the size of the local system from \num{20} to \num{2}.
-We also present the explicit expression of the consistent tangent operator, which is not available in the previous works.
+We also present the explicit expression of the consistent tangent operator, which is not available in previous works.
 If \eqsref{eq:original_z} can be explicitly integrated by choosing a specific function $U$ (such as the cotangent function used in the original proposal), the local system can be further reduced to a scalar residual.
 \subsection{Further Discussions}
 One may have observed that the subtle difference between the uniaxial and multiaxial formulations lies in the scaling factor $\sqrt{\dfrac{2}{3}}$.
@@ -651,11 +651,11 @@ Is there an alternative approach that may avoid this issue?
 In this section, we explore a possible solution that may better align the uniaxial and multiaxial formulations.
 
 Now that we have introduced the split (e.g., \eqsref{eq:decomposition_back}) that accounts for magnitude and direction separately, we can consider additional tweaks.
-Again, let's revisit the ODE \eqsref{eq:af_ode} with both $a$ and $b$ being constants,
+Again, let us revisit the ODE \eqsref{eq:af_ode} with both $a$ and $b$ being constants,
 \begin{gather}
     y'=b(a-y).
 \end{gather}
-For trivial initial condition, the solution is, as stated earlier,
+For a trivial initial condition, the solution is, as stated earlier,
 \begin{gather}
     y(x)=a\left(1-\exp\left(-bx\right)\right).
 \end{gather}
