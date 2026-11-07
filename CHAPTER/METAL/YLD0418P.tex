@@ -15,7 +15,7 @@ Because both matrix and tensor notations are used below, the elasticity can also
 \begin{gather}
     \bsigma=\mb{D}:\left(\bvarepsilon-\bvarepsilon^p\right).
 \end{gather}
-The convention is simple: when $\mb{D}$ is used, it represents a tensor, thus tensor operations are required, while when $\mb{E}$ is used, it represents a matrix, thus matrix operations are required.
+The convention is simple: $\mb{D}$ denotes a tensor and calls for tensor operations, while $\mb{E}$ denotes a matrix and calls for matrix operations.
 For the flow rule, we assume associative plasticity such that the plastic potential is identical to the yield function.
 \begin{gather}
     \dot{\bvarepsilon^p}=\gamma\bn=\gamma\pdfrac{f}{\bsigma}.
@@ -31,9 +31,8 @@ with
 with $\mb{T}=\diag{\begin{matrix}
             1 & 1 & 1 & \dfrac{1}{2} & \dfrac{1}{2} & \dfrac{1}{2}
         \end{matrix}}$.
-Both rules are effectively identical to the ones introduced previously in \S~\ref{sec:hoffman}.
-However, since we focus only on the yield criterion in this section, we are not going to explore various alternatives.
-Nevertheless, based on the framework presented here, it is relatively easy to employ more complex hardening rules.
+Both rules are effectively identical to those introduced in \S~\ref{sec:hoffman}; since this section focuses only on the yield criterion, we do not explore the alternatives.
+More complex hardening rules, however, are relatively easy to employ within the present framework.
 \subsection{Derivatives of Eigenvalues and Eigenvectors}\label{sec:derivative_eigen}
 Now let $\lambda_i$ be the eigenvalues of the stress tensor $\mb{\aleph}$ and $\bv_i$ the corresponding normalised eigenvectors.
 Then,
@@ -82,7 +81,7 @@ One can also keep both the Voigt representation and the double contraction by de
         \mb{\aleph}_{11} \\\mb{\aleph}_{22}\\\mb{\aleph}_{33}\\\mb{\aleph}_{12}\\\mb{\aleph}_{23}\\\mb{\aleph}_{31}
     \end{bmatrix}.
 \end{gather}
-Such a mixed notation may appear to be a bit confusing, but it is actually quite useful in practice.
+Such a mixed notation may appear confusing, but it is actually quite useful in practice.
 
 For $\md{\bv_i}$ itself, one can derive the following expression; see \cite{Wu2006} and the references therein:
 \begin{gather}\label{eq:eigenvector_diff_def}
@@ -99,10 +98,10 @@ Since $\bv_i\cdot\bv_j=\delta_{ij}$, indeed $\md{\bv_i}\cdot\bv_i=0$.
 \end{gather}
 It is assumed that $\lambda_i\neq\lambda_j$, that is, the eigenvalues are distinct.
 For degenerate cases, the above expression is \textbf{not} valid.
-But is it actually a problem?
-In practice, the algorithm used to perform eigenanalysis is likely iterative, so exactly identical eigenvalues are unlikely to be obtained.
-This is also supported by the fact that $\mb{\aleph}$ are transformed tensors.
-Unless carefully designed, obtaining very close eigenvalues is practically difficult, let alone exactly identical eigenvalues.
+But is that actually a problem?
+In practice, eigenanalysis is likely performed iteratively, so exactly identical eigenvalues are unlikely to be obtained.
+The fact that $\mb{\aleph}$ are transformed tensors also supports this.
+Unless the algorithm is carefully designed, even very close eigenvalues are practically difficult to obtain, let alone identical ones.
 We will revisit this issue later.
 \subsection{Yield Function}\label{sec:yld0418p_yield_function}
 The YLD0418P yield criterion is expressed as a function of a set of \textbf{transformed} stress tensors, that is, in its most general form,
@@ -240,7 +239,7 @@ In matrix form, if we define
         \end{matrix}}\mb{P}^{\mb{\aleph}}.
 \end{gather}
 What a compact and elegant expression!
-The matrix $\mb{P}^{\mb{\aleph}}$ is a projection matrix that purely depends on the eigenvectors.
+The matrix $\mb{P}^{\mb{\aleph}}$ is a projection matrix that depends purely on the eigenvectors.
 The diagonal matrix accounts for both the direct second order partial derivatives and the contribution of the rotating eigenvectors.
 If we further define $\mb{H}^{\mb{\aleph}}=\mb{P}^{\mb{\aleph}}:\mb{C}_{\mb{\aleph}}$, then,
 \begin{gather}
@@ -248,7 +247,7 @@ If we further define $\mb{H}^{\mb{\aleph}}=\mb{P}^{\mb{\aleph}}:\mb{C}_{\mb{\ale
 \end{gather}
 in which for brevity the middle diagonal matrix is not repeated.
 
-Now let us study the degenerate case when $\alpha_i$ approaches $\alpha_j$.
+Now let us study the degenerate case where $\alpha_i$ approaches $\alpha_j$.
 By examining the expression,
 \begin{gather}
     \pdfrac{f}{\alpha_i}=\dfrac{m}{\sigma_\text{ref}}\sum_{j=1}^3\abs{\Delta_{ij}}^{m-2}\Delta_{ij},
@@ -279,8 +278,8 @@ The main expressions are summarised in the following table.
     \end{tabular}
 \end{table}
 \subsubsection{Local System}
-It is very important to note that since the yield function $f$ is defined in the deviatoric stress space, it is \textbf{not} possible to take $\bsigma$ as an independent variable, as was done in the previous orthotropic model.
-This is reasonable, as it is \textbf{not} possible to determine $\bsigma$ from $\bs$ while the spherical part remains unknown.
+Since the yield function $f$ is defined in the deviatoric stress space, it is \textbf{not} possible to take $\bsigma$ as an independent variable, as was done in the previous orthotropic model.
+This is reasonable, since $\bsigma$ cannot be determined from $\bs$ while the spherical part remains unknown.
 Thus, the local variable is taken as $\mb{x}=\underbrace{\begin{bmatrix}\gamma&\bs\end{bmatrix}^\mT}_{7\times1}$. The local system consists of two residuals.
 \begin{gather}
     \mb{R}=\left\{\begin{array}{l}\displaystyle
@@ -292,7 +291,7 @@ Because the yield function is expressed in the deviatoric stress space, the asso
 This makes the plastic strain increment, and thus $\mb{E}\bn\gamma$, deviatoric as well.
 There is no need to take extra steps to compute the deviatoric part of $\mb{E}$ in the second residual.
 Furthermore, only when the material is isotropic can the second residual be simplified as $\bs+2G\bn\gamma-\bs^\text{trial}$, given that $\bn$ is deviatoric.
-For orthotropic materials, there is no concise way to simplify it anymore.
+For orthotropic materials, there is no concise way to simplify it any further.
 The Jacobian is thus
 \begin{gather}
     \mb{J}=\underbrace{\begin{bmatrix}
@@ -354,9 +353,8 @@ then
 \end{gather}
 The above expression is in pure matrix form.
 \subsection{Kinematic Hardening Extension}
-Common orthotropic materials such as timber and bone do not exhibit kinematic hardening.
-This is why kinematic hardening was not introduced in the previous sections.
-However, as the YLD0418P yield criterion is widely used in the context of sheet metals, extending the model to include kinematic hardening is meaningful.
+Common orthotropic materials such as timber and bone do not exhibit kinematic hardening, which is why it was not introduced in the previous sections.
+However, since the YLD0418P yield criterion is widely used for sheet metals, extending the model to include kinematic hardening is meaningful.
 
 With the introduction of the back stress $\ba$, the corresponding shifted stress is defined as the difference between $\bs$ and $\ba$ as
 \begin{gather}
@@ -449,7 +447,7 @@ With kinematic hardening enabled, the local system has a size of \num{13}.
 YLD0418P::with_kinematic
 \end{cppcode}
 
-With kinematic hardening disabled, the local system has size \num{7}.
+With kinematic hardening disabled, the local system has a size of \num{7}.
 This makes the Jacobian \SI{70}{\percent} smaller than the one with kinematic hardening.
 \begin{cppcode}
 YLD0418P::without_kinematic

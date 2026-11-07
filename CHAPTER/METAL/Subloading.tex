@@ -1,5 +1,5 @@
 \section{Extended Subloading Surface Model}\label{sec:subloading}
-The model is published \cite{Chang2025}.
+The model was published in \cite{Chang2025}.
 \subsection{Subloading Surface}
 Conventional plasticity models often adopt the concept of a yield surface, denoted by $f\left(\bsigma,\cdots\right)$, which defines the frontier/boundary of plasticity.
 For example,
@@ -12,13 +12,13 @@ Within the yield surface $f$, the material is elastic, while plasticity develops
 In that case, the surface itself expands to enclose the current stress state accordingly.
 Thus, any admissible state should satisfy the inequality $f\leqslant0$.
 
-The original proposal of the subloading surface model introduces a new internal variable called the normal yield ratio, denoted by $z$ in this work.
-It effectively scales the yield surface $f$ down by a factor $z$; the new surface is called the subloading surface $f_s$ and is concentric with the yield surface $f$.
+The original subloading surface model introduces a new internal variable, the normal yield ratio, denoted by $z$ in this work.
+Scaling the yield surface $f$ down by a factor $z$ gives the subloading surface $f_s$, which is concentric with $f$.
 \begin{gather}
     f_s=\norm{\beeta}-zF.
 \end{gather}
 The normal yield ratio $0\leqslant{}z\leqslant{}1$ should be updated so that $f_s=0$ is enforced not only for plastic loading but also for elastic unloading.
-With such a construct, any given stress state always lies on the subloading surface, meaning that $f_s=0$ is always satisfied.
+With such a construct, any stress state lies on the subloading surface, so $f_s=0$ always holds.
 
 The main shortcoming of the original subloading surface model is that it exhibits excessive strain accumulation under cyclic loading.
 To address this issue, an additional internal field, denoted by $\bc$, is adopted to define the elastic core surface in the extended subloading surface model, which is concentric with the yield surface (centred at the back stress $\bbeta$).
@@ -74,8 +74,7 @@ The evolution rule for the normal yield ratio $z$ is given by
 \end{gather}
 where $U=U\left(z\right)$ is a function that should satisfy certain conditions, and $q$ is the accumulated plastic strain.
 
-Both of the above evolution rules will be discussed and refined in the following sections.
-Here, we only present them in their original forms for completeness.
+Both rules will be discussed and refined in the following sections; here they are given in their original forms for completeness.
 \subsection{Revisions}\label{sec:revised}
 \subsubsection{Preliminary Remarks}
 In scalar form, the Armstrong--Frederick evolution rule \cite{Frederick2007} is equivalent to the following ordinary differential equation (ODE),
@@ -90,7 +89,7 @@ which defines a curve that asymptotically approaches the constant bound $a$.
 
 To employ a non-constant bound, one may simply replace the constant $a$ by a function $a(x)$ in the ODE \eqsref{eq:af_ode}, such that $y'=b\left(a\left(x\right)-y\right)$.
 However, as noted in the literature, the corresponding solution is not strictly bounded by $a(x)$.
-\figref{fig:examples} presents both hardening and softening examples to illustrate this point.
+\figref{fig:examples} illustrates the point with both hardening and softening examples.
 \begin{figure}[htb]
     \centering
     \begin{subfigure}{.48\textwidth}
@@ -150,7 +149,7 @@ On the other hand, the corresponding ODE can be derived as follows,
     y'=ab\exp\left(-bx\right)+a'\left(1-\exp\left(-bx\right)\right)=b\left(a-y\right)+\dfrac{a'}{a}y.
 \end{gather}
 After careful comparison, one could observe that \eqsref{eq:strict_bound} is in fact the scalar unidirectional version of the evolution rule presented in \eqsref{eq:original_core}.
-They bear the same format.
+They share the same form.
 Thus, one can conclude that \eqsref{eq:strict_bound_core} is mathematically equivalent to \eqsref{eq:strict_bound}, as it is the solution to the latter with the initial condition $y(0)=0$.
 However, the latter is much more cumbersome.
 
@@ -167,15 +166,14 @@ By comparing with \eqsref{eq:original_core}, one can conclude that \eqsref{eq:po
 \begin{gather}
     \dot{\bd}=c_e\norm{\dot{\bvarepsilon^p}}\left(z_e\bn-\bd\right).
 \end{gather}
-If the associative flow rule is adopted, the above expression can be further expressed as
+If the associative flow rule is adopted, the above expression can be further written as
 \begin{gather}
     \dot{\bd}=c_e\left(z_e\dot{\bvarepsilon^p}-\norm{\dot{\bvarepsilon^p}}\bd\right).
 \end{gather}
 This is effectively an Armstrong--Frederick type evolution rule for $\bd$.
 \subsubsection{Revised Evolution Rule (Elastic Core)}
 The evolution rule for $\bc$ shown in \eqsref{eq:original_core} is derived at the limit state where the subloading surface coincides with the limit surface --- a state that would not occur because of its asymptotic nature.
-It possesses a cumbersome form that involves both $F$ and its derivative.
-As a result, it is not straightforward to implement numerically.
+Its form is cumbersome, involving both $F$ and its derivative, which makes it awkward to implement numerically.
 Instead, based on the above observations, one can apply the following decomposition,
 \begin{gather}\label{eq:decomposition_core}
     \boxed{\bc-\bbeta=F\bd\qquad\rightarrow\qquad\bc=\bbeta+F\bd,}
@@ -323,8 +321,7 @@ where $z^\text{trial}$ should be computed by enforcing the corresponding $f_s^\t
 % \end{gather}
 % in which $\bar{\beeta}=\bar{\beeta}\left(r\right)=\bs_n-H_n\balpha_n-F_n\bd_n+r\Delta\bs$.
 % The subscript $\left(\cdot\right)_n$ denotes the converged state at the beginning of the current loading step.
-Since no extra constraints are imposed on $r$ for the moment, a solution is guaranteed to exist.
-However, three distinctive cases arise.
+No extra constraints are imposed on $r$ for the moment, so a solution is guaranteed to exist, although three distinct cases arise.
 \begin{enumerate}
     \item If $0<r<1$, the given load increment $\Delta\bs$ contains both elastic unloading and plastic loading.
           Since the elastic unloading portion ($0\to{}r$) reduces $z$ to a value smaller than the converged $z_n$, the plastic loading portion ($r\to{}1$) should use this minimum $z$ (smaller than $z_n$, not necessarily zero in 3D models), instead of $z_n$, as the starting value to correctly compute plasticity development.
@@ -414,8 +411,7 @@ They can be removed if such consistency is not required.
 For brevity, the Armstrong--Frederick evolution rule is used for $\balpha$ and $\bd$.
 More complex definitions can be used if necessary.
 The main takeaway is the proposed decomposition, namely \eqref{eq:decomposition_core} and \eqsref{eq:decomposition_back}.
-It satisfies the enclosing/bounding condition as long as $\balpha$ and $\bd$ are bounded.
-It allows a simple and concise formulation that is beneficial for both theoretical interpretation and numerical implementation.
+It satisfies the enclosing/bounding condition as long as $\balpha$ and $\bd$ are bounded, and it allows a simple, concise formulation that benefits both theoretical interpretation and numerical implementation.
 \subsection{Formulation}
 \subsubsection{Trial State}
 Similar to the conventional return mapping algorithm, the trial state is computed by assuming that the given load increment is fully elastic.
@@ -429,7 +425,7 @@ The increment of the deviatoric part, $\bs^\text{trial}=\dev{\bsigma^\text{trial
 \end{gather}
 where $G$ is the shear modulus.
 \subsubsection{Loading/Unloading Criterion}
-At the beginning of each load increment, accounting for \eqsref{eq:mises_subloading_surface} and $\bar{\beeta}=\bs_n-H_n\balpha_n-F_n\bd_n+r\Delta\bs$, noting that $f_s^\text{trial}=0$ implies
+At the beginning of each load increment, accounting for \eqsref{eq:mises_subloading_surface} and $\bar{\beeta}=\bs_n-H_n\balpha_n-F_n\bd_n+r\Delta\bs$, and noting that $f_s^\text{trial}=0$ implies
 \begin{gather}
     \left(\bar{\beeta}+z^\text{trial}F_n\bd_n\right):\left(\bar{\beeta}+z^\text{trial}F_n\bd_n\right)=\dfrac{2}{3}\left(z^\text{trial}\right)^2F_n^2,
 \end{gather}
@@ -653,12 +649,11 @@ Note that the alternative formulation presented in \tabref{tab:summary_alternati
 Subloading::update_trial_status
 \end{cppcode}
 \subsubsection{Remarks}
-Compared to previous implementations \cite{Fincato2017,Anjiki2019}, the formulation proposed in this work dramatically reduces the size of the local system from \num{20} to \num{2}.
-We also present the explicit expression of the consistent tangent operator, which is not available in previous works.
+Compared to previous implementations \cite{Fincato2017,Anjiki2019}, the formulation proposed here dramatically reduces the size of the local system from \num{20} to \num{2}, and we also give an explicit expression for the consistent tangent operator, which previous works do not provide.
 If \eqsref{eq:original_z} can be explicitly integrated by choosing a specific function $U$ (such as the cotangent function used in the original proposal), the local system can be further reduced to a scalar residual.
 \subsection{Further Discussions}
 One may have observed that the subtle difference between the uniaxial and multiaxial formulations lies in the scaling factor $\sqrt{\dfrac{2}{3}}$.
-Accounting for this factor scattered here and there would be cumbersome and error-prone, and thus requires excessive attention.
+Accounting for this factor scattered here and there would be cumbersome and error-prone, and thus require excessive attention.
 Is there an alternative approach that may avoid this issue?
 In this section, we explore a possible solution that may better align the uniaxial and multiaxial formulations.
 
