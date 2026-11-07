@@ -1,18 +1,18 @@
 \chapter{Viscoplasticity}
 \section{VAFCRP Model}
 Here we present a versatile viscoplastic model for metals under dynamic loading.
-It is essentially a multiaxial extension of the aforementioned Armstrong--Frederick uniaxial model with an additional viscosity component.
-Due to the presence of viscosity, the usual formulation and implementation should be modified slightly, because transient effects are now accounted for and the yield function does not need to remain non-positive.
-It is used only to determine whether a trial state is elastic or plastic.
+Essentially, it extends the aforementioned Armstrong--Frederick uniaxial model to multiaxial states and adds a viscosity component.
+With viscosity, the usual formulation and implementation should be modified slightly: transient effects are now accounted for, and the yield function no longer has to remain non-positive.
+The yield function now serves only to determine whether a trial state is elastic or plastic.
 \subsection{Theory}
 \subsubsection{Yield Function}
-A von Mises type yielding function is used.
+The yield function is of von Mises type.
 \begin{gather}
 f=\sqrt{\dfrac{3}{2}}\norm{\beeta}-k=q-k,
 \end{gather}
 in which $\beeta=\bs-\bbeta$ is the shifted stress, $\bs$ is the deviatoric stress, $\bbeta$ is the back stress, $k$ is the isotropic hardening stress and $q=\sqrt{\dfrac{3}{2}}\norm{\beeta}$ is the equivalent stress.
 \subsubsection{Flow Rule}
-The associated plasticity flow is adopted.
+The associated flow rule is adopted.
 The plastic strain rate is then
 \begin{gather}
 \dot{\bvarepsilon^p}=\gamma\pdfrac{f}{\bsigma}=\sqrt{\dfrac{3}{2}}\gamma\bn,
@@ -23,26 +23,25 @@ The corresponding accumulated plastic strain rate is
 \dot{p}=\sqrt{\dfrac{2}{3}\dot{\bvarepsilon^p}:\dot{\bvarepsilon^p}}=\gamma.
 \end{gather}
 Strictly speaking, this should be the viscoplastic strain rather than the plastic strain.
-For brevity, however, the superscript $\left(\cdot\right)^p$ is used.
-If desired, $\left(\cdot\right)^{vp}$ can also be used.
+For brevity, however, the superscript $\left(\cdot\right)^p$ is used, though $\left(\cdot\right)^{vp}$ may be used instead if desired.
 \subsubsection{Plastic Multiplier}
-Unlike plasticity, viscoplasticity adopts a different way to determine plastic multiplier.
-The rate of plastic multiplier is defined as
+Plasticity and viscoplasticity determine the plastic multiplier differently.
+The rate of the plastic multiplier is defined as
 \begin{gather}
 \dfrac{\gamma}{\Delta{}t}=\dfrac{1}{\mu}\left(\left(\dfrac{q}{k}\right)^{\dfrac{1}{\epsilon}}-1\right),
 \end{gather}
 in which $\Delta{}t$ is the increment of pseudo-time, which should be available from the global time integration method, and $\mu$ and $\epsilon$ are two material constants.
-Here a \cite{Peric1993} type rule is used for easier numerical implementation.
+A rule of the type proposed by \cite{Peric1993} is used here to ease numerical implementation.
 Equivalently, after some rearrangement, it becomes
 \begin{gather}
 q\left(\dfrac{\Delta{}t}{\Delta{}t+\mu\gamma}\right)^\epsilon-k=0.
 \end{gather}
 \subsubsection{Hardening Law}
-Similar to the previous model, a Voce type exponential function with a linear component is used for isotropic hardening stress.
+As in the previous model, the isotropic hardening stress uses a Voce-type exponential function with a linear component.
 \begin{gather}
 k=\sigma_y+k_lp+k_s-k_se^{-mp}.
 \end{gather}
-In which, $m$ is a parameter that controls the speed of hardening.
+Here, $m$ is a parameter that controls the speed of hardening.
 
 The incremental form of the multiplicative back stress \cite{Chaboche1989} $\displaystyle\bbeta=\sum\bbeta^i$ is defined as
 \begin{gather*}
@@ -78,7 +77,7 @@ Hence,
 \begin{gather*}
 \norm{\beeta}\bn+\sqrt{6}G\gamma\bn+\sum\dfrac{a^i\gamma}{1+b^i\gamma}\bn=\bs^\text{trial}-\sum\dfrac{\bbeta_n^i}{1+b^i\gamma},
 \end{gather*}
-it is easy to see that
+it follows that
 \begin{gather}
 \left(\norm{\beeta}+\sqrt{6}G\gamma+\sum\dfrac{a^i\gamma}{1+b^i\gamma}\right)\bn=\bs^\text{trial}-\sum\dfrac{\bbeta_n^i}{1+b^i\gamma},
 \end{gather}
@@ -92,13 +91,12 @@ Based on this fact,
 \beeta=\norm{\beeta}\bn=\left(\norm{\bs^\text{trial}-\sum\dfrac{\bbeta_n^i}{1+b^i\gamma}}-\sqrt{6}G\gamma-\sum\dfrac{a^i\gamma}{1+b^i\gamma}\right)\bn.
 \end{gather}
 Furthermore, $q=\sqrt{\dfrac{3}{2}}\left(\norm{\bs^\text{trial}-\sum\dfrac{\bbeta_n^i}{1+b^i\gamma}}-\sqrt{6}G\gamma-\sum\dfrac{a^i\gamma}{1+b^i\gamma}\right)$.
-Its derivative with regard to $\gamma$ is
+Its derivative with respect to $\gamma$ is
 \begin{gather}
 \pdfrac{q}{\gamma}=\sqrt{\dfrac{3}{2}}\sum\dfrac{b^i\bn:\bbeta_n^i-a^i}{(1+b^i\gamma)^2}-3G.
 \end{gather}
 \subsubsection{Local Scalar Residual}
-For viscoplasticity, the yield function $f$ is not necessarily zero.
-The rate form of plastic multiplier is used here as the residual.
+In viscoplasticity the yield function $f$ need not be zero, so the rate form of the plastic multiplier serves as the residual.
 \begin{gather*}\label{eq:vafcrp_r}
 R=q\left(\dfrac{\Delta{}t}{\Delta{}t+\mu\gamma}\right)^\epsilon-k.
 \end{gather*}
@@ -115,7 +113,7 @@ with
 \ddfrac{k}{\gamma}=k_l+k_sme^{-m\left(p_n+\gamma\right)}.
 \end{gather}
 \subsubsection{Consistent Tangent Stiffness}
-For stiffness, $\bvarepsilon_{n+1}$ is now varying, then
+For stiffness, $\bvarepsilon_{n+1}$ is now varying, so
 \begin{gather}
 \pdfrac{R}{\bvarepsilon_{n+1}}+\pdfrac{R}{\gamma}\pdfrac{\gamma}{\bvarepsilon_{n+1}}=0,\qquad\pdfrac{\gamma}{\bvarepsilon_{n+1}}=-\left(\pdfrac{R}{\gamma}\right)^{-1}\pdfrac{R}{\bvarepsilon_{n+1}}.
 \end{gather}
@@ -130,7 +128,7 @@ The derivative is
 &=\mb{D}+\sqrt{6}G\left(\left(\bn+\gamma\pdfrac{\bn}{\gamma}\right)\left(\pdfrac{R}{\gamma}\right)^{-1}\pdfrac{R}{\bvarepsilon_{n+1}}-\gamma\pdfrac{\bn}{\bvarepsilon_{n+1}}\right).
 \end{split}
 \end{gather}
-In which,
+Here,
 \begin{gather}
 \pdfrac{\bn}{\gamma}=\dfrac{\sum\dfrac{b^i}{(1+b^i\gamma)^2}\left(\bbeta_n^i-\left(\bn:\bbeta_n^i\right)\bn\right)}{\norm{\bs^\text{trial}-\sum\dfrac{\bbeta_n^i}{1+b^i\gamma}}},\qquad
 \pdfrac{\bn}{\bvarepsilon_{n+1}}=\dfrac{2G\left(\mathbb{I}^\text{dev}-\bn\otimes\bn\right)}{\norm{\bs^\text{trial}-\sum\dfrac{\bbeta_n^i}{1+b^i\gamma}}}.
@@ -172,34 +170,33 @@ The state determination algorithm of this VAFCRP model is given in \algoref{algo
 VAFCRP::update_trial_status
 \end{cppcode}
 \section{Maxwell Model}
-The above viscoplasticity models often require an explicit reference to time $t$ (and its increment $\Delta{}t$).
+The viscoplasticity models above often need an explicit reference to time $t$ and its increment $\Delta{}t$.
 Given the strain increment $\Delta{}\bvarepsilon$ and $\Delta{}t$, the strain rate can be computed by, for example, assuming a constant rate.
-In this way, the whole model can be converted into a form that depends only on strain input, provided that (pseudo-)time is always accessible to local material points.
-Even with a static analysis setup, creep can be modelled.
+The whole model can then be recast in a form that depends only on strain input, provided that (pseudo-)time is always accessible to local material points.
+Creep can then be modelled even in a static analysis.
 
 Here we present a general framework \cite{Chang2022a} to solve the viscoplasticity model that is truly responsive to both strain and strain-rate inputs.
 \subsection{Background}
 For viscous dampers, the mechanical response is often defined in displacement/force.
-Without loss of generality, a typical viscosity model often defines a linear relationship between stress (force/resistance) $\sigma$ and strain rate (velocity) $\dot{\varepsilon}$,
+Without loss of generality, a typical viscosity model often relates stress (force/resistance) $\sigma$ linearly to strain rate (velocity) $\dot{\varepsilon}$,
 \begin{gather}
 \sigma=\eta\cdot\dot{\varepsilon},
 \end{gather}
-where $\eta$ is a non-zero constant that is known as the viscosity.
-Such a linear relationship is known as Newtonian viscosity.
-For non-Newtonian behaviour, often the power-law fluid is assumed for simplicity \cite{Wu2016}, that is,
+where $\eta$ is a non-zero constant known as the viscosity.
+This linear relationship is known as Newtonian viscosity.
+For non-Newtonian behaviour, the power-law fluid is often assumed for simplicity \cite{Wu2016}:
 \begin{gather}
 \sigma=\eta\cdot\sign{\dot{\varepsilon}}\cdot\left\lvert\dot{\varepsilon}\right\rvert^{\alpha},
 \end{gather}
 where $\alpha$ is a positive constant, often known as the flow behaviour index, that should be determined experimentally.
 If $\alpha=1.0$, the Newtonian viscosity is recovered.
 A value greater than \num{1.0} represents shear thickening behaviour.
-For structural dampers, often shear thinning fluid is used; typical values of $\alpha$ range from \num{0.3} to \num{1.0} \cite{Lee2001}.
+For structural dampers, a shear thinning fluid is often used; typical values of $\alpha$ range from \num{0.3} to \num{1.0} \cite{Lee2001}.
 For recent applications, this exponent can be as small as \num{0.1} \cite{Lago2018}.
 \subsection{Modified Power-law Viscosity}
-Viscous dampers can show different behaviour in four quadrants of strain versus strain rate space.
-Such a change of behaviour may stem from, for example, applying one-way valves, varying chamber geometries \cite{Hazaveh2017}, changing material types \cite{Lu2018} and/or effective fluid velocity.
-A constant damping coefficient (viscosity) is not capable of describing such a behaviour (of the device).
-Instead, it should be defined as a positive function of the current state to account for various mechanisms, which is
+Viscous dampers can behave differently in the four quadrants of strain versus strain-rate space.
+Such changes may stem, for example, from one-way valves, varying chamber geometries \cite{Hazaveh2017}, different material types \cite{Lu2018}, and/or a change in effective fluid velocity.
+A constant damping coefficient (viscosity) cannot describe such device behaviour; instead, it should be defined as a positive function of the current state to account for the various mechanisms:
 \begin{gather}
 \eta=f\left(\varepsilon,\dot\varepsilon\right)>0.
 \end{gather}
@@ -211,10 +208,10 @@ It should be noted that \eqsref{eq:quadrant_damper_govern} can also be expressed
 \begin{gather}
 \sigma=\tilde{\eta}\cdot\dot{\varepsilon}
 \end{gather}
-with $\tilde{\eta}=\eta\left(\varepsilon,\dot\varepsilon\right)\cdot\left\lvert\dot{\varepsilon}\right\rvert^{\alpha-1}$ known as \textit{apparent viscosity}, so that such a modification can still be categorised as the generalised Newtonian fluid model.
+with $\tilde{\eta}=\eta\left(\varepsilon,\dot\varepsilon\right)\cdot\left\lvert\dot{\varepsilon}\right\rvert^{\alpha-1}$ known as \textit{apparent viscosity}, so that such a modification can still be categorised as a generalised Newtonian fluid model.
 %If $\eta$ is strictly defined as a material constant, other equivalent forms may also be applied, one example would be $\sigma=\eta\cdot\sign{\dot{\varepsilon}}\cdot\left\lvert\zeta\left(\varepsilon,\dot\varepsilon\right)\cdot\dot{\varepsilon}\right\rvert^{\alpha}$ where $\zeta\left(\varepsilon,\dot\varepsilon\right)$ is a positive multiplier. In this work, we focus on \eqsref{eq:quadrant_damper_govern}.
 The definition of $\eta\left(\varepsilon,\dot\varepsilon\right)$ can be quite flexible to describe the desired response.
-Such a modification mimics semi-active control schemes in which stress feedback can be adjusted based on different strain and strain rates as inputs.
+Such a modification mimics semi-active control schemes in which stress feedback can be adjusted based on different strains and strain rates as inputs.
 For more complex (semi-)active schemes, it can be further defined as a function of other quantities, such as system energy and its history.
 Two examples are shown as follows to illustrate this feature.
 \subsubsection{Proposed Quadrant Modification}\label{sec:quadrant_damper}
@@ -228,8 +225,8 @@ The simplest case uses four different constants for the four quadrants of the $\
 \end{array}\right.
 \end{gather}
 
-Although \eqsref{eq:quadrant_damper} has a simple form that is easy to understand, sudden changes in the damping coefficient, as observed on the two axes, are practically unrealistic.
-The rate of transition from one quadrant to another also plays a vital role and affects the overall response.
+Although \eqsref{eq:quadrant_damper} is simple and easy to understand, the sudden changes in damping coefficient observed on the two axes are practically unrealistic.
+The rate of transition between quadrants also matters and affects the overall response.
 Furthermore, discontinuities in the damping coefficient may cause numerical difficulties.
 Ideally, a smooth transition is required to improve both numerical stability and robustness of the model.
 To this end, a sigmoid function can be applied.
@@ -251,8 +248,7 @@ The damping coefficient $\eta$ can now be expressed as a function of four materi
 
 Since a sudden change in damping response is not achievable in practice, the constants $g_1$ and $g_2$ can represent the physical manufacturing tolerances of pistons and chambers, strictly speaking mainly the one associated with displacement tolerance, viz., $g_1$.
 
-Apart from the arctangent function, other types of sigmoid curves can also be used.
-The following is an alternative using the logistic function.
+Other sigmoid curves besides the arctangent can also be used; the logistic function provides one alternative.
 \begin{gather}
 \eta\left(\varepsilon,\dot\varepsilon\right)=\eta_3+\dfrac{\eta_4-\eta_3}{1+e^{-g_1\varepsilon}}+\dfrac{\eta_2-\eta_3}{1+e^{-g_2\dot{\varepsilon}}}+\dfrac{\eta_1+\eta_3-\eta_2-\eta_4}{\left(1+e^{-g_1\varepsilon}\right)\left(1+e^{-g_2\dot{\varepsilon}}\right)}.
 \end{gather}
@@ -264,9 +260,9 @@ Further elaborations are shown in numerical examples.
 Readers who are interested in practical applications of such a quadrant damper can refer to, for example, the work by \cite{Hazaveh2017}.
 \subsection{Extension to Maxwell Model}
 In certain applications, dampers can be idealised as Maxwell models because the extender braces are not fully rigid \cite{Makris1991}.
-For classic viscoelasticity and viscoplasticity, theories have been developed \cite{Simo1998}.
-Simple cases can be solved analytically by using convolution integrals.
-Consider a typical Maxwell model; the rheology model is often represented by \figref{fig:rheology_maxwell}.
+Theories for classic viscoelasticity and viscoplasticity have been developed \cite{Simo1998}.
+Simple cases can be solved analytically with convolution integrals.
+Consider a typical Maxwell model; its rheology is often represented as in \figref{fig:rheology_maxwell}.
 \begin{figure}[ht]
 \centering\scriptsize
 \begin{tikzpicture}[scale=2]
@@ -295,14 +291,13 @@ The governing equation can be established via \eqsref{eq:equal_stress} so that
 \sigma_d-\sigma_s=0.
 \end{gather}
 \subsection{Formulation}
-In terms of numerical simulation, using a dashpot alone does not require special treatments since the corresponding damping force can be treated as an external load and directly applied to the system/structure/model.
+In numerical simulation, a dashpot alone needs no special treatment: its damping force can be treated as an external load and applied directly to the system, structure, or model.
 If needed, the damping modulus can be derived accordingly.
-This also applies to the case where the damper is idealised as a Kelvin--Voigt model.
-However, for a Maxwell model, due to the presence of coupling between dashpot and spring, a proper algorithm is required for the state determination of both components.
-Some researchers use the popular Bouc-Wen \cite{Wen1976} model to simulate viscous dampers \cite{Gong2016,Chang2016}.
-However, the identification and calibration of model parameters often impose unnecessary complexities on the model.
-Alternatively, the Maxwell system can be solved by using ODE solvers.
-In this section, the drawbacks of the ODE solver based approach are first discussed, followed by the proposition of a new iterative algorithm with better accuracy and efficiency.
+The same applies when the damper is idealised as a Kelvin--Voigt model.
+A Maxwell model, however, couples the dashpot and the spring, so its state determination requires a proper algorithm for both components.
+Some researchers simulate viscous dampers with the popular Bouc-Wen \cite{Wen1976} model \cite{Gong2016,Chang2016}, but identifying and calibrating its parameters often adds unnecessary complexity.
+Alternatively, the Maxwell system can be solved with ODE solvers.
+This section first discusses the drawbacks of the ODE-solver-based approach, then proposes a new iterative algorithm with better accuracy and efficiency.
 \subsubsection{ODE Solver Based Approach}\label{sec:ode_issue}
 If a linear elastic spring and a constant $\eta$ are adopted, the whole system can be converted into an ordinary differential equation via \eqsref{eq:equal_strain_rate}, that is,
 \begin{gather}
@@ -324,7 +319,7 @@ Applicability.
 Such an approach cannot be applied to an inelastic spring.
 In that case, unless the corresponding spring constitutive model is \textbf{stress driven}, which is not true for most constitutive models, the spring strain (rate) cannot be recovered from the total stress (rate) because it depends on the loading history.
 As a consequence, dashpot strain (rate) cannot be recovered.
-For this reason, the damping coefficient $\eta$ can only be a function of total strain and total strain rate (instead of that of dashpot), however, dashpot response solely depends on its own strain and strain rate according to the definition.
+For this reason, the damping coefficient $\eta$ can only be a function of total strain and total strain rate (instead of that of the dashpot); however, dashpot response solely depends on its own strain and strain rate according to the definition.
 This is \textbf{theoretically incorrect}.
 As can be seen later, the discrepancy due to different strain and strain rate measures adopted can sometimes be significant, depending on the specific parameter set used.
 
@@ -335,18 +330,18 @@ Kinematic Compatibility.
 This problem stems from the assumed distribution of total strain rate $\dot\varepsilon$, which should be carefully defined by taking the global level time integration method into account.
 On one hand, the global time integration scheme is often not known to local material points.
 Analysts may switch from one global time integration method to another, resulting in different integrations of total strain at local points.
-On the other hand, an arbitrarily defined distribution of $\dot\varepsilon$, such as a simple linear relationship \cite{Akcelyan2018}, would lead to a corresponding strain increment which is independent from the one computed by the global time integration.
+On the other hand, an arbitrarily defined distribution of $\dot\varepsilon$, such as a simple linear relationship \cite{Akcelyan2018}, would lead to a corresponding strain increment which is independent of the one computed by the global time integration.
 A consistency/compatibility issue arises.
 This is less concerning if the time step is sufficiently small.
 \item
 Efficiency.
-Existing ODE solvers are less efficient in terms of solving such a Maxwell model.
-Consider the classic Fehlberg method \cite{Fehlberg1969} as an example; by construction, it requires six evaluations of \eqsref{eq:maxwell_ode} for every new $\sigma$.
-If the error of the current step is unacceptable, all previously evaluated function values would be discarded and a smaller step size needs to be chosen to repeat the whole computation procedure.
+Existing ODE solvers handle such a Maxwell model less efficiently.
+Take the classic Fehlberg method \cite{Fehlberg1969} as an example: by construction, it requires six evaluations of \eqsref{eq:maxwell_ode} for every new $\sigma$.
+If the error of the current step is unacceptable, all previously evaluated function values would be discarded, and the whole procedure repeated with a smaller step size.
 Sub-iterations may be further required to meet a small tolerance.
 
-Besides, if a shear thinning power-law fluid is used, when $\alpha$ deviates from unity ($\alpha<1$), \eqsref{eq:maxwell_ode} tends to be stiff when velocity (strain rate) is close to zero and results in potential numerical instability.
-In that case, explicit methods fail and lower order implicit solvers have to be used, and the computational cost skyrockets due to their low order of convergence (second order at most due to the second Dahlquist barrier \cite{Dahlquist1963}).
+Besides, with a shear thinning power-law fluid and $\alpha$ deviating from unity ($\alpha<1$), \eqsref{eq:maxwell_ode} tends to become stiff as the velocity (strain rate) approaches zero, which can result in potential numerical instability.
+In that case, explicit methods fail, lower order implicit solvers have to be used, and the computational cost climbs sharply due to their low order of convergence (second order at most due to the second Dahlquist barrier \cite{Dahlquist1963}).
 Similar stability issues may also occur if the spring stiffness is disproportionately large.
 
 Furthermore, since the only independent variable is time $t$, it is in general difficult to derive the tangent moduli for global equation solving, resulting in a superlinear global convergence rate at most.
@@ -367,16 +362,16 @@ or equivalently with $\Delta\chi=\chi^{n+1}-\chi^n$ and $\Delta\dot\chi=\dot\chi
 \end{gather}
 where $\beta$ is an integration parameter.
 For $\beta=0.5$, a constant acceleration rule is implied.
-Since there is no other constraint imposed, such an integration relationship can be alternatively applied to either spring component ($\chi=\varepsilon_s$) or dashpot component ($\chi=\varepsilon_d$).
-In this way, kinematic compatibility can be satisfied rigorously within the Maxwell model and remains independent of the global time integration method.
-The parameter $\beta$ can be defined as a user input (if $\chi=\varepsilon_s$ or $\chi=\varepsilon_d$) or be solved internally (if $\chi=\varepsilon$), which is
+With no other constraint imposed, the same integration relationship can be applied to either the spring ($\chi=\varepsilon_s$) or the dashpot ($\chi=\varepsilon_d$).
+In this way, kinematic compatibility can be satisfied rigorously within the Maxwell model, independently of the global time integration method.
+The parameter $\beta$ can be given as a user input (if $\chi=\varepsilon_s$ or $\chi=\varepsilon_d$) or solved internally (if $\chi=\varepsilon$), which is
 \begin{gather}\label{eq:delta}
 \beta=\dfrac{\Delta\varepsilon-\dot\varepsilon^n\Delta{}t}{\Delta\dot\varepsilon\Delta{}t},
 \end{gather}
 by using total strains $\varepsilon^{n+1}$ and $\varepsilon^n$ and total strain rates $\dot\varepsilon^n$ and $\dot\varepsilon^{n+1}$, since they are given at the beginning of each time step at a specific material point.
 
-As aforementioned, the damping coefficient can be defined as a function of dashpot strain $\varepsilon_d$ and dashpot strain rate $\dot\varepsilon_d$; it is necessary to compute them explicitly as history variables.
-Here an iterative method is presented to solve for all strain and strain rate components.
+As noted above, the damping coefficient can be defined as a function of the dashpot strain $\varepsilon_d$ and dashpot strain rate $\dot\varepsilon_d$, so both must be computed explicitly as history variables.
+An iterative method for solving all strain and strain rate components is presented here.
 
 With the above basic formulae at hand, the problem can now be rephrased as follows: knowing $\varepsilon^n$, $\dot\varepsilon^n$, $\varepsilon^n_d$, $\dot\varepsilon^n_d$, $\varepsilon^n_s$, and $\dot\varepsilon^n_s$, and given the total increments $\Delta\varepsilon=\varepsilon^{n+1}-\varepsilon^n$ and $\Delta\dot\varepsilon=\dot\varepsilon^{n+1}-\dot\varepsilon^n$, find the increments $\Delta\varepsilon_d$, $\Delta\varepsilon_s$, $\Delta\dot\varepsilon_d$, and $\Delta\dot\varepsilon_s$ that satisfy
 \begin{gather}
@@ -414,8 +409,8 @@ The determinant of $\mb{J}$ reads
 \begin{gather}
 \det{\mb{J}}=\beta\Delta{}t\left(\dfrac{\md{\sigma_s}}{\md{\varepsilon_s}}+\pdfrac{\sigma_d}{\varepsilon_d}\right)+\pdfrac{\sigma_d}{\dot\varepsilon_d}.
 \end{gather}
-Clearly in the current setup, there is no guarantee that $\mb{J}$ is strictly invertible.
-If $\mb{J}$ appears to be ill-conditioned, low rank updates such as the BFGS method, which do not rely on the Jacobian, can be used to solve the system.
+Clearly, the current setup offers no guarantee that $\mb{J}$ is strictly invertible.
+If $\mb{J}$ turns out to be ill-conditioned, low rank updates such as the BFGS method, which do not rely on the Jacobian, can solve the system.
 The inverse $\mb{J}^{-1}$ can be analytically expressed as
 \begin{gather}\label{eq:inv_j}
 \mb{J}^{-1}=\dfrac{-1}{\det{\mb{J}}}\begin{bmatrix}
@@ -427,7 +422,7 @@ The inverse $\mb{J}^{-1}$ can be analytically expressed as
 \eqsref{eq:inv_j} can be directly used in iterations.
 The computation of the numerical inverse of the Jacobian can be avoided so that the rounding error in floating point arithmetic can be minimised as long as $\det{\mb{J}}$ is not zero.
 \subsubsection{A Simple Case}
-In the case of nonlinear spring and constant damping coefficient $\eta$,
+In the case of a nonlinear spring and a constant damping coefficient $\eta$,
 \begin{gather}
 \dfrac{\md{\sigma_s}}{\md{\varepsilon_s}}=E(\varepsilon_s),\qquad\pdfrac{\sigma_d}{\varepsilon_d}=0,\qquad\pdfrac{\sigma_d}{\dot\varepsilon_d}=\eta\alpha\left\lvert\dot\varepsilon_d\right\rvert^{\alpha-1}.
 \end{gather}
@@ -446,7 +441,7 @@ guarantees an invertible Jacobian.
 Furthermore, if the spring is linear elastic and $\alpha=1$, the Jacobian is constant so all quantities can be solved in one step.
 To solve such a system with the aforementioned ODE solver based approach, multiple function evaluations are inevitable, although the analytical solution is available.
 \subsubsection{Tangent Stiffness and Damping Moduli}
-For an easier derivation of tangent stiffness and damping moduli, the stress response can be rewritten as follows,
+For an easier derivation of the tangent stiffness and damping moduli, the stress response can be rewritten as follows,
 \begin{gather}
 \sigma=\dfrac{1}{2}\left(\sigma_s+\sigma_d\right).
 \end{gather}
@@ -465,10 +460,10 @@ in which $\mb{a}=\begin{bmatrix}
 	-\pdfrac{\sigma_d}{\varepsilon_d}                                                            & \dfrac{\md{\sigma_s}}{\md{\varepsilon_s}}\beta\Delta{}t+\pdfrac{\sigma_d}{\varepsilon_d}\beta\Delta{}t
 \end{bmatrix}.
 \end{gather}
-It should be pointed out that, for brevity, the parameter $\beta$ is assumed to be a constant user input in the above derivation.
-If it is expressed as a function of $\mb{a}$ via \eqsref{eq:delta}, the corresponding $\partial\mb{x}/\partial\mb{a}$ can be derived accordingly.
+Note that, for brevity, $\beta$ is assumed constant and user-supplied in the derivation above.
+If it is expressed as a function of $\mb{a}$ via \eqsref{eq:delta}, the corresponding $\partial\mb{x}/\partial\mb{a}$ follows accordingly.
 The procedure is presented in the appendix.
-The stiffness and damping moduli can be readily computed by using the chain rule.
+The stiffness and damping moduli then follow readily from the chain rule.
 Knowing that
 \begin{gather}\label{eq:moduli}
 \pdfrac{\sigma}{\mb{x}}=\dfrac{1}{2}\begin{bmatrix}
@@ -492,9 +487,9 @@ Another major problem is that $\partial\sigma_d/\partial\dot\varepsilon_d$ appro
 A strain rate sufficiently close to the origin is often encountered, especially in forced vibrations.
 This may not be a problem if the corresponding damping modulus term $\partial\sigma_d/\partial\dot\varepsilon_d$ is not involved in the global equation of motion, in which case the quadratic convergence rate cannot be recovered.
 However, when combined with a spring to form a Maxwell model, a disproportionately large $\partial\sigma_d/\partial\dot\varepsilon_d$ may cause the local iteration to fail.
-A possible workaround would be limiting the apparent viscosity to a finite value via extrapolation \cite{Wu1998}.
+A possible workaround would be to limit the apparent viscosity to a finite value via extrapolation \cite{Wu1998}.
 
-Here in lieu of the original power-law relationship, a cubic segment within a small width around the origin is used to limit the corresponding derivative to a finite value so that the stress feedback can be rewritten as a piecewise-defined function such as
+Here, in lieu of the original power-law relationship, a cubic segment of small width around the origin limits the corresponding derivative to a finite value, so that the stress feedback becomes a piecewise-defined function such as
 \begin{gather}
 \sigma_d=\left\{
 \begin{array}{ll}
@@ -503,9 +498,9 @@ Here in lieu of the original power-law relationship, a cubic segment within a sm
 \end{array}
 \right.
 \end{gather}
-where $v$ is a user-defined constant that controls the size of cubic replacement.
-The cubic function, as an odd function, is chosen given the fact that the power-law \eqsref{eq:quadrant_damper_govern} is also an odd function.
-With a cubic replacement, $C^1$ continuity can be ensured.
+where $v$ is a user-defined constant that controls the size of the cubic replacement.
+An odd cubic is chosen because the power-law \eqsref{eq:quadrant_damper_govern} is also odd.
+With the cubic replacement, $C^1$ continuity can be ensured.
 By enforcing continuity of both $\sigma_d$ and $\partial\sigma_d/\partial\dot\varepsilon_d$ at $\left\lvert\dot{\varepsilon}_d\right\rvert=v$, constants $A$ and $B$ can be solved as
 \begin{gather}
 A=\dfrac{\alpha-1}{2}v^{\alpha-3},\qquad
