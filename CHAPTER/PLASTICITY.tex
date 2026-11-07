@@ -1,8 +1,9 @@
 \chapter{Plasticity Basics}
 This chapter presents a general framework for plasticity.
 
-A typical elasto-plastic model can be idealised by the frictional device shown in \figref{fig:idealisation}.
-The device consists of an elastic spring element, whose deformation is fully recoverable when the applied external force becomes zero, and a friction element, which deforms once the deformation exceeds a certain limit and whose deformation cannot be recovered even when the applied external force becomes zero.
+The frictional device shown in \figref{fig:idealisation} idealises a typical elasto-plastic model.
+The device consists of an elastic spring element and a friction element.
+The spring's deformation is fully recoverable when the applied force becomes zero, whereas the friction element deforms once the deformation exceeds a certain limit, and that deformation cannot be recovered even when the applied force becomes zero.
 
 Most plastic models are formulated in \textbf{stress space} or, equivalently, are \textbf{strain driven}.
 The task is to determine the stress response from the strain input.
@@ -26,48 +27,48 @@ The elastic part obeys Hooke's law,
 \end{gather}
 where $\mb{D}$ denotes the elastic stiffness moduli.
 \section{Yield Function}
-To determine whether a given stress state is admissible, the yield function is introduced as the criterion.
-It is often a scalar-valued function of stress $\bsigma$ and some additional internal variables $\bq$, viz.,
+The yield function provides the criterion for deciding whether a given stress state is admissible.
+It is often a scalar-valued function of stress $\bsigma$ and additional internal variables $\bq$, viz.,
 \begin{gather}
 f=f\left(\bsigma,~\bq\right).
 \end{gather}
 By convention, it is defined so that all admissible stress states satisfy $f\leqslant0$, while $f>0$ is not allowed.
-If $f$ is viewed as a surface in stress space, all admissible stress states should lie within the volume bounded by $f$.
-Thus, the yield function is also called the yield surface in some literature.
-It may further evolve (change of size, location, etc.) with the development of plasticity.
-It is sometimes classified into two types: the initial yield surface (when plasticity has not occurred) and the subsequent yield surface (when plasticity has developed and is developing).
+If $f$ is viewed as a surface in stress space, it bounds the volume within which all admissible stress states should lie.
+Some literature therefore calls it the yield surface.
+As plasticity develops, it may further evolve (changes in size, location, etc.).
+Two types are sometimes distinguished: the initial yield surface (when plasticity has not occurred) and the subsequent yield surface (when plasticity has developed and is still developing).
 
 The internal variables $\bq$ are called history variables.
 \section{Flow Rule}
-As plastic strain may evolve during the loading/unloading process, it is necessary to know how it evolves, and the flow rule is defined as follows.
+Plastic strain may evolve during loading and unloading, so the flow rule defines how it does so.
 \begin{gather}\label{eq:general_flow_rule}
 \dot{\bvarepsilon^p}=\gamma\mb{r}\left(\bsigma,~\bq\right),
 \end{gather}
 where $\gamma$ is a non-negative scalar called the consistency parameter, $\mb{r}=\mb{r}\left(\bsigma,~\bq\right)$ is a tensor--valued function that indicates the direction of plastic flow.
 
-In the context of plasticity, since time $t$ is often not explicitly involved, the dot symbol $\dot{\left(\cdot\right)}$ above a quantity denotes the increment $\dot{\left(\cdot\right)}=\pdfrac{\left(\cdot\right)}{t}\Delta{}t$ for brevity.
+Since plasticity often does not involve time $t$ explicitly, the dot symbol $\dot{\left(\cdot\right)}$ above a quantity denotes the increment $\dot{\left(\cdot\right)}=\pdfrac{\left(\cdot\right)}{t}\Delta{}t$ for brevity.
 \section{Hardening Law}
-To allow the yield function to evolve, the internal variables are governed by a function, which is defined as the hardening law.
+To allow the yield function to evolve, a hardening law governs the internal variables.
 \begin{gather}
 \dot{\bq}=\gamma\mb{h}\left(\bsigma,~\bq\right),
 \end{gather}
 where $\mb{h}=\mb{h}\left(\bsigma,~\bq\right)$ is another tensor--valued function that indicates the type of hardening.
 \section{Consistency Conditions}
-Since $f\ngtr0$ and $\gamma\nless0$, only a limited number of admissible situations exist:
+Since $f\ngtr0$ and $\gamma\nless0$, there are only a limited number of admissible situations:
 \begin{itemize}
 \item $f<0$ --- elastic loading/unloading
 \item $f=0$ and $\dot{f}<0$ --- elastic unloading from the yield surface
 \item $f=0$ and $\dot{f}=0$ and $\gamma>0$ --- plastic loading
 \item $f=0$ and $\dot{f}=0$ and $\gamma=0$ --- neutral loading on the current yield surface
 \end{itemize}
-The above lengthy list can be elegantly characterised by the consistency conditions:
+The consistency conditions capture the above lengthy list neatly:
 \begin{gather}\label{eq:consistency_condition}
 \gamma{}f=0\qquad\text{and}\qquad\gamma\dot{f}=0.
 \end{gather}
 \section{State Determination}
-The yield function, flow rule and hardening law are three elements that complete most plastic models.
+The yield function, flow rule and hardening law together complete most plastic models.
 
-For a given strain input $\Delta\varepsilon$ and initial conditions, a general algorithm has the following structure.
+Given a strain input $\Delta\varepsilon$ and initial conditions, a general algorithm proceeds as follows.
 \begin{breakablealgorithm}
 \caption{general state determination algorithm of plastic models}
 \begin{algorithmic}[1]
@@ -86,8 +87,8 @@ For a given strain input $\Delta\varepsilon$ and initial conditions, a general a
 \end{breakablealgorithm}
 \subsection{Local Iteration}
 If plasticity must develop, note that $f=0$.
-With the aid of \eqsref{eq:strain_decomposition}, $\bsigma$ can be equivalently represented by $\bvarepsilon^p$.
-There are three unknown variables $\gamma$, $\bvarepsilon^p$ and $\bq$ to be solved, subject to the following three equations.
+With the aid of \eqsref{eq:strain_decomposition}, $\bsigma$ can be expressed equivalently in terms of $\bvarepsilon^p$.
+Three unknowns, $\gamma$, $\bvarepsilon^p$ and $\bq$, must be solved for, subject to the following three equations.
 \begin{gather}
 \left\{
 \begin{array}{l}
@@ -97,7 +98,7 @@ There are three unknown variables $\gamma$, $\bvarepsilon^p$ and $\bq$ to be sol
 \end{array}\right.
 \end{gather}
 
-The above system is often nonlinear by construction and needs to be solved with an iterative method. It can be rewritten in a more compact nonlinear form. Let $\mb{x}=\begin{bmatrix}
+The above system is often nonlinear by construction and calls for an iterative solution. It can be rewritten in a more compact nonlinear form. Let $\mb{x}=\begin{bmatrix}
 \gamma&\bvarepsilon^p&\bq
 \end{bmatrix}$ denote the local variable vector, and $\mb{R}\left(\gamma,~\bvarepsilon^p,~\bq\right)$ denote the residual of the nonlinear system
 \begin{gather}\label{eq:local_system}
@@ -109,17 +110,17 @@ f\left(\bvarepsilon^p,~\bq\right),\\
 \end{array}\right.
 \end{gather}
 The goal is to find the solution $\mb{x}$ to $\mb{R}=\mb{0}$ for a prescribed total strain $\bvarepsilon$.
-The Newton--Raphson method can be adopted with the help of the Jacobian $\pdfrac{\mb{R}}{\mb{x}}$.
-Note that partial derivatives are used here because, fundamentally, $\bvarepsilon$ enters the system.
-It is a variable that is held constant only at the local iteration level.
+Newton--Raphson can then be applied, with the help of the Jacobian $\pdfrac{\mb{R}}{\mb{x}}$.
+The derivatives are partial because, fundamentally, $\bvarepsilon$ enters the system.
+It is held constant only at the local iteration level.
 \subsection{Consistent Tangent Stiffness}\label{sec:consistent_tangent_general}
-To compute the consistent tangent stiffness, one can start from \eqsref{eq:strain_decomposition},
+The consistent tangent stiffness can be computed starting from \eqsref{eq:strain_decomposition},
 \begin{gather}
 \pdfrac{\bsigma}{\bvarepsilon}=\mb{D}-\mb{D}:\pdfrac{\bvarepsilon^p}{\bvarepsilon}.
 \end{gather}
 
-Note that at equilibrium, the local residual is zero, viz., $\mb{R}=\mb{0}$.
-Taking the full differentiation leads to
+At equilibrium, the local residual is zero, viz., $\mb{R}=\mb{0}$.
+Full differentiation then gives
 \begin{gather}\label{eq:consistent_stiffness}
 \pdfrac{\mb{R}}{\bvarepsilon}+\pdfrac{\mb{R}}{\mb{x}}\pdfrac{\mb{x}}{\bvarepsilon}\equiv\mb{0},
 \end{gather}
@@ -129,7 +130,7 @@ thus
 \end{gather}
 The term $\pdfrac{\bvarepsilon^p}{\bvarepsilon}$ can be extracted from $\pdfrac{\mb{x}}{\bvarepsilon}$.
 
-Although not in closed form, the above procedure provides a universal and highly efficient approach for computing the consistent tangent stiffness, and it can be applied to a wide range of plastic models.
+The procedure is not in closed form, but it provides a universal and highly efficient way to compute the consistent tangent stiffness, and it applies to a wide range of plastic models.
 
 Readers who are interested in plasticity theory may refer to \cite{Simo1998} for more formal mathematical formulations.
 \section{Some Tensor Quantities}
@@ -179,7 +180,7 @@ By simple comparison, one can immediately find
 \end{bmatrix}
 \end{gather}
 is the matrix representation of the fourth order deviatoric operator $\mathbb{I}^\text{dev}$.
-Note that, due to the adoption of the Voigt notation, the matrix representation of $\mathbb{I}^\text{dev}$ is \textbf{not} unique.
+Because the Voigt notation is adopted, the matrix representation of $\mathbb{I}^\text{dev}$ is \textbf{not} unique.
 The above expression is \textbf{only} valid for stress tensors.
 
 It can be expressed as
@@ -216,7 +217,7 @@ In tensor notation,
 \be=\bvarepsilon^d=\mathbb{I}^\text{dev}:\bvarepsilon.
 \end{gather}
 \subsection{Invariants}
-For a given symmetric tensor $A_{ij}\in\mathbb{R}^3\times\mathbb{R}^3$, it can be explicitly expressed as
+For a given symmetric tensor $A_{ij}\in\mathbb{R}^3\times\mathbb{R}^3$, one can explicitly express it as
 \begin{gather}
 \mb{A}=
 \begin{bmatrix}
@@ -237,7 +238,7 @@ I_3=\det{\mb{A}}=A_{11}A_{22}A_{33}+2A_{12}A_{23}A_{31}-A_{11}A_{23}^2-A_{22}A_{
 The three invariants $I_1$, $I_2$ and $I_3$ are in fact functions of the eigenvalues of $\mb{A}$.
 They are invariant under frame transformations since the eigenvalues do not change.
 
-The corresponding derivatives with regard to $\mb{A}$ (in Voigt notation) can be computed as
+The corresponding derivatives with respect to $\mb{A}$ (in Voigt notation) can be computed as
 \begin{gather}\label{eq:tensor_invariant_derivative}
 	\ddfrac{I_1}{\mb{A}}=\begin{bmatrix}
 		1 \\
@@ -267,7 +268,7 @@ The corresponding derivatives with regard to $\mb{A}$ (in Voigt notation) can be
 
 The above expressions hold for any symmetric tensor.
 They thus apply to deviatoric tensors as well.
-The deviatoric stress invariants can then be defined by denoting $\mb{S}=\mb{A}-\dfrac{I_1}{3}\mb{1}$.
+Denoting $\mb{S}=\mb{A}-\dfrac{I_1}{3}\mb{1}$, the deviatoric stress invariants can then be defined.
 \begin{gather}
 J_1=\tr{\mb{S}}=0,\\
 \begin{split}
@@ -284,13 +285,13 @@ J_3&=\det{\mb{S}}\\
 In some literature, $J_2$ is defined as $J_2=\dfrac{1}{2}\tr{\mb{S}^2}$.
 Clearly, if $J_2$ is an invariant, $-J_2$ is also an invariant.
 Depending on the context, either definition may be used.
-Readers are encouraged to carry out the above laborious computation to verify the results.
-In practice, only a single set of functions needs to be implemented.
+Readers are encouraged to verify the results by carrying out the above laborious computation.
+In practice, implementing a single set of functions is enough.
 When an arbitrary tensor is provided as input, the corresponding invariants should be computed.
 When a deviatoric tensor is provided, the deviatoric invariants are computed.
 
-In the following, we further provide some explicit expressions for strain and stress tensors.
-Although this may appear confusing, note that \eqsref{eq:tensor_invariant} applies to any given tensor.
+Below we further give explicit expressions for stress and strain tensors.
+This may look confusing, but \eqsref{eq:tensor_invariant} applies to any given tensor.
 \subsubsection{Stress Invariants}
 For a stress tensor expressed in the Voigt notation, namely,
 \begin{gather}
@@ -322,7 +323,7 @@ I_2=\varepsilon_1\varepsilon_2+\varepsilon_2\varepsilon_3+\varepsilon_1\varepsil
 I_3=\varepsilon_1\varepsilon_2\varepsilon_3+\dfrac{\gamma_{12}\gamma_{23}\gamma_{31}}{4}-\dfrac{\varepsilon_1\gamma_{23}^2+\varepsilon_2\gamma_{31}^2+\varepsilon_3\gamma_{12}^2}{4}.
 \end{gather}
 \subsection{Hooke's Law}
-The spherical part and the deviatoric part are governed by two material parameters, the bulk modulus $K$ and the shear modulus $G$.
+Two material parameters govern the spherical and deviatoric parts: the bulk modulus $K$ and the shear modulus $G$.
 In tensor notation,
 \begin{gather}
 p=K\varepsilon^v,\qquad\mb{s}=2G\bvarepsilon^d.
@@ -388,7 +389,7 @@ s_{31}
 \end{bmatrix}}_{\bvarepsilon}.
 \end{gather}
 
-After some manipulations, the total stress can be expressed in terms of the total strain as follows.
+After some algebra, the total stress can be expressed in terms of the total strain:
 \begin{gather}
 \begin{split}
 \bsigma&=\mb{s}+p\mb{1}\\
@@ -421,7 +422,7 @@ In matrix representation,
 \end{bmatrix}.
 \end{gather}
 
-Using Lam\'{e}'s constant $\lambda=K-\dfrac{2}{3}G$, $\mb{D}$ can be alternatively expressed as
+Using Lam\'{e}'s constant $\lambda=K-\dfrac{2}{3}G$, $\mb{D}$ can alternatively be expressed as
 \begin{gather}
 \mb{D}=\begin{bmatrix}
 \lambda+2G&\lambda&\lambda&\cdot&\cdot&\cdot\\
@@ -434,8 +435,8 @@ Using Lam\'{e}'s constant $\lambda=K-\dfrac{2}{3}G$, $\mb{D}$ can be alternative
 \end{gather}
 This form is widely seen in elementary elasticity.
 \subsection{Lode Angle}
-For some material models, the Haigh--Westergaard stress space may be used.
-The Lode angle is often used to define a parameter that alters the yield surface, which may have a special shape on the $\pi$-plane.
+Some material models may use the Haigh--Westergaard stress space.
+The Lode angle is often used to define a parameter that alters the yield surface, giving it a special shape on the $\pi$-plane.
 The Lode angle $\theta$ can be defined as
 \begin{gather}\label{eq:lode}
 \cos\left(3\theta\right)=\dfrac{J_3}{2}\left(\dfrac{3}{J_2}\right)^{1.5},
@@ -468,7 +469,7 @@ With the aid of
 &=\sqrt{2}\left(\dfrac{3}{2J_2}\right)^{1.5}\left(\bs\cdot\bs-\dfrac{2J_2}{3}\mb{1}-\dfrac{3}{2J_2}J_3\bs\right).
 \end{split}
 \end{gather}
-Denoting $s=\dfrac{2J_2}{3}$, then
+With $s=\dfrac{2J_2}{3}$,
 \begin{gather}
 \ddfrac{\cos\left(3\theta\right)}{\bs}=\sqrt{2}s^{-1.5}\left(\bs\cdot\bs-s\mb{1}-\dfrac{J_3}{s}\bs\right).
 \end{gather}
