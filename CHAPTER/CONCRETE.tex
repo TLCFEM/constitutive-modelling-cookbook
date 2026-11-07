@@ -1,16 +1,16 @@
 \chapter{Concrete}
 \section{Concrete Damage Plasticity (CDP) Model}
-In this section, we present the concrete damage plasticity model proposed by \cite{Lee1998}.
-It can be seen as a continuation and further extension of the Barcelona model \cite{Lubliner1989}, which proposes a unified uniaxial backbone curve with several interesting features.
+This section presents the concrete damage plasticity model of \cite{Lee1998}.
+It continues and extends the Barcelona model \cite{Lubliner1989}, which proposes a unified uniaxial backbone curve with several interesting features.
 ABAQUS implements a slightly different version, with Lode angle dependency and other minor changes.
 
-The CDP model follows Lemaitre's damage theory \cite{Lemaitre1985} and is developed under the assumption of isotropic damage.
+The CDP model follows Lemaitre's damage theory \cite{Lemaitre1985} and assumes isotropic damage.
 Accordingly, the final stress $\bsigma$ can be expressed as the product of the effective stress $\bbsigma$ and some function of the damage measure.
 \begin{gather}
 \bsigma=h\cdot\bbsigma,
 \end{gather}
 where $h=h\left(d_t,d_c\right)$ is a function of two damage variables $d_t$ and $d_c$, which depend on some internal history variables.
-It can be understood by using the two--surface concept, that is, the final stress $\bsigma$ is the projection of $\bbsigma$ onto the final yield surface.
+In the two--surface picture, the final stress $\bsigma$ is the projection of $\bbsigma$ onto the final yield surface.
 
 The effective stress $\bbsigma$ itself is bounded by the effective yield surface that fully resembles the conventional plasticity.
 The damage measure $h\left(d_t,d_c\right)$ can be independently computed once all internal history variables are determined.
@@ -29,7 +29,7 @@ The parameter $\zeta$ \cite{Lubliner1989} is determined by the ratio between the
 \zeta=\dfrac{3\left(1-K_c\right)}{2K_c-1}.
 \end{gather}
 A typical value $K_c=\dfrac{2}{3}$ yields $\zeta=3$.
-One can further rewrite the yield function into the following concise form.
+The yield function can be rewritten more concisely as
 \begin{gather}
 f=\alpha\bar{I}_1+\sqrt{\dfrac{3}{2}}\norm{\bar{\bs}}+\psi\hat{\sigma}_1-\left(1-\alpha\right)c_c,
 \end{gather}
@@ -43,7 +43,7 @@ with
 \right.
 \end{gather}
 
-It should be noted that, for a given $\bbsigma$, one can perform the eigendecomposition to obtain the principal stress $\hat{\bsigma}$, for which the following holds
+For a given $\bbsigma$, eigendecomposition yields the principal stress $\hat{\bsigma}$, for which the following holds
 \begin{gather}
 \hat{I}_1=\tr{\hat{\bsigma}}=\bar{I}_1,\qquad
 \norm{\hat{\bs}}=\norm{\bar{\bs}},
@@ -57,9 +57,9 @@ The flow potential $g$ is chosen to be
 g=\sqrt{2\bar{J}_2}+\alpha_p\bar{I}_1=\norm{\bar{\bs}}+\tr{\alpha_p\bbsigma},
 \end{gather}
 in which $\alpha_p$ is a material constant that controls dilatation.
-This is a Drucker--Prager function as later seen in \secref{sec:drucker_prager}.
-Some implementations add an extra term to the square root to get rid of the apex such that the surface is well-defined.
-It is not considered here for two reasons: a) the apex return is practically not reachable, and b) the extra term breaks coaxiality thus further complicates the implementation.
+This is a Drucker--Prager function as will be seen later in \secref{sec:drucker_prager}.
+Some implementations add an extra term to the square root to remove the apex and keep the surface well-defined.
+It is not considered here for two reasons: a) the apex return is practically not reachable, and b) the extra term breaks coaxiality and thus further complicates the implementation.
 The flow rule is accordingly defined as
 \begin{gather}
 \dot{\bvarepsilon^p}=\gamma\pdfrac{g}{\bbsigma}=\gamma\left(\dfrac{\bar{\bs}}{\norm{\bar{\bs}}}+\alpha_p\mb{1}\right)=\gamma\left(\bn+\alpha_p\mb{1}\right).
@@ -80,12 +80,12 @@ equivalently,
 \norm{\bar{\bs}}+\gamma2G=\norm{\bar{\bs}^\text{trial}},\\
 \bar{I}_1+\gamma9K\alpha_p=\bar{I}_1^\text{trial}.
 \end{gather}
-Furthermore, $\bs$ and $\bs^\text{trial}$ are coaxial, thus,
+Furthermore, $\bs$ and $\bs^\text{trial}$ are coaxial; thus,
 \begin{gather}
 \dfrac{\bar{\bs}}{\norm{\bar{\bs}}}=\dfrac{\bar{\bs}^\text{trial}}{\norm{\bar{\bs}^\text{trial}}}\equiv{}\bn.
 \end{gather}
-It simply means the flow direction is fixed for all iterations in each sub-step.
-And due to the coaxiality, $\bar{\bs}$ and $\bar{\bs}^\text{trial}$ share the same eigen space.
+In other words, the flow direction stays fixed for all iterations in each sub-step.
+Because of this coaxiality, $\bar{\bs}$ and $\bar{\bs}^\text{trial}$ share the same eigen space.
 More importantly, the eigenvectors remain constant for each iteration.
 Thus,
 \begin{gather}
@@ -93,13 +93,13 @@ Thus,
 \hat{\bn}=\dfrac{\hat{\bs}}{\norm{\hat{\bs}}}=\dfrac{\hat{\bs}^\text{trial}}{\norm{\hat{\bs}^\text{trial}}},
 \end{gather}
 where $\hat{\bs}$ denotes the principal stress tensor of the deviatoric stress tensor $\bar{\bs}$.
-As the yield function $f$ can be equivalently expressed with the principal stresses, in the following derivation, $\hat{\bn}$ is used to represent the unit principal deviatoric stress which has three components.
+As the yield function $f$ can be equivalently expressed in terms of the principal stresses, in the following derivation, $\hat{\bn}$ is used to represent the unit principal deviatoric stress, which has three components.
 The transformation matrix $\mb{T}$ is defined as
 \begin{gather}
 \underbrace{\hat{\bsigma}}_\text{\numproduct{3x1}}=\underbrace{\mb{T}}_\text{\numproduct{3x6}}\underbrace{\bbsigma}_\text{\numproduct{6x1}},\qquad
 \underbrace{\hat{\bs}}_\text{\numproduct{3x1}}=\underbrace{\mb{T}}_\text{\numproduct{3x6}}\underbrace{\bar{\bs}}_\text{\numproduct{6x1}},
 \end{gather}
-and can be formulated from eigenanalysis.
+and can be obtained from eigenanalysis.
 One can check \secref{sec:derivative_eigen} for detailed derivations and explanations.
 \subsubsection{Hardening Law}
 Both compression and tension backbones are described by functions of the same form.
@@ -121,13 +121,13 @@ In the original model, it is defined as
 \begin{gather}
 r\left(\hat{\bsigma}\right)=\dfrac{\left\langle\hat{\sigma}_1\right\rangle+\left\langle\hat{\sigma}_2\right\rangle+\left\langle\hat{\sigma}_3\right\rangle}{\abs{\hat{\sigma}_1}+\abs{\hat{\sigma}_2}+\abs{\hat{\sigma}_3}}.
 \end{gather}
-The purpose of $r$ is to characterise the proportion of tension in a multiaxial loading case.
+$r$ serves to characterise the proportion of tension in a multiaxial loading case.
 Other forms can also be used, for example,
 \begin{gather}
 r\left(\hat{\bsigma}\right)=\dfrac{\norm{\left\langle\hat{\bsigma}\right\rangle}}{\norm{\hat{\bsigma}}}.
 \end{gather}
 
-It must be noted that since $\hat{\bn}$ is the normalised principal deviatoric stress tensor, it is guaranteed that $\hat{n}_1>0>\hat{n}_3$.
+It must be noted that, since $\hat{\bn}$ is the normalised principal deviatoric stress tensor, it is guaranteed that $\hat{n}_1>0>\hat{n}_3$.
 However, due to the presence of $\alpha_p$, $\hat{n}_3+\alpha_p$ may not be strictly negative.
 On the other hand, as a plasticity history, $\kappa_c$ should be non-decreasing, implying $\dot{\kappa}_c\geqslant0$, forcing $\hat{n}_3+\alpha_p\leqslant0$.
 A more rigorous definition shall then be
@@ -155,13 +155,12 @@ with the damage variable $d_\aleph$,
 \begin{gather}\label{eq:cdp_d_backbone}
 d_\aleph=1-\Phi_\aleph^{c_\aleph/b_\aleph}.
 \end{gather}
-One can observe that $f_\aleph=\left(1-d_\aleph\right)\bar{f}_\aleph$ also follows the damage theory.
-When $d_\aleph=0$, there is no damage, then $f_\aleph=\bar{f}_\aleph$.
-When $d_\aleph=1$, the material has completely failed, then $f_\aleph=0$.
+Note that $f_\aleph=\left(1-d_\aleph\right)\bar{f}_\aleph$ also follows the damage theory.
+When $d_\aleph=0$, there is no damage, and $f_\aleph=\bar{f}_\aleph$; when $d_\aleph=1$, the material has completely failed, and $f_\aleph=0$.
 We do not discuss those functions in detail here.
 One can refer to the Barcelona model \cite{Lubliner1989} for an extensive discussion.
 
-However, this issue warrants explicit consideration.
+However, one issue warrants explicit consideration.
 In \eqsref{eq:cdp_d_backbone}, when $c_\aleph/b_\aleph<1$, which may occur for certain combinations of input parameters, the derivative (slope) of $d_\aleph$ diverges as $\kappa_\aleph\rightarrow1$.
 This can lead to severe local convergence difficulties that are neither physically meaningful nor relevant, but instead introduce unnecessary numerical complications, particularly because the corresponding strength becomes negligible as $\kappa_\aleph\rightarrow1$.
 A simple remedy is to impose an upper bound on the slope, for example,
@@ -171,7 +170,7 @@ A simple remedy is to impose an upper bound on the slope, for example,
 Whenever this constraint is violated, the original curve is replaced by a linear segment with a slope of \num{100}.
 
 In general, the backbone curve can be customised.
-The main algorithm is not concerned with how the backbone curve is computed; it only requires $f_\aleph$, $\bar{f}_\aleph$, and $d_\aleph$, together with their derivatives with respect to $\kappa_\aleph$.
+The main algorithm is independent of how the backbone curve is computed; it only needs $f_\aleph$, $\bar{f}_\aleph$ and $d_\aleph$, together with their derivatives with respect to $\kappa_\aleph$.
 The exponential form adopted in the original model may encounter numerical difficulties, which, in the author's opinion, is not ideal.
 Other forms can always be chosen, such as providing these quantities in tabulated form.
 This is also what ABAQUS offers.
@@ -181,10 +180,10 @@ The damage measure takes the form
 h\left(d_t,d_c\right)=\left(1-d_c\right)\left(1-sd_t\right)
 \end{gather}
 where $s=s_0+\left(1-s_0\right)r$ is the recovery factor.
-When $r=1$, indicating pure tension loading, $s=1$, the tension damage $d_t$ is fully accounted.
+When $r=1$, indicating pure tension loading, $s=1$, the tension damage $d_t$ is fully accounted for.
 When $r=0$, indicating pure compression loading, $s=s_0$, the effective tension damage is $s_0d_t<d_t$.
-This is a convenient approach to simulate the strength recovery when the material is initially pulled and later compressed.
-No similar counterpart is considered for compression damage, as typically once the material is crushed, further tension is not possible.
+This offers a convenient way to simulate the strength recovery when the material is pulled first and compressed later.
+No similar counterpart is considered for compression damage, as, typically, once the material is crushed, further tension is not possible.
 The alternative to achieve a similar effect is to use an anisotropic damage measure.
 \subsection{Plasticity Formulation}
 The CDP model is driven by three quantities $\kappa_t$, $\kappa_c$ and $\bvarepsilon^p$.
@@ -200,7 +199,7 @@ Hardening Law&$\dot{\kappa}_\aleph=\gamma{}\left\langle{}H_\aleph\right\rangle$\
 \end{tabular}
 \end{table}
 \subsubsection{Elastic Loading/Unloading}
-Assuming elastic loading/unloading, the trial state of the effective part can be computed as done in other plasticity models.
+Assuming elastic loading/unloading, the trial state of the effective part follows the usual procedure of other plasticity models.
 \begin{gather}
 \bbsigma^\text{trial}=\mb{D}:\left(\bvarepsilon_{n+1}-\bvarepsilon^p_n\right).
 \end{gather}
@@ -210,13 +209,13 @@ The trial yield function is
 f^\text{trial}=\alpha\bar{I}_1^\text{trial}+\sqrt{\dfrac{3}{2}}\norm{\bar{\bs}^\text{trial}}+\psi\hat{\sigma}_1^\text{trial}-\left(1-\alpha\right)c_c,
 \end{gather}
 with $\beta$ and $c_c$ computed by using $\kappa_{t,n}$ and $\kappa_{c,n}$.
-If $f^\text{trial}<0$, indicating elastic loading/unloading, then $\bbsigma_{n+1}=\bbsigma^\text{trial}$, the final stress is simply
+If $f^\text{trial}<0$, indicating elastic loading/unloading, then $\bbsigma_{n+1}=\bbsigma^\text{trial}$ and the final stress is simply
 \begin{gather}
 \bsigma_{n+1}=\left(1-d_{c,n}\right)\left(1-sd_{t,n}\right)\bbsigma^\text{trial}.
 \end{gather}
 
 Since $r$ is a function of $\bbsigma_{n+1}$, the corresponding tangent stiffness is \textbf{not} a scaled version of the elastic stiffness.
-It can be derived as follows using the chain rule.
+By the chain rule,
 \begin{gather}\label{eq:cdp_ed}
 \begin{split}
 \pdfrac{\bsigma_{n+1}}{\bvarepsilon_{n+1}}&=\pdfrac{\bsigma_{n+1}}{\bbsigma_{n+1}}:\pdfrac{\bbsigma_{n+1}}{\bvarepsilon_{n+1}}\\
@@ -238,7 +237,7 @@ The local system consists of three residuals.
 
 By choosing $\mb{x}=\begin{bmatrix}
 \gamma&\kappa_t&\kappa_c
-\end{bmatrix}^\mT$ as the independent variables and assuming $\hat{\bn}=\dfrac{\hat{\bs}^\text{trial}}{\norm{\hat{\bs}^\text{trial}}}$ that is a function of $\bvarepsilon_{n+1}$ only thus does not contain $\gamma$, the Jacobian can be computed as
+\end{bmatrix}^\mT$ as the independent variables and assuming $\hat{\bn}=\dfrac{\hat{\bs}^\text{trial}}{\norm{\hat{\bs}^\text{trial}}}$ is a function of $\bvarepsilon_{n+1}$ only and thus does not contain $\gamma$, the Jacobian can be computed as
 \begin{footnotesize}
 \begin{gather}\label{eq:cdp_dr}
 \mb{J}=\begin{bmatrix}
@@ -275,7 +274,7 @@ f_c\left\langle\dfrac{\hat{n}_3+\alpha_p}{g_c}\right\rangle_-\left(1-r-\gamma\pd
 \end{footnotesize}
 In the above, $\left\langle\cdot\right\rangle_-$ denotes the negative--part operator, corresponding to the Macaulay brackets $\left\langle\cdot\right\rangle$.
 \subsection{Damage Formulation}
-There is no local iteration required in the damage part.
+The damage part requires no local iteration.
 Once $\kappa_t$ and $\kappa_c$ are determined, the effective part $\bar\bsigma$ can be determined.
 Damage measures $d_t$ and $d_c$ can be computed accordingly.
 \subsection{Consistent Tangent Stiffness}
@@ -366,7 +365,7 @@ Due to the coaxiality, the model can be constructed in the eigen space, which br
 The state determination of the CDP model is shown in \algoref{algo:cdp_model}.
 Compared with the original implementation, the one presented here is much more concise and avoids lengthy computation of the consistent tangent stiffness.
 
-It is worth noting that some quantities remain constant during the local iteration, for example,
+Some quantities remain constant during the local iteration, for example,
 \begin{gather}
 2G\hat{n}_1+3K\alpha_p,\qquad
 \dfrac{\hat{n}_1+\alpha_p}{g_t},\qquad
@@ -416,15 +415,15 @@ The C++ implementation of the state determination is given below.
 NonlinearCDP::update_trial_status
 \end{cppcode}
 
-A typical backbone computation can be seen as follows.
+A typical backbone computation looks like this.
 \begin{cppcode}
 CDP::compute_backbone
 \end{cppcode}
 \section{Anisotropic CDP for Masonry}
-Masonry and concrete bear similarities in terms of mechanics.
+Masonry and concrete are mechanically similar.
 Concrete is often considered isotropic at the macro level.
 Masonry is inherently anisotropic (orthotropic) due to horizontal mortar bed joints and vertical head joints creating preferential failure planes along mortar lines.
-This implies that a constitutive model designed for concrete can be repurposed to model masonry with some minor modifications.
+A constitutive model designed for concrete can therefore be repurposed to model masonry with some minor modifications.
 \subsection{Theory}
 \subsubsection{Transformation}
 Borrowing the idea of \secref{sec:ylp0418p}, the effective stress can be obtained via transformation.
@@ -456,7 +455,7 @@ We shall adopt the conventional elasticity such that
 \begin{gather}
     \bar\bsigma=\mb{E}\left(\bvarepsilon-\bvarepsilon^p\right).
 \end{gather}
-Noting that in the current context, anisotropy is often considered, hence the simplifications based on deviatoric and hydrostatic decomposition are not applicable.
+Note that in the current context, anisotropy is often considered; hence, the simplifications based on deviatoric and hydrostatic decomposition are not applicable.
 \subsubsection{Yield Surface}
 Hence, the same yield surface is used, but with the effective stress replaced by the transformed one.
 \begin{gather}
@@ -472,13 +471,13 @@ Similarly, the same flow potential is chosen such that the flow rule can be expr
 \begin{gather}
 \dot{\bvarepsilon^p}=\gamma\pdfrac{g}{\bbsigma}=\gamma\left(\dfrac{\bs^*}{\norm{\bs^*}}+\alpha_p\mb{1}\right):\ddfrac{\bsigma^*}{\bar\bsigma}=\gamma\left(\bn+\alpha_p\mb{1}\right):\ddfrac{\bsigma^*}{\bar\bsigma}.
 \end{gather}
-Because of the transformation, the coaxiality no longer exists.
+With this transformation, coaxiality no longer holds.
 \section{CDPM2 Model}
 The CDP model adopts isotropic damage, which leads, for example, to degradation of compressive/tensile strength due to tensile/compressive damage.
 In cyclic loading cases, this may not be ideal.
-The CDPM2 model uses a different approach that applies tensile damage to the tensile part of the stress and compressive damage to the compressive part.
+CDPM2 takes a different approach: tensile damage applies to the tensile part of the stress, compressive damage to the compressive part.
 
-Compared to the original formulation \cite{Grassl2013}, here the dependency on the Lode angle is removed for brevity.
+Compared to the original formulation \cite{Grassl2013}, the dependency on the Lode angle is removed here for brevity.
 \subsection{Plasticity}
 The model is driven by the norm of the deviatoric stress $s=\norm{\mb{s}}$, the hydrostatic stress $p$ and the internal hardening variable $\kappa_p$.
 \subsubsection{Yield Function}
@@ -597,7 +596,7 @@ The local residual is
 R=f_t\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{ft}}\right)-\left(1-\omega_t\right)E\kappa_{dt}.
 \end{gather}
 For a given set of $\kappa_{dt}$, $\kappa_{dt1}$ and $\kappa_{dt2}$, the above residual is a function of the unknown $\omega_t$.
-It can be solved by, for example, Newton's method.
+It can be solved, for example, by Newton's method.
 The corresponding derivatives are
 \begin{gather}
 \pdfrac{R}{\omega_t}=E\kappa_{dt}-\dfrac{\kappa_{dt2}}{\varepsilon_{fc}}f_t\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{ft}}\right),\\
@@ -621,7 +620,7 @@ R=f_t\exp\left(-\dfrac{\varepsilon_i}{\varepsilon_{fc}}\right)-\left(1-\omega_c\
 \end{gather}
 \subsection{Formulation}
 The CDPM2 model employs a single internal variable, $\kappa_p$.
-A key feature of the model is the complete decoupling of plasticity and damage, such that the evolution of either component does not affect the other.
+A key feature is that plasticity and damage are completely decoupled: the evolution of either does not affect the other.
 \subsubsection{Plasticity Residual}
 Collecting the yield function, evolutions of $s$, $p$ and $\kappa_p$, the local residual of the plasticity part can be expressed as
 \begin{gather}
