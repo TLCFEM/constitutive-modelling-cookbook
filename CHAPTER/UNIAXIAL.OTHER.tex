@@ -1,43 +1,40 @@
 \chapter{Uniaxial Plasticity Models (Other Materials)}
 \section{K4 Concrete}
-In this section, we introduce a uniaxial model for concrete formulated within the classic plasticity framework.
-In this book, we call it the K4 model because the four authors' surnames all start with the letter `K'.
-However, the model presented in the original paper adopts linear degradation, which inevitably leads to zero stiffness once a certain strain limit is exceeded.
-Numerical models do not favour exact zeros, so we revise it to use an exponentially decaying function instead.
+We introduce here a uniaxial model for concrete formulated within the classic plasticity framework.
+The K4 name comes from the four authors, whose surnames all start with the letter `K'.
+The model in the original paper, however, adopts linear degradation, which inevitably drives the stiffness to zero once a certain strain limit is exceeded.
+Since numerical models do not handle exact zeros well, we replace the linear degradation with an exponentially decaying function.
 Note also that the original formulation \cite{Kenawy2020} contains some mistakes.
-In the event of any discrepancy or inconsistency, we follow the formulation discussed in this section.
+Any discrepancy or inconsistency is resolved in favour of the formulation discussed in this section.
 
-There are quite a number of phenomenological models for concrete.
-Since they are phenomenological, different loading/unloading responses can be defined with relative flexibility.
-Such flexibility makes these models easier for engineers to understand and extrapolate.
-However, they may violate thermodynamic principles.
+Phenomenological models for concrete are numerous.
+Because they are phenomenological, different loading and unloading responses can be defined with some flexibility, which makes the models easier for engineers to understand and extrapolate.
+They may, however, violate thermodynamic principles.
 \subsection{Theory}
-The classic plasticity framework does not support the definition of stiffness degradation; the elastic loading/unloading paths always follow the initial stiffness gradient.
-It is common to combine plasticity and damage \cite{Lemaitre1985} so that the apparent stiffness can gradually degrade.
+The classic plasticity framework offers no way to define stiffness degradation: elastic loading and unloading paths always follow the initial stiffness gradient.
+Combining plasticity with damage \cite{Lemaitre1985} is therefore common, so that the apparent stiffness can gradually degrade.
 
 The apparent stress $\sigma$ is conventionally expressed as
 \begin{gather}
 \sigma=\left(1-d\right)\bar{\sigma},
 \end{gather}
 where $d$ is the damage factor ranging from zero to unity and $\bar{\sigma}$ is the effective stress.
-With such a formulation, damage and plasticity apply to $d$ and $\bar{\sigma}$ respectively.
+In this formulation, $d$ accounts for damage and $\bar{\sigma}$ for plasticity.
 
 Just like other plasticity models, the additive decomposition applies such that
 \begin{gather}
 \bar{\sigma}=E\left(\varepsilon-\varepsilon^p\right).
 \end{gather}
 \subsubsection{Yield Function}
-Unlike metals, concrete does not require ratcheting to be modelled.
-As a result, only isotropic hardening is conventionally used, with no kinematic hardening.
-Thus, there is also no need to introduce back stress into the model.
-The yield function $F$ can be simply expressed as
+Unlike metals, concrete does not require ratcheting to be modelled, so only isotropic hardening is conventionally used, with no kinematic hardening; consequently, there is no need to introduce back stress.
+The yield function $F$ can be expressed simply as
 \begin{gather}
 F=\abs{\bar{\sigma}}-\bar{\sigma}_y.
 \end{gather}
-This states that plastic evolution is triggered whenever the magnitude of the effective stress $\bar{\sigma}$ exceeds the backbone defined by $\bar{\sigma}_y$, which depends on an internal hardening variable.
+Accordingly, plastic evolution is triggered whenever the magnitude of the effective stress $\bar{\sigma}$ exceeds the backbone $\bar{\sigma}_y$, which depends on an internal hardening variable.
 
-It becomes apparent that if only one $\bar{\sigma}_y$ is used, there is no way to distinguish tensile behaviour from compressive behaviour.
-This issue can be addressed by adopting two sets of rules, one for tension and the other for compression.
+With only one $\bar{\sigma}_y$, tensile and compressive behaviour cannot be distinguished.
+Adopting two sets of rules, one for tension and the other for compression, addresses this.
 \begin{gather}
 F=\left\{
 \begin{array}{ll}
@@ -58,14 +55,14 @@ For uniaxial models, the flow direction is simply the loading direction,
 \end{gather}
 This coincides with associative plasticity (the second equality).
 \subsubsection{Hardening Law}
-Any functions can be chosen as the hardening law, so
+Any functions can be chosen as the hardening laws, so
 \begin{gather}
 \bar{\sigma}_{y,t}=H_t\left(k_t\right),\qquad
 \bar{\sigma}_{y,c}=H_c\left(k_c\right),
 \end{gather}
 where $k_t$ and $k_c$ are internal hardening variables.
 
-Since damage theory is adopted to account for stiffness and strength degradation, monotonically increasing functions are often chosen as hardening functions.
+Because damage theory accounts for stiffness and strength degradation, the hardening functions are often chosen to increase monotonically.
 
 The original formulation adopts the following explicit forms.
 \begin{gather}\label{eq:k4_hardening}
@@ -78,10 +75,10 @@ f_y+h_ck_0+h_d\left(k_c-k_0\right),&\text{otherwise}.
 \right.
 \end{gather}
 In the above expression, $f_t$ and $f_y$ are the crack strength (for tension, positive) and the yield strength (for compression, positive), $h_t$, $h_c$ and $h_d$ are three positive moduli, and $k_0$ denotes the value of $k_c$ at the compressive crush strength.
-Essentially, $\bar{\sigma}_{y,t}$ is a linear hardening function, while $\bar{\sigma}_{y,c}$ is a bilinear hardening function.
-The expression can be further simplified by letting $f_c$ denote $f_y+h_ck_0$.
+In essence, $\bar{\sigma}_{y,t}$ hardens linearly, while $\bar{\sigma}_{y,c}$ hardens bilinearly.
+The expression can be simplified further by letting $f_c$ denote $f_y+h_ck_0$.
 
-Since stiffness and strength degradation is taken care of by the damage part, here no softening is considered such that
+Since stiffness and strength degradation are handled by the damage part, no softening is considered here, so that
 \begin{gather}
 h_t,h_c,h_d\geqslant0.
 \end{gather}
@@ -91,11 +88,11 @@ The evolutions of $k_t$ and $k_c$ are tied to the plastic strain.
 \dot{k}_t=\abs{\dot{\varepsilon^p}}=\gamma\qquad\text{for tension loading},\\
 \dot{k}_c=\abs{\dot{\varepsilon^p}}=\gamma\qquad\text{for compression loading}.
 \end{gather}
-Although the same expression is used for both, note that in a single loading step only one of the two yield functions is activated.
-Hence, the plastic strain increment $\gamma$ for that step can contribute only to either $k_t$ or $k_c$, not both.
+Although both share the same expression, only one of the two yield functions is activated in a single loading step.
+Hence the plastic strain increment $\gamma$ for that step can contribute to either $k_t$ or $k_c$, not both.
 \subsubsection{Degradation}
-With the above yield function, flow rule, and hardening law, we have effectively defined a very simple plasticity model with only isotropic hardening, although it may behave differently in tension and compression.
-It bears some resemblance to the model introduced in \secref{sec:uniaxial_brb}, which adopts the same concept to differentiate tension and compression but uses more complex specific functions.
+The yield function, flow rule, and hardening law above effectively define a very simple plasticity model with only isotropic hardening, although it may behave differently in tension and compression.
+It resembles the model introduced in \secref{sec:uniaxial_brb}, which uses the same concept to distinguish tension from compression but with more complex specific functions.
 
 Similarly, it is desirable to control the degradation rate independently for tension and compression.
 To this end,
@@ -107,8 +104,7 @@ d_c,&\text{otherwise},
 \end{array}
 \right.
 \end{gather}
-The specific forms of tensile damage $d_t$ and compressive damage $d_c$ can vary.
-For example, the original formulation \cite{Kenawy2020} uses the linear degradation in \cite{Grassl2013}.
+The specific forms of tensile damage $d_t$ and compressive damage $d_c$ can vary: the original formulation \cite{Kenawy2020}, for instance, uses the linear degradation of \cite{Grassl2013}.
 Here, we use a simpler exponential function.
 \begin{gather}
 d_t=1-\exp\left(-\dfrac{k_t}{e_{r,t}}\right),\qquad
@@ -116,8 +112,7 @@ d_c=1-\exp\left(-\dfrac{k_c}{e_{r,c}}\right).
 \end{gather}
 The parameters $e_{r,t}$ and $e_{r,c}$ are introduced to control the degradation rate.
 
-For compression, if the original bilinear hardening function \eqsref{eq:k4_hardening} is used, the crush strength should still be reached.
-Thus, the damage evolution should be delayed.
+In compression, when the original bilinear hardening function \eqsref{eq:k4_hardening} is used, the crush strength should still be reached, so damage evolution should be delayed.
 The following function
 \begin{gather*}
 d_c=1-\exp\left(-\dfrac{\max\left(k_c-k_0,0\right)}{e_{r,c}}\right)
@@ -142,11 +137,11 @@ The initial slope is
 \begin{gather}
 \ddfrac{\sigma_y}{k}\bigg|_{k=0}=a-\dfrac{b}{c}.
 \end{gather}
-For this to be smaller than zero (no initial hardening, softening only), we require
+For this to be less than zero (no initial hardening, softening only), we require
 \begin{gather}
 ac<b.
 \end{gather}
-If $a=0$, then no matter what value $c$ takes, there is no initial hardening because $b>0$.
+If $a=0$, there is no initial hardening whatever the value of $c$, since $b>0$.
 If $ac\geqslant{}b$, implying $a>0$, the backbone has a peak value at $k=c-\dfrac{b}{a}$.
 
 We can associate $c$ with $b$ by setting $c=\dfrac{b}{\zeta{}E}$, where $\zeta$ is a positive multiplier.
@@ -159,7 +154,7 @@ The peak value for $\zeta{}E<a$ is
 \dfrac{ab}{\zeta{}E}\exp\left(\dfrac{\zeta{}E-a}{a}\right).
 \end{gather}
 
-If the reference $\zeta_r$ is given for the reference characteristic length $l_r$, then for any characteristic length $l$, if the total energy needs to remain unchanged,
+Given the reference $\zeta_r$ for the reference characteristic length $l_r$, for any characteristic length $l$, if the total energy is to remain unchanged,
 \begin{gather}
 \left(\dfrac{a}{\zeta^2E^2}+\dfrac{1}{\zeta{}E}\right)b^2l=\left(\dfrac{a}{\zeta_r^2E^2}+\dfrac{1}{\zeta_r{}E}\right)b^2l_r,\\
 \dfrac{a}{\zeta^2E^2}+\dfrac{1}{\zeta{}E}=\dfrac{l_r}{l}\left(\dfrac{a}{\zeta_r^2E^2}+\dfrac{1}{\zeta_r{}E}\right),\\
@@ -170,22 +165,20 @@ Denoting $r_a=\dfrac{a}{E}$,
 \zeta=\dfrac{2r_a}{\sqrt{1+4\dfrac{l_r}{l}\left(\dfrac{r_a^2}{\zeta_r^2}+\dfrac{r_a}{\zeta_r}\right)}-1}.
 \end{gather}
 
-Note that here we only enforce the total energy to remain constant.
+Note that here we enforce only constancy of the total energy.
 This is not equivalent to obtaining objective results under arbitrary loading magnitudes.
 \subsubsection{Crack/Gap Closing}
-According to \eqsref{eq:k4_evolution}, $k_t$ is the accumulated tensile plastic strain.
-Physically, it represents the crack opening.
+According to \eqsref{eq:k4_evolution}, $k_t$ is the accumulated tensile plastic strain, which physically represents the crack opening.
 When reloading towards compression, this opening can be gradually closed.
 
-To account for this crack-closing mechanism, one more history variable $k_k$ is introduced to allow additional plasticity to develop.
-The variable $k_k$ tracks crack closing.
+To account for this crack-closing mechanism, an additional history variable $k_k$ is introduced to allow further plasticity to develop; it tracks crack closing.
 
-For this inner plasticity model, we adopt a simple linear model such that a fixed fraction of the strain increment contributes to plastic strain, that is
+For this inner plasticity, we adopt a simple linear rule such that a fixed fraction of the strain increment contributes to plastic strain, that is
 \begin{gather}
 \Delta\varepsilon^p=\Delta\varepsilon\dfrac{E}{E+h_k}.
 \end{gather}
 
-Knowing that this is only activated during compressive loading ($\bar\sigma<0$ and $\Delta\varepsilon<0$), $\Delta\varepsilon^p<0$ and $\abs{\Delta\varepsilon^p}=-\Delta\varepsilon^p$.
+Given that this is only activated during compressive loading ($\bar\sigma<0$ and $\Delta\varepsilon<0$), we have $\Delta\varepsilon^p<0$ and $\abs{\Delta\varepsilon^p}=-\Delta\varepsilon^p$.
 \begin{gather}
 \Delta{}k_k=-\Delta\varepsilon^p,\\
 \Delta\bar{\sigma}=-E\Delta\varepsilon^p.
@@ -195,9 +188,7 @@ This mechanism states that, during reloading towards compression ($\bar\sigma<0$
 Under this condition, the inner plasticity is activated so that part of the strain increment is converted to plastic strain (crack closing).
 The following two implementation details need to be considered to ensure a correct model.
 \paragraph{Entering}
-Note that the exact transition step from tensile stress to compressive stress needs special treatment.
-The tensile stress needs to fully unload to zero; this part involves no plasticity.
-The remainder is compressive loading, which does involve plasticity.
+The exact transition step from tensile to compressive stress needs special treatment: the tensile stress must fully unload to zero, which involves no plasticity, and the remainder is compressive loading, which does involve plasticity.
 Thus $\Delta\varepsilon^p$ should be limited such that
 \begin{gather}\label{eq:k4_closing_strain}
 \Delta\varepsilon^p=\left(\Delta\varepsilon+\dfrac{\max\left(\bar\sigma_n,0\right)}{E}\right)\dfrac{E}{E+h_k}=\Delta\varepsilon\dfrac{E}{E+h_k}+\dfrac{\max\left(\bar\sigma_n,0\right)}{E+h_k}.
@@ -222,13 +213,13 @@ Characterising such a mechanism using a yield function, such as
 F_k=\abs{\bar{\sigma}}-\bar{\sigma}_k
 \end{gather*}
 with $\bar{\sigma}_k=h_kk_k$, does not properly define the behaviour.
-Especially under cyclic loading, the elastic region grows as $\bar{\sigma}_k$ would grow.
+Especially under cyclic loading, the elastic region grows whenever $\bar{\sigma}_k$ grows.
 
-To correct the response, however, it has to be defined at least as
+To correct the response, however, the mechanism has to be defined at least as
 \begin{gather}
 \bar{\sigma}_k=h_k\left(k_k-k_k^i\right),
 \end{gather}
-where $k_k^i$ is the initial $k_k$ at the beginning of the current loading path, and needs to be updated whenever load reversal occurs.
+where $k_k^i$ is the initial $k_k$ at the beginning of the current loading path, which needs updating whenever load reversal occurs.
 
 We avoid such a complex presentation because it may cause unnecessary confusion.
 At its core, the crack-closing mechanism tries to close the unclosed crack ($k_t-k_k$) by accumulating a portion of the strain increment into $k_k$ ($\Delta{}k_k=\abs{\Delta\varepsilon}\dfrac{E}{E+h_k}$), and this mechanism is activated only under certain conditions.
@@ -292,7 +283,7 @@ The stiffness can be expressed as
 \begin{gather}
 \ddfrac{\sigma}{\varepsilon}=\left(1-d\right)\left(E+\dfrac{E^2}{J}\right)+\abs{\bar{\sigma}}\ddfrac{d}{k}\dfrac{E}{J}.
 \end{gather}
-The explicit form of $\ddfrac{d}{k}$ should be determined by the damage evolution.
+The damage evolution determines the explicit form of $\ddfrac{d}{k}$.
 \subsection{Implementation}
 \begin{breakablealgorithm}
 \caption{state determination of K4 concrete model}\label{algo:k4_concrete}
@@ -311,7 +302,7 @@ The explicit form of $\ddfrac{d}{k}$ should be determined by the damage evolutio
 \end{algorithmic}
 \end{breakablealgorithm}
 
-It is straightforward to translate the above pseudocode into an implementation.
+The pseudocode above translates directly into an implementation.
 \begin{cppcode}
 NonlinearK4::update_trial_status
 \end{cppcode}
@@ -321,8 +312,8 @@ The crack-closing branch accounts for the entering/exiting details discussed abo
 NonlinearK4::compute_crack_close_branch
 \end{cppcode}
 
-The tension and compression return-mapping algorithms are almost identical, except that they update different history variables and call different functions to compute the backbone and damage.
-We can therefore unify them and use one implementation for both.
+The tension and compression return-mapping algorithms are almost identical; they differ only in the history variables they update and in the functions they call to compute the backbone and damage.
+The two can therefore be unified into one implementation.
 \begin{cppcode}
 NonlinearK4::compute_plasticity
 \end{cppcode}
