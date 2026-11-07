@@ -2,14 +2,14 @@
 In engineering, tensors are often defined in Euclidean spaces and thus belong to the Cartesian tensor type.
 The transformation between covariant and contravariant bases, and thus the raising/lowering of indices, is often not emphasised (but implied).
 
-The most likely reason is that orthonormal bases are often used, so covariant and contravariant bases lead to the same coordinates.
+Most likely this is because orthonormal bases are so common: with them, covariant and contravariant bases lead to the same coordinates.
 For this reason, in this book, only subscripts ($i$, $j$, $k$, $l$, etc.) are used to represent tensor indices, implying that contravariant bases are used.
 Furthermore, scalars are denoted by normal symbols such as $A$ while vectors and tensors are not distinguished, all denoted by boldface symbols such as $\mb{A}$.
 
 In this chapter, we briefly summarise the main concepts of tensors and tensor algebra.
 These concepts are practically useful in 3D constitutive models.
-The contents presented here are not complete, but they are sufficient for the purpose of this book.
-Readers are referred to monographs on this topic if a systematic introduction is desired.
+The treatment is not complete, but it is sufficient for the purpose of this book.
+For a systematic introduction, readers are referred to monographs on the topic.
 \section{Notations}
 Let $\mb{A}\in\mathbb{R}^2\times\mathbb{R}^2$ denote a second order tensor with contravariant bases $\mb{e}^1$ and $\mb{e}^2$.
 Then $\mb{A}$ has four components that can be arranged in the following matrix.
@@ -26,21 +26,21 @@ In some literature, it is omitted for simplicity, giving
 \begin{gather}
 \mb{A}=A_{ij}\mb{e}^i\mb{e}^j.
 \end{gather}
-This notation will be used in this book.
+We use this notation throughout the book.
 In this case, $\mb{e}^i\mb{e}^j$ does not represent the dot product of two vectors (or first order tensors).
 Rather, the corresponding dot product operator $\cdot$ should be explicitly shown as $\mb{e}^i\cdot\mb{e}^j$ to avoid potential confusion.
 Note also that the matrix representation only explicitly shows the four components of $A_{ij}$; the corresponding contravariant bases $\mb{e}^1$ and $\mb{e}^2$ are not shown at all!
-This is handy because those bases do not need to be repeated every time, given that they typically do not change within a given context/system/problem.
-Tensor notation is often used in tensor operations, making the computation compact and concise and thus easier to follow and understand.
-The matrix representation is widely used in numerical implementations due to performance considerations, where the majority of computation only involves vector/matrix operations (for most problems).
+That is handy: the bases do not have to be repeated every time, since within a given context/system/problem they typically do not change.
+Tensor notation is common in tensor operations: it keeps the computation compact and concise, and hence easier to follow and understand.
+For performance reasons, numerical implementations rely heavily on the matrix representation, since most computations involve only vector/matrix operations (for most problems).
 
-The Einstein summation convention is adopted, that is, for each single term, if the same index appears exactly twice, the summation of that term over all values of that index has to be carried out.
+The Einstein summation convention is adopted, that is, for each term, if the same index appears exactly twice, the summation of that term over all values of that index has to be carried out.
 In this 2D example, $i,j=\{1,2\}$.
 Thus,
 \begin{gather}
 \mb{A}=A_{ij}\mb{e}^i\mb{e}^j=\sum_{i,j=1}^{2}A_{ij}\mb{e}^i\mb{e}^j=A_{11}\mb{e}^1\mb{e}^1+A_{12}\mb{e}^1\mb{e}^2+A_{21}\mb{e}^2\mb{e}^1+A_{22}\mb{e}^2\mb{e}^2.
 \end{gather}
-Since indices only act as placeholders, it does not matter which symbol is used.
+Indices are only placeholders, so the choice of symbol does not matter.
 The following expressions are equivalent.
 \begin{gather}
 \mb{A}=A_{ij}\mb{e}^i\mb{e}^j=A_{ik}\mb{e}^i\mb{e}^k=A_{ji}\mb{e}^j\mb{e}^i=A_{jk}\mb{e}^j\mb{e}^k=A_{ki}\mb{e}^k\mb{e}^i=A_{kj}\mb{e}^k\mb{e}^j.
@@ -71,7 +71,7 @@ If $\mb{A}$ represents a symmetric stress tensor $\bsigma$, it can be expressed 
 \end{bmatrix}\quad\text{Mandel notation}.
 \end{gather}
 Readers should be familiar with the Voigt notation, as it is widely used due to its simplicity.
-The Mandel notation is an alternative that provides convenience when it comes to some tensor algebra operations.
+The Mandel notation is an alternative that offers convenience for some tensor algebra operations.
 Examples will be shown later.
 Note that different vector/matrix representations of a tensor may have different components.
 
@@ -96,19 +96,19 @@ If $\mb{A}$ represents a symmetric strain tensor $\mb{\varepsilon}$, then its ma
 \end{bmatrix}\quad\text{Mandel notation}.
 \end{gather}
 In the above, $\gamma_{xy}=2\varepsilon_{12}=2\varepsilon_{21}$ is commonly known as the engineering shear strain.
-Using engineering strains in the Voigt notation is a common practice.
+Engineering strains are commonly used with the Voigt notation.
 However, due to the discrepancy between stress and strain, the same tensorial operations may behave differently depending on the operands involved.
 We further point out that using engineering strain has a physical meaning: vectors $\bsigma$ and $\bvarepsilon$ need to be energy-conjugate pairs such that $\bsigma\cdot\bvarepsilon=\bsigma^\mT\bvarepsilon$ represents the actual energy.
 In this sense, the factor \num{2} has to be added to either the shear stress or the shear strain components to ensure energy consistency.
-Readers should be aware of this issue, as it often causes confusion, if not mistakes.
-We will further discuss similarities and differences when we run into concrete examples.
+This issue is worth keeping in mind, since it often causes confusion, if not mistakes.
+We will further discuss similarities and differences when we encounter concrete examples.
 
-\cite{Helnwein2001} presents a great discussion on compressed matrix representation covering both second order and fourth order tensors.
+\cite{Helnwein2001} presents a great discussion of compressed matrix representations covering both second order and fourth order tensors.
 \section{Tensor Operations}
 \subsection{Tensor Product}
 \subsubsection{Definition}
 The tensor (tensorial) product is also called the dyadic product.
-It constructs a higher-order tensor from two lower-order tensors.
+The product builds a higher-order tensor from two lower-order ones.
 Let $\mb{A}=A_i\mb{e}^i\in\mathbb{R}^2$ and $\mb{B}=B_i\mb{e}^i\in\mathbb{R}^2$ be two first order tensors (vectors), then the tensor product of $\mb{A}$ and $\mb{B}$ gives a second order tensor $\mb{C}\in\mathbb{R}^2\times\mathbb{R}^2$
 \begin{gather}
 \mb{C}=\mb{A}\otimes\mb{B}=A_i\mb{e}^i\otimes{}B_j\mb{e}^j=A_iB_j\mb{e}^i\otimes{}\mb{e}^j=C_{ij}\mb{e}^i\otimes{}\mb{e}^j.
@@ -135,8 +135,8 @@ and minor symmetry
 \begin{gather}
 C_{ijkl}=C_{jikl}=C_{ijlk}.
 \end{gather}
-Iterating over all four indices, the total number of components of $\mb{C}$ is $3^4=81$ in 3D and $2^4=16$ in 2D.
-The number of independent components is further reduced, depending on the symmetry of $\mb{A}$ and $\mb{B}$.
+Iterating over all four indices, one finds that the total number of components of $\mb{C}$ is $3^4=81$ in 3D and $2^4=16$ in 2D.
+Symmetry in $\mb{A}$ and $\mb{B}$ reduces the number of independent components further.
 \subsubsection{Vector/Matrix Representation}
 Let $\mb{A}=A_i\mb{e}^i\in\mathbb{R}^2$ and $\mb{B}=B_i\mb{e}^i\in\mathbb{R}^2$ be two first order tensors; their column vector representations can be written as
 \begin{gather}
@@ -157,7 +157,7 @@ A_1B_1&A_1B_2\\
 A_2B_1&A_2B_2
 \end{bmatrix}.
 \end{gather}
-If tensor $\mb{C}$ is treated as a matrix while tensors $\mb{A}$ and $\mb{B}$ are treated as column vectors, then the tensor product is exactly the outer product between $\mb{A}$ and $\mb{B}$.
+Treat tensor $\mb{C}$ as a matrix and tensors $\mb{A}$ and $\mb{B}$ as column vectors: the tensor product is then exactly the outer product of $\mb{A}$ and $\mb{B}$.
 That is,
 \begin{gather}\label{eq:tensor_product}
 \underbrace{\mb{C}=\mb{A}\otimes\mb{B}=\mb{A}\mb{B}}_\text{tensor product between tensors}\qquad\longleftrightarrow\qquad\underbrace{\mb{C}=\mb{A}\mb{B}^\mT.}_\text{{vector/matrix representation}}
@@ -184,7 +184,7 @@ C_{2311}&C_{2322}&C_{2333}&C_{2312}&C_{2323}&C_{2331}\\
 C_{3111}&C_{3122}&C_{3133}&C_{3112}&C_{3123}&C_{3131}
 \end{bmatrix}.
 \end{gather}
-It can be seen that \eqsref{eq:tensor_product} still applies, since $C_{ijkl}=A_{ij}B_{kl}$.
+The relation \eqsref{eq:tensor_product} still applies, since $C_{ijkl}=A_{ij}B_{kl}$.
 It is thus convenient to adopt the Voigt notation to perform the tensor product between stress tensors.
 
 However, if $\mb{A}$ and $\mb{B}$ are \textbf{strain} tensors, the Voigt notation leads to the following result of the outer product
@@ -198,13 +198,13 @@ C_{3311}&C_{3322}&C_{3333}&2C_{3312}&2C_{3323}&2C_{3331}\\
 2C_{3111}&2C_{3122}&2C_{3133}&4C_{3112}&4C_{3123}&4C_{3131}
 \end{bmatrix}.
 \end{gather}
-This \textbf{wrong} expression is the direct result of the scaling factor \num{2} in the shear terms.
+The scaling factor \num{2} in the shear terms is directly responsible for this \textbf{wrong} expression.
 They must therefore be scaled back to obtain the correct result.
-We will not emphasise this further, but the reader should be clear about this difference and apply the proper scaling vectors/matrices when necessary in compressed matrix representations.
+We will not emphasise this further, but the reader should be clear about this difference and apply the proper scaling vectors/matrices in compressed matrix representations when necessary.
 In practice, the strain tensor under consideration may be derived/associated with some function of some stress tensor, and it may or may not be necessary to manually scale the shear components.
 This affects how the corresponding implementation is carried out.
 
-Given that most constitutive models are formulated in the stress space, we will rarely encounter tensor products between strain tensors.
+Since most constitutive models are formulated in the stress space, tensor products between strain tensors rarely arise.
 \subsection{Double Contraction}
 \subsubsection{Definition}
 We are familiar with the concept of the dot product.
@@ -217,7 +217,7 @@ We have assumed that $\mb{e}^i\cdot\mb{e}^j=\delta_{ij}$, which is valid for ort
 
 The double contraction, also known as the double dot product, is a tensor operation that constructs lower-order tensors from higher-order tensors.
 
-If $\mb{A}=A_{ij}\mb{e}^i\mb{e}^j$ and $\mb{B}=B_{ij}\mb{e}^i\mb{e}^j$ are two second order tensors, then the double contraction performs dot product twice on different indices, resulting in a zeroth order tensor (scalar) as
+If $\mb{A}=A_{ij}\mb{e}^i\mb{e}^j$ and $\mb{B}=B_{ij}\mb{e}^i\mb{e}^j$ are two second order tensors, then the double contraction performs the dot product twice on different indices, resulting in a zeroth order tensor (scalar) as
 \begin{gather}\label{eq:double_contraction}
 \begin{split}
 C&=\mb{A}:\mb{B}=A_{ij}\mb{e}^i\mb{e}^j:B_{kl}\mb{e}^k\mb{e}^l=A_{ij}B_{kl}(\mb{e}^i\cdot\mb{e}^k)(\mb{e}^j\cdot\mb{e}^l)\\&=\delta_{ik}\delta_{jl}A_{ij}B_{kl}=A_{ij}B_{ij}.
@@ -227,9 +227,9 @@ The corresponding derivative is straightforward,
 \begin{gather}
     \md{C}=\mb{B}:\md{\mb{A}}+\mb{A}:\md{\mb{B}}.
 \end{gather}
-In essence, double contraction results in the summation of the element-wise products of every component of two second order tensors.
+In essence, the double contraction sums the element-wise products of every component of two second order tensors.
 
-For high order tensors, the procedure is similar: dot product is performed twice on different indices.
+For high order tensors, the procedure is similar: the dot product is performed twice on different indices.
 For example, if $\mb{A}=A_{ijkl}\mb{e}^i\mb{e}^j\mb{e}^k\mb{e}^l$ and $\mb{B}=B_{ij}\mb{e}^i\mb{e}^j$, then
 \begin{gather}
     \begin{split}
@@ -239,7 +239,7 @@ For example, if $\mb{A}=A_{ijkl}\mb{e}^i\mb{e}^j\mb{e}^k\mb{e}^l$ and $\mb{B}=B_
 This is thus a second order tensor with $C_{ij}=A_{ijkl}B_{kl}$.
 There are different conventions for performing double contraction between tensors of different orders.
 In the above example, the last two indices of $\mb{A}$ are contracted with the two indices of $\mb{B}$.
-One can, in theory, pick any two indices of $\mb{A}$ to be contracted with $\mb{B}$, although not all choices embody physical meanings.
+One can, in theory, pick any two indices of $\mb{A}$ to be contracted with $\mb{B}$, although not all choices embody physical meaning.
 \subsubsection{Vector/Matrix Representation}
 Let $\mb{A}=A_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ and $\mb{B}=B_{ij}\mb{e}^i\mb{e}^j\in\mathbb{R}^3\times\mathbb{R}^3$ be two symmetric second order \textbf{stress} tensors.
 According to \eqsref{eq:tensor_stress} and \eqsref{eq:double_contraction}, their double contraction gives
@@ -288,14 +288,14 @@ If $\mb{A}$ and $\mb{B}$ represent \textbf{strain} tensors, a similar expression
 1&1&1&\dfrac{1}{2}&\dfrac{1}{2}&\dfrac{1}{2}
 \end{matrix}}.
 \end{gather}
-With the Mandel notation, again no additional scaling matrix is required, $C=\mb{A}^\mT\mb{B}$.
+With the Mandel notation, again no additional scaling matrix is required, so $C=\mb{A}^\mT\mb{B}$.
 
 The Mandel notation is constructed on top of an orthonormal basis of second order tensors.
 The advantage is obvious: there is no need to handle covariant and contravariant representations.
-With the Mandel notation, the corresponding numerical implementation can be greatly simplified as it fully mimics linear algebra operations.
+With the Mandel notation, the corresponding numerical implementation can be greatly simplified since it fully mimics linear algebra operations.
 However, it is not widely used in theory, as its physical meaning is less obvious.
 It also requires additional translations between force and stress (in equilibrium equations), and between displacement and strain (in kinematics).
-For the same reason, it is rarely seen in numerical implementations.
+For that reason, numerical implementations rarely use it.
 In this book, the Voigt notation is used by default.
 
 Finally, if $\mb{A}$ and $\mb{B}$ represent a stress tensor and a strain tensor, one can easily derive
@@ -303,18 +303,18 @@ Finally, if $\mb{A}$ and $\mb{B}$ represent a stress tensor and a strain tensor,
     C=\mb{A}^\mT\mb{B}=\mb{B}^\mT\mb{A}.
 \end{gather}
 There is no scaling matrix involved in this case!
-Readers can verify the above three cases by explicitly writing out all components.
+Writing out all components is a good way to verify the above three cases.
 
-It can be confusing, if not frustrating, to realise that for different operands, the scaling matrices $\mb{S}$ are different.
-Thus, one should always ask what the operands represent before performing those tensor operations in vector/matrix representations.
-This is a vital issue existing at the implementation level but not at the abstraction level.
+Realising that the scaling matrices $\mb{S}$ differ between operands can be confusing, if not frustrating.
+One should therefore always ask what the operands represent before performing those tensor operations in vector/matrix representations.
+The issue is vital at the implementation level, but not at the abstraction level.
 It can be fully circumvented if, instead of compact vector/matrix representations, one uses full tensor notation, so that second order tensors are represented by 2D arrays and fourth order tensors by 4D arrays, at the cost of performance.
 
-The good news is that the vast majority of the existing constitutive models are formulated in the stress space --- the classic plasticity theory is formulated in the stress space after all.
+Fortunately, the vast majority of existing constitutive models are formulated in the stress space; classic plasticity theory is formulated there after all.
 In practice, we rarely need to apply different scaling matrices in a single constitutive model.
 \section{Stress Tensor Norm}
-The double contraction between a second order tensor $\mb{A}$ and itself results in a scalar that can be used to characterise the norm of $\mb{A}$.
-In this sense, the double contraction of second order tensors can be regarded as an equivalent version of the dot product of vectors.
+Contracting a second order tensor $\mb{A}$ with itself gives a scalar that can be used to characterise the norm of $\mb{A}$.
+In this sense, the double contraction of second order tensors can be regarded as the counterpart of the vector dot product.
 
 Let $\bsigma\in\mathbb{R}^3\times\mathbb{R}^3$ denote a symmetric stress tensor, and define its Euclidean norm as
 \begin{gather}
@@ -328,7 +328,7 @@ Accordingly, its normalised version is
 \mb{n}=\dfrac{\bsigma}{\norm{\bsigma}}.
 \end{gather}
 
-The derivative of $\norm{\bsigma}$ can be computed by the chain rule.
+The chain rule gives the derivative of $\norm{\bsigma}$.
 \begin{gather}\label{eq:norm_derivative}
     \md{\norm{\bsigma}}=\dfrac{1}{2}\dfrac{2\bsigma:\mathbb{I}}{\norm{\bsigma}}:\md{\bsigma}=\mb{n}:\md{\bsigma}\qquad\text{in tensor notation},
 \end{gather}
@@ -395,9 +395,9 @@ In some cases, the chain rule may be applied, resulting in the cancellation of s
 \begin{gather}
     \ddfrac{\norm{\bsigma}}{\bsigma}=\bn^\mT\qquad\text{all vectors}.
 \end{gather}
-We thus must emphasise that such a subtle difference should always be kept in mind.
+That difference is subtle, and it should always be kept in mind.
 
-We now proceed to compute the derivative of $\mb{n}$ with respect to $\bsigma$.
+Next we compute the derivative of $\mb{n}$ with respect to $\bsigma$.
 \begin{gather}
 \md{\bn}=\dfrac{\norm{\bsigma}\mathbb{I}-\bsigma\otimes\md{\norm{\bsigma}}}{\norm{\bsigma}^2}:\md{\bsigma}
 =\dfrac{1}{\norm{\bsigma}}\left(\mathbb{I}-\mb{n}\otimes\mb{n}\right):\md{\bsigma}\qquad\text{in tensor notation}.
@@ -436,7 +436,7 @@ It is essentially
 \end{bmatrix}.
 \end{gather}
 
-From the above example, we point out that although we typically use tensor notation in analytical expressions and compressed matrix representations in implementations, the two forms may resemble each other while still requiring additional scaling matrices to ensure correctness.
+The above example makes the point. Analytical expressions typically use tensor notation, whereas implementations use compressed matrix representations. Even so, the two forms may resemble each other while still requiring additional scaling matrices to ensure correctness.
 \section{Tensor Function of Stress Tensors}
 Some tensor-valued functions of stress tensors are frequently used in the analysis of plasticity.
 Let $\mb{\beta}=f\left(\bsigma,\mb{\alpha}\right)$ denote a tensor-valued function of the stress tensor $\bsigma$ and other tensors denoted by $\mb{\alpha}$.
