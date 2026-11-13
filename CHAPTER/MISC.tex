@@ -161,3 +161,79 @@ If this cannot be achieved, a composite implementation that combines global root
 In constitutive modelling, analytical formulations must be balanced against numerical considerations that govern implementation robustness and efficiency.
 Specifically, explicit rather than implicit evolution laws for internal variables eliminate the auxiliary nonlinear solves typically required to evaluate the yield function.
 Explicit rules also decouple the internal variables, which simplifies the local system and streamlines the formulation of the Jacobian matrix.
+\subsection{Homotopy Continuation}
+The root-finding strategy discussed above presumes that the yield function can be evaluated from $\gamma$ alone.
+When the internal variables cannot be eliminated and themselves require a local nonlinear solve, such a univariate structure is unavailable.
+A homotopy method, also known as numerical continuation \cite{Allgower1990}, provides a general safeguard for the fully coupled local system.
+The vector $\mb{x}=\begin{bmatrix}\gamma&\bvarepsilon^p&\bq\end{bmatrix}$ collects the unknowns of the local problem, and $\mb{R}$ is the residual in \eqsref{eq:local_system}.
+Its first component is the yield function, while the remaining components enforce the flow rule and the hardening law.
+The idea is to replace the original residual equation $\mb{R}\left(\mb{x}\right)=\mb{0}$ with a one-parameter family of equations,
+\begin{gather}\label{eq:homotopy}
+\mb{H}\left(\mb{x},~\lambda\right)=\mb{R}\left(\mb{x}\right)-\left(1-\lambda\right)\mb{R}\left(\mb{x}_0\right)=\mb{0},
+\end{gather}
+where $\lambda\in\left[0,~1\right]$ is the homotopy parameter and $\mb{x}_0$ is the converged local state of the previous increment.
+At $\lambda=0$, \eqsref{eq:homotopy} is trivially satisfied by $\mb{x}=\mb{x}_0$.
+At $\lambda=1$, it reduces to the original return-mapping problem $\mb{R}\left(\mb{x}\right)=\mb{0}$.
+The solution is therefore not computed directly, but is reached along a continuous path $\mb{x}\left(\lambda\right)$ that starts from a known state and ends at the desired one.
+For a yield function that depends only on $\gamma$, the same construction reduces to $H\left(\gamma,~\lambda\right)=f\left(\gamma\right)-\left(1-\lambda\right)f\left(\gamma_0\right)$, which connects the present discussion to the bracketing strategy above.
+
+The core idea is easiest to grasp by analogy.
+Imagine descending into a deep valley in thick fog.
+Newton--Raphson behaves like a confident hiker who looks at the local slope and leaps in that direction: near the valley floor a few leaps suffice, but from the rim they may overshoot the valley or carry the hiker over a cliff.
+Homotopy is like building a staircase from the rim to the valley floor and descending one step at a time.
+Each step is short enough to be safe, and the last step lands exactly at the intended destination.
+The homotopy parameter plays the role of the fraction of the staircase that has already been built: at $\lambda=0$ one stands on familiar ground, and at $\lambda=1$ the staircase reaches the valley floor.
+No step is allowed to begin until the previous one has been completed, so the local convergence of Newton--Raphson is restored at every stage.
+
+Differentiating \eqsref{eq:homotopy} with respect to $\lambda$ along the path gives
+\begin{gather}\label{eq:homotopy_ode}
+\pdfrac{\mb{H}}{\mb{x}}\ddfrac{\mb{x}}{\lambda}=-\pdfrac{\mb{H}}{\lambda}=\mb{R}\left(\mb{x}_0\right),
+\end{gather}
+which is Davidenko's equation.
+Because $\pdfrac{\mb{H}}{\mb{x}}=\pdfrac{\mb{R}}{\mb{x}}$, the Jacobian of the original local system is reused without modification.
+This is a practical advantage: no additional derivatives need to be derived or implemented.
+
+The standard procedure is summarized in \algoref{alg:homotopy}.
+A step size $\Delta\lambda>0$ is chosen and $\lambda$ is advanced from $0$ to $1$ in increments.
+At each increment, Newton--Raphson solves $\mb{H}\left(\mb{x},~\lambda\right)=\mb{0}$, starting from the solution of the previous increment.
+The simplest predictor is $\mb{x}^\text{pred}=\mb{x}$, although a tangent predictor based on \eqsref{eq:homotopy_ode} can reduce the number of corrections.
+If the corrector converges within a prescribed number of iterations, the step is accepted and $\Delta\lambda$ may be increased.
+If it fails, the step is rejected, $\Delta\lambda$ is halved, and the corrector is retried.
+This adaptive control resembles substepping, but it operates on the residual rather than on the imposed strain increment.
+Once $\lambda=1$ is reached, the solution is identical to that of the original return mapping, and the consistent tangent operator is obtained from \eqsref{eq:consistent_stiffness} at the final state.
+The constitutive model itself is untouched: only the route to its local solution is changed.
+\begin{breakablealgorithm}
+\caption{homotopy-continuation return mapping}\label{alg:homotopy}
+\begin{algorithmic}[1]
+\State \textbf{Input}: $\mb{x}_0$ from the previous converged increment, tolerances, initial step $\Delta\lambda_0$
+\State $\lambda=0$, $\Delta\lambda=\Delta\lambda_0$, $\mb{x}=\mb{x}_0$
+\While{$\lambda<1$}
+\State $\lambda^\text{new}=\min\left(\lambda+\Delta\lambda,~1\right)$
+\State $\mb{x}^\text{pred}=\mb{x}$\Comment{or a tangent predictor from \eqsref{eq:homotopy_ode}}
+\State solve $\mb{H}\left(\mb{x},~\lambda^\text{new}\right)=\mb{0}$ for $\mb{x}^\text{new}$ by Newton--Raphson from $\mb{x}^\text{pred}$
+\If{converged}
+\State $\mb{x}\leftarrow\mb{x}^\text{new}$, $\lambda\leftarrow\lambda^\text{new}$
+\State $\Delta\lambda\leftarrow\min\left(2\Delta\lambda,~\Delta\lambda_\text{max}\right)$
+\Else
+\State $\Delta\lambda\leftarrow\Delta\lambda/2$
+\EndIf
+\EndWhile
+\State compute the consistent tangent operator at $\mb{x}$\Comment{\eqsref{eq:consistent_stiffness}}
+\end{algorithmic}
+\end{breakablealgorithm}
+
+Compared with other non-classical Newton methods, homotopy offers a different kind of safeguard.
+Line searches \cite{Scherzinger2017}, trust-region methods and the Levenberg--Marquardt method keep the original problem fixed and modify only the step.
+Such methods rely on a merit function, typically the norm of the residual, and can stall at a local minimum of that norm where the residual does not vanish.
+They also inherit the difficulty of a singular or indefinite Jacobian: a modified step may avoid the immediate breakdown, but the underlying problem remains unchanged.
+Quasi-Newton updates reduce the cost of each iteration, but they do not enlarge the radius of convergence.
+Homotopy instead changes the problem itself: the solution at $\lambda=0$ is known by construction, and the original problem is reached through a sequence of nearby problems, each of which starts from an excellent initial guess.
+If the path is regular and the steps are small enough, every corrector remains in the local convergence basin of Newton--Raphson, and a singularity of the Jacobian at an isolated turning point can be circumvented by a pseudo-arclength parameterization.
+Neither a line search nor a trust-region method can accomplish this, because both keep the singular Jacobian of the original problem.
+In practice, a line search can still be used inside each corrector, so homotopy and the methods above are complementary rather than mutually exclusive.
+Substepping is indeed the special case of homotopy in which $\lambda$ scales the imposed strain increment; the residual-based form above is more general and does not require the continuation to follow a physical loading path.
+Root-finding algorithms such as Ridders' method are more robust in one dimension, but they require a bracket and apply only when $f=f\left(\gamma\right)$.
+Homotopy makes no such structural demand and can be applied to the full coupled system.
+At the same time, homotopy is not free: it typically requires more residual and Jacobian evaluations than a successful Newton--Raphson iteration.
+It is therefore best regarded as a fallback for difficult increments rather than a default solver.
+With adaptive step control, the overhead remains modest, and quadratic convergence is recovered near $\lambda=1$.
